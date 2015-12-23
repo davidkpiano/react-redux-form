@@ -7,10 +7,20 @@ import { filter, map } from 'lodash/collection';
 
 function setField(state, model, props) {
   return set(state, model, {
+    ...initialFieldState,
     ...get(state, model),
     ...props
   });
 }
+
+const initialFieldState = {
+  focus: false,
+  blur: true,
+  pristine: true,
+  dirty: false,
+  touched: false,
+  untouched: true,
+};
 
 function createFieldReducer(model, initialState = {}) {
   return (state = initialState, action) => {
@@ -30,19 +40,41 @@ function createFieldReducer(model, initialState = {}) {
 
     switch (action.type) {
       case 'rsf/focus':
-        set(superState, action.model, { focus: true, blur: false });
+        setField(superState, action.model, { focus: true, blur: false });
 
         return get(superState, model);
       case 'rsf/blur':
-        set(superState, action.model, { blur: true, focus: false });
+        setField(superState, action.model, { focus: false, blur: true });
+
+        return get(superState, model);
+
+      case 'rsf/change':
+      case 'rsf/setDirty':
+        setField(superState, action.model, { dirty: true, pristine: false });
+
+        return get(superState, model);
+      case 'rsf/setPristine':
+        setField(superState, action.model, { dirty: false, pristine: true });
+
+        return get(superState, model);
+      case 'rsf/blur':
+      case 'rsf/setTouched':
+        setField(superState, action.model, { touched: true, untouched: false });
+
+        return get(superState, model);
+      case 'rsf/setUntouched':
+        setField(superState, action.model, { touched: false, untouched: true });
 
         return get(superState, model);
       default:
-        return state;
+        setField(superState, action.model, initialFieldState);
+
+        return get(superState, model);
     }
   }
 }
 
 export {
-  createFieldReducer
+  createFieldReducer,
+  initialFieldState
 }

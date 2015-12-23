@@ -1,18 +1,23 @@
 import React from 'react';
-import {contains} from 'lodash/collection';
+import { contains } from 'lodash/collection';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {defaults, get} from 'lodash/object';
+import { defaults, get } from 'lodash/object';
 import { compose } from 'lodash/function';
 import { capitalize } from 'lodash/string';
+import { identity } from 'lodash/utility';
 
 import * as modelActions from '../actions/model-actions';
 import * as fieldActions from '../actions/field-actions';
 
+import {
+  isMulti
+} from '../utils';
+
 
 function createField(input, props) {
   let { dispatch } = props;
-  let model = input.props.name || props.model;
+  let model = props.model;
   let value = input.props.value || props.value;
   let updateOn = `on${capitalize(props.updateOn || 'change')}`;
 
@@ -26,6 +31,7 @@ function createField(input, props) {
   } = bindActionCreators(fieldActions, dispatch);
 
   let defaultProps = {
+    name: model,
     checked: contains(get(props, model), value),
     onFocus: () => focus(model),
     onBlur: () => blur(model)
@@ -37,7 +43,7 @@ function createField(input, props) {
     defaultProps,
     {
       [updateOn]: compose(
-        defaultProps[updateOn] || ((a) => a),
+        defaultProps[updateOn] || identity,
         () => change(model, value))
     })
   );

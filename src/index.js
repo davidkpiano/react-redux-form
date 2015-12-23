@@ -6,16 +6,7 @@ import { combineReducers, createStore } from 'redux';
 import { createModelReducer } from './reducers/model-reducer';
 import { createFieldReducer } from './reducers/field-reducer';
 
-
-const testReducer = (state = {user: {name: 'Bob', 'password': 123, preferences: []}}, action) => {
-  console.log(action)
-  if (action.type == 'CLEAR_ODD') {
-    console.log(state.user.preferences.filter(p => {console.log(p);return p!=='5'}))
-    return {...state, user: { ...state.user, preferences: state.user.preferences.filter(p => !(+p%2))}};
-  }
-
-  return modelReducer(state, action);
-}
+import { isPristine, isFocused } from './utils';
 
 const userReducer = (state = { preferences: [] }, action) => {
   const modelReducer = createModelReducer('user');
@@ -39,9 +30,6 @@ import * as fieldActions from './actions/field-actions';
 
 import Field from './components/field-component';
 
-function isFocused(field) {
-  return field && field.focus;
-}
 
 function form(props) {
   let change = (...args) => (e) => {
@@ -65,6 +53,7 @@ function form(props) {
       <input type="password" onBlur={change('user.password')} defaultValue={user.password}/>
       <div style={{color: isFocused(userFields.firstName) ? 'green' : 'black'}}>
         { user.fullName }
+        { isPristine(userFields.password) ? 'Pristine!' : 'Not pristine.' }
       </div>
       <div>{ user.color }</div>
       <div>{ user.preferences.join(',') }</div>

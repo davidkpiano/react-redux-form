@@ -9,7 +9,20 @@ const blur = (model) => ({
   model
 });
 
+const setPristine = (model) => ({
+  type: 'rsf/setPristine',
+  model
+});
+
+const setDirty = (model) => ({
+  type: 'rsf/setDirty',
+  model
+});
+
+
 export {
   focus,
-  blur
+  blur,
+  setPristine,
+  setDirty
 }
