@@ -39,6 +39,10 @@ import * as fieldActions from './actions/field-actions';
 
 import Field from './components/field-component';
 
+function isFocused(field) {
+  return field && field.focus;
+}
+
 function form(props) {
   let change = (...args) => (e) => {
     e.persist();
@@ -55,10 +59,13 @@ function form(props) {
       <input type="text"
         onChange={change('user.firstName')}
         onFocus={() => dispatch(fieldActions.focus('user.firstName'))}
+        onBlur={() => dispatch(fieldActions.blur('user.firstName'))}
         value={user.firstName}/>
       <input type="text" onChange={change('user.lastName')} value={user.lastName}/>
       <input type="password" onBlur={change('user.password')} defaultValue={user.password}/>
-      <div>{ user.fullName }</div>
+      <div style={{color: isFocused(userFields.firstName) ? 'green' : 'black'}}>
+        { user.fullName }
+      </div>
       <div>{ user.color }</div>
       <div>{ user.preferences.join(',') }</div>
       <div>
@@ -100,7 +107,7 @@ function form(props) {
         </label>
       </div>
       <label>
-        <Field model="user.preferences[]">
+        <Field model="user.preferences[]" updateOn="blur">
           <input type="checkbox" value="4" />
         </Field>
         <span>Item 4</span>
