@@ -3,41 +3,102 @@ import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
-const testReducer = (state = {}, action) => {
-  console.log(action);
+import defaults from 'lodash/object/defaults';
+import {endsWith} from 'lodash/string';
+import {curry} from 'lodash/function';
+import {contains} from 'lodash/collection';
 
-  return state;
+import { createModelReducer } from './reducers/model-reducer';
+
+function isEvent(event) {
+  return !!(event && event.stopPropagation && event.preventDefault);
 }
 
-let store = createStore(combineReducers({ test: testReducer }));
+function getValue(event) {
+  return isEvent(event)
+    ? event.target.value
+    : event;
+}
 
-const makeAction = (e, model) => {
-  return {
-    type: `rsf/${e.type}`,
-    model,
-    value: e.target.value
+const testReducer = (state = {user: {name: 'Bob', 'password': 123, preferences: []}}, action) => {
+  console.log(action)
+  if (action.type == 'CLEAR_ODD') {
+    console.log(state.user.preferences.filter(p => {console.log(p);return p!=='5'}))
+    return {...state, user: { ...state.user, preferences: state.user.preferences.filter(p => !(+p%2))}};
   }
+
+  return modelReducer(state, action);
 }
 
-function Field(props, state) {
-  let { dispatch, test, model } = props;
+let store = createStore(combineReducers({
+  user: createModelReducer('user', {
+    preferences: []
+  })
+}));
+
+const actions = {
+  change: curry((model, value) => ({
+    type: `rsf/change`,
+    model: model,
+    value: getValue(value),
+    multi: endsWith(model, '[]')
+  }))
+}
+
+function form(props) {
+  let change = (model) => (e) => {
+    e.persist();
+    console.log(e);
+    store.dispatch(actions.change(model, e));
+  }
+
+  let { user, dispatch } = props;
+
+  console.log(user);
 
   return (
-    <div onChange={(e) => dispatch(makeAction(e, model))}>
-      <input type="text" name="" id=""/>
+    <div>
+      <input type="text" onChange={change('user.name')} value={user.name}/>
+      <input type="password" onBlur={change('user.password')} defaultValue={user.password}/>
+      <div>{ user.name }</div>
+      <div>{ user.password }</div>
+      <div>{ user.preferences.join(',') }</div>
+      <div onChange={change('user.preferences[]')}>
+        <label>
+          <input type="checkbox" value="1"/>
+          <span>Item 1</span>
+        </label>
+        <label>
+          <input type="checkbox" value="2"/>
+          <span>Item 2</span>
+        </label>
+        <label>
+          <input type="checkbox" value="3"/>
+          <span>Item 3</span>
+        </label>
+        <label>
+          <input type="checkbox" value="4"/>
+          <span>Item 4</span>
+        </label>
+        <label>
+          <input type="checkbox" onChange={(e)=>{e.preventDefault();dispatch(actions.change('user.preferences[]', 5))}}/>
+          <span>Item 5</span>
+        </label>
+      </div>
+      <input type="text" onChange={change('user.phone')}/>
+      <button onClick={() => props.dispatch({type:'CLEAR_ODD'})}>clear odd</button>
     </div>
   )
 }
 
-let Foo = connect(s=>s)(Field);
+let Form = connect(s => s)(form);
 
 class App extends React.Component {
   render() {
-    console.log(this.props);
 
     return (
       <Provider store={store}>
-        <Foo model="user.name"></Foo>
+        <Form />
       </Provider>
     )
   }
