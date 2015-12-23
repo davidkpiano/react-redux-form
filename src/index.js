@@ -3,22 +3,8 @@ import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
-import defaults from 'lodash/object/defaults';
-import {endsWith} from 'lodash/string';
-import {curry} from 'lodash/function';
-import {contains} from 'lodash/collection';
-
 import { createModelReducer } from './reducers/model-reducer';
 
-function isEvent(event) {
-  return !!(event && event.stopPropagation && event.preventDefault);
-}
-
-function getValue(event) {
-  return isEvent(event)
-    ? event.target.value
-    : event;
-}
 
 const testReducer = (state = {user: {name: 'Bob', 'password': 123, preferences: []}}, action) => {
   console.log(action)
@@ -36,20 +22,15 @@ let store = createStore(combineReducers({
   })
 }));
 
-const actions = {
-  change: curry((model, value) => ({
-    type: `rsf/change`,
-    model: model,
-    value: getValue(value),
-    multi: endsWith(model, '[]')
-  }))
-}
+import * as actions from './actions/model-actions';
+
+import Field from './components/field-component';
 
 function form(props) {
-  let change = (model) => (e) => {
+  let change = (...args) => (e) => {
     e.persist();
     console.log(e);
-    store.dispatch(actions.change(model, e));
+    store.dispatch(actions.change(...args, e));
   }
 
   let { user, dispatch } = props;
@@ -69,24 +50,28 @@ function form(props) {
           <span>Item 1</span>
         </label>
         <label>
-          <input type="checkbox" value="2"/>
+          <input type="checkbox" value="2" />
           <span>Item 2</span>
         </label>
         <label>
-          <input type="checkbox" value="3"/>
+          <input type="checkbox" value="3" />
           <span>Item 3</span>
         </label>
-        <label>
-          <input type="checkbox" value="4"/>
-          <span>Item 4</span>
-        </label>
-        <label>
-          <input type="checkbox" onChange={(e)=>{e.preventDefault();dispatch(actions.change('user.preferences[]', 5))}}/>
-          <span>Item 5</span>
-        </label>
       </div>
+      <label>
+        <Field model="user.preferences[]">
+          <input type="checkbox" value="4" />
+        </Field>
+        <span>Item 4</span>
+      </label>
+      <label>
+        <Field model="user.preferences[]">
+          <input type="checkbox" value={5}/>
+        </Field>
+        <span>Item 5</span>
+      </label>
       <input type="text" onChange={change('user.phone')}/>
-      <button onClick={() => props.dispatch({type:'CLEAR_ODD'})}>clear odd</button>
+      <button onClick={() => dispatch(actions.filter('user.preferences[]', (p) => !(+p % 2)))}>only even</button>
     </div>
   )
 }
