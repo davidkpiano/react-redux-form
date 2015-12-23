@@ -44,17 +44,23 @@ function form(props) {
       <div>{ user.name }</div>
       <div>{ user.password }</div>
       <div>{ user.preferences.join(',') }</div>
-      <div onChange={change('user.preferences[]')}>
+      <div>
         <label>
-          <input type="checkbox" value="1"/>
+          <Field model="user.preferences[]">
+            <input type="checkbox" value="1" />
+          </Field>
           <span>Item 1</span>
         </label>
         <label>
-          <input type="checkbox" value="2" />
+          <Field model="user.preferences[]">
+            <input type="checkbox" value="2" />
+          </Field>
           <span>Item 2</span>
         </label>
         <label>
-          <input type="checkbox" value="3" />
+          <Field model="user.preferences[]">
+            <input type="checkbox" value="3" />
+          </Field>
           <span>Item 3</span>
         </label>
       </div>
@@ -72,6 +78,7 @@ function form(props) {
       </label>
       <input type="text" onChange={change('user.phone')}/>
       <button onClick={() => dispatch(actions.filter('user.preferences[]', (p) => !(+p % 2)))}>only even</button>
+      <button onClick={() => dispatch(actions.map('user.preferences[]', (p) => p * 2 + ""))}>double them</button>
     </div>
   )
 }
