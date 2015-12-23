@@ -4,6 +4,7 @@ import { Provider, connect } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import { createModelReducer } from './reducers/model-reducer';
+import { createFieldReducer } from './reducers/field-reducer';
 
 
 const testReducer = (state = {user: {name: 'Bob', 'password': 123, preferences: []}}, action) => {
@@ -16,13 +17,25 @@ const testReducer = (state = {user: {name: 'Bob', 'password': 123, preferences: 
   return modelReducer(state, action);
 }
 
+const userReducer = (state = { preferences: [] }, action) => {
+  const modelReducer = createModelReducer('user');
+
+  let model = modelReducer(state, action);
+
+  return {
+    ...model,
+    fullName: model.firstName + ' ' + model.lastName
+  }
+}
+
 let store = createStore(combineReducers({
-  user: createModelReducer('user', {
-    preferences: []
-  })
+  user: userReducer,
+  userFields: createFieldReducer('user')
 }));
 
 import * as actions from './actions/model-actions';
+import * as fieldActions from './actions/field-actions';
+
 
 import Field from './components/field-component';
 
@@ -33,18 +46,40 @@ function form(props) {
     store.dispatch(actions.change(...args, e));
   }
 
-  let { user, dispatch } = props;
+  let { user, userFields, dispatch } = props;
 
-  console.log(user);
+  console.log(userFields);
 
   return (
     <div>
-      <input type="text" onChange={change('user.name')} value={user.name}/>
+      <input type="text"
+        onChange={change('user.firstName')}
+        onFocus={() => dispatch(fieldActions.focus('user.firstName'))}
+        value={user.firstName}/>
+      <input type="text" onChange={change('user.lastName')} value={user.lastName}/>
       <input type="password" onBlur={change('user.password')} defaultValue={user.password}/>
-      <div>{ user.name }</div>
-      <div>{ user.password }</div>
+      <div>{ user.fullName }</div>
+      <div>{ user.color }</div>
       <div>{ user.preferences.join(',') }</div>
       <div>
+        <select onChange={change('user.color')}>
+          <option></option>
+          <option value="ff0000">Red</option>
+          <option value="00ff00">Green</option>
+          <option value="0000ff">Blue</option>
+        </select>
+        <label>
+          <Field model="user.choice">
+            <input type="radio" value="first" />
+          </Field>
+          <span>First</span>
+        </label>
+        <label>
+          <Field model="user.choice">
+            <input type="radio" value="second" />
+          </Field>
+          <span>Second</span>
+        </label>
         <label>
           <Field model="user.preferences[]">
             <input type="checkbox" value="1" />
