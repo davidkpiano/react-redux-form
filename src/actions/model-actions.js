@@ -1,5 +1,5 @@
-import {curry} from 'lodash/function';
-import {endsWith} from 'lodash/string';
+import curry from 'lodash/function/curry';
+import endsWith from 'lodash/string/endsWith';
 
 function isEvent(event) {
   return !!(event && event.stopPropagation && event.preventDefault);

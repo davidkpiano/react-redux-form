@@ -1,9 +1,11 @@
-import { get, set } from 'lodash/object';
-import { xor } from 'lodash/array';
-import { startsWith } from 'lodash/string';
-import { filterActions } from 'redux-ignore';
-import { cloneDeep, isArray } from 'lodash/lang';
-import { filter, map } from 'lodash/collection';
+import get from 'lodash/object/get';
+import set from 'lodash/object/set';
+import xor from 'lodash/array/xor';
+import startsWith from 'lodash/string/startsWith';
+import cloneDeep from 'lodash/lang';
+import isArray from 'lodash/lang/isArray';
+import filter from 'lodash/collection';
+import map from 'lodash/collection/map';
 
 function setField(state, model, props) {
   return set(state, model, {

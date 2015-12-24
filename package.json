@@ -2,7 +2,7 @@
   "name": "redux-simple-form",
   "version": "0.0.1",
   "description": "Simple Redux Forms",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "start": "webpack -w src/index.js dist/index.js --config webpack.config.base.js",
     "test": "echo \"Error: no test specified\" && exit 1"

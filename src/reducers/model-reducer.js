@@ -1,9 +1,11 @@
-import { get, set } from 'lodash/object';
-import { xor } from 'lodash/array';
-import { startsWith } from 'lodash/string';
-import { filterActions } from 'redux-ignore';
-import { cloneDeep, isArray } from 'lodash/lang';
-import { filter, map } from 'lodash/collection';
+import get from 'lodash/object/get';
+import set from 'lodash/object/set';
+import xor from 'lodash/array/xor';
+import startsWith from 'lodash/string/startsWith';
+import cloneDeep from 'lodash/lang/cloneDeep';
+import isArray from 'lodash/lang/isArray';
+import filter from 'lodash/collection/filter';
+import map from 'lodash/collection/map';
 
 function createModelReducer(model, initialState = {}) {
   return (state = initialState, action) => {
@@ -29,7 +31,7 @@ function createModelReducer(model, initialState = {}) {
             set(superState, action.model, action.value);
 
             return get(superState, model);
-            
+
           case 'toggle':
             set(superState, action.model, xor(collection, [action.value]));
 

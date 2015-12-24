@@ -1,11 +1,13 @@
 import React from 'react';
-import { contains } from 'lodash/collection';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { defaults, get } from 'lodash/object';
-import { compose } from 'lodash/function';
-import { capitalize } from 'lodash/string';
-import { identity } from 'lodash/utility';
+
+import contains from 'lodash/collection/contains';
+import get from 'lodash/object/get';
+import defaults from 'lodash/object/defaults';
+import compose from 'lodash/function/compose';
+import capitalize from 'lodash/string/capitalize';
+import identity from 'lodash/utility/identity';
 
 import * as modelActions from '../actions/model-actions';
 import * as fieldActions from '../actions/field-actions';
@@ -21,8 +23,6 @@ function createField(input, props) {
   let modelValue = props.modelValue;
   let value = input.props.value || props.value || '';
   let updateOn = `on${capitalize(props.updateOn || 'change')}`;
-
-  console.log(modelValue);
 
   let {
     change,

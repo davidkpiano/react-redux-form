@@ -30,6 +30,14 @@ import * as fieldActions from './actions/field-actions';
 
 import Field from './components/field-component';
 
+export {
+  createModelReducer,
+  createFieldReducer,
+  actions as modelActions,
+  fieldActions,
+  Field
+}
+
 
 function form(props) {
   let change = (...args) => (e) => {
@@ -131,4 +139,4 @@ class App extends React.Component {
 }
 
 
-ReactDOM.render(<App></App>, document.getElementById('app'));
+// ReactDOM.render(<App></App>, document.getElementById('app'));

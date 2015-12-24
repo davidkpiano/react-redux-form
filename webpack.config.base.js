@@ -13,5 +13,5 @@ module.exports = {
   resolve: {
     extensions: ['', '.js']
   },
-  devtool: 'inline-source-map'
+  // devtool: 'inline-source-map'
 };
