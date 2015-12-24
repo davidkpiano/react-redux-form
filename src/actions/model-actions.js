@@ -17,25 +17,36 @@ function isMulti(model) {
 
 const change = curry((model, value) => ({
   type: `rsf/change`,
-  model: model,
+  method: 'change',
+  model,
   value: getValue(value),
   multi: isMulti(model)
 }));
 
-const filter = (model, iteratee = (a) => a) => ({
-  type: `rsf/filter`,
+const toggle = (model, value) => ({
+  type: `rsf/change`,
+  method: 'toggle',
   model,
-  iteratee: iteratee
+  value: getValue(value)
+})
+
+const filter = (model, iteratee = (a) => a) => ({
+  type: `rsf/change`,
+  method: 'filter',
+  model,
+  iteratee
 });
 
 const map = (model, iteratee = (a) => a) => ({
-  type: `rsf/map`,
+  type: `rsf/change`,
+  method: 'map',
   model,
-  iteratee: iteratee
+  iteratee
 });
 
 export {
   change,
+  toggle,
   filter,
   map
 }

@@ -8,7 +8,7 @@ import { createFieldReducer } from './reducers/field-reducer';
 
 import { isPristine, isFocused } from './utils';
 
-const userReducer = (state = { preferences: [] }, action) => {
+const userReducer = (state = { firstName: 'David', preferences: [] }, action) => {
   const modelReducer = createModelReducer('user');
 
   let model = modelReducer(state, action);
@@ -50,13 +50,16 @@ function form(props) {
       <Field model="user.lastName" updateOn="blur">
         <input type="text" />
       </Field>
-      <input type="password" onBlur={change('user.password')} defaultValue={user.password}/>
+      <Field model="user.password">
+        <input type="password" />
+      </Field>
       <div style={{color: isFocused(userFields.firstName) ? 'green' : 'black'}}>
         { user.fullName }
         { isPristine(userFields.password) ? 'Pristine!' : 'Not pristine.' }
       </div>
       <div>{ user.color }</div>
       <div>{ user.preferences.join(',') }</div>
+      <button onClick={() => dispatch(actions.toggle('user.preferences[]', 3))}>Toggle the third one.</button>
       <div>
         <select onChange={change('user.color')}>
           <option></option>
@@ -90,7 +93,7 @@ function form(props) {
         </label>
         <label>
           <Field model="user.preferences[]">
-            <input type="checkbox" value="3" />
+            <input type="checkbox" value={3} />
           </Field>
           <span>Item 3</span>
         </label>

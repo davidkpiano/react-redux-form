@@ -18,11 +18,15 @@ import {
 function createField(input, props) {
   let { dispatch } = props;
   let model = props.model;
+  let modelValue = props.modelValue;
   let value = input.props.value || props.value || '';
   let updateOn = `on${capitalize(props.updateOn || 'change')}`;
 
+  console.log(modelValue);
+
   let {
-    change
+    change,
+    toggle
   } = modelActions;
 
   let {
@@ -32,35 +36,50 @@ function createField(input, props) {
 
   let defaultProps = {};
 
+  let changeMethod = change;
 
-  let dispatchChange = input.props.hasOwnProperty('value')
-    ? () => dispatch(change(model, value))
-    : (e) => dispatch(change(model, e));
 
   switch (input.type) {
     case 'input':
       switch (input.props.type) {
         case 'checkbox':
-        case 'radio':
           defaultProps = {
             name: model,
-            checked: contains(get(props, model), value),
+            checked: contains(modelValue, value),
             onFocus: () => focus(model),
             onBlur: () => blur(model)
           };
+
+          changeMethod = toggle;
+
           break;
+
+        case 'radio':
+          defaultProps = {
+            name: model,
+            checked: modelValue === value,
+            onFocus: () => focus(model),
+            onBlur: () => blur(model)
+          };
+
+          break;
+
         case 'text':
         case 'password':
           defaultProps = {
             name: model,
+            defaultValue: modelValue,
             onFocus: () => focus(model),
             onBlur: () => blur(model)
           };
+
           break;
       }
   }
 
-  // console.log(input);
+  let dispatchChange = input.props.hasOwnProperty('value')
+    ? () => dispatch(changeMethod(model, value))
+    : (e) => dispatch(changeMethod(model, e));
 
   return React.cloneElement(
     input,
@@ -74,7 +93,14 @@ function createField(input, props) {
   );
 }
 
-const Field = connect(s => s)((props) => {
+function selector(state, { model }) {
+  return {
+    model,
+    modelValue: get(state, model)
+  };
+}
+
+const Field = connect(selector)((props) => {
   if (props.children.length > 1) {
     return <div {...props}>
       { React.Children.map(props.children, (child) => createField(child, props)) }
