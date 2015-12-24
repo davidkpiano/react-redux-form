@@ -43,29 +43,35 @@ function createFieldReducer(model, initialState = {}) {
         setField(superState, action.model, { focus: true, blur: false });
 
         return get(superState, model);
-      case 'rsf/blur':
-        setField(superState, action.model, { focus: false, blur: true });
-
-        return get(superState, model);
 
       case 'rsf/change':
       case 'rsf/setDirty':
         setField(superState, action.model, { dirty: true, pristine: false });
 
         return get(superState, model);
+
       case 'rsf/setPristine':
         setField(superState, action.model, { dirty: false, pristine: true });
 
         return get(superState, model);
+
       case 'rsf/blur':
       case 'rsf/setTouched':
-        setField(superState, action.model, { touched: true, untouched: false });
+        setField(superState, action.model, {
+          touched: true,
+          untouched: false,
+          focus: false,
+          blur: true,
+        });
 
         return get(superState, model);
+
       case 'rsf/setUntouched':
         setField(superState, action.model, { touched: false, untouched: true });
 
         return get(superState, model);
+
+      case 'rsf/setInitial':
       default:
         setField(superState, action.model, initialFieldState);
 

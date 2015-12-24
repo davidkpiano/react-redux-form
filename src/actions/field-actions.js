@@ -19,10 +19,15 @@ const setDirty = (model) => ({
   model
 });
 
+const setInitial = (model) => ({
+  type: 'rsf/setInitial',
+  model
+});
 
 export {
   focus,
   blur,
   setPristine,
-  setDirty
+  setDirty,
+  setInitial
 }

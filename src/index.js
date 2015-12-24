@@ -44,12 +44,12 @@ function form(props) {
 
   return (
     <div>
-      <input type="text"
-        onChange={change('user.firstName')}
-        onFocus={() => dispatch(fieldActions.focus('user.firstName'))}
-        onBlur={() => dispatch(fieldActions.blur('user.firstName'))}
-        value={user.firstName}/>
-      <input type="text" onChange={change('user.lastName')} value={user.lastName}/>
+      <Field model="user.firstName">
+        <input type="text" />
+      </Field>
+      <Field model="user.lastName" updateOn="blur">
+        <input type="text" />
+      </Field>
       <input type="password" onBlur={change('user.password')} defaultValue={user.password}/>
       <div style={{color: isFocused(userFields.firstName) ? 'green' : 'black'}}>
         { user.fullName }
