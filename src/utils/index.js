@@ -1,5 +1,5 @@
 
-import { initialFieldState } from '../reducers/field-reducer';
+import { initialFieldState } from '../reducers/form-reducer';
 
 import endsWith from 'lodash/string/endsWith';
 

@@ -7,6 +7,13 @@ import isArray from 'lodash/lang/isArray';
 import filter from 'lodash/collection/filter';
 import map from 'lodash/collection/map';
 
+function getSuperState(model, state) {
+  return set(
+    {},
+    model,
+    cloneDeep(state));
+}
+
 function createModelReducer(model, initialState = {}) {
   return (state = initialState, action) => {
     console.log(action);
@@ -15,11 +22,7 @@ function createModelReducer(model, initialState = {}) {
       return state;
     }
 
-    let superState = set(
-      {},
-      model,
-      cloneDeep(state)
-    );
+    let superState = getSuperState(model, state);
 
     let collection = get(superState, action.model, []);
 
@@ -49,6 +52,16 @@ function createModelReducer(model, initialState = {}) {
 
           case 'map':
             set(superState, action.model, map(collection, action.iteratee));
+
+            return get(superState, model);
+
+          case 'push':
+            set(superState, action.model, [...collection, action.value]);
+
+            return get(superState, model);
+
+          case 'reset':
+            set(superState, action.model, get(getSuperState(model, initialState), action.model));
 
             return get(superState, model);
         }

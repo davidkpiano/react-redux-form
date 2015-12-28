@@ -46,6 +46,12 @@ const filter = (model, iteratee = (a) => a) => ({
   iteratee
 });
 
+const reset = (model) => ({
+  type: `rsf/change`,
+  method: 'reset',
+  model
+});
+
 const map = (model, iteratee = (a) => a) => ({
   type: `rsf/change`,
   method: 'map',
@@ -53,10 +59,19 @@ const map = (model, iteratee = (a) => a) => ({
   iteratee
 });
 
+const push = (model, value = null) => ({
+  type: `rsf/change`,
+  method: 'push',
+  model,
+  value
+});
+
 export {
   change,
   xor,
   toggle,
   filter,
-  map
+  reset,
+  map,
+  push
 }

@@ -24,7 +24,12 @@ const initialFieldState = {
   untouched: true,
 };
 
-function createFieldReducer(model, initialState = {}) {
+const initialFormState = {
+  ...initialFieldState,
+  fields: {}
+};
+
+function createFormReducer(model, initialState = initialFormState) {
   return (state = initialState, action) => {
     console.log(action);
 
@@ -35,27 +40,30 @@ function createFieldReducer(model, initialState = {}) {
     let superState = set(
       {},
       model,
-      cloneDeep(state)
+      cloneDeep(state.fields)
     );
+
+    let form = state;
 
     let collection = get(superState, action.model, []);
 
     switch (action.type) {
       case 'rsf/focus':
+        Object.assign(form, { focus: true, blur: false });
         setField(superState, action.model, { focus: true, blur: false });
 
-        return get(superState, model);
+        break;
 
       case 'rsf/change':
       case 'rsf/setDirty':
         setField(superState, action.model, { dirty: true, pristine: false });
 
-        return get(superState, model);
+        break;
 
       case 'rsf/setPristine':
         setField(superState, action.model, { dirty: false, pristine: true });
 
-        return get(superState, model);
+        break;
 
       case 'rsf/blur':
       case 'rsf/setTouched':
@@ -66,23 +74,28 @@ function createFieldReducer(model, initialState = {}) {
           blur: true,
         });
 
-        return get(superState, model);
+        break;
 
       case 'rsf/setUntouched':
         setField(superState, action.model, { touched: false, untouched: true });
 
-        return get(superState, model);
+        break;
 
       case 'rsf/setInitial':
       default:
         setField(superState, action.model, initialFieldState);
 
-        return get(superState, model);
+        break;
+    }
+
+    return {
+      ...form,
+      fields: get(superState, model)
     }
   }
 }
 
 export {
-  createFieldReducer,
+  createFormReducer,
   initialFieldState
 }
