@@ -33,7 +33,7 @@ class Field extends React.Component {
     let { dispatch } = props;
     let model = props.model;
     let modelValue = props.modelValue;
-    let value = input.props.value || props.value || '';
+    let value = input.props.value;
     let updateOn = `on${capitalize(props.updateOn || 'change')}`;
 
     let {
@@ -49,6 +49,10 @@ class Field extends React.Component {
     let defaultProps = {};
 
     let changeMethod = change;
+
+    let dispatchChange = input.props.hasOwnProperty('value')
+      ? () => dispatch(changeMethod(model, value))
+      : (e) => dispatch(changeMethod(model, e));
 
     switch (input.type) {
       case 'input':
@@ -88,6 +92,8 @@ class Field extends React.Component {
               onBlur: () => blur(model)
             };
 
+            dispatchChange = (e) => dispatch(changeMethod(model, e));
+
             break;
         }
         break;
@@ -97,12 +103,10 @@ class Field extends React.Component {
           onBlur: () => blur(model)
         };
 
+        dispatchChange = (e) => dispatch(changeMethod(model, e));
+
         break;
     }
-
-    let dispatchChange = input.props.hasOwnProperty('value')
-      ? () => dispatch(changeMethod(model, value))
-      : (e) => dispatch(changeMethod(model, e));
 
     return React.cloneElement(
       input,

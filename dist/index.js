@@ -25594,7 +25594,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var model = props.model;
 	      var modelValue = props.modelValue;
-	      var value = input.props.value || props.value || '';
+	      var value = input.props.value;
 	      var updateOn = 'on' + (0, _capitalize2.default)(props.updateOn || 'change');
 
 	      var change = modelActions.change;
@@ -25608,6 +25608,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var defaultProps = {};
 
 	      var changeMethod = change;
+
+	      var dispatchChange = input.props.hasOwnProperty('value') ? function () {
+	        return dispatch(changeMethod(model, value));
+	      } : function (e) {
+	        return dispatch(changeMethod(model, e));
+	      };
 
 	      switch (input.type) {
 	        case 'input':
@@ -25655,6 +25661,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                }
 	              };
 
+	              dispatchChange = function (e) {
+	                return dispatch(changeMethod(model, e));
+	              };
+
 	              break;
 	          }
 	          break;
@@ -25668,14 +25678,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	          };
 
+	          dispatchChange = function (e) {
+	            return dispatch(changeMethod(model, e));
+	          };
+
 	          break;
 	      }
-
-	      var dispatchChange = input.props.hasOwnProperty('value') ? function () {
-	        return dispatch(changeMethod(model, value));
-	      } : function (e) {
-	        return dispatch(changeMethod(model, e));
-	      };
 
 	      return _react2.default.cloneElement(input, Object.assign({}, defaultProps, _defineProperty({}, updateOn, (0, _compose2.default)(defaultProps[updateOn] || _identity2.default, dispatchChange))));
 	    }
