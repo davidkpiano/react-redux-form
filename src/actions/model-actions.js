@@ -6,6 +6,8 @@ function isEvent(event) {
 }
 
 function getValue(event) {
+  console.log(event);
+
   return isEvent(event)
     ? event.target.value
     : event;
@@ -22,6 +24,13 @@ const change = curry((model, value) => ({
   value: getValue(value),
   multi: isMulti(model)
 }));
+
+const xor = (model, value) => ({
+  type: `rsf/change`,
+  method: 'xor',
+  model,
+  value: getValue(value)
+});
 
 const toggle = (model, value) => ({
   type: `rsf/change`,
@@ -46,6 +55,7 @@ const map = (model, iteratee = (a) => a) => ({
 
 export {
   change,
+  xor,
   toggle,
   filter,
   map

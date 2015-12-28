@@ -18,6 +18,8 @@ import {
 
 
 function createField(input, props) {
+  if (!input.props) return input;
+
   let { dispatch } = props;
   let model = props.model;
   let modelValue = props.modelValue;
@@ -38,19 +40,25 @@ function createField(input, props) {
 
   let changeMethod = change;
 
+  console.log(input);
 
   switch (input.type) {
     case 'input':
+    case 'textarea':
       switch (input.props.type) {
         case 'checkbox':
           defaultProps = {
             name: model,
-            checked: contains(modelValue, value),
+            checked: isMulti(model)
+              ? contains(modelValue, value)
+              : !!modelValue,
             onFocus: () => focus(model),
             onBlur: () => blur(model)
           };
 
-          changeMethod = toggle;
+          changeMethod = isMulti(model)
+            ? xor
+            : toggle;
 
           break;
 
@@ -66,6 +74,7 @@ function createField(input, props) {
 
         case 'text':
         case 'password':
+        case 'textarea':
           defaultProps = {
             name: model,
             defaultValue: modelValue,
@@ -75,7 +84,16 @@ function createField(input, props) {
 
           break;
       }
+    default:
+      defaultProps = {
+        onFocus: () => focus(model),
+        onBlur: () => blur(model)
+      };
+
+      break;
   }
+
+  console.log(input.type, defaultProps);
 
   let dispatchChange = input.props.hasOwnProperty('value')
     ? () => dispatch(changeMethod(model, value))

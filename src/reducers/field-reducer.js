@@ -2,9 +2,9 @@ import get from 'lodash/object/get';
 import set from 'lodash/object/set';
 import xor from 'lodash/array/xor';
 import startsWith from 'lodash/string/startsWith';
-import cloneDeep from 'lodash/lang';
+import cloneDeep from 'lodash/lang/cloneDeep';
 import isArray from 'lodash/lang/isArray';
-import filter from 'lodash/collection';
+import filter from 'lodash/collection/filter';
 import map from 'lodash/collection/map';
 
 function setField(state, model, props) {

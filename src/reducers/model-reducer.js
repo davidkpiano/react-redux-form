@@ -32,8 +32,13 @@ function createModelReducer(model, initialState = {}) {
 
             return get(superState, model);
 
-          case 'toggle':
+          case 'xor':
             set(superState, action.model, xor(collection, [action.value]));
+
+            return get(superState, model);
+
+          case 'toggle':
+            set(superState, action.model, !get(superState, action.model));
 
             return get(superState, model);
 
