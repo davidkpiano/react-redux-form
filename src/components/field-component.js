@@ -16,9 +16,6 @@ import {
   isMulti
 } from '../utils';
 
-
-
-
 function selector(state, { model }) {
   return {
     model,
@@ -27,13 +24,11 @@ function selector(state, { model }) {
 }
 
 class Field extends React.Component {
-  createField(input, props) {
-    if (!input.props) return input;
+  createField(control, props) {
+    if (!control.props) return control;
 
-    let { dispatch } = props;
-    let model = props.model;
-    let modelValue = props.modelValue;
-    let value = input.props.value;
+    let { dispatch, model, modelValue } = props;
+    let value = control.props.value;
     let updateOn = `on${capitalize(props.updateOn || 'change')}`;
 
     let {
@@ -50,14 +45,14 @@ class Field extends React.Component {
 
     let changeMethod = change;
 
-    let dispatchChange = input.props.hasOwnProperty('value')
+    let dispatchChange = control.props.hasOwnProperty('value')
       ? () => dispatch(changeMethod(model, value))
       : (e) => dispatch(changeMethod(model, e));
 
-    switch (input.type) {
+    switch (control.type) {
       case 'input':
       case 'textarea':
-        switch (input.props.type) {
+        switch (control.props.type) {
           case 'checkbox':
             defaultProps = {
               name: model,
@@ -109,7 +104,7 @@ class Field extends React.Component {
     }
 
     return React.cloneElement(
-      input,
+      control,
       Object.assign({},
       defaultProps,
       {
@@ -118,6 +113,12 @@ class Field extends React.Component {
           dispatchChange)
       })
     );
+  }
+
+  shouldComponentUpdate(nextProps) {
+    let { modelValue: nextModelValue } = nextProps;
+
+    return this.props.modelValue !== nextModelValue;
   }
 
   render() {

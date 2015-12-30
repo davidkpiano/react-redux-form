@@ -1,5 +1,10 @@
 import curry from 'lodash/function/curry';
 import endsWith from 'lodash/string/endsWith';
+import get from 'lodash/object/get';
+import cloneDeep from 'lodash/lang/cloneDeep';
+import _xor from 'lodash/array/xor';
+import _filter from 'lodash/collection/filter';
+import _map from 'lodash/collection/map';
 
 function isEvent(event) {
   return !!(event && event.stopPropagation && event.preventDefault);
@@ -25,26 +30,36 @@ const change = curry((model, value) => ({
   multi: isMulti(model)
 }));
 
-const xor = (model, value) => ({
-  type: `rsf/change`,
-  method: 'xor',
-  model,
-  value: getValue(value)
-});
+const xor = (model, item) => (dispatch, getState) => {
+  let value = _xor(get(getState(), model, []), [getValue(item)]);
 
-const toggle = (model, value) => ({
-  type: `rsf/change`,
-  method: 'toggle',
-  model,
-  value: getValue(value)
-})
+  dispatch({
+    type: `rsf/change`,
+    model,
+    value
+  });
+}
 
-const filter = (model, iteratee = (a) => a) => ({
-  type: `rsf/change`,
-  method: 'filter',
-  model,
-  iteratee
-});
+const toggle = (model) => (dispatch, getState) => {
+  let value = !get(getState(), model);
+
+  dispatch({
+    type: `rsf/change`,
+    model,
+    value
+  });
+}
+
+const filter = (model, iteratee = (a) => a) => (dispatch, getState) => {
+  let collection = get(getState(), model);
+  let value = filter(collection, iteratee);
+
+  dispatch({  
+    type: `rsf/change`,
+    model,
+    value
+  });
+};
 
 const reset = (model) => ({
   type: `rsf/change`,
@@ -52,19 +67,41 @@ const reset = (model) => ({
   model
 });
 
-const map = (model, iteratee = (a) => a) => ({
-  type: `rsf/change`,
-  method: 'map',
-  model,
-  iteratee
-});
+const map = (model, iteratee = (a) => a) => (dispatch, getState) => {
+  let collection = get(getState(), model);
+  let value = map(collection, iteratee);
 
-const push = (model, value = null) => ({
-  type: `rsf/change`,
-  method: 'push',
-  model,
-  value
-});
+  dispatch({  
+    type: `rsf/change`,
+    model,
+    value
+  });
+};
+
+const push = (model, item = null) => (dispatch, getState) => {
+  let collection = get(getState(), model);
+  let value = [...collection, item];
+
+  dispatch({
+    type: `rsf/change`,
+    model,
+    value
+  });
+}
+
+const remove = (model, index) => (dispatch, getState) => {
+  let collection = get(getState(), model);
+  let value = [
+    ...collection.slice(0, index),
+    ...collection.slice(index + 1)
+  ];
+
+  {  
+    type: `rsf/change`,
+    model,
+    value
+  }
+};
 
 export {
   change,
@@ -73,5 +110,6 @@ export {
   filter,
   reset,
   map,
-  push
+  push,
+  remove
 }
