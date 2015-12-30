@@ -24,7 +24,6 @@ function isMulti(model) {
 
 const change = curry((model, value) => ({
   type: `rsf/change`,
-  method: 'change',
   model,
   value: getValue(value),
   multi: isMulti(model)
@@ -96,11 +95,11 @@ const remove = (model, index) => (dispatch, getState) => {
     ...collection.slice(index + 1)
   ];
 
-  {  
+  dispatch({  
     type: `rsf/change`,
     model,
     value
-  }
+  });
 };
 
 export {

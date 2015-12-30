@@ -24165,7 +24165,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var change = (0, _curry2.default)(function (model, value) {
 	  return {
 	    type: 'rsf/change',
-	    method: 'change',
 	    model: model,
 	    value: getValue(value),
 	    multi: isMulti(model)
@@ -24255,9 +24254,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var collection = (0, _get2.default)(getState(), model);
 	    var value = [].concat(_toConsumableArray(collection.slice(0, index)), _toConsumableArray(collection.slice(index + 1)));
 
-	    {
-	      type: 'rsf/change', model, value;
-	    }
+	    dispatch({
+	      type: 'rsf/change',
+	      model: model,
+	      value: value
+	    });
 	  };
 	};
 
