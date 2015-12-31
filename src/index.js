@@ -4,7 +4,7 @@ import { Provider, connect } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import { createModelReducer } from './reducers/model-reducer';
-import { createFormReducer } from './reducers/form-reducer';
+import { createFormReducer, getField } from './reducers/form-reducer';
 
 import { isPristine, isFocused } from './utils';
 
@@ -13,11 +13,14 @@ import * as fieldActions from './actions/field-actions';
 
 
 import Field from './components/field-component';
+import Form from './components/form-component';
 
 export {
   createModelReducer,
   createFormReducer,
   actions as modelActions,
   fieldActions,
-  Field
+  Field,
+  Form,
+  getField
 }

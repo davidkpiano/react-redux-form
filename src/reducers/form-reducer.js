@@ -30,12 +30,13 @@ const initialFieldState = {
   untouched: true,
   valid: true,
   validating: false,
-  errors: null
+  errors: {}
 };
 
 const initialFormState = {
   ...initialFieldState,
-  fields: {}
+  fields: {},
+  field: () => initialFieldState
 };
 
 function createFormReducer(model, initialState = initialFormState) {
@@ -112,9 +113,12 @@ function createFormReducer(model, initialState = initialFormState) {
         break;
     }
 
+    console.log('what the fuck');
+
     return {
       ...form,
-      fields: get(superState, model)
+      fields: get(superState, model),
+      field: (model) => get(superState, model, initialFieldState)
     }
   }
 }

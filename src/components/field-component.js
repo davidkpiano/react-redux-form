@@ -26,7 +26,8 @@ function selector(state, { model }) {
 
 class Field extends React.Component {
   createField(control, props) {
-    if (!control.props) return control;
+    console.log(control);
+    if (!control || !control.props) return control;
 
     let {
       dispatch,
@@ -99,7 +100,7 @@ class Field extends React.Component {
             break;
         }
         break;
-      default:
+      case 'select':
         defaultProps = {
           onFocus: () => focus(model),
           onBlur: () => blur(model)
@@ -108,6 +109,8 @@ class Field extends React.Component {
         dispatchChange = (e) => dispatch(changeMethod(model, e));
 
         break;
+      default:
+        return control;
     }
 
 
@@ -123,7 +126,7 @@ class Field extends React.Component {
 
         dispatch(setValidity(model, validity));
       }
-          
+
       eventActions[validateOn].push(dispatchValidate);
     }
 
