@@ -8,6 +8,7 @@ import defaults from 'lodash/object/defaults';
 import compose from 'lodash/function/compose';
 import capitalize from 'lodash/string/capitalize';
 import identity from 'lodash/utility/identity';
+import mapValues from 'lodash/object/mapValues';
 
 import * as modelActions from '../actions/model-actions';
 import * as fieldActions from '../actions/field-actions';
@@ -27,9 +28,14 @@ class Field extends React.Component {
   createField(control, props) {
     if (!control.props) return control;
 
-    let { dispatch, model, modelValue } = props;
+    let {
+      dispatch,
+      model,
+      modelValue,
+      validators } = props;
     let value = control.props.value;
     let updateOn = `on${capitalize(props.updateOn || 'change')}`;
+    let validateOn = `on${capitalize(props.validateOn || 'change')}`;
 
     let {
       change,
@@ -38,10 +44,17 @@ class Field extends React.Component {
 
     let {
       focus,
-      blur
+      blur,
+      setValidity
     } = bindActionCreators(fieldActions, dispatch);
 
     let defaultProps = {};
+
+    let eventActions = {
+      onFocus: [() => focus(model)],
+      onBlur: [() => blur(model)],
+      onChange: []
+    };
 
     let changeMethod = change;
 
@@ -58,9 +71,7 @@ class Field extends React.Component {
               name: model,
               checked: isMulti(model)
                 ? contains(modelValue, value)
-                : !!modelValue,
-              onFocus: () => focus(model),
-              onBlur: () => blur(model)
+                : !!modelValue
             };
 
             changeMethod = isMulti(model)
@@ -72,9 +83,7 @@ class Field extends React.Component {
           case 'radio':
             defaultProps = {
               name: model,
-              checked: modelValue === value,
-              onFocus: () => focus(model),
-              onBlur: () => blur(model)
+              checked: modelValue === value
             };
 
             break;
@@ -82,9 +91,7 @@ class Field extends React.Component {
           default:
             defaultProps = {
               name: model,
-              defaultValue: modelValue,
-              onFocus: () => focus(model),
-              onBlur: () => blur(model)
+              defaultValue: modelValue
             };
 
             dispatchChange = (e) => dispatch(changeMethod(model, e));
@@ -103,15 +110,28 @@ class Field extends React.Component {
         break;
     }
 
+
+    eventActions[updateOn].push(dispatchChange);
+
+    if (validators) {
+      let dispatchValidate = (e) => {
+        let validatingValue = control.props.hasOwnProperty('value')
+          ? value
+          : e.target.value;
+        let validity = mapValues(validators,
+          (validator) => validator(validatingValue));
+
+        dispatch(setValidity(model, validity));
+      }
+          
+      eventActions[validateOn].push(dispatchValidate);
+    }
+
     return React.cloneElement(
       control,
       Object.assign({},
       defaultProps,
-      {
-        [updateOn]: compose(
-          defaultProps[updateOn] || identity,
-          dispatchChange)
-      })
+      mapValues(eventActions, (actions) => compose(...actions)))
     );
   }
 

@@ -4,12 +4,14 @@ import xor from 'lodash/array/xor';
 import startsWith from 'lodash/string/startsWith';
 import cloneDeep from 'lodash/lang/cloneDeep';
 import isArray from 'lodash/lang/isArray';
+import isPlainObject from 'lodash/lang/isPlainObject';
+import isBoolean from 'lodash/lang/isBoolean';
 import filter from 'lodash/collection/filter';
 import map from 'lodash/collection/map';
+import mapValues from 'lodash/object/mapValues';
+import every from 'lodash/collection/every';
 
 import * as actionTypes from '../action-types';
-
-console.log(actionTypes);
 
 function setField(state, model, props) {
   return set(state, model, {
@@ -36,8 +38,8 @@ const initialFormState = {
   fields: {}
 };
 
-function createFormReducer(model, validation = {}) {
-  return (state = initialFormState, action) => {
+function createFormReducer(model, initialState = initialFormState) {
+  return (state = initialState, action) => {
     if (model && !startsWith(action.model, model)) {
       return state;
     }
@@ -76,20 +78,19 @@ function createFormReducer(model, validation = {}) {
 
         break;
 
-      case actionTypes.VALIDATE:
-        let getErrors = get(validation, action.model);
-        let errors = null;
-
-        console.log(getErrors);
-
-        if (getErrors) {
-          errors = getErrors(superState);
-        }
-
-        console.log(errors);
+      case actionTypes.SET_VALIDITY:
+        let errors = isPlainObject(action.validity)
+          ? {
+              ...get(superState, action.model).errors,
+              ...mapValues(action.validity, (valid) => !valid)
+            }
+          : action.validity;
 
         setField(superState, action.model, {
-          errors
+          errors,
+          valid: isBoolean(errors)
+            ? errors
+            : every(errors, (error) => !!error)
         });
 
         break;

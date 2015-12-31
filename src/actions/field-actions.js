@@ -29,11 +29,18 @@ const setInitial = (model) => ({
   model
 });
 
+const setValidity = (model, validity) => ({
+  type: 'rsf/setValidity',
+  model,
+  validity
+});
+
 export {
   focus,
   blur,
   validate,
   setPristine,
   setDirty,
-  setInitial
+  setInitial,
+  setValidity
 }

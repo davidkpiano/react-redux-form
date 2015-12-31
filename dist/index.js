@@ -22405,6 +22405,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
+	var _isPlainObject = __webpack_require__(308);
+
+	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
+
+	var _isBoolean = __webpack_require__(310);
+
+	var _isBoolean2 = _interopRequireDefault(_isBoolean);
+
 	var _filter = __webpack_require__(227);
 
 	var _filter2 = _interopRequireDefault(_filter);
@@ -22413,6 +22421,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _map2 = _interopRequireDefault(_map);
 
+	var _mapValues = __webpack_require__(311);
+
+	var _mapValues2 = _interopRequireDefault(_mapValues);
+
+	var _every = __webpack_require__(313);
+
+	var _every2 = _interopRequireDefault(_every);
+
 	var _actionTypes = __webpack_require__(302);
 
 	var actionTypes = _interopRequireWildcard(_actionTypes);
@@ -22420,8 +22436,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	console.log(actionTypes);
 
 	function setField(state, model, props) {
 	  return (0, _set2.default)(state, model, _extends({}, initialFieldState, (0, _get2.default)(state, model), props));
@@ -22444,10 +22458,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	function createFormReducer(model) {
-	  var validation = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	  var initialState = arguments.length <= 1 || arguments[1] === undefined ? initialFormState : arguments[1];
 
 	  return function () {
-	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialFormState : arguments[0];
+	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
 	    var action = arguments[1];
 
 	    if (model && !(0, _startsWith2.default)(action.model, model)) {
@@ -22484,20 +22498,16 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        break;
 
-	      case actionTypes.VALIDATE:
-	        var getErrors = (0, _get2.default)(validation, action.model);
-	        var errors = null;
-
-	        console.log(getErrors);
-
-	        if (getErrors) {
-	          errors = getErrors(superState);
-	        }
-
-	        console.log(errors);
+	      case actionTypes.SET_VALIDITY:
+	        var errors = (0, _isPlainObject2.default)(action.validity) ? _extends({}, (0, _get2.default)(superState, action.model).errors, (0, _mapValues2.default)(action.validity, function (valid) {
+	          return !valid;
+	        })) : action.validity;
 
 	        setField(superState, action.model, {
-	          errors: errors
+	          errors: errors,
+	          valid: (0, _isBoolean2.default)(errors) ? errors : (0, _every2.default)(errors, function (error) {
+	            return !!error;
+	          })
 	        });
 
 	        break;
@@ -24355,12 +24365,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
+	var setValidity = function setValidity(model, validity) {
+	  return {
+	    type: 'rsf/setValidity',
+	    model: model,
+	    validity: validity
+	  };
+	};
+
 	exports.focus = focus;
 	exports.blur = blur;
 	exports.validate = validate;
 	exports.setPristine = setPristine;
 	exports.setDirty = setDirty;
 	exports.setInitial = setInitial;
+	exports.setValidity = setValidity;
 
 /***/ },
 /* 257 */
@@ -24406,6 +24425,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _identity2 = _interopRequireDefault(_identity);
 
+	var _mapValues = __webpack_require__(311);
+
+	var _mapValues2 = _interopRequireDefault(_mapValues);
+
 	var _modelActions = __webpack_require__(255);
 
 	var modelActions = _interopRequireWildcard(_modelActions);
@@ -24420,7 +24443,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -24454,9 +24477,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var dispatch = props.dispatch;
 	      var model = props.model;
 	      var modelValue = props.modelValue;
+	      var validators = props.validators;
 
 	      var value = control.props.value;
 	      var updateOn = 'on' + (0, _capitalize2.default)(props.updateOn || 'change');
+	      var validateOn = 'on' + (0, _capitalize2.default)(props.validateOn || 'change');
 
 	      var change = modelActions.change;
 	      var toggle = modelActions.toggle;
@@ -24465,8 +24490,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var focus = _bindActionCreators.focus;
 	      var blur = _bindActionCreators.blur;
+	      var setValidity = _bindActionCreators.setValidity;
 
 	      var defaultProps = {};
+
+	      var eventActions = {
+	        onFocus: [function () {
+	          return focus(model);
+	        }],
+	        onBlur: [function () {
+	          return blur(model);
+	        }],
+	        onChange: []
+	      };
 
 	      var changeMethod = change;
 
@@ -24483,13 +24519,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 'checkbox':
 	              defaultProps = {
 	                name: model,
-	                checked: (0, _utils.isMulti)(model) ? (0, _contains2.default)(modelValue, value) : !!modelValue,
-	                onFocus: function onFocus() {
-	                  return focus(model);
-	                },
-	                onBlur: function onBlur() {
-	                  return blur(model);
-	                }
+	                checked: (0, _utils.isMulti)(model) ? (0, _contains2.default)(modelValue, value) : !!modelValue
 	              };
 
 	              changeMethod = (0, _utils.isMulti)(model) ? xor : toggle;
@@ -24499,13 +24529,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            case 'radio':
 	              defaultProps = {
 	                name: model,
-	                checked: modelValue === value,
-	                onFocus: function onFocus() {
-	                  return focus(model);
-	                },
-	                onBlur: function onBlur() {
-	                  return blur(model);
-	                }
+	                checked: modelValue === value
 	              };
 
 	              break;
@@ -24513,13 +24537,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            default:
 	              defaultProps = {
 	                name: model,
-	                defaultValue: modelValue,
-	                onFocus: function onFocus() {
-	                  return focus(model);
-	                },
-	                onBlur: function onBlur() {
-	                  return blur(model);
-	                }
+	                defaultValue: modelValue
 	              };
 
 	              dispatchChange = function (e) {
@@ -24546,7 +24564,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	          break;
 	      }
 
-	      return _react2.default.cloneElement(control, Object.assign({}, defaultProps, _defineProperty({}, updateOn, (0, _compose2.default)(defaultProps[updateOn] || _identity2.default, dispatchChange))));
+	      eventActions[updateOn].push(dispatchChange);
+
+	      if (validators) {
+	        var dispatchValidate = function dispatchValidate(e) {
+	          var validatingValue = control.props.hasOwnProperty('value') ? value : e.target.value;
+	          var validity = (0, _mapValues2.default)(validators, function (validator) {
+	            return validator(validatingValue);
+	          });
+
+	          dispatch(setValidity(model, validity));
+	        };
+
+	        eventActions[validateOn].push(dispatchValidate);
+	      }
+
+	      return _react2.default.cloneElement(control, Object.assign({}, defaultProps, (0, _mapValues2.default)(eventActions, function (actions) {
+	        return _compose2.default.apply(undefined, _toConsumableArray(actions));
+	      })));
 	    }
 	  }, {
 	    key: 'shouldComponentUpdate',
@@ -26609,6 +26644,360 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	module.exports = basePullAt;
+
+
+/***/ },
+/* 308 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseForIn = __webpack_require__(309),
+	    isArguments = __webpack_require__(205),
+	    isObjectLike = __webpack_require__(188);
+
+	/** `Object#toString` result references. */
+	var objectTag = '[object Object]';
+
+	/** Used for native method references. */
+	var objectProto = Object.prototype;
+
+	/** Used to check objects for own properties. */
+	var hasOwnProperty = objectProto.hasOwnProperty;
+
+	/**
+	 * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+	 * of values.
+	 */
+	var objToString = objectProto.toString;
+
+	/**
+	 * Checks if `value` is a plain object, that is, an object created by the
+	 * `Object` constructor or one with a `[[Prototype]]` of `null`.
+	 *
+	 * **Note:** This method assumes objects created by the `Object` constructor
+	 * have no inherited enumerable properties.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is a plain object, else `false`.
+	 * @example
+	 *
+	 * function Foo() {
+	 *   this.a = 1;
+	 * }
+	 *
+	 * _.isPlainObject(new Foo);
+	 * // => false
+	 *
+	 * _.isPlainObject([1, 2, 3]);
+	 * // => false
+	 *
+	 * _.isPlainObject({ 'x': 0, 'y': 0 });
+	 * // => true
+	 *
+	 * _.isPlainObject(Object.create(null));
+	 * // => true
+	 */
+	function isPlainObject(value) {
+	  var Ctor;
+
+	  // Exit early for non `Object` objects.
+	  if (!(isObjectLike(value) && objToString.call(value) == objectTag && !isArguments(value)) ||
+	      (!hasOwnProperty.call(value, 'constructor') && (Ctor = value.constructor, typeof Ctor == 'function' && !(Ctor instanceof Ctor)))) {
+	    return false;
+	  }
+	  // IE < 9 iterates inherited properties before own properties. If the first
+	  // iterated property is an object's own property then there are no inherited
+	  // enumerable properties.
+	  var result;
+	  // In most environments an object's own properties are iterated before
+	  // its inherited properties. If the last iterated property is an object's
+	  // own property then there are no inherited enumerable properties.
+	  baseForIn(value, function(subValue, key) {
+	    result = key;
+	  });
+	  return result === undefined || hasOwnProperty.call(value, result);
+	}
+
+	module.exports = isPlainObject;
+
+
+/***/ },
+/* 309 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseFor = __webpack_require__(208),
+	    keysIn = __webpack_require__(206);
+
+	/**
+	 * The base implementation of `_.forIn` without support for callback
+	 * shorthands and `this` binding.
+	 *
+	 * @private
+	 * @param {Object} object The object to iterate over.
+	 * @param {Function} iteratee The function invoked per iteration.
+	 * @returns {Object} Returns `object`.
+	 */
+	function baseForIn(object, iteratee) {
+	  return baseFor(object, iteratee, keysIn);
+	}
+
+	module.exports = baseForIn;
+
+
+/***/ },
+/* 310 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isObjectLike = __webpack_require__(188);
+
+	/** `Object#toString` result references. */
+	var boolTag = '[object Boolean]';
+
+	/** Used for native method references. */
+	var objectProto = Object.prototype;
+
+	/**
+	 * Used to resolve the [`toStringTag`](http://ecma-international.org/ecma-262/6.0/#sec-object.prototype.tostring)
+	 * of values.
+	 */
+	var objToString = objectProto.toString;
+
+	/**
+	 * Checks if `value` is classified as a boolean primitive or object.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Lang
+	 * @param {*} value The value to check.
+	 * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+	 * @example
+	 *
+	 * _.isBoolean(false);
+	 * // => true
+	 *
+	 * _.isBoolean(null);
+	 * // => false
+	 */
+	function isBoolean(value) {
+	  return value === true || value === false || (isObjectLike(value) && objToString.call(value) == boolTag);
+	}
+
+	module.exports = isBoolean;
+
+
+/***/ },
+/* 311 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var createObjectMapper = __webpack_require__(312);
+
+	/**
+	 * Creates an object with the same keys as `object` and values generated by
+	 * running each own enumerable property of `object` through `iteratee`. The
+	 * iteratee function is bound to `thisArg` and invoked with three arguments:
+	 * (value, key, object).
+	 *
+	 * If a property name is provided for `iteratee` the created `_.property`
+	 * style callback returns the property value of the given element.
+	 *
+	 * If a value is also provided for `thisArg` the created `_.matchesProperty`
+	 * style callback returns `true` for elements that have a matching property
+	 * value, else `false`.
+	 *
+	 * If an object is provided for `iteratee` the created `_.matches` style
+	 * callback returns `true` for elements that have the properties of the given
+	 * object, else `false`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Object
+	 * @param {Object} object The object to iterate over.
+	 * @param {Function|Object|string} [iteratee=_.identity] The function invoked
+	 *  per iteration.
+	 * @param {*} [thisArg] The `this` binding of `iteratee`.
+	 * @returns {Object} Returns the new mapped object.
+	 * @example
+	 *
+	 * _.mapValues({ 'a': 1, 'b': 2 }, function(n) {
+	 *   return n * 3;
+	 * });
+	 * // => { 'a': 3, 'b': 6 }
+	 *
+	 * var users = {
+	 *   'fred':    { 'user': 'fred',    'age': 40 },
+	 *   'pebbles': { 'user': 'pebbles', 'age': 1 }
+	 * };
+	 *
+	 * // using the `_.property` callback shorthand
+	 * _.mapValues(users, 'age');
+	 * // => { 'fred': 40, 'pebbles': 1 } (iteration order is not guaranteed)
+	 */
+	var mapValues = createObjectMapper();
+
+	module.exports = mapValues;
+
+
+/***/ },
+/* 312 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseCallback = __webpack_require__(229),
+	    baseForOwn = __webpack_require__(207);
+
+	/**
+	 * Creates a function for `_.mapKeys` or `_.mapValues`.
+	 *
+	 * @private
+	 * @param {boolean} [isMapKeys] Specify mapping keys instead of values.
+	 * @returns {Function} Returns the new map function.
+	 */
+	function createObjectMapper(isMapKeys) {
+	  return function(object, iteratee, thisArg) {
+	    var result = {};
+	    iteratee = baseCallback(iteratee, thisArg, 3);
+
+	    baseForOwn(object, function(value, key, object) {
+	      var mapped = iteratee(value, key, object);
+	      key = isMapKeys ? mapped : key;
+	      value = isMapKeys ? value : mapped;
+	      result[key] = value;
+	    });
+	    return result;
+	  };
+	}
+
+	module.exports = createObjectMapper;
+
+
+/***/ },
+/* 313 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var arrayEvery = __webpack_require__(314),
+	    baseCallback = __webpack_require__(229),
+	    baseEvery = __webpack_require__(315),
+	    isArray = __webpack_require__(184),
+	    isIterateeCall = __webpack_require__(260);
+
+	/**
+	 * Checks if `predicate` returns truthy for **all** elements of `collection`.
+	 * The predicate is bound to `thisArg` and invoked with three arguments:
+	 * (value, index|key, collection).
+	 *
+	 * If a property name is provided for `predicate` the created `_.property`
+	 * style callback returns the property value of the given element.
+	 *
+	 * If a value is also provided for `thisArg` the created `_.matchesProperty`
+	 * style callback returns `true` for elements that have a matching property
+	 * value, else `false`.
+	 *
+	 * If an object is provided for `predicate` the created `_.matches` style
+	 * callback returns `true` for elements that have the properties of the given
+	 * object, else `false`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @alias all
+	 * @category Collection
+	 * @param {Array|Object|string} collection The collection to iterate over.
+	 * @param {Function|Object|string} [predicate=_.identity] The function invoked
+	 *  per iteration.
+	 * @param {*} [thisArg] The `this` binding of `predicate`.
+	 * @returns {boolean} Returns `true` if all elements pass the predicate check,
+	 *  else `false`.
+	 * @example
+	 *
+	 * _.every([true, 1, null, 'yes'], Boolean);
+	 * // => false
+	 *
+	 * var users = [
+	 *   { 'user': 'barney', 'active': false },
+	 *   { 'user': 'fred',   'active': false }
+	 * ];
+	 *
+	 * // using the `_.matches` callback shorthand
+	 * _.every(users, { 'user': 'barney', 'active': false });
+	 * // => false
+	 *
+	 * // using the `_.matchesProperty` callback shorthand
+	 * _.every(users, 'active', false);
+	 * // => true
+	 *
+	 * // using the `_.property` callback shorthand
+	 * _.every(users, 'active');
+	 * // => false
+	 */
+	function every(collection, predicate, thisArg) {
+	  var func = isArray(collection) ? arrayEvery : baseEvery;
+	  if (thisArg && isIterateeCall(collection, predicate, thisArg)) {
+	    predicate = undefined;
+	  }
+	  if (typeof predicate != 'function' || thisArg !== undefined) {
+	    predicate = baseCallback(predicate, thisArg, 3);
+	  }
+	  return func(collection, predicate);
+	}
+
+	module.exports = every;
+
+
+/***/ },
+/* 314 */
+/***/ function(module, exports) {
+
+	/**
+	 * A specialized version of `_.every` for arrays without support for callback
+	 * shorthands and `this` binding.
+	 *
+	 * @private
+	 * @param {Array} array The array to iterate over.
+	 * @param {Function} predicate The function invoked per iteration.
+	 * @returns {boolean} Returns `true` if all elements pass the predicate check,
+	 *  else `false`.
+	 */
+	function arrayEvery(array, predicate) {
+	  var index = -1,
+	      length = array.length;
+
+	  while (++index < length) {
+	    if (!predicate(array[index], index, array)) {
+	      return false;
+	    }
+	  }
+	  return true;
+	}
+
+	module.exports = arrayEvery;
+
+
+/***/ },
+/* 315 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseEach = __webpack_require__(248);
+
+	/**
+	 * The base implementation of `_.every` without support for callback
+	 * shorthands and `this` binding.
+	 *
+	 * @private
+	 * @param {Array|Object|string} collection The collection to iterate over.
+	 * @param {Function} predicate The function invoked per iteration.
+	 * @returns {boolean} Returns `true` if all elements pass the predicate check,
+	 *  else `false`
+	 */
+	function baseEvery(collection, predicate) {
+	  var result = true;
+	  baseEach(collection, function(value, index, collection) {
+	    result = !!predicate(value, index, collection);
+	    return result;
+	  });
+	  return result;
+	}
+
+	module.exports = baseEvery;
 
 
 /***/ }
