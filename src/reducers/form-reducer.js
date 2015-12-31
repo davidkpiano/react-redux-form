@@ -26,6 +26,9 @@ const initialFieldState = {
   dirty: false,
   touched: false,
   untouched: true,
+  valid: true,
+  validating: false,
+  errors: null
 };
 
 const initialFormState = {
@@ -33,10 +36,8 @@ const initialFormState = {
   fields: {}
 };
 
-function createFormReducer(model, initialState = initialFormState) {
-  return (state = initialState, action) => {
-    console.log(action);
-
+function createFormReducer(model, validation = {}) {
+  return (state = initialFormState, action) => {
     if (model && !startsWith(action.model, model)) {
       return state;
     }
@@ -64,11 +65,6 @@ function createFormReducer(model, initialState = initialFormState) {
 
         break;
 
-      case actionTypes.SET_PRISTINE:
-        setField(superState, action.model, { dirty: false, pristine: true });
-
-        break;
-
       case actionTypes.BLUR:
       case actionTypes.SET_TOUCHED:
         setField(superState, action.model, {
@@ -77,6 +73,29 @@ function createFormReducer(model, initialState = initialFormState) {
           focus: false,
           blur: true,
         });
+
+        break;
+
+      case actionTypes.VALIDATE:
+        let getErrors = get(validation, action.model);
+        let errors = null;
+
+        console.log(getErrors);
+
+        if (getErrors) {
+          errors = getErrors(superState);
+        }
+
+        console.log(errors);
+
+        setField(superState, action.model, {
+          errors
+        });
+
+        break;
+
+      case actionTypes.SET_PRISTINE:
+        setField(superState, action.model, { dirty: false, pristine: true });
 
         break;
 

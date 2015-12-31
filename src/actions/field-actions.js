@@ -9,6 +9,11 @@ const blur = (model) => ({
   model
 });
 
+const validate = (model) => ({
+  type: 'rsf/validate',
+  model
+});
+
 const setPristine = (model) => ({
   type: 'rsf/setPristine',
   model
@@ -27,6 +32,7 @@ const setInitial = (model) => ({
 export {
   focus,
   blur,
+  validate,
   setPristine,
   setDirty,
   setInitial

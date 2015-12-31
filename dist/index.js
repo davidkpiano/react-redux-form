@@ -22433,7 +22433,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  pristine: true,
 	  dirty: false,
 	  touched: false,
-	  untouched: true
+	  untouched: true,
+	  valid: true,
+	  validating: false,
+	  errors: null
 	};
 
 	var initialFormState = _extends({}, initialFieldState, {
@@ -22441,13 +22444,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	function createFormReducer(model) {
-	  var initialState = arguments.length <= 1 || arguments[1] === undefined ? initialFormState : arguments[1];
+	  var validation = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
 	  return function () {
-	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
+	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialFormState : arguments[0];
 	    var action = arguments[1];
-
-	    console.log(action);
 
 	    if (model && !(0, _startsWith2.default)(action.model, model)) {
 	      return state;
@@ -22472,11 +22473,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        break;
 
-	      case actionTypes.SET_PRISTINE:
-	        setField(superState, action.model, { dirty: false, pristine: true });
-
-	        break;
-
 	      case actionTypes.BLUR:
 	      case actionTypes.SET_TOUCHED:
 	        setField(superState, action.model, {
@@ -22485,6 +22481,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	          focus: false,
 	          blur: true
 	        });
+
+	        break;
+
+	      case actionTypes.VALIDATE:
+	        var getErrors = (0, _get2.default)(validation, action.model);
+	        var errors = null;
+
+	        console.log(getErrors);
+
+	        if (getErrors) {
+	          errors = getErrors(superState);
+	        }
+
+	        console.log(errors);
+
+	        setField(superState, action.model, {
+	          errors: errors
+	        });
+
+	        break;
+
+	      case actionTypes.SET_PRISTINE:
+	        setField(superState, action.model, { dirty: false, pristine: true });
 
 	        break;
 
@@ -24308,6 +24327,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
+	var validate = function validate(model) {
+	  return {
+	    type: 'rsf/validate',
+	    model: model
+	  };
+	};
+
 	var setPristine = function setPristine(model) {
 	  return {
 	    type: 'rsf/setPristine',
@@ -24331,6 +24357,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.focus = focus;
 	exports.blur = blur;
+	exports.validate = validate;
 	exports.setPristine = setPristine;
 	exports.setDirty = setDirty;
 	exports.setInitial = setInitial;
@@ -26357,20 +26384,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	var CHANGE = 'rsf/change';
 	var FOCUS = 'rsf/focus';
 	var BLUR = 'rsf/blur';
+	var VALIDATE = 'rsf/validate';
 	var SET_DIRTY = 'rsf/setDirty';
 	var SET_PRISTINE = 'rsf/setPristine';
 	var SET_TOUCHED = 'rsf/setTouched';
 	var SET_UNTOUCHED = 'rsf/setUntouched';
 	var SET_INITIAL = 'rsf/setInitial';
+	var SET_VALIDATING = 'rsf/setValidating';
+	var SET_VALIDITY = 'rsf/setValidity';
 
 	exports.CHANGE = CHANGE;
 	exports.FOCUS = FOCUS;
 	exports.BLUR = BLUR;
+	exports.VALIDATE = VALIDATE;
 	exports.SET_DIRTY = SET_DIRTY;
 	exports.SET_PRISTINE = SET_PRISTINE;
 	exports.SET_TOUCHED = SET_TOUCHED;
 	exports.SET_UNTOUCHED = SET_UNTOUCHED;
 	exports.SET_INITIAL = SET_INITIAL;
+	exports.SET_VALIDITY = SET_VALIDITY;
 
 /***/ },
 /* 303 */
