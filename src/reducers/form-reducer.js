@@ -82,7 +82,7 @@ function createFormReducer(model, initialState = initialFormState) {
       case actionTypes.SET_VALIDITY:
         let errors = isPlainObject(action.validity)
           ? {
-              ...get(superState, action.model).errors,
+              ...get(superState, action.model, initialFieldState).errors,
               ...mapValues(action.validity, (valid) => !valid)
             }
           : action.validity;

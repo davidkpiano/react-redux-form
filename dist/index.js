@@ -22508,7 +22508,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        break;
 
 	      case actionTypes.SET_VALIDITY:
-	        var errors = (0, _isPlainObject2.default)(action.validity) ? _extends({}, (0, _get2.default)(superState, action.model).errors, (0, _mapValues2.default)(action.validity, function (valid) {
+	        var errors = (0, _isPlainObject2.default)(action.validity) ? _extends({}, (0, _get2.default)(superState, action.model, initialFieldState).errors, (0, _mapValues2.default)(action.validity, function (valid) {
 	          return !valid;
 	        })) : action.validity;
 
