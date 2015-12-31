@@ -22413,7 +22413,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _map2 = _interopRequireDefault(_map);
 
+	var _actionTypes = __webpack_require__(302);
+
+	var actionTypes = _interopRequireWildcard(_actionTypes);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	console.log(actionTypes);
 
 	function setField(state, model, props) {
 	  return (0, _set2.default)(state, model, _extends({}, initialFieldState, (0, _get2.default)(state, model), props));
@@ -22452,25 +22460,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var collection = (0, _get2.default)(superState, action.model, []);
 
 	    switch (action.type) {
-	      case 'rsf/focus':
+	      case actionTypes.FOCUS:
 	        Object.assign(form, { focus: true, blur: false });
 	        setField(superState, action.model, { focus: true, blur: false });
 
 	        break;
 
-	      case 'rsf/change':
-	      case 'rsf/setDirty':
+	      case actionTypes.CHANGE:
+	      case actionTypes.SET_DIRTY:
 	        setField(superState, action.model, { dirty: true, pristine: false });
 
 	        break;
 
-	      case 'rsf/setPristine':
+	      case actionTypes.SET_PRISTINE:
 	        setField(superState, action.model, { dirty: false, pristine: true });
 
 	        break;
 
-	      case 'rsf/blur':
-	      case 'rsf/setTouched':
+	      case actionTypes.BLUR:
+	      case actionTypes.SET_TOUCHED:
 	        setField(superState, action.model, {
 	          touched: true,
 	          untouched: false,
@@ -22480,12 +22488,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        break;
 
-	      case 'rsf/setUntouched':
+	      case actionTypes.SET_UNTOUCHED:
 	        setField(superState, action.model, { touched: false, untouched: true });
 
 	        break;
 
-	      case 'rsf/setInitial':
+	      case actionTypes.SET_INITIAL:
 	      default:
 	        setField(superState, action.model, initialFieldState);
 
@@ -24144,6 +24152,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _map3 = _interopRequireDefault(_map2);
 
+	var _pullAt2 = __webpack_require__(303);
+
+	var _pullAt3 = _interopRequireDefault(_pullAt2);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -24183,6 +24195,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
+	var push = function push(model) {
+	  var item = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+	  return function (dispatch, getState) {
+	    var collection = (0, _get2.default)(getState(), model);
+	    var value = [].concat(_toConsumableArray(collection), [item]);
+
+	    dispatch({
+	      type: 'rsf/change',
+	      model: model,
+	      value: value
+	    });
+	  };
+	};
+
 	var toggle = function toggle(model) {
 	  return function (dispatch, getState) {
 	    var value = !(0, _get2.default)(getState(), model);
@@ -24201,7 +24227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } : arguments[1];
 	  return function (dispatch, getState) {
 	    var collection = (0, _get2.default)(getState(), model);
-	    var value = filter(collection, iteratee);
+	    var value = (0, _filter3.default)(collection, iteratee);
 
 	    dispatch({
 	      type: 'rsf/change',
@@ -24225,21 +24251,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } : arguments[1];
 	  return function (dispatch, getState) {
 	    var collection = (0, _get2.default)(getState(), model);
-	    var value = map(collection, iteratee);
-
-	    dispatch({
-	      type: 'rsf/change',
-	      model: model,
-	      value: value
-	    });
-	  };
-	};
-
-	var push = function push(model) {
-	  var item = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
-	  return function (dispatch, getState) {
-	    var collection = (0, _get2.default)(getState(), model);
-	    var value = [].concat(_toConsumableArray(collection), [item]);
+	    var value = (0, _map3.default)(collection, iteratee);
 
 	    dispatch({
 	      type: 'rsf/change',
@@ -24251,8 +24263,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var remove = function remove(model, index) {
 	  return function (dispatch, getState) {
-	    var collection = (0, _get2.default)(getState(), model);
-	    var value = [].concat(_toConsumableArray(collection.slice(0, index)), _toConsumableArray(collection.slice(index + 1)));
+	    var collection = (0, _cloneDeep2.default)((0, _get2.default)(getState(), model));
+
+	    var value = ((0, _pullAt3.default)(collection, index), collection);
 
 	    dispatch({
 	      type: 'rsf/change',
@@ -24511,9 +24524,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'shouldComponentUpdate',
 	    value: function shouldComponentUpdate(nextProps) {
-	      var nextModelValue = nextProps.modelValue;
-
-	      return this.props.modelValue !== nextModelValue;
+	      return this.props.modelValue !== nextProps.modelValue;
 	    }
 	  }, {
 	    key: 'render',
@@ -26331,6 +26342,241 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	module.exports = mergeData;
+
+
+/***/ },
+/* 302 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var CHANGE = 'rsf/change';
+	var FOCUS = 'rsf/focus';
+	var BLUR = 'rsf/blur';
+	var SET_DIRTY = 'rsf/setDirty';
+	var SET_PRISTINE = 'rsf/setPristine';
+	var SET_TOUCHED = 'rsf/setTouched';
+	var SET_UNTOUCHED = 'rsf/setUntouched';
+	var SET_INITIAL = 'rsf/setInitial';
+
+	exports.CHANGE = CHANGE;
+	exports.FOCUS = FOCUS;
+	exports.BLUR = BLUR;
+	exports.SET_DIRTY = SET_DIRTY;
+	exports.SET_PRISTINE = SET_PRISTINE;
+	exports.SET_TOUCHED = SET_TOUCHED;
+	exports.SET_UNTOUCHED = SET_UNTOUCHED;
+	exports.SET_INITIAL = SET_INITIAL;
+
+/***/ },
+/* 303 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseAt = __webpack_require__(304),
+	    baseCompareAscending = __webpack_require__(305),
+	    baseFlatten = __webpack_require__(306),
+	    basePullAt = __webpack_require__(307),
+	    restParam = __webpack_require__(268);
+
+	/**
+	 * Removes elements from `array` corresponding to the given indexes and returns
+	 * an array of the removed elements. Indexes may be specified as an array of
+	 * indexes or as individual arguments.
+	 *
+	 * **Note:** Unlike `_.at`, this method mutates `array`.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Array
+	 * @param {Array} array The array to modify.
+	 * @param {...(number|number[])} [indexes] The indexes of elements to remove,
+	 *  specified as individual indexes or arrays of indexes.
+	 * @returns {Array} Returns the new array of removed elements.
+	 * @example
+	 *
+	 * var array = [5, 10, 15, 20];
+	 * var evens = _.pullAt(array, 1, 3);
+	 *
+	 * console.log(array);
+	 * // => [5, 15]
+	 *
+	 * console.log(evens);
+	 * // => [10, 20]
+	 */
+	var pullAt = restParam(function(array, indexes) {
+	  indexes = baseFlatten(indexes);
+
+	  var result = baseAt(array, indexes);
+	  basePullAt(array, indexes.sort(baseCompareAscending));
+	  return result;
+	});
+
+	module.exports = pullAt;
+
+
+/***/ },
+/* 304 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isArrayLike = __webpack_require__(201),
+	    isIndex = __webpack_require__(191);
+
+	/**
+	 * The base implementation of `_.at` without support for string collections
+	 * and individual key arguments.
+	 *
+	 * @private
+	 * @param {Array|Object} collection The collection to iterate over.
+	 * @param {number[]|string[]} props The property names or indexes of elements to pick.
+	 * @returns {Array} Returns the new array of picked elements.
+	 */
+	function baseAt(collection, props) {
+	  var index = -1,
+	      isNil = collection == null,
+	      isArr = !isNil && isArrayLike(collection),
+	      length = isArr ? collection.length : 0,
+	      propsLength = props.length,
+	      result = Array(propsLength);
+
+	  while(++index < propsLength) {
+	    var key = props[index];
+	    if (isArr) {
+	      result[index] = isIndex(key, length) ? collection[key] : undefined;
+	    } else {
+	      result[index] = isNil ? undefined : collection[key];
+	    }
+	  }
+	  return result;
+	}
+
+	module.exports = baseAt;
+
+
+/***/ },
+/* 305 */
+/***/ function(module, exports) {
+
+	/**
+	 * The base implementation of `compareAscending` which compares values and
+	 * sorts them in ascending order without guaranteeing a stable sort.
+	 *
+	 * @private
+	 * @param {*} value The value to compare.
+	 * @param {*} other The other value to compare.
+	 * @returns {number} Returns the sort order indicator for `value`.
+	 */
+	function baseCompareAscending(value, other) {
+	  if (value !== other) {
+	    var valIsNull = value === null,
+	        valIsUndef = value === undefined,
+	        valIsReflexive = value === value;
+
+	    var othIsNull = other === null,
+	        othIsUndef = other === undefined,
+	        othIsReflexive = other === other;
+
+	    if ((value > other && !othIsNull) || !valIsReflexive ||
+	        (valIsNull && !othIsUndef && othIsReflexive) ||
+	        (valIsUndef && othIsReflexive)) {
+	      return 1;
+	    }
+	    if ((value < other && !valIsNull) || !othIsReflexive ||
+	        (othIsNull && !valIsUndef && valIsReflexive) ||
+	        (othIsUndef && valIsReflexive)) {
+	      return -1;
+	    }
+	  }
+	  return 0;
+	}
+
+	module.exports = baseCompareAscending;
+
+
+/***/ },
+/* 306 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var arrayPush = __webpack_require__(218),
+	    isArguments = __webpack_require__(205),
+	    isArray = __webpack_require__(184),
+	    isArrayLike = __webpack_require__(201),
+	    isObjectLike = __webpack_require__(188);
+
+	/**
+	 * The base implementation of `_.flatten` with added support for restricting
+	 * flattening and specifying the start index.
+	 *
+	 * @private
+	 * @param {Array} array The array to flatten.
+	 * @param {boolean} [isDeep] Specify a deep flatten.
+	 * @param {boolean} [isStrict] Restrict flattening to arrays-like objects.
+	 * @param {Array} [result=[]] The initial result value.
+	 * @returns {Array} Returns the new flattened array.
+	 */
+	function baseFlatten(array, isDeep, isStrict, result) {
+	  result || (result = []);
+
+	  var index = -1,
+	      length = array.length;
+
+	  while (++index < length) {
+	    var value = array[index];
+	    if (isObjectLike(value) && isArrayLike(value) &&
+	        (isStrict || isArray(value) || isArguments(value))) {
+	      if (isDeep) {
+	        // Recursively flatten arrays (susceptible to call stack limits).
+	        baseFlatten(value, isDeep, isStrict, result);
+	      } else {
+	        arrayPush(result, value);
+	      }
+	    } else if (!isStrict) {
+	      result[result.length] = value;
+	    }
+	  }
+	  return result;
+	}
+
+	module.exports = baseFlatten;
+
+
+/***/ },
+/* 307 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var isIndex = __webpack_require__(191);
+
+	/** Used for native method references. */
+	var arrayProto = Array.prototype;
+
+	/** Native method references. */
+	var splice = arrayProto.splice;
+
+	/**
+	 * The base implementation of `_.pullAt` without support for individual
+	 * index arguments and capturing the removed elements.
+	 *
+	 * @private
+	 * @param {Array} array The array to modify.
+	 * @param {number[]} indexes The indexes of elements to remove.
+	 * @returns {Array} Returns `array`.
+	 */
+	function basePullAt(array, indexes) {
+	  var length = array ? indexes.length : 0;
+	  while (length--) {
+	    var index = indexes[length];
+	    if (index != previous && isIndex(index)) {
+	      var previous = index;
+	      splice.call(array, index, 1);
+	    }
+	  }
+	  return array;
+	}
+
+	module.exports = basePullAt;
 
 
 /***/ }

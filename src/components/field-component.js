@@ -116,9 +116,7 @@ class Field extends React.Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    let { modelValue: nextModelValue } = nextProps;
-
-    return this.props.modelValue !== nextModelValue;
+    return this.props.modelValue !== nextProps.modelValue;
   }
 
   render() {

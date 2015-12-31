@@ -5,6 +5,7 @@ import cloneDeep from 'lodash/lang/cloneDeep';
 import _xor from 'lodash/array/xor';
 import _filter from 'lodash/collection/filter';
 import _map from 'lodash/collection/map';
+import _pullAt from 'lodash/array/pullAt';
 
 function isEvent(event) {
   return !!(event && event.stopPropagation && event.preventDefault);
@@ -39,6 +40,17 @@ const xor = (model, item) => (dispatch, getState) => {
   });
 }
 
+const push = (model, item = null) => (dispatch, getState) => {
+  let collection = get(getState(), model);
+  let value = [...collection, item];
+
+  dispatch({
+    type: `rsf/change`,
+    model,
+    value
+  });
+}
+
 const toggle = (model) => (dispatch, getState) => {
   let value = !get(getState(), model);
 
@@ -51,7 +63,7 @@ const toggle = (model) => (dispatch, getState) => {
 
 const filter = (model, iteratee = (a) => a) => (dispatch, getState) => {
   let collection = get(getState(), model);
-  let value = filter(collection, iteratee);
+  let value = _filter(collection, iteratee);
 
   dispatch({  
     type: `rsf/change`,
@@ -68,7 +80,7 @@ const reset = (model) => ({
 
 const map = (model, iteratee = (a) => a) => (dispatch, getState) => {
   let collection = get(getState(), model);
-  let value = map(collection, iteratee);
+  let value = _map(collection, iteratee);
 
   dispatch({  
     type: `rsf/change`,
@@ -77,23 +89,10 @@ const map = (model, iteratee = (a) => a) => (dispatch, getState) => {
   });
 };
 
-const push = (model, item = null) => (dispatch, getState) => {
-  let collection = get(getState(), model);
-  let value = [...collection, item];
-
-  dispatch({
-    type: `rsf/change`,
-    model,
-    value
-  });
-}
-
 const remove = (model, index) => (dispatch, getState) => {
-  let collection = get(getState(), model);
-  let value = [
-    ...collection.slice(0, index),
-    ...collection.slice(index + 1)
-  ];
+  let collection = cloneDeep(get(getState(), model));
+  
+  let value = (_pullAt(collection, index), collection);
 
   dispatch({  
     type: `rsf/change`,

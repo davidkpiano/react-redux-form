@@ -7,6 +7,10 @@ import isArray from 'lodash/lang/isArray';
 import filter from 'lodash/collection/filter';
 import map from 'lodash/collection/map';
 
+import * as actionTypes from '../action-types';
+
+console.log(actionTypes);
+
 function setField(state, model, props) {
   return set(state, model, {
     ...initialFieldState,
@@ -48,25 +52,25 @@ function createFormReducer(model, initialState = initialFormState) {
     let collection = get(superState, action.model, []);
 
     switch (action.type) {
-      case 'rsf/focus':
+      case actionTypes.FOCUS:
         Object.assign(form, { focus: true, blur: false });
         setField(superState, action.model, { focus: true, blur: false });
 
         break;
 
-      case 'rsf/change':
-      case 'rsf/setDirty':
+      case actionTypes.CHANGE:
+      case actionTypes.SET_DIRTY:
         setField(superState, action.model, { dirty: true, pristine: false });
 
         break;
 
-      case 'rsf/setPristine':
+      case actionTypes.SET_PRISTINE:
         setField(superState, action.model, { dirty: false, pristine: true });
 
         break;
 
-      case 'rsf/blur':
-      case 'rsf/setTouched':
+      case actionTypes.BLUR:
+      case actionTypes.SET_TOUCHED:
         setField(superState, action.model, {
           touched: true,
           untouched: false,
@@ -76,12 +80,12 @@ function createFormReducer(model, initialState = initialFormState) {
 
         break;
 
-      case 'rsf/setUntouched':
+      case actionTypes.SET_UNTOUCHED:
         setField(superState, action.model, { touched: false, untouched: true });
 
         break;
 
-      case 'rsf/setInitial':
+      case actionTypes.SET_INITIAL:
       default:
         setField(superState, action.model, initialFieldState);
 
