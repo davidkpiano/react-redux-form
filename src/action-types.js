@@ -1,0 +1,25 @@
+
+const CHANGE = 'rsf/change';
+const FOCUS = 'rsf/focus';
+const BLUR = 'rsf/blur';
+const VALIDATE = 'rsf/validate';
+const SET_DIRTY = 'rsf/setDirty';
+const SET_PRISTINE = 'rsf/setPristine';
+const SET_TOUCHED = 'rsf/setTouched';
+const SET_UNTOUCHED = 'rsf/setUntouched';
+const SET_INITIAL = 'rsf/setInitial';
+const SET_VALIDATING = 'rsf/setValidating';
+const SET_VALIDITY = 'rsf/setValidity';
+
+export {
+  CHANGE,
+  FOCUS,
+  BLUR,
+  VALIDATE,
+  SET_DIRTY,
+  SET_PRISTINE,
+  SET_TOUCHED,
+  SET_UNTOUCHED,
+  SET_INITIAL,
+  SET_VALIDITY,
+}
