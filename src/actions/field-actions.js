@@ -1,3 +1,4 @@
+import get from 'lodash/object/get';
 
 const focus = (model) => ({
   type: 'rsf/focus',
@@ -29,11 +30,33 @@ const setInitial = (model) => ({
   model
 });
 
+const setPending = (model, pending = true) => ({
+  type: 'rsf/setPending',
+  model,
+  pending
+});
+
 const setValidity = (model, validity) => ({
   type: 'rsf/setValidity',
   model,
   validity
 });
+
+const asyncSetValidity = (model, validator) => {
+  return (dispatch, getState) => {
+    let value = get(getState(), model);
+
+    dispatch(setPending(model, true));
+
+    const done = (validity) => {
+      console.log(model, validity);
+      dispatch(setValidity(model, validity));
+      dispatch(setPending(model, false));
+    };
+
+    validator(value, done);
+  }
+}
 
 export {
   focus,
@@ -42,5 +65,7 @@ export {
   setPristine,
   setDirty,
   setInitial,
-  setValidity
+  setValidity,
+  asyncSetValidity,
+  setPending
 }

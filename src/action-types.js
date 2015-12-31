@@ -8,7 +8,7 @@ const SET_PRISTINE = 'rsf/setPristine';
 const SET_TOUCHED = 'rsf/setTouched';
 const SET_UNTOUCHED = 'rsf/setUntouched';
 const SET_INITIAL = 'rsf/setInitial';
-const SET_VALIDATING = 'rsf/setValidating';
+const SET_PENDING = 'rsf/setPending';
 const SET_VALIDITY = 'rsf/setValidity';
 
 export {
@@ -22,4 +22,5 @@ export {
   SET_UNTOUCHED,
   SET_INITIAL,
   SET_VALIDITY,
+  SET_PENDING,
 }

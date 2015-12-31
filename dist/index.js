@@ -22507,6 +22507,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        break;
 
+	      case actionTypes.SET_PENDING:
+	        setField(superState, action.model, { pending: action.pending });
+
+	        break;
+
 	      case actionTypes.SET_VALIDITY:
 	        var errors = (0, _isPlainObject2.default)(action.validity) ? _extends({}, (0, _get2.default)(superState, action.model, initialFieldState).errors, (0, _mapValues2.default)(action.validity, function (valid) {
 	          return !valid;
@@ -22537,8 +22542,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        break;
 	    }
-
-	    console.log('what the fuck');
 
 	    return _extends({}, form, {
 	      fields: (0, _get2.default)(superState, model),
@@ -24477,7 +24480,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var SET_TOUCHED = 'rsf/setTouched';
 	var SET_UNTOUCHED = 'rsf/setUntouched';
 	var SET_INITIAL = 'rsf/setInitial';
-	var SET_VALIDATING = 'rsf/setValidating';
+	var SET_PENDING = 'rsf/setPending';
 	var SET_VALIDITY = 'rsf/setValidity';
 
 	exports.CHANGE = CHANGE;
@@ -24490,6 +24493,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.SET_UNTOUCHED = SET_UNTOUCHED;
 	exports.SET_INITIAL = SET_INITIAL;
 	exports.SET_VALIDITY = SET_VALIDITY;
+	exports.SET_PENDING = SET_PENDING;
 
 /***/ },
 /* 263 */
@@ -26180,13 +26184,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 299 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.setPending = exports.asyncSetValidity = exports.setValidity = exports.setInitial = exports.setDirty = exports.setPristine = exports.validate = exports.blur = exports.focus = undefined;
+
+	var _get = __webpack_require__(178);
+
+	var _get2 = _interopRequireDefault(_get);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var focus = function focus(model) {
 	  return {
@@ -26230,11 +26241,36 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
+	var setPending = function setPending(model) {
+	  var pending = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+	  return {
+	    type: 'rsf/setPending',
+	    model: model,
+	    pending: pending
+	  };
+	};
+
 	var setValidity = function setValidity(model, validity) {
 	  return {
 	    type: 'rsf/setValidity',
 	    model: model,
 	    validity: validity
+	  };
+	};
+
+	var asyncSetValidity = function asyncSetValidity(model, validator) {
+	  return function (dispatch, getState) {
+	    var value = (0, _get2.default)(getState(), model);
+
+	    dispatch(setPending(model, true));
+
+	    var done = function done(validity) {
+	      console.log(model, validity);
+	      dispatch(setValidity(model, validity));
+	      dispatch(setPending(model, false));
+	    };
+
+	    validator(value, done);
 	  };
 	};
 
@@ -26245,6 +26281,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.setDirty = setDirty;
 	exports.setInitial = setInitial;
 	exports.setValidity = setValidity;
+	exports.asyncSetValidity = asyncSetValidity;
+	exports.setPending = setPending;
 
 /***/ },
 /* 300 */
@@ -26310,6 +26348,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -26344,10 +26384,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var model = props.model;
 	      var modelValue = props.modelValue;
 	      var validators = props.validators;
+	      var asyncValidators = props.asyncValidators;
 
 	      var value = control.props.value;
 	      var updateOn = 'on' + (0, _capitalize2.default)(props.updateOn || 'change');
 	      var validateOn = 'on' + (0, _capitalize2.default)(props.validateOn || 'change');
+	      var asyncValidateOn = 'on' + (0, _capitalize2.default)(props.asyncValidateOn || 'blur');
 
 	      var change = modelActions.change;
 	      var toggle = modelActions.toggle;
@@ -26357,6 +26399,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var focus = _bindActionCreators.focus;
 	      var blur = _bindActionCreators.blur;
 	      var setValidity = _bindActionCreators.setValidity;
+	      var asyncSetValidity = _bindActionCreators.asyncSetValidity;
 
 	      var defaultProps = {};
 
@@ -26445,6 +26488,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	        };
 
 	        eventActions[validateOn].push(dispatchValidate);
+	      }
+
+	      if (asyncValidators) {
+	        var dispatchAsyncValidate = function dispatchAsyncValidate(e) {
+	          var validatingValue = control.props.hasOwnProperty('value') ? value : e.target.value;
+
+	          (0, _mapValues2.default)(asyncValidators, function (validator, key) {
+	            return asyncSetValidity(model, function (value, done) {
+	              var outerDone = function outerDone(valid) {
+	                return done(_defineProperty({}, key, valid));
+	              };
+
+	              validator(value, outerDone);
+	            });
+	          });
+	        };
+
+	        eventActions[asyncValidateOn].push(dispatchAsyncValidate);
 	      }
 
 	      return _react2.default.cloneElement(control, Object.assign({}, defaultProps, (0, _mapValues2.default)(eventActions, function (actions) {

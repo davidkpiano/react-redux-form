@@ -79,6 +79,11 @@ function createFormReducer(model, initialState = initialFormState) {
 
         break;
 
+      case actionTypes.SET_PENDING:
+        setField(superState, action.model, { pending: action.pending });
+
+        break;
+
       case actionTypes.SET_VALIDITY:
         let errors = isPlainObject(action.validity)
           ? {
@@ -112,8 +117,6 @@ function createFormReducer(model, initialState = initialFormState) {
 
         break;
     }
-
-    console.log('what the fuck');
 
     return {
       ...form,

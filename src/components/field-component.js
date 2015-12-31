@@ -33,10 +33,12 @@ class Field extends React.Component {
       dispatch,
       model,
       modelValue,
-      validators } = props;
+      validators,
+      asyncValidators } = props;
     let value = control.props.value;
     let updateOn = `on${capitalize(props.updateOn || 'change')}`;
     let validateOn = `on${capitalize(props.validateOn || 'change')}`;
+    let asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
 
     let {
       change,
@@ -46,7 +48,8 @@ class Field extends React.Component {
     let {
       focus,
       blur,
-      setValidity
+      setValidity,
+      asyncSetValidity
     } = bindActionCreators(fieldActions, dispatch);
 
     let defaultProps = {};
@@ -128,6 +131,23 @@ class Field extends React.Component {
       }
 
       eventActions[validateOn].push(dispatchValidate);
+    }
+
+    if (asyncValidators) {
+      let dispatchAsyncValidate = (e) => {
+        let validatingValue = control.props.hasOwnProperty('value')
+          ? value
+          : e.target.value;
+
+        mapValues(asyncValidators,
+          (validator, key) => asyncSetValidity(model, (value, done) => {
+            const outerDone = (valid) => done({ [key]: valid });
+
+            validator(value, outerDone);
+          }));
+      }
+
+      eventActions[asyncValidateOn].push(dispatchAsyncValidate);
     }
 
     return React.cloneElement(
