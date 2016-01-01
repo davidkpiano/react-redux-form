@@ -26,7 +26,6 @@ function selector(state, { model }) {
 
 class Field extends React.Component {
   createField(control, props) {
-    console.log(control);
     if (!control || !control.props) return control;
 
     let {

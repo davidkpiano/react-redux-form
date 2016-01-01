@@ -10,6 +10,7 @@ const SET_UNTOUCHED = 'rsf/setUntouched';
 const SET_INITIAL = 'rsf/setInitial';
 const SET_PENDING = 'rsf/setPending';
 const SET_VALIDITY = 'rsf/setValidity';
+const SET_SUBMITTED = 'rsf/setSubmitted';
 
 export {
   CHANGE,
@@ -23,4 +24,5 @@ export {
   SET_INITIAL,
   SET_VALIDITY,
   SET_PENDING,
+  SET_SUBMITTED,
 }

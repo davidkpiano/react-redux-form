@@ -49,14 +49,23 @@ const asyncSetValidity = (model, validator) => {
     dispatch(setPending(model, true));
 
     const done = (validity) => {
-      console.log(model, validity);
       dispatch(setValidity(model, validity));
       dispatch(setPending(model, false));
     };
 
-    validator(value, done);
+    let immediateResult = validator(value, done);
+
+    if (typeof immediateResult !== 'undefined') {
+      done(immediateResult);
+    }
   }
 }
+
+const setSubmitted = (model, submitted = true) => ({
+  type: 'rsf/setSubmitted',
+  model,
+  submitted
+});
 
 export {
   focus,
@@ -67,5 +76,6 @@ export {
   setInitial,
   setValidity,
   asyncSetValidity,
-  setPending
+  setPending,
+  setSubmitted
 }

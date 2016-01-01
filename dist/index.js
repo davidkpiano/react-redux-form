@@ -22444,7 +22444,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function setField(state, model, props) {
-	  return (0, _set2.default)(state, model, _extends({}, initialFieldState, (0, _get2.default)(state, model), props));
+	  return (0, _set2.default)(state, ['fields', model], _extends({}, initialFieldState, (0, _get2.default)(state, ['fields', model]), props));
+	}
+
+	function getField(state, model) {
+	  return (0, _get2.default)(state, ['fields', model], initialFieldState);
 	}
 
 	var initialFieldState = {
@@ -22456,15 +22460,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  untouched: true,
 	  valid: true,
 	  validating: false,
+	  pending: false,
+	  submitted: false,
 	  errors: {}
 	};
 
-	var initialFormState = _extends({}, initialFieldState, {
+	var initialFormState = {
 	  fields: {},
 	  field: function field() {
 	    return initialFieldState;
 	  }
-	});
+	};
 
 	function createFormReducer(model) {
 	  var initialState = arguments.length <= 1 || arguments[1] === undefined ? initialFormState : arguments[1];
@@ -22477,28 +22483,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return state;
 	    }
 
-	    var superState = (0, _set2.default)({}, model, (0, _cloneDeep2.default)(state.fields));
-
-	    var form = state;
-
-	    var collection = (0, _get2.default)(superState, action.model, []);
+	    var form = (0, _cloneDeep2.default)(state);
 
 	    switch (action.type) {
 	      case actionTypes.FOCUS:
-	        Object.assign(form, { focus: true, blur: false });
-	        setField(superState, action.model, { focus: true, blur: false });
+	        setField(form, action.model, { focus: true, blur: false });
 
 	        break;
 
 	      case actionTypes.CHANGE:
 	      case actionTypes.SET_DIRTY:
-	        setField(superState, action.model, { dirty: true, pristine: false });
+	        setField(form, action.model, { dirty: true, pristine: false });
 
 	        break;
 
 	      case actionTypes.BLUR:
 	      case actionTypes.SET_TOUCHED:
-	        setField(superState, action.model, {
+	        setField(form, action.model, {
 	          touched: true,
 	          untouched: false,
 	          focus: false,
@@ -22508,16 +22509,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        break;
 
 	      case actionTypes.SET_PENDING:
-	        setField(superState, action.model, { pending: action.pending });
+	        setField(form, action.model, { pending: action.pending });
 
 	        break;
 
 	      case actionTypes.SET_VALIDITY:
-	        var errors = (0, _isPlainObject2.default)(action.validity) ? _extends({}, (0, _get2.default)(superState, action.model, initialFieldState).errors, (0, _mapValues2.default)(action.validity, function (valid) {
+	        var errors = (0, _isPlainObject2.default)(action.validity) ? _extends({}, getField(form, action.model).errors, (0, _mapValues2.default)(action.validity, function (valid) {
 	          return !valid;
 	        })) : action.validity;
 
-	        setField(superState, action.model, {
+	        setField(form, action.model, {
 	          errors: errors,
 	          valid: (0, _isBoolean2.default)(errors) ? errors : (0, _every2.default)(errors, function (error) {
 	            return !!error;
@@ -22527,26 +22528,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	        break;
 
 	      case actionTypes.SET_PRISTINE:
-	        setField(superState, action.model, { dirty: false, pristine: true });
+	        setField(form, action.model, { dirty: false, pristine: true });
 
 	        break;
 
 	      case actionTypes.SET_UNTOUCHED:
-	        setField(superState, action.model, { touched: false, untouched: true });
+	        setField(form, action.model, { touched: false, untouched: true });
+
+	        break;
+
+	      case actionTypes.SET_SUBMITTED:
+	        setField(form, action.model, { submitted: !!action.submitted });
 
 	        break;
 
 	      case actionTypes.SET_INITIAL:
 	      default:
-	        setField(superState, action.model, initialFieldState);
+	        setField(form, action.model, initialFieldState);
 
 	        break;
 	    }
 
 	    return _extends({}, form, {
-	      fields: (0, _get2.default)(superState, model),
 	      field: function field(model) {
-	        return (0, _get2.default)(superState, model, initialFieldState);
+	        return getField(form, model);
 	      }
 	    });
 	  };
@@ -24482,6 +24487,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var SET_INITIAL = 'rsf/setInitial';
 	var SET_PENDING = 'rsf/setPending';
 	var SET_VALIDITY = 'rsf/setValidity';
+	var SET_SUBMITTED = 'rsf/setSubmitted';
 
 	exports.CHANGE = CHANGE;
 	exports.FOCUS = FOCUS;
@@ -24494,6 +24500,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.SET_INITIAL = SET_INITIAL;
 	exports.SET_VALIDITY = SET_VALIDITY;
 	exports.SET_PENDING = SET_PENDING;
+	exports.SET_SUBMITTED = SET_SUBMITTED;
 
 /***/ },
 /* 263 */
@@ -26191,7 +26198,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.setPending = exports.asyncSetValidity = exports.setValidity = exports.setInitial = exports.setDirty = exports.setPristine = exports.validate = exports.blur = exports.focus = undefined;
+	exports.setSubmitted = exports.setPending = exports.asyncSetValidity = exports.setValidity = exports.setInitial = exports.setDirty = exports.setPristine = exports.validate = exports.blur = exports.focus = undefined;
 
 	var _get = __webpack_require__(178);
 
@@ -26265,12 +26272,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    dispatch(setPending(model, true));
 
 	    var done = function done(validity) {
-	      console.log(model, validity);
 	      dispatch(setValidity(model, validity));
 	      dispatch(setPending(model, false));
 	    };
 
-	    validator(value, done);
+	    var immediateResult = validator(value, done);
+
+	    if (typeof immediateResult !== 'undefined') {
+	      done(immediateResult);
+	    }
+	  };
+	};
+
+	var setSubmitted = function setSubmitted(model) {
+	  var submitted = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
+	  return {
+	    type: 'rsf/setSubmitted',
+	    model: model,
+	    submitted: submitted
 	  };
 	};
 
@@ -26283,6 +26302,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.setValidity = setValidity;
 	exports.asyncSetValidity = asyncSetValidity;
 	exports.setPending = setPending;
+	exports.setSubmitted = setSubmitted;
 
 /***/ },
 /* 300 */
@@ -26377,7 +26397,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Field, [{
 	    key: 'createField',
 	    value: function createField(control, props) {
-	      console.log(control);
 	      if (!control || !control.props) return control;
 
 	      var dispatch = props.dispatch;

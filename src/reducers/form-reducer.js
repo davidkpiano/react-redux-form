@@ -14,11 +14,15 @@ import every from 'lodash/collection/every';
 import * as actionTypes from '../action-types';
 
 function setField(state, model, props) {
-  return set(state, model, {
+  return set(state, ['fields', model], {
     ...initialFieldState,
-    ...get(state, model),
+    ...get(state, ['fields', model]),
     ...props
   });
+}
+
+function getField(state, model) {
+  return get(state, ['fields', model], initialFieldState);
 }
 
 const initialFieldState = {
@@ -30,47 +34,40 @@ const initialFieldState = {
   untouched: true,
   valid: true,
   validating: false,
+  pending: false,
+  submitted: false,
   errors: {}
 };
 
 const initialFormState = {
-  ...initialFieldState,
   fields: {},
   field: () => initialFieldState
 };
 
 function createFormReducer(model, initialState = initialFormState) {
   return (state = initialState, action) => {
+    
     if (model && !startsWith(action.model, model)) {
       return state;
     }
 
-    let superState = set(
-      {},
-      model,
-      cloneDeep(state.fields)
-    );
-
-    let form = state;
-
-    let collection = get(superState, action.model, []);
+    let form = cloneDeep(state);
 
     switch (action.type) {
       case actionTypes.FOCUS:
-        Object.assign(form, { focus: true, blur: false });
-        setField(superState, action.model, { focus: true, blur: false });
+        setField(form, action.model, { focus: true, blur: false });
 
         break;
 
       case actionTypes.CHANGE:
       case actionTypes.SET_DIRTY:
-        setField(superState, action.model, { dirty: true, pristine: false });
+        setField(form, action.model, { dirty: true, pristine: false });
 
         break;
 
       case actionTypes.BLUR:
       case actionTypes.SET_TOUCHED:
-        setField(superState, action.model, {
+        setField(form, action.model, {
           touched: true,
           untouched: false,
           focus: false,
@@ -80,19 +77,19 @@ function createFormReducer(model, initialState = initialFormState) {
         break;
 
       case actionTypes.SET_PENDING:
-        setField(superState, action.model, { pending: action.pending });
+        setField(form, action.model, { pending: action.pending });
 
         break;
 
       case actionTypes.SET_VALIDITY:
         let errors = isPlainObject(action.validity)
           ? {
-              ...get(superState, action.model, initialFieldState).errors,
+              ...getField(form, action.model).errors,
               ...mapValues(action.validity, (valid) => !valid)
             }
           : action.validity;
 
-        setField(superState, action.model, {
+        setField(form, action.model, {
           errors,
           valid: isBoolean(errors)
             ? errors
@@ -102,26 +99,30 @@ function createFormReducer(model, initialState = initialFormState) {
         break;
 
       case actionTypes.SET_PRISTINE:
-        setField(superState, action.model, { dirty: false, pristine: true });
+        setField(form, action.model, { dirty: false, pristine: true });
 
         break;
 
       case actionTypes.SET_UNTOUCHED:
-        setField(superState, action.model, { touched: false, untouched: true });
+        setField(form, action.model, { touched: false, untouched: true });
+
+        break;
+
+      case actionTypes.SET_SUBMITTED:
+        setField(form, action.model, { submitted: !!action.submitted });
 
         break;
 
       case actionTypes.SET_INITIAL:
       default:
-        setField(superState, action.model, initialFieldState);
+        setField(form, action.model, initialFieldState);
 
         break;
     }
 
     return {
       ...form,
-      fields: get(superState, model),
-      field: (model) => get(superState, model, initialFieldState)
+      field: (model) => getField(form, model)
     }
   }
 }
