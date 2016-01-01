@@ -20872,6 +20872,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -20925,6 +20927,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        switch (action.method) {
 	          default:
 	          case 'change':
+	            if (action.model === model) {
+	              return _extends({}, state, action.value);
+	            }
+
 	            (0, _set2.default)(superState, action.model, action.value);
 
 	            return (0, _get2.default)(superState, model);

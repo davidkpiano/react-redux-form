@@ -28,7 +28,14 @@ function createModelReducer(model, initialState = {}) {
       case 'rsf/change':
         switch (action.method) {
           default:
-          case 'change':      
+          case 'change':
+            if (action.model === model) {
+              return {
+                ...state,
+                ...action.value
+              };
+            }
+
             set(superState, action.model, action.value);
 
             return get(superState, model);
