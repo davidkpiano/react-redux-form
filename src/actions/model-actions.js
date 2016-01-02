@@ -12,8 +12,6 @@ function isEvent(event) {
 }
 
 function getValue(event) {
-  console.log(event);
-
   return isEvent(event)
     ? event.target.value
     : event;

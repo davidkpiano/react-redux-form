@@ -24513,7 +24513,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.isTouched = exports.isPristine = exports.isFocused = exports.isMulti = undefined;
+	exports.getValue = exports.isTouched = exports.isPristine = exports.isFocused = exports.isMulti = undefined;
 
 	var _formReducer = __webpack_require__(216);
 
@@ -24539,10 +24539,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return field ? field.touched : _formReducer.initialFieldState.touched;
 	}
 
+	function isEvent(event) {
+	  return !!(event && event.stopPropagation && event.preventDefault);
+	}
+
+	function getValue(event) {
+	  return isEvent(event) ? event.target.value : event;
+	}
+
 	exports.isMulti = isMulti;
 	exports.isFocused = isFocused;
 	exports.isPristine = isPristine;
 	exports.isTouched = isTouched;
+	exports.getValue = getValue;
 
 /***/ },
 /* 264 */
@@ -24642,8 +24651,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function getValue(event) {
-	  console.log(event);
-
 	  return isEvent(event) ? event.target.value : event;
 	}
 
@@ -26416,6 +26423,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var modelValue = props.modelValue;
 	      var validators = props.validators;
 	      var asyncValidators = props.asyncValidators;
+	      var parse = props.parse;
 
 	      var value = control.props.value;
 	      var updateOn = 'on' + (0, _capitalize2.default)(props.updateOn || 'change');
@@ -26445,7 +26453,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        onChange: []
 	      };
 
-	      var changeMethod = change;
+	      var changeMethod = function changeMethod(model, value) {
+	        return change(model, (parse || function (a) {
+	          return a;
+	        })((0, _utils.getValue)(value)));
+	      };
 
 	      var dispatchChange = control.props.hasOwnProperty('value') ? function () {
 	        return dispatch(changeMethod(model, value));

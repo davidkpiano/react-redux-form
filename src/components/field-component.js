@@ -14,7 +14,8 @@ import * as modelActions from '../actions/model-actions';
 import * as fieldActions from '../actions/field-actions';
 
 import {
-  isMulti
+  isMulti,
+  getValue
 } from '../utils';
 
 function selector(state, { model }) {
@@ -44,7 +45,8 @@ class Field extends React.Component {
       model,
       modelValue,
       validators,
-      asyncValidators } = props;
+      asyncValidators,
+      parse } = props;
     let value = control.props.value;
     let updateOn = `on${capitalize(props.updateOn || 'change')}`;
     let validateOn = `on${capitalize(props.validateOn || 'change')}`;
@@ -71,7 +73,9 @@ class Field extends React.Component {
       onChange: []
     };
 
-    let changeMethod = change;
+    let changeMethod = (model, value) => {
+      return change(model, (parse || ((a) => a))(getValue(value)));
+    };
 
     let dispatchChange = control.props.hasOwnProperty('value')
       ? () => dispatch(changeMethod(model, value))

@@ -23,9 +23,21 @@ function isTouched(field) {
     : initialFieldState.touched;
 }
 
+function isEvent(event) {
+  return !!(event && event.stopPropagation && event.preventDefault);
+}
+
+function getValue(event) {
+  return isEvent(event)
+    ? event.target.value
+    : event;
+}
+
+
 export {
   isMulti,
   isFocused,
   isPristine,
   isTouched,
+  getValue,
 }
