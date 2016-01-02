@@ -20872,8 +20872,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
@@ -20912,8 +20910,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
 	    var action = arguments[1];
 
-	    console.log(action);
-
 	    if (model && !(0, _startsWith2.default)(action.model, model)) {
 	      return state;
 	    }
@@ -20928,7 +20924,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          default:
 	          case 'change':
 	            if (action.model === model) {
-	              return _extends({}, state, action.value);
+	              return action.value;
 	            }
 
 	            (0, _set2.default)(superState, action.model, action.value);
@@ -27185,8 +27181,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var validators = this.props.validators;
 
 	      var validity = (0, _mapValues2.default)(validators, this.setValidity, this);
-
-	      console.log(validity);
 	    }
 	  }, {
 	    key: 'render',

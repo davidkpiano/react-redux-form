@@ -22,8 +22,6 @@ class Form extends React.Component {
     let { validators } = this.props;
 
     let validity = mapValues(validators, this.setValidity, this);
-
-    console.log(validity);
   }
 
   render() {

@@ -14,8 +14,6 @@ function getSuperState(model, state) {
 
 function createModelReducer(model, initialState = {}) {
   return (state = initialState, action) => {
-    console.log(action);
-
     if (model && !startsWith(action.model, model)) {
       return state;
     }
@@ -30,10 +28,7 @@ function createModelReducer(model, initialState = {}) {
           default:
           case 'change':
             if (action.model === model) {
-              return {
-                ...state,
-                ...action.value
-              };
+              return action.value;
             }
 
             set(superState, action.model, action.value);
