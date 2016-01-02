@@ -26403,7 +26403,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Field, [{
 	    key: 'createField',
 	    value: function createField(control, props) {
+	      var _this2 = this;
+
 	      if (!control || !control.props) return control;
+
+	      if (control.props.children && control.props.children.length) {
+	        return _react2.default.cloneElement(control, {
+	          children: _react2.default.Children.map(control.props.children, function (child) {
+	            return _this2.createField(child, props);
+	          })
+	        });
+	      }
 
 	      var dispatch = props.dispatch;
 	      var model = props.model;
@@ -26418,6 +26428,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var change = modelActions.change;
 	      var toggle = modelActions.toggle;
+	      var xor = modelActions.xor;
 
 	      var _bindActionCreators = (0, _redux.bindActionCreators)(fieldActions, dispatch);
 
@@ -26545,7 +26556,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var props = this.props;
 
@@ -26554,7 +26565,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          'div',
 	          props,
 	          _react2.default.Children.map(props.children, function (child) {
-	            return _this2.createField(child, props);
+	            return _this3.createField(child, props);
 	          })
 	        );
 	      }

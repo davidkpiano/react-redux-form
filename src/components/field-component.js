@@ -28,6 +28,17 @@ class Field extends React.Component {
   createField(control, props) {
     if (!control || !control.props) return control;
 
+    if (control.props.children && control.props.children.length) {
+      return React.cloneElement(
+        control,
+        {
+          children: React.Children.map(
+            control.props.children,
+            (child) => this.createField(child, props)
+          )
+        });
+    }
+
     let {
       dispatch,
       model,
@@ -41,7 +52,8 @@ class Field extends React.Component {
 
     let {
       change,
-      toggle
+      toggle,
+      xor
     } = modelActions;
 
     let {
