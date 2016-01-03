@@ -26319,6 +26319,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 	Object.defineProperty(exports, "__esModule", {
@@ -26369,6 +26371,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var fieldActions = _interopRequireWildcard(_fieldActions);
 
+	var _controlComponent = __webpack_require__(317);
+
+	var _controlComponent2 = _interopRequireDefault(_controlComponent);
+
 	var _utils = __webpack_require__(263);
 
 	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -26410,14 +26416,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (!control || !control.props) return control;
 
-	      if (control.props.children && control.props.children.length) {
-	        return _react2.default.cloneElement(control, {
-	          children: _react2.default.Children.map(control.props.children, function (child) {
-	            return _this2.createField(child, props);
-	          })
-	        });
-	      }
-
 	      var dispatch = props.dispatch;
 	      var model = props.model;
 	      var modelValue = props.modelValue;
@@ -26426,9 +26424,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var parse = props.parse;
 
 	      var value = control.props.value;
-	      var updateOn = 'on' + (0, _capitalize2.default)(props.updateOn || 'change');
+	      var updateOn = typeof props.updateOn === 'function' ? 'onChange' : 'on' + (0, _capitalize2.default)(props.updateOn || 'change');
 	      var validateOn = 'on' + (0, _capitalize2.default)(props.validateOn || 'change');
 	      var asyncValidateOn = 'on' + (0, _capitalize2.default)(props.asyncValidateOn || 'blur');
+
+	      console.log('createField called for ' + model);
 
 	      var change = modelActions.change;
 	      var toggle = modelActions.toggle;
@@ -26454,6 +26454,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 
 	      var changeMethod = function changeMethod(model, value) {
+	        console.log(value);
 	        return change(model, (parse || function (a) {
 	          return a;
 	        })((0, _utils.getValue)(value)));
@@ -26465,11 +26466,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return dispatch(changeMethod(model, e));
 	      };
 
+	      if (typeof props.updateOn === 'function') {
+	        dispatchChange = props.updateOn(dispatchChange);
+	      }
+
 	      switch (control.type) {
 	        case 'input':
 	        case 'textarea':
 	          switch (control.props.type) {
 	            case 'checkbox':
+	              console.log('here', !!modelValue);
 	              defaultProps = {
 	                name: model,
 	                checked: (0, _utils.isMulti)(model) ? (0, _contains2.default)(modelValue, value) : !!modelValue
@@ -26493,9 +26499,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                defaultValue: modelValue
 	              };
 
-	              dispatchChange = function (e) {
-	                return dispatch(changeMethod(model, e));
-	              };
+	              // dispatchChange = (e) => dispatch(changeMethod(model, e));
 
 	              break;
 	          }
@@ -26516,6 +26520,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	          break;
 	        default:
+	          if (control.props.children && control.props.children.length) {
+	            return _react2.default.cloneElement(control, {
+	              children: _react2.default.Children.map(control.props.children, function (child) {
+	                return _this2.createField(child, props);
+	              })
+	            });
+	          }
 	          return control;
 	      }
 
@@ -26552,9 +26563,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        eventActions[asyncValidateOn].push(dispatchAsyncValidate);
 	      }
 
-	      return _react2.default.cloneElement(control, Object.assign({}, defaultProps, (0, _mapValues2.default)(eventActions, function (actions) {
+	      return _react2.default.createElement(_controlComponent2.default, _extends({}, defaultProps, (0, _mapValues2.default)(eventActions, function (actions) {
 	        return _compose2.default.apply(undefined, _toConsumableArray(actions));
-	      })));
+	      }), {
+	        modelValue: modelValue,
+	        control: control }));
 	    }
 	  }, {
 	    key: 'shouldComponentUpdate',
@@ -27219,6 +27232,118 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = (0, _reactRedux.connect)(function (s) {
 	  return s;
 	})(Form);
+
+/***/ },
+/* 317 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(159);
+
+	var _redux = __webpack_require__(166);
+
+	var _contains = __webpack_require__(301);
+
+	var _contains2 = _interopRequireDefault(_contains);
+
+	var _get = __webpack_require__(178);
+
+	var _get2 = _interopRequireDefault(_get);
+
+	var _defaults = __webpack_require__(306);
+
+	var _defaults2 = _interopRequireDefault(_defaults);
+
+	var _compose = __webpack_require__(312);
+
+	var _compose2 = _interopRequireDefault(_compose);
+
+	var _capitalize = __webpack_require__(315);
+
+	var _capitalize2 = _interopRequireDefault(_capitalize);
+
+	var _identity = __webpack_require__(215);
+
+	var _identity2 = _interopRequireDefault(_identity);
+
+	var _mapValues = __webpack_require__(256);
+
+	var _mapValues2 = _interopRequireDefault(_mapValues);
+
+	var _modelActions = __webpack_require__(265);
+
+	var modelActions = _interopRequireWildcard(_modelActions);
+
+	var _fieldActions = __webpack_require__(299);
+
+	var fieldActions = _interopRequireWildcard(_fieldActions);
+
+	var _utils = __webpack_require__(263);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Control = (function (_React$Component) {
+	  _inherits(Control, _React$Component);
+
+	  function Control() {
+	    _classCallCheck(this, Control);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Control).apply(this, arguments));
+	  }
+
+	  _createClass(Control, [{
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      var _this2 = this;
+
+	      this.handleChange = function (e) {
+	        e.persist && e.persist();
+	        return _this2.props.onChange(e);
+	      };
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var children = _props.children;
+	      var control = _props.control;
+
+	      return _react2.default.cloneElement(control, _extends({}, this.props, {
+	        onChange: this.handleChange
+	      }, control.props));
+	    }
+	  }, {
+	    key: 'shouldComponentUpdate',
+	    value: function shouldComponentUpdate(nextProps) {
+	      return this.props.modelValue !== nextProps.modelValue;
+	    }
+	  }]);
+
+	  return Control;
+	})(_react2.default.Component);
+
+	exports.default = Control;
 
 /***/ }
 /******/ ])

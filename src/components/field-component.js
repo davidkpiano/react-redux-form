@@ -13,6 +13,8 @@ import mapValues from 'lodash/object/mapValues';
 import * as modelActions from '../actions/model-actions';
 import * as fieldActions from '../actions/field-actions';
 
+import Control from './control-component';
+
 import {
   isMulti,
   getValue
@@ -29,17 +31,6 @@ class Field extends React.Component {
   createField(control, props) {
     if (!control || !control.props) return control;
 
-    if (control.props.children && control.props.children.length) {
-      return React.cloneElement(
-        control,
-        {
-          children: React.Children.map(
-            control.props.children,
-            (child) => this.createField(child, props)
-          )
-        });
-    }
-
     let {
       dispatch,
       model,
@@ -48,9 +39,13 @@ class Field extends React.Component {
       asyncValidators,
       parse } = props;
     let value = control.props.value;
-    let updateOn = `on${capitalize(props.updateOn || 'change')}`;
+    let updateOn = (typeof props.updateOn === 'function')
+      ? 'onChange'
+      : `on${capitalize(props.updateOn || 'change')}`;
     let validateOn = `on${capitalize(props.validateOn || 'change')}`;
     let asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
+
+    console.log('createField called for ' + model);
 
     let {
       change,
@@ -74,6 +69,7 @@ class Field extends React.Component {
     };
 
     let changeMethod = (model, value) => {
+      console.log(value);
       return change(model, (parse || ((a) => a))(getValue(value)));
     };
 
@@ -81,11 +77,16 @@ class Field extends React.Component {
       ? () => dispatch(changeMethod(model, value))
       : (e) => dispatch(changeMethod(model, e));
 
+    if (typeof props.updateOn === 'function') {
+      dispatchChange = props.updateOn(dispatchChange);
+    }
+
     switch (control.type) {
       case 'input':
       case 'textarea':
         switch (control.props.type) {
           case 'checkbox':
+          console.log('here',!!modelValue);
             defaultProps = {
               name: model,
               checked: isMulti(model)
@@ -113,7 +114,7 @@ class Field extends React.Component {
               defaultValue: modelValue
             };
 
-            dispatchChange = (e) => dispatch(changeMethod(model, e));
+            // dispatchChange = (e) => dispatch(changeMethod(model, e));
 
             break;
         }
@@ -128,6 +129,16 @@ class Field extends React.Component {
 
         break;
       default:
+        if (control.props.children && control.props.children.length) {
+          return React.cloneElement(
+            control,
+            {
+              children: React.Children.map(
+                control.props.children,
+                (child) => this.createField(child, props)
+              )
+            });
+        }
         return control;
     }
 
@@ -165,11 +176,12 @@ class Field extends React.Component {
       eventActions[asyncValidateOn].push(dispatchAsyncValidate);
     }
 
-    return React.cloneElement(
-      control,
-      Object.assign({},
-      defaultProps,
-      mapValues(eventActions, (actions) => compose(...actions)))
+    return (
+      <Control
+        {...defaultProps}
+        {...mapValues(eventActions, (actions) => compose(...actions))}
+        modelValue={modelValue}
+        control={control} />
     );
   }
 
