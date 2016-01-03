@@ -1,0 +1,216 @@
+/*
+
+Monokai Sublime style. Derived from Monokai by noformnocontent http://nn.mit-license.org/
+
+*/
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 0.5em;
+  background: #23241f; }
+
+.hljs,
+.hljs-tag,
+.hljs-subst {
+  color: #f8f8f2; }
+
+.hljs-strong,
+.hljs-emphasis {
+  color: #a8a8a2; }
+
+.hljs-bullet,
+.hljs-quote,
+.hljs-number,
+.hljs-regexp,
+.hljs-literal,
+.hljs-link {
+  color: #ae81ff; }
+
+.hljs-code,
+.hljs-title,
+.hljs-section,
+.hljs-selector-class {
+  color: #a6e22e; }
+
+.hljs-strong {
+  font-weight: bold; }
+
+.hljs-emphasis {
+  font-style: italic; }
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-name,
+.hljs-attr {
+  color: #f92672; }
+
+.hljs-symbol,
+.hljs-attribute {
+  color: #66d9ef; }
+
+.hljs-params,
+.hljs-class .hljs-title {
+  color: #f8f8f2; }
+
+.hljs-string,
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-selector-id,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-addition,
+.hljs-variable,
+.hljs-template-variable {
+  color: #e6db74; }
+
+.hljs-comment,
+.hljs-deletion,
+.hljs-meta {
+  color: #75715e; }
+
+html, body, #app {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0; }
+
+*, *:before, *:after {
+  box-sizing: border-box;
+  position: relative; }
+
+.rsf-layout-page {
+  height: 100%;
+  width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  font-family: Lato, sans-serif;
+  font-weight: 300;
+  display: flex;
+  flex-direction: row;
+  color: #333; }
+
+.rsf-layout-nav {
+  background: #272E35;
+  flex-basis: 25%;
+  flex-shrink: 0;
+  padding: 1rem; }
+  .rsf-layout-nav > .rsf-heading {
+    font-size: 1rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px; }
+  .rsf-layout-nav > .rsf-list {
+    margin: 0;
+    margin-bottom: 1rem;
+    list-style: none;
+    padding: 0; }
+  .rsf-layout-nav .rsf-anchor {
+    text-decoration: none;
+    color: white;
+    line-height: 1.4;
+    display: block;
+    font-size: 0.8rem; }
+
+@keyframes fade-in {
+  from {
+    opacity: 0; }
+  to {
+    opacity: 1; } }
+
+.rsf-layout-content {
+  flex-grow: 1;
+  max-height: 100%;
+  overflow-y: scroll;
+  padding: 1rem;
+  animation: fade-in 0.3s ease-in-out; }
+  .rsf-layout-content.recipes {
+    padding: 0; }
+  .rsf-layout-content div:not([class]) {
+    margin-bottom: 1rem; }
+  .rsf-layout-content input:not([type="radio"]):not([type="checkbox"]), .rsf-layout-content textarea {
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0.5rem;
+    display: block;
+    width: 100%;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 1px solid #EDEDED;
+    font-family: Lato, sans-serif;
+    font-weight: 300; }
+    .rsf-layout-content input:not([type="radio"]):not([type="checkbox"]) + input, .rsf-layout-content textarea + input {
+      margin-top: 0.5rem; }
+    .rsf-layout-content input:not([type="radio"]):not([type="checkbox"]):hover, .rsf-layout-content textarea:hover {
+      border: 1px solid rgba(87, 145, 201, 0.4); }
+    .rsf-layout-content input:not([type="radio"]):not([type="checkbox"]):focus, .rsf-layout-content textarea:focus {
+      outline: none;
+      border: 1px solid #5791c9; }
+    .rsf-layout-content input:not([type="radio"]):not([type="checkbox"]).-error, .rsf-layout-content textarea.-error {
+      border-color: red; }
+  .rsf-layout-content label {
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: #BCBCBC;
+    display: block; }
+  .rsf-layout-content button {
+    -webkit-appearance: none;
+    background-color: #5791c9;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    text-transform: uppercase;
+    margin-bottom: 1rem; }
+    .rsf-layout-content button:focus {
+      outline: 1px solid white;
+      outline-offset: -2px; }
+    .rsf-layout-content button + button {
+      margin-left: 0.5rem; }
+    .rsf-layout-content button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5; }
+
+.rsf-layout-content h1 {
+  font-size: 4rem;
+  font-weight: 300;
+  margin: 0; }
+
+.rsf-layout-content p {
+  line-height: 1.4; }
+
+.rsf-layout-content ul {
+  margin-bottom: 1rem;
+  padding: 0;
+  list-style: none; }
+
+.rsf-recipe {
+  display: flex;
+  flex-direction: row; }
+  .rsf-recipe > .rsf-content, .rsf-recipe > .rsf-data {
+    padding: 1rem;
+    flex-basis: 50%;
+    flex-shrink: 0; }
+  @media (max-width: 600px) {
+    .rsf-recipe {
+      display: block; } }
+
+.rsf-data {
+  background: #111;
+  color: white;
+  font-size: 0.85rem; }
+
+.rsf-field {
+  margin-bottom: 0.5rem; }
+
+.rsf-error {
+  color: red;
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 0.25rem; }

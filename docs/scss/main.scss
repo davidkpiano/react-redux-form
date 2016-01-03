@@ -1,0 +1,207 @@
+@import 'prism/theme-atom-dark';
+
+$colors: (
+  'primary': #5791c9,
+  'label': #BCBCBC,
+  'border': #EDEDED,
+);
+
+@function colors($key) {
+  @return map-get($colors, $key);
+}
+
+html, body, #app {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+*, *:before, *:after {
+  box-sizing: border-box;
+  position: relative;
+}
+
+.rsf-layout-page {
+  height: 100%;
+  width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  font-family: Lato, sans-serif;
+  font-weight: 300;
+  display: flex;
+  flex-direction: row;
+  color: #333;
+}
+
+.rsf-layout-nav {
+  background: #272E35;
+  flex-basis: 25%;
+  flex-shrink: 0;
+  padding: 1rem;
+
+  > .rsf-heading {
+    font-size: 1rem;
+    margin: 0;
+    margin-bottom: 0.5rem;
+    color: rgba(white, 0.4);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  > .rsf-list {
+    margin: 0;
+    margin-bottom: 1rem;
+    list-style: none;
+    padding: 0;
+  }
+
+  .rsf-anchor {
+    text-decoration: none;
+    color: white;
+    line-height: 1.4;
+    display: block;
+    font-size: 0.8rem;
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.rsf-layout-content {
+  flex-grow: 1;
+  max-height: 100%;
+  overflow-y: scroll;
+  padding: 1rem;
+  animation: fade-in 0.3s ease-in-out;
+
+  h1 { @extend %heading--huge; }
+  p { @extend %paragraph; }
+  ul { @extend %list; }
+
+  &.recipes {
+    padding: 0;
+  }
+
+  div:not([class]) {
+    margin-bottom: 1rem;
+  }
+
+  input:not([type="radio"]):not([type="checkbox"]), textarea {
+    font-size: 1rem;
+    line-height: 1;
+    padding: 0.5rem;
+    display: block;
+    width: 100%;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 1px solid colors('border');
+    font-family: Lato, sans-serif;
+    font-weight: 300;
+
+    + input {
+      margin-top: 0.5rem;
+    }
+
+    &:hover {
+      border: 1px solid rgba(colors('primary'), 0.4);
+    }
+
+    &:focus {
+      outline: none;
+      border: 1px solid colors('primary');
+    }
+
+    &.-error {
+      border-color: red;
+    }
+  }
+
+  label {
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-transform: uppercase;
+    font-weight: 400;
+    color: colors('label');
+    display: block;
+  }
+
+  button {
+    -webkit-appearance: none;
+    background-color: colors('primary');
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+
+    &:focus {
+      outline: 1px solid white;
+      outline-offset: -2px;
+    }
+
+    + button {
+      margin-left: 0.5rem;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+  }
+}
+
+%heading {
+  &--huge {
+    font-size: 4rem;
+    font-weight: 300;
+    margin: 0;
+  }
+}
+
+%paragraph {
+  line-height: 1.4;
+}
+
+%list {
+  margin-bottom: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.rsf-recipe {
+  display: flex;
+  flex-direction: row;
+
+  > .rsf-content, > .rsf-data {
+    padding: 1rem;
+    flex-basis: 50%;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 600px) {
+    display: block;
+  }
+}
+
+.rsf-data {
+  background: #111;
+  color: white;
+  font-size: 0.85rem;
+}
+
+.rsf-field {
+  margin-bottom: 0.5rem;
+}
+
+.rsf-error {
+  color: red;
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 0.25rem;
+}
