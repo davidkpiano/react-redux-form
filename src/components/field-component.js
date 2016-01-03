@@ -10,8 +10,17 @@ import capitalize from 'lodash/string/capitalize';
 import identity from 'lodash/utility/identity';
 import mapValues from 'lodash/object/mapValues';
 
-import * as modelActions from '../actions/model-actions';
-import * as fieldActions from '../actions/field-actions';
+import {
+  change,
+  toggle,
+  xor
+} from '../actions/model-actions';
+import {
+  focus,
+  blur,
+  setValidity,
+  asyncSetValidity
+} from '../actions/field-actions';
 
 import Control from './control-component';
 
@@ -37,7 +46,8 @@ class Field extends React.Component {
       modelValue,
       validators,
       asyncValidators,
-      parse } = props;
+      parse
+    } = props;
     let value = control.props.value;
     let updateOn = (typeof props.updateOn === 'function')
       ? 'onChange'
@@ -45,26 +55,11 @@ class Field extends React.Component {
     let validateOn = `on${capitalize(props.validateOn || 'change')}`;
     let asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
 
-    console.log('createField called for ' + model);
-
-    let {
-      change,
-      toggle,
-      xor
-    } = modelActions;
-
-    let {
-      focus,
-      blur,
-      setValidity,
-      asyncSetValidity
-    } = bindActionCreators(fieldActions, dispatch);
-
     let defaultProps = {};
 
     let eventActions = {
-      onFocus: [() => focus(model)],
-      onBlur: [() => blur(model)],
+      onFocus: [() => dispatch(focus(model))],
+      onBlur: [() => dispatch(blur(model))],
       onChange: []
     };
 
@@ -86,7 +81,6 @@ class Field extends React.Component {
       case 'textarea':
         switch (control.props.type) {
           case 'checkbox':
-          console.log('here',!!modelValue);
             defaultProps = {
               name: model,
               checked: isMulti(model)
@@ -114,20 +108,14 @@ class Field extends React.Component {
               defaultValue: modelValue
             };
 
-            // dispatchChange = (e) => dispatch(changeMethod(model, e));
-
             break;
         }
         break;
       case 'select':
-        defaultProps = {
-          onFocus: () => focus(model),
-          onBlur: () => blur(model)
-        };
-
         dispatchChange = (e) => dispatch(changeMethod(model, e));
 
         break;
+        
       default:
         if (control.props.children && control.props.children.length) {
           return React.cloneElement(
@@ -166,11 +154,11 @@ class Field extends React.Component {
           : e.target.value;
 
         mapValues(asyncValidators,
-          (validator, key) => asyncSetValidity(model, (value, done) => {
+          (validator, key) => dispatch(asyncSetValidity(model, (value, done) => {
             const outerDone = (valid) => done({ [key]: valid });
 
             validator(value, outerDone);
-          }));
+          })));
       }
 
       eventActions[asyncValidateOn].push(dispatchAsyncValidate);

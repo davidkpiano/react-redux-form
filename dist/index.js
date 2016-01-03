@@ -26365,19 +26365,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _modelActions = __webpack_require__(265);
 
-	var modelActions = _interopRequireWildcard(_modelActions);
-
 	var _fieldActions = __webpack_require__(299);
-
-	var fieldActions = _interopRequireWildcard(_fieldActions);
 
 	var _controlComponent = __webpack_require__(317);
 
 	var _controlComponent2 = _interopRequireDefault(_controlComponent);
 
 	var _utils = __webpack_require__(263);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -26428,34 +26422,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var validateOn = 'on' + (0, _capitalize2.default)(props.validateOn || 'change');
 	      var asyncValidateOn = 'on' + (0, _capitalize2.default)(props.asyncValidateOn || 'blur');
 
-	      console.log('createField called for ' + model);
-
-	      var change = modelActions.change;
-	      var toggle = modelActions.toggle;
-	      var xor = modelActions.xor;
-
-	      var _bindActionCreators = (0, _redux.bindActionCreators)(fieldActions, dispatch);
-
-	      var focus = _bindActionCreators.focus;
-	      var blur = _bindActionCreators.blur;
-	      var setValidity = _bindActionCreators.setValidity;
-	      var asyncSetValidity = _bindActionCreators.asyncSetValidity;
-
 	      var defaultProps = {};
 
 	      var eventActions = {
 	        onFocus: [function () {
-	          return focus(model);
+	          return dispatch((0, _fieldActions.focus)(model));
 	        }],
 	        onBlur: [function () {
-	          return blur(model);
+	          return dispatch((0, _fieldActions.blur)(model));
 	        }],
 	        onChange: []
 	      };
 
 	      var changeMethod = function changeMethod(model, value) {
 	        console.log(value);
-	        return change(model, (parse || function (a) {
+	        return (0, _modelActions.change)(model, (parse || function (a) {
 	          return a;
 	        })((0, _utils.getValue)(value)));
 	      };
@@ -26475,13 +26456,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        case 'textarea':
 	          switch (control.props.type) {
 	            case 'checkbox':
-	              console.log('here', !!modelValue);
 	              defaultProps = {
 	                name: model,
 	                checked: (0, _utils.isMulti)(model) ? (0, _contains2.default)(modelValue, value) : !!modelValue
 	              };
 
-	              changeMethod = (0, _utils.isMulti)(model) ? xor : toggle;
+	              changeMethod = (0, _utils.isMulti)(model) ? _modelActions.xor : _modelActions.toggle;
 
 	              break;
 
@@ -26499,26 +26479,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	                defaultValue: modelValue
 	              };
 
-	              // dispatchChange = (e) => dispatch(changeMethod(model, e));
-
 	              break;
 	          }
 	          break;
 	        case 'select':
-	          defaultProps = {
-	            onFocus: function onFocus() {
-	              return focus(model);
-	            },
-	            onBlur: function onBlur() {
-	              return blur(model);
-	            }
-	          };
-
 	          dispatchChange = function (e) {
 	            return dispatch(changeMethod(model, e));
 	          };
 
 	          break;
+
 	        default:
 	          if (control.props.children && control.props.children.length) {
 	            return _react2.default.cloneElement(control, {
@@ -26539,7 +26509,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return validator(validatingValue);
 	          });
 
-	          dispatch(setValidity(model, validity));
+	          dispatch((0, _fieldActions.setValidity)(model, validity));
 	        };
 
 	        eventActions[validateOn].push(dispatchValidate);
@@ -26550,13 +26520,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	          var validatingValue = control.props.hasOwnProperty('value') ? value : e.target.value;
 
 	          (0, _mapValues2.default)(asyncValidators, function (validator, key) {
-	            return asyncSetValidity(model, function (value, done) {
+	            return dispatch((0, _fieldActions.asyncSetValidity)(model, function (value, done) {
 	              var outerDone = function outerDone(valid) {
 	                return done(_defineProperty({}, key, valid));
 	              };
 
 	              validator(value, outerDone);
-	            });
+	            }));
 	          });
 	        };
 
