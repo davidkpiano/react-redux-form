@@ -9,6 +9,7 @@ import compose from 'lodash/function/compose';
 import capitalize from 'lodash/string/capitalize';
 import identity from 'lodash/utility/identity';
 import mapValues from 'lodash/object/mapValues';
+import isEqual from 'lodash/lang/isEqual';
 
 import {
   change,
@@ -38,6 +39,7 @@ function selector(state, { model }) {
 
 class Field extends React.Component {
   createField(control, props) {
+    console.log(`creating ${props.model}`);
     if (!control || !control.props) return control;
 
     let {
@@ -64,17 +66,12 @@ class Field extends React.Component {
     };
 
     let changeMethod = (model, value) => {
-      console.log(value);
       return change(model, (parse || ((a) => a))(getValue(value)));
     };
 
     let dispatchChange = control.props.hasOwnProperty('value')
       ? () => dispatch(changeMethod(model, value))
       : (e) => dispatch(changeMethod(model, e));
-
-    if (typeof props.updateOn === 'function') {
-      dispatchChange = props.updateOn(dispatchChange);
-    }
 
     switch (control.type) {
       case 'input':
@@ -108,6 +105,8 @@ class Field extends React.Component {
               defaultValue: modelValue
             };
 
+            dispatchChange = (e) => dispatch(changeMethod(model, e));
+
             break;
         }
         break;
@@ -115,7 +114,7 @@ class Field extends React.Component {
         dispatchChange = (e) => dispatch(changeMethod(model, e));
 
         break;
-        
+
       default:
         if (control.props.children && control.props.children.length) {
           return React.cloneElement(
@@ -130,6 +129,9 @@ class Field extends React.Component {
         return control;
     }
 
+    if (typeof props.updateOn === 'function') {
+      dispatchChange = props.updateOn(dispatchChange);
+    }
 
     eventActions[updateOn].push(dispatchChange);
 
@@ -174,7 +176,7 @@ class Field extends React.Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return this.props.modelValue !== nextProps.modelValue;
+    return !isEqual(this.props.modelValue, nextProps.modelValue);
   }
 
   render() {

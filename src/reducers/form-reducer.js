@@ -55,13 +55,19 @@ function createFormReducer(model, initialState = initialFormState) {
 
     switch (action.type) {
       case actionTypes.FOCUS:
-        setField(form, action.model, { focus: true, blur: false });
+        setField(form, action.model, {
+          focus: true,
+          blur: false
+        });
 
         break;
 
       case actionTypes.CHANGE:
       case actionTypes.SET_DIRTY:
-        setField(form, action.model, { dirty: true, pristine: false });
+        setField(form, action.model, {
+          dirty: true,
+          pristine: false
+        });
 
         break;
 
@@ -77,7 +83,10 @@ function createFormReducer(model, initialState = initialFormState) {
         break;
 
       case actionTypes.SET_PENDING:
-        setField(form, action.model, { pending: action.pending });
+        setField(form, action.model, {
+          pending: action.pending,
+          submitted: false
+        });
 
         break;
 
@@ -90,26 +99,34 @@ function createFormReducer(model, initialState = initialFormState) {
           : action.validity;
 
         setField(form, action.model, {
-          errors,
+          errors: errors,
           valid: isBoolean(errors)
             ? errors
-            : every(errors, (error) => !!error)
+            : every(errors, (error) => !error)
         });
 
         break;
 
       case actionTypes.SET_PRISTINE:
-        setField(form, action.model, { dirty: false, pristine: true });
+        setField(form, action.model, {
+          dirty: false,
+          pristine: true
+        });
 
         break;
 
       case actionTypes.SET_UNTOUCHED:
-        setField(form, action.model, { touched: false, untouched: true });
+        setField(form, action.model, {
+          touched: false,
+          untouched: true
+        });
 
         break;
 
       case actionTypes.SET_SUBMITTED:
-        setField(form, action.model, { submitted: !!action.submitted });
+        setField(form, action.model, {
+          submitted: !!action.submitted
+        });
 
         break;
 

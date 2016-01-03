@@ -22489,13 +22489,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    switch (action.type) {
 	      case actionTypes.FOCUS:
-	        setField(form, action.model, { focus: true, blur: false });
+	        setField(form, action.model, {
+	          focus: true,
+	          blur: false
+	        });
 
 	        break;
 
 	      case actionTypes.CHANGE:
 	      case actionTypes.SET_DIRTY:
-	        setField(form, action.model, { dirty: true, pristine: false });
+	        setField(form, action.model, {
+	          dirty: true,
+	          pristine: false
+	        });
 
 	        break;
 
@@ -22511,7 +22517,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	        break;
 
 	      case actionTypes.SET_PENDING:
-	        setField(form, action.model, { pending: action.pending });
+	        setField(form, action.model, {
+	          pending: action.pending,
+	          submitted: false
+	        });
 
 	        break;
 
@@ -22523,24 +22532,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	        setField(form, action.model, {
 	          errors: errors,
 	          valid: (0, _isBoolean2.default)(errors) ? errors : (0, _every2.default)(errors, function (error) {
-	            return !!error;
+	            return !error;
 	          })
 	        });
 
 	        break;
 
 	      case actionTypes.SET_PRISTINE:
-	        setField(form, action.model, { dirty: false, pristine: true });
+	        setField(form, action.model, {
+	          dirty: false,
+	          pristine: true
+	        });
 
 	        break;
 
 	      case actionTypes.SET_UNTOUCHED:
-	        setField(form, action.model, { touched: false, untouched: true });
+	        setField(form, action.model, {
+	          touched: false,
+	          untouched: true
+	        });
 
 	        break;
 
 	      case actionTypes.SET_SUBMITTED:
-	        setField(form, action.model, { submitted: !!action.submitted });
+	        setField(form, action.model, {
+	          submitted: !!action.submitted
+	        });
 
 	        break;
 
@@ -26363,6 +26380,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _mapValues2 = _interopRequireDefault(_mapValues);
 
+	var _isEqual = __webpack_require__(318);
+
+	var _isEqual2 = _interopRequireDefault(_isEqual);
+
 	var _modelActions = __webpack_require__(265);
 
 	var _fieldActions = __webpack_require__(299);
@@ -26408,6 +26429,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function createField(control, props) {
 	      var _this2 = this;
 
+	      console.log('creating ' + props.model);
 	      if (!control || !control.props) return control;
 
 	      var dispatch = props.dispatch;
@@ -26435,7 +26457,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      };
 
 	      var changeMethod = function changeMethod(model, value) {
-	        console.log(value);
 	        return (0, _modelActions.change)(model, (parse || function (a) {
 	          return a;
 	        })((0, _utils.getValue)(value)));
@@ -26446,10 +26467,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      } : function (e) {
 	        return dispatch(changeMethod(model, e));
 	      };
-
-	      if (typeof props.updateOn === 'function') {
-	        dispatchChange = props.updateOn(dispatchChange);
-	      }
 
 	      switch (control.type) {
 	        case 'input':
@@ -26479,6 +26496,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	                defaultValue: modelValue
 	              };
 
+	              dispatchChange = function (e) {
+	                return dispatch(changeMethod(model, e));
+	              };
+
 	              break;
 	          }
 	          break;
@@ -26498,6 +26519,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	            });
 	          }
 	          return control;
+	      }
+
+	      if (typeof props.updateOn === 'function') {
+	        dispatchChange = props.updateOn(dispatchChange);
 	      }
 
 	      eventActions[updateOn].push(dispatchChange);
@@ -26542,7 +26567,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'shouldComponentUpdate',
 	    value: function shouldComponentUpdate(nextProps) {
-	      return this.props.modelValue !== nextProps.modelValue;
+	      return !(0, _isEqual2.default)(this.props.modelValue, nextProps.modelValue);
 	    }
 	  }, {
 	    key: 'render',
@@ -27314,6 +27339,66 @@ return /******/ (function(modules) { // webpackBootstrap
 	})(_react2.default.Component);
 
 	exports.default = Control;
+
+/***/ },
+/* 318 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var baseIsEqual = __webpack_require__(235),
+	    bindCallback = __webpack_require__(214);
+
+	/**
+	 * Performs a deep comparison between two values to determine if they are
+	 * equivalent. If `customizer` is provided it's invoked to compare values.
+	 * If `customizer` returns `undefined` comparisons are handled by the method
+	 * instead. The `customizer` is bound to `thisArg` and invoked with up to
+	 * three arguments: (value, other [, index|key]).
+	 *
+	 * **Note:** This method supports comparing arrays, booleans, `Date` objects,
+	 * numbers, `Object` objects, regexes, and strings. Objects are compared by
+	 * their own, not inherited, enumerable properties. Functions and DOM nodes
+	 * are **not** supported. Provide a customizer function to extend support
+	 * for comparing other values.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @alias eq
+	 * @category Lang
+	 * @param {*} value The value to compare.
+	 * @param {*} other The other value to compare.
+	 * @param {Function} [customizer] The function to customize value comparisons.
+	 * @param {*} [thisArg] The `this` binding of `customizer`.
+	 * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+	 * @example
+	 *
+	 * var object = { 'user': 'fred' };
+	 * var other = { 'user': 'fred' };
+	 *
+	 * object == other;
+	 * // => false
+	 *
+	 * _.isEqual(object, other);
+	 * // => true
+	 *
+	 * // using a customizer callback
+	 * var array = ['hello', 'goodbye'];
+	 * var other = ['hi', 'goodbye'];
+	 *
+	 * _.isEqual(array, other, function(value, other) {
+	 *   if (_.every([value, other], RegExp.prototype.test, /^h(?:i|ello)$/)) {
+	 *     return true;
+	 *   }
+	 * });
+	 * // => true
+	 */
+	function isEqual(value, other, customizer, thisArg) {
+	  customizer = typeof customizer == 'function' ? bindCallback(customizer, thisArg, 3) : undefined;
+	  var result = customizer ? customizer(value, other) : undefined;
+	  return  result === undefined ? baseIsEqual(value, other, customizer) : !!result;
+	}
+
+	module.exports = isEqual;
+
 
 /***/ }
 /******/ ])
