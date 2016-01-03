@@ -175,10 +175,6 @@ class Field extends React.Component {
     );
   }
 
-  shouldComponentUpdate(nextProps) {
-    return !isEqual(this.props.modelValue, nextProps.modelValue);
-  }
-
   render() {
     let { props } = this;
 

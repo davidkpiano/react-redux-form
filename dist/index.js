@@ -26568,11 +26568,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        control: control }));
 	    }
 	  }, {
-	    key: 'shouldComponentUpdate',
-	    value: function shouldComponentUpdate(nextProps) {
-	      return !(0, _isEqual2.default)(this.props.modelValue, nextProps.modelValue);
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this3 = this;
