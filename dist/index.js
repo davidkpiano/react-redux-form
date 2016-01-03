@@ -56,10 +56,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getField = exports.Form = exports.Field = exports.fieldActions = exports.modelActions = exports.createFormReducer = exports.createModelReducer = undefined;
+	exports.getField = exports.Form = exports.Field = exports.actions = exports.createFormReducer = exports.createModelReducer = undefined;
 
 	var _react = __webpack_require__(1);
 
@@ -81,7 +83,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _modelActions = __webpack_require__(265);
 
-	var actions = _interopRequireWildcard(_modelActions);
+	var modelActions = _interopRequireWildcard(_modelActions);
 
 	var _fieldActions = __webpack_require__(299);
 
@@ -99,10 +101,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	var actions = _extends({}, modelActions, fieldActions);
+
 	exports.createModelReducer = _modelReducer.createModelReducer;
 	exports.createFormReducer = _formReducer.createFormReducer;
-	exports.modelActions = actions;
-	exports.fieldActions = fieldActions;
+	exports.actions = actions;
 	exports.Field = _fieldComponent2.default;
 	exports.Form = _formComponent2.default;
 	exports.getField = _formReducer.getField;

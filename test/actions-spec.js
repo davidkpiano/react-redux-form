@@ -3,8 +3,6 @@ import should from 'should';
 
 import actions from '../src/actions';
 
-console.log(actions);
-
 describe('RSF model action creators', () => {
   describe('actions.change()', () => {  
     it('should return an action', () => {
