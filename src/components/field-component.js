@@ -39,8 +39,10 @@ function selector(state, { model }) {
 
 class Field extends React.Component {
   createField(control, props) {
-    console.log(`creating ${props.model}`);
-    if (!control || !control.props) return control;
+    if (!control
+      || !control.props
+      || Object.hasOwnProperty(control.props, 'modelValue')
+    ) return control;
 
     let {
       dispatch,

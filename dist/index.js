@@ -26432,8 +26432,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value: function createField(control, props) {
 	      var _this2 = this;
 
-	      console.log('creating ' + props.model);
-	      if (!control || !control.props) return control;
+	      if (!control || !control.props || Object.hasOwnProperty(control.props, 'modelValue')) return control;
 
 	      var dispatch = props.dispatch;
 	      var model = props.model;
