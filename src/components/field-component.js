@@ -145,6 +145,7 @@ class Field extends React.Component {
         let validity = mapValues(validators,
           (validator) => validator(validatingValue));
 
+        console.log(validity);
         dispatch(setValidity(model, validity));
       }
 
