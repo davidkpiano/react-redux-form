@@ -12,35 +12,45 @@ class MultiRecordRecipe extends React.Component {
     return (
       <Recipe model="multiRecord">
         <h2>Multiple Records</h2>
-        <table><tbody>
-        { multiRecord.map((record, i) => 
-          <tr key={i}>
-            <td>
-              <Field model={`multiRecord[${i}].name`}>
-                <input type="text" />
-              </Field>
-            </td>
-            <td>
-              <Field model={`multiRecord[${i}].description`}
-                updateOn={(change) => debounce(change, 1000)}>
-                <input type="text" />
-              </Field>
-            </td>
-            <td>
-              <Field model={`multiRecord[${i}].quantity`}
-                parse={a => +a}>
-                <input type="text" />
-              </Field>
-            </td>
-            <td>
-              <Field model={`multiRecord[${i}].price`}
-                parse={a => +a}>
-                <input type="text" />
-              </Field>
-            </td>
-          </tr>
-        )}
-        </tbody></table>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Quantity</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+          { multiRecord.map((record, i) => 
+            <tr key={i}>
+              <td>
+                <Field model={`multiRecord[${i}].name`}>
+                  <input type="text" />
+                </Field>
+              </td>
+              <td>
+                <Field model={`multiRecord[${i}].description`}
+                  updateOn={(change) => debounce(change, 1000)}>
+                  <input type="text" />
+                </Field>
+              </td>
+              <td>
+                <Field model={`multiRecord[${i}].quantity`}
+                  parse={a => +a}>
+                  <input type="text" />
+                </Field>
+              </td>
+              <td>
+                <Field model={`multiRecord[${i}].price`}
+                  parse={a => +a}>
+                  <input type="text" />
+                </Field>
+              </td>
+            </tr>
+          )}
+          </tbody>
+        </table>
         <button type="button"
           onClick={() => dispatch(actions.push('multiRecord', {}))}>
           Add new record

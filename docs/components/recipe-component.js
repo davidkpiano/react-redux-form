@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import get from 'lodash/object/get';
+import Code from './code-component';
 
 class Recipe extends React.Component {
   constructor() {
@@ -11,17 +12,18 @@ class Recipe extends React.Component {
     }
   }
   render() {
-    let { name, children, model } = this.props;
+    let { name, children, model, code } = this.props;
 
     return (
-      <form
-        name={ name }
-        className="rsf-recipe"
-        onSubmit={this.props.onSubmit}>
-        <div className="rsf-content">
-          <h3>{ name }</h3>
-          { children }
-        </div>
+      <div className="rsf-recipe">
+        <form
+          name={ name }
+          className="rsf-content"
+          onSubmit={this.props.onSubmit}>
+            <h3>{ name }</h3>
+            { children }
+        </form>
+
         <div className="rsf-data">
           <span onClick={() => this.setState({data: 'model'})}>Model</span>
           { get(this.props, `${model}Form`) &&
@@ -37,7 +39,9 @@ class Recipe extends React.Component {
             <pre>{ JSON.stringify(get(this.props, `${model}Form`), null, 2) }</pre>
           ]}
         </div>
-      </form>
+
+        { code && <Code className="rsf-code" content={code} /> }
+      </div>
     );
   }
 }

@@ -1,13 +1,6 @@
 import React from 'react';
-import Code from '../components/code-component';
-import marked from 'marked';
 
-const Markdown = ({ content }) => <div
-  className="rsf-layout-content"
-  dangerouslySetInnerHTML={{
-    __html: marked(content)
-  }} />;
-
+import Markdown from '../components/markdown-component';
 
 const js = (code) => `<pre><code class="hljs javascript">${hljs.highlight('javascript', code[0]).value}</code></pre>`;
 
@@ -19,6 +12,10 @@ A simple, flexible, and powerful way to create complex forms
 with React and Redux.
 
 **Getting Started**
+1. Install the prerequisites:
+  - \`npm install react redux react-redux --save\`
+  - (recommended) \`npm install redux-thunk --save\`
+1. \`npm install redux-simple-form --save\`
 
 ${js`
 import React from 'react';
@@ -49,10 +46,7 @@ class LoginForm extends React.Component {
 
 export default connect(s => ({ user: s.user }))(LoginForm);
 `}
-
-Any questions?
 `;
-
 
 const IntroPage = () => (
   <Markdown content={content} />

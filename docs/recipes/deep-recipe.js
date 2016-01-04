@@ -37,10 +37,10 @@ class DeepRecipe extends React.Component {
             </Field>
           </div>
         )}
+        <br/>
         <button type="button" onClick={() => dispatch(actions.push('user6.children', null))}>
-          Add Phone
+          Add Child
         </button>
-        <pre>{ JSON.stringify(user6, null, 2) }</pre>
       </Recipe>
     );
   }

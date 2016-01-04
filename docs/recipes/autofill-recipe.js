@@ -4,41 +4,133 @@ import { Field, actions } from 'redux-simple-form';
 
 import Recipe from '../components/recipe-component';
 
-class AutofillRecipe extends React.Component {
-  handleAutofill() {
-    let { dispatch } = this.props;
+const code = `
+import { Field, actions } from 'redux-simple-form';
 
-    dispatch(actions.change('user5', {
-      firstName: 'David',
-      lastName: 'Khourshid',
-      age: 25,
-      occupation: 'Pianist'
-    }));
+class OrderForm extends React.Component {
+  handleAutofill() {
+    let { dispatch, order } = this.props;
+
+    dispatch(actions.change('order.shipping', order.billing));
   }
+
   render() {
-    let { user5 } = this.props;
+    let { order } = this.props;
 
     return (
-      <Recipe model="user5">
-        <h2>Autofill Data</h2>
+      <form>
+        <h2>Billing Address</h2>
+
+        <Field model="order.billing.address">
+          <label>Address</label>
+          <input type="text" value={order.billing.address}/>
+        </Field>
+
+        <Field model="order.billing.city">
+          <label>City</label>
+          <input type="text" value={order.billing.city} />
+        </Field>
+
+        <Field model="order.billing.state">
+          <label>State</label>
+          <input type="text" value={order.billing.state} />
+        </Field>
+
+        <Field model="order.billing.zip">
+          <label>Zip Code</label>
+          <input type="text" value={order.billing.zip} />
+        </Field>
+
+        <h2>Shipping Address</h2>
+
         <button type="button" onClick={() => this.handleAutofill()}>
-          Autofill User
+          Autofill from Billing Address
         </button>
-        <Field model="user5.firstName">
-          <label htmlFor="">First Name</label>
-          <input type="text" value={user5.firstName}/>
+
+        <Field model="order.shipping.address">
+          <label>Address</label>
+          <input type="text" value={order.shipping.address}/>
         </Field>
-        <Field model="user5.lastName">
-          <label htmlFor="">Last Name</label>
-          <input type="text" value={user5.lastName} />
+
+        <Field model="order.shipping.city">
+          <label>City</label>
+          <input type="text" value={order.shipping.city} />
         </Field>
-        <Field model="user5.age">
-          <label htmlFor="">Age</label>
-          <input type="text" value={user5.age} />
+
+        <Field model="order.shipping.state">
+          <label>State</label>
+          <input type="text" value={order.shipping.state} />
         </Field>
-        <Field model="user5.occupation">
-          <label htmlFor="">Occupation</label>
-          <input type="text" value={user5.occupation} />
+
+        <Field model="order.shipping.zip">
+          <label>Zip Code</label>
+          <input type="text" value={order.shipping.zip} />
+        </Field>
+      </Recipe>
+    );
+  }
+}
+`;
+
+class AutofillRecipe extends React.Component {
+  handleAutofill() {
+    let { dispatch, order } = this.props;
+
+    dispatch(actions.change('order.shipping', order.billing));
+  }
+
+  render() {
+    let { order } = this.props;
+
+    return (
+      <Recipe model="order" code={code}>
+        <h1>Autofill Recipe</h1>
+        <h2>Billing Address</h2>
+
+        <Field model="order.billing.address">
+          <label>Address</label>
+          <input type="text" value={order.billing.address}/>
+        </Field>
+
+        <Field model="order.billing.city">
+          <label>City</label>
+          <input type="text" value={order.billing.city} />
+        </Field>
+
+        <Field model="order.billing.state">
+          <label>State</label>
+          <input type="text" value={order.billing.state} />
+        </Field>
+
+        <Field model="order.billing.zip">
+          <label>Zip Code</label>
+          <input type="text" value={order.billing.zip} />
+        </Field>
+
+        <h2>Shipping Address</h2>
+
+        <button type="button" onClick={() => this.handleAutofill()}>
+          Autofill from Billing Address
+        </button>
+
+        <Field model="order.shipping.address">
+          <label>Address</label>
+          <input type="text" value={order.shipping.address}/>
+        </Field>
+
+        <Field model="order.shipping.city">
+          <label>City</label>
+          <input type="text" value={order.shipping.city} />
+        </Field>
+
+        <Field model="order.shipping.state">
+          <label>State</label>
+          <input type="text" value={order.shipping.state} />
+        </Field>
+
+        <Field model="order.shipping.zip">
+          <label>Zip Code</label>
+          <input type="text" value={order.shipping.zip} />
         </Field>
       </Recipe>
     );

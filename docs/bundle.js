@@ -104,6 +104,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _introPage2 = _interopRequireDefault(_introPage);
 
+	var _actionsPage = __webpack_require__(694);
+
+	var _actionsPage2 = _interopRequireDefault(_actionsPage);
+
 	var _syncValidationRecipe = __webpack_require__(507);
 
 	var _syncValidationRecipe2 = _interopRequireDefault(_syncValidationRecipe);
@@ -174,7 +178,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	  userForm: (0, _reduxSimpleForm.createFormReducer)('user'),
 	  multiUser: (0, _reduxSimpleForm.createModelReducer)('multiUser'),
 	  multiRecord: (0, _reduxSimpleForm.createModelReducer)('multiRecord', [{}]),
-	  parseUser: (0, _reduxSimpleForm.createModelReducer)('parseUser')
+	  parseUser: (0, _reduxSimpleForm.createModelReducer)('parseUser'),
+	  order: (0, _reduxSimpleForm.createModelReducer)('order', {
+	    shipping: {},
+	    billing: {}
+	  })
 	}));
 
 	var recipes = ['SyncValidationRecipe', 'SubmitValidationRecipe', 'BlurValidationRecipe', 'AsyncBlurValidationRecipe', 'AutofillRecipe', 'DeepRecipe', 'MultiRecipe', 'MultiRecordRecipe', 'ParseRecipe'];
@@ -213,6 +221,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _reactRouter.Link,
 	            { className: 'rsf-anchor', to: '/' },
 	            'Getting Started'
+	          ),
+	          _react2.default.createElement(
+	            _reactRouter.Link,
+	            { className: 'rsf-anchor', to: 'actions' },
+	            'RSF Actions'
 	          )
 	        )
 	      ),
@@ -276,6 +289,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            _reactRouter.Route,
 	            { path: '/', component: Docs },
 	            _react2.default.createElement(_reactRouter.IndexRoute, { component: _introPage2.default }),
+	            _react2.default.createElement(_reactRouter.Route, { path: 'actions', component: _actionsPage2.default }),
 	            _react2.default.createElement(
 	              _reactRouter.Route,
 	              { path: 'recipe', component: Recipes },
@@ -48972,6 +48986,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _get2 = _interopRequireDefault(_get);
 
+	var _codeComponent = __webpack_require__(677);
+
+	var _codeComponent2 = _interopRequireDefault(_codeComponent);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -49003,16 +49021,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var name = _props.name;
 	      var children = _props.children;
 	      var model = _props.model;
+	      var code = _props.code;
 
 	      return _react2.default.createElement(
-	        'form',
-	        {
-	          name: name,
-	          className: 'rsf-recipe',
-	          onSubmit: this.props.onSubmit },
+	        'div',
+	        { className: 'rsf-recipe' },
 	        _react2.default.createElement(
-	          'div',
-	          { className: 'rsf-content' },
+	          'form',
+	          {
+	            name: name,
+	            className: 'rsf-content',
+	            onSubmit: this.props.onSubmit },
 	          _react2.default.createElement(
 	            'h3',
 	            null,
@@ -49058,7 +49077,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	            null,
 	            JSON.stringify((0, _get2.default)(this.props, model + 'Form'), null, 2)
 	          )]
-	        )
+	        ),
+	        code && _react2.default.createElement(_codeComponent2.default, { className: 'rsf-code', content: code })
 	      );
 	    }
 	  }]);
@@ -50140,6 +50160,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var code = '\nimport { Field, actions } from \'redux-simple-form\';\n\nclass OrderForm extends React.Component {\n  handleAutofill() {\n    let { dispatch, order } = this.props;\n\n    dispatch(actions.change(\'order.shipping\', order.billing));\n  }\n\n  render() {\n    let { order } = this.props;\n\n    return (\n      <form>\n        <h2>Billing Address</h2>\n\n        <Field model="order.billing.address">\n          <label>Address</label>\n          <input type="text" value={order.billing.address}/>\n        </Field>\n\n        <Field model="order.billing.city">\n          <label>City</label>\n          <input type="text" value={order.billing.city} />\n        </Field>\n\n        <Field model="order.billing.state">\n          <label>State</label>\n          <input type="text" value={order.billing.state} />\n        </Field>\n\n        <Field model="order.billing.zip">\n          <label>Zip Code</label>\n          <input type="text" value={order.billing.zip} />\n        </Field>\n\n        <h2>Shipping Address</h2>\n\n        <button type="button" onClick={() => this.handleAutofill()}>\n          Autofill from Billing Address\n        </button>\n\n        <Field model="order.shipping.address">\n          <label>Address</label>\n          <input type="text" value={order.shipping.address}/>\n        </Field>\n\n        <Field model="order.shipping.city">\n          <label>City</label>\n          <input type="text" value={order.shipping.city} />\n        </Field>\n\n        <Field model="order.shipping.state">\n          <label>State</label>\n          <input type="text" value={order.shipping.state} />\n        </Field>\n\n        <Field model="order.shipping.zip">\n          <label>Zip Code</label>\n          <input type="text" value={order.shipping.zip} />\n        </Field>\n      </Recipe>\n    );\n  }\n}\n';
+
 	var AutofillRecipe = (function (_React$Component) {
 	  _inherits(AutofillRecipe, _React$Component);
 
@@ -50152,76 +50174,123 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(AutofillRecipe, [{
 	    key: 'handleAutofill',
 	    value: function handleAutofill() {
-	      var dispatch = this.props.dispatch;
+	      var _props = this.props;
+	      var dispatch = _props.dispatch;
+	      var order = _props.order;
 
-	      dispatch(_reduxSimpleForm.actions.change('user5', {
-	        firstName: 'David',
-	        lastName: 'Khourshid',
-	        age: 25,
-	        occupation: 'Pianist'
-	      }));
+	      dispatch(_reduxSimpleForm.actions.change('order.shipping', order.billing));
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
 
-	      var user5 = this.props.user5;
+	      var order = this.props.order;
 
 	      return _react2.default.createElement(
 	        _recipeComponent2.default,
-	        { model: 'user5' },
+	        { model: 'order', code: code },
+	        _react2.default.createElement(
+	          'h1',
+	          null,
+	          'Autofill Recipe'
+	        ),
 	        _react2.default.createElement(
 	          'h2',
 	          null,
-	          'Autofill Data'
+	          'Billing Address'
+	        ),
+	        _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'order.billing.address' },
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            'Address'
+	          ),
+	          _react2.default.createElement('input', { type: 'text', value: order.billing.address })
+	        ),
+	        _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'order.billing.city' },
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            'City'
+	          ),
+	          _react2.default.createElement('input', { type: 'text', value: order.billing.city })
+	        ),
+	        _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'order.billing.state' },
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            'State'
+	          ),
+	          _react2.default.createElement('input', { type: 'text', value: order.billing.state })
+	        ),
+	        _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'order.billing.zip' },
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            'Zip Code'
+	          ),
+	          _react2.default.createElement('input', { type: 'text', value: order.billing.zip })
+	        ),
+	        _react2.default.createElement(
+	          'h2',
+	          null,
+	          'Shipping Address'
 	        ),
 	        _react2.default.createElement(
 	          'button',
 	          { type: 'button', onClick: function onClick() {
 	              return _this2.handleAutofill();
 	            } },
-	          'Autofill User'
+	          'Autofill from Billing Address'
 	        ),
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
-	          { model: 'user5.firstName' },
+	          { model: 'order.shipping.address' },
 	          _react2.default.createElement(
 	            'label',
-	            { htmlFor: '' },
-	            'First Name'
+	            null,
+	            'Address'
 	          ),
-	          _react2.default.createElement('input', { type: 'text', value: user5.firstName })
+	          _react2.default.createElement('input', { type: 'text', value: order.shipping.address })
 	        ),
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
-	          { model: 'user5.lastName' },
+	          { model: 'order.shipping.city' },
 	          _react2.default.createElement(
 	            'label',
-	            { htmlFor: '' },
-	            'Last Name'
+	            null,
+	            'City'
 	          ),
-	          _react2.default.createElement('input', { type: 'text', value: user5.lastName })
+	          _react2.default.createElement('input', { type: 'text', value: order.shipping.city })
 	        ),
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
-	          { model: 'user5.age' },
+	          { model: 'order.shipping.state' },
 	          _react2.default.createElement(
 	            'label',
-	            { htmlFor: '' },
-	            'Age'
+	            null,
+	            'State'
 	          ),
-	          _react2.default.createElement('input', { type: 'text', value: user5.age })
+	          _react2.default.createElement('input', { type: 'text', value: order.shipping.state })
 	        ),
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
-	          { model: 'user5.occupation' },
+	          { model: 'order.shipping.zip' },
 	          _react2.default.createElement(
 	            'label',
-	            { htmlFor: '' },
-	            'Occupation'
+	            null,
+	            'Zip Code'
 	          ),
-	          _react2.default.createElement('input', { type: 'text', value: user5.occupation })
+	          _react2.default.createElement('input', { type: 'text', value: order.shipping.zip })
 	        )
 	      );
 	    }
@@ -50345,17 +50414,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            )
 	          );
 	        }),
+	        _react2.default.createElement('br', null),
 	        _react2.default.createElement(
 	          'button',
 	          { type: 'button', onClick: function onClick() {
 	              return dispatch(_reduxSimpleForm.actions.push('user6.children', null));
 	            } },
-	          'Add Phone'
-	        ),
-	        _react2.default.createElement(
-	          'pre',
-	          null,
-	          JSON.stringify(user6, null, 2)
+	          'Add Child'
 	        )
 	      );
 	    }
@@ -50539,6 +50604,34 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _react2.default.createElement(
 	          'table',
 	          null,
+	          _react2.default.createElement(
+	            'thead',
+	            null,
+	            _react2.default.createElement(
+	              'tr',
+	              null,
+	              _react2.default.createElement(
+	                'th',
+	                null,
+	                'Name'
+	              ),
+	              _react2.default.createElement(
+	                'th',
+	                null,
+	                'Description'
+	              ),
+	              _react2.default.createElement(
+	                'th',
+	                null,
+	                'Quantity'
+	              ),
+	              _react2.default.createElement(
+	                'th',
+	                null,
+	                'Price'
+	              )
+	            )
+	          ),
 	          _react2.default.createElement(
 	            'tbody',
 	            null,
@@ -56007,12 +56100,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function Code(_ref) {
 	  var content = _ref.content;
+	  var className = _ref.className;
 
 	  return _react2.default.createElement(
 	    'pre',
-	    null,
-	    _react2.default.createElement('code', { className: 'javascript hljs', dangerouslySetInnerHTML: {
-	        __html: hljs.highlight('javascript', content).value
+	    { className: className || undefined },
+	    _react2.default.createElement('code', { className: 'javascript hljs',
+	      dangerouslySetInnerHTML: {
+	        __html: hljs.highlight('javascript', content).value + '\n'
 	      } })
 	  );
 	}
@@ -56035,35 +56130,22 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _codeComponent = __webpack_require__(677);
+	var _markdownComponent = __webpack_require__(693);
 
-	var _codeComponent2 = _interopRequireDefault(_codeComponent);
-
-	var _marked = __webpack_require__(692);
-
-	var _marked2 = _interopRequireDefault(_marked);
+	var _markdownComponent2 = _interopRequireDefault(_markdownComponent);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-	var Markdown = function Markdown(_ref) {
-	  var content = _ref.content;
-	  return _react2.default.createElement('div', {
-	    className: 'rsf-layout-content',
-	    dangerouslySetInnerHTML: {
-	      __html: (0, _marked2.default)(content)
-	    } });
-	};
-
 	var js = function js(code) {
 	  return '<pre><code class="hljs javascript">' + hljs.highlight('javascript', code[0]).value + '</code></pre>';
 	};
 
-	var content = '\n# redux simple form\n\nA simple, flexible, and powerful way to create complex forms\nwith React and Redux.\n\n**Getting Started**\n\n' + js(_templateObject) + '\n\nAny questions?\n';
+	var content = '\n# redux simple form\n\nA simple, flexible, and powerful way to create complex forms\nwith React and Redux.\n\n**Getting Started**\n1. Install the prerequisites:\n  - `npm install react redux react-redux --save`\n  - (recommended) `npm install redux-thunk --save`\n1. `npm install redux-simple-form --save`\n\n' + js(_templateObject) + '\n';
 
 	var IntroPage = function IntroPage() {
-	  return _react2.default.createElement(Markdown, { content: content });
+	  return _react2.default.createElement(_markdownComponent2.default, { content: content });
 	};
 
 	exports.default = IntroPage;
@@ -57699,6 +57781,73 @@ return /******/ (function(modules) { // webpackBootstrap
 	}());
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
+
+/***/ },
+/* 693 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _marked = __webpack_require__(692);
+
+	var _marked2 = _interopRequireDefault(_marked);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var Markdown = function Markdown(_ref) {
+	  var content = _ref.content;
+	  return _react2.default.createElement('div', {
+	    className: 'rsf-layout-content',
+	    dangerouslySetInnerHTML: {
+	      __html: (0, _marked2.default)(content)
+	    } });
+	};
+
+	exports.default = Markdown;
+
+/***/ },
+/* 694 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _templateObject = _taggedTemplateLiteral(['\nimport React from \'react\';\nimport { connect } from \'react-redux\';\nimport {\n  actions\n} from \'redux-simple-form\';\n\nexport default class UserForm extends React.Component {\n  render() {\n    let { dispatch, user } = this.props;\n\n    return (\n      <div>\n        <h1>Name: { user.name }</h1>\n        <button onClick={() =>\n          dispatch(actions.change(\'user.name\', \'David\'))}>\n          Change name to David\n        </button>\n      </div>\n    );\n  }\n}\n'], ['\nimport React from \'react\';\nimport { connect } from \'react-redux\';\nimport {\n  actions\n} from \'redux-simple-form\';\n\nexport default class UserForm extends React.Component {\n  render() {\n    let { dispatch, user } = this.props;\n\n    return (\n      <div>\n        <h1>Name: { user.name }</h1>\n        <button onClick={() =>\n          dispatch(actions.change(\'user.name\', \'David\'))}>\n          Change name to David\n        </button>\n      </div>\n    );\n  }\n}\n']);
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _markdownComponent = __webpack_require__(693);
+
+	var _markdownComponent2 = _interopRequireDefault(_markdownComponent);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+	var js = function js(code) {
+	  return '<pre><code class="hljs javascript">' + hljs.highlight('javascript', code[0]).value + '\n</code></pre>';
+	};
+
+	var content = '\n## Actions\n\nRedux Simple Form is built around a single action that describes all\nchanges to your models, the `change(model, value)` action.\n\n' + js(_templateObject) + '\n\n';
+
+	var IntroPage = function IntroPage() {
+	  return _react2.default.createElement(_markdownComponent2.default, { content: content });
+	};
+
+	exports.default = IntroPage;
 
 /***/ }
 /******/ ])

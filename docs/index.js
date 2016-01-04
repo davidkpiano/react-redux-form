@@ -25,6 +25,7 @@ import Recipe from './components/recipe-component';
 import Code from './components/code-component';
 
 import IntroPage from './pages/intro-page';
+import ActionsPage from './pages/actions-page';
 
 import SyncValidationRecipe from './recipes/sync-validation-recipe';
 import SubmitValidationRecipe from './recipes/submit-validation-recipe';
@@ -64,6 +65,10 @@ const store = applyMiddleware(thunk)(createStore)(combineReducers({
   multiUser: createModelReducer('multiUser'),
   multiRecord: createModelReducer('multiRecord', [ {} ]),
   parseUser: createModelReducer('parseUser'),
+  order: createModelReducer('order', {
+    shipping: {},
+    billing: {}
+  }),
 }));
 
 const recipes = [
@@ -99,6 +104,9 @@ const Docs = (props) => (
           <Link className="rsf-anchor" to="/">
             Getting Started
           </Link>
+          <Link className="rsf-anchor" to="actions">
+            RSF Actions
+          </Link>
         </li>
       </ul>
       <h6 className="rsf-heading">Recipes</h6>
@@ -128,6 +136,7 @@ class App extends React.Component {
         <Router history={ hashHistory }>
           <Route path="/" component={ Docs }>
             <IndexRoute component={ IntroPage } />
+            <Route path="actions" component={ ActionsPage }/>
             <Route path="recipe" component={ Recipes }>
             { recipes.map((recipe) => 
               <Route path={kebabCase(recipe)}

@@ -4,6 +4,8 @@ $colors: (
   'primary': #5791c9,
   'label': #BCBCBC,
   'border': #EDEDED,
+  'dark': #272E35,
+  'code': rgba(#272E35, 0.1)
 );
 
 @function colors($key) {
@@ -27,7 +29,7 @@ html, body, #app {
   width: 100%;
   max-height: 100%;
   overflow: hidden;
-  font-family: Lato, sans-serif;
+  font-family: Lato, Helvetica, Arial, sans-serif;
   font-weight: 300;
   display: flex;
   flex-direction: row;
@@ -35,8 +37,8 @@ html, body, #app {
 }
 
 .rsf-layout-nav {
-  background: #272E35;
-  flex-basis: 25%;
+  background: colors('dark');
+  flex-basis: 200px;
   flex-shrink: 0;
   padding: 1rem;
 
@@ -82,6 +84,12 @@ html, body, #app {
   h1 { @extend %heading--huge; }
   p { @extend %paragraph; }
   ul { @extend %list; }
+
+  code:not([class]) {
+    display: inline-block;
+    background: colors('code');
+    padding: 0.25rem;
+  }
 
   &.recipes {
     padding: 0;
@@ -131,11 +139,23 @@ html, body, #app {
     display: block;
   }
 
+  table {
+    margin-bottom: 1rem;
+  }
+
+  th {
+    text-align: left;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: colors('label');
+    font-weight: 400;
+  }
+
   button {
     -webkit-appearance: none;
     background-color: colors('primary');
     color: white;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1rem;
     border: none;
     text-transform: uppercase;
     margin-bottom: 1rem;
@@ -169,19 +189,32 @@ html, body, #app {
 }
 
 %list {
-  margin-bottom: 1rem;
+  margin: 0.5rem 0;
   padding: 0;
-  list-style: none;
+  list-style-type: square;
+  padding-left: 1rem;
 }
 
 .rsf-recipe {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
 
   > .rsf-content, > .rsf-data {
     padding: 1rem;
-    flex-basis: 50%;
     flex-shrink: 0;
+  }
+
+  > .rsf-data {
+    flex-basis: 40%;
+  }
+
+  > .rsf-content {
+    flex-basis: 60%;
+  }
+
+  > .rsf-code {
+    flex-basis: 100%;
   }
 
   @media (max-width: 600px) {
