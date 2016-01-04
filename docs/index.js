@@ -26,6 +26,7 @@ import Code from './components/code-component';
 
 import IntroPage from './pages/intro-page';
 import ActionsPage from './pages/actions-page';
+import ApiPage from './pages/api-page';
 
 import SyncValidationRecipe from './recipes/sync-validation-recipe';
 import SubmitValidationRecipe from './recipes/submit-validation-recipe';
@@ -95,6 +96,10 @@ const recipeComponents = {
   ParseRecipe,
 };
 
+const apiReference = [
+  'actions'
+]
+
 const Docs = (props) => (
   <main className="rsf-layout-page">
     <nav className="rsf-layout-nav">
@@ -108,6 +113,17 @@ const Docs = (props) => (
             RSF Actions
           </Link>
         </li>
+      </ul>
+      <h6 className="rsf-heading">API Reference</h6>
+      <ul className="rsf-list">
+        { apiReference.map((item) =>
+          <li className="rsf-item">
+            <Link className="rsf-anchor"
+              to={`api/${item}`}>
+              { startCase(item) }
+            </Link>
+          </li>
+        )}
       </ul>
       <h6 className="rsf-heading">Recipes</h6>
       <ul className="rsf-list">
@@ -137,6 +153,7 @@ class App extends React.Component {
           <Route path="/" component={ Docs }>
             <IndexRoute component={ IntroPage } />
             <Route path="actions" component={ ActionsPage }/>
+            <Route path="api/:item" component={ ApiPage } />
             <Route path="recipe" component={ Recipes }>
             { recipes.map((recipe) => 
               <Route path={kebabCase(recipe)}

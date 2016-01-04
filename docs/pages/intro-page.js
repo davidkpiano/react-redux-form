@@ -19,13 +19,44 @@ Heavily inspired by Angular's forms and controls.
   - (recommended) \`npm install redux-thunk --save\`
 1. \`npm install redux-simple-form --save\`
 
+**Full Example**
+
 ${js`
+// app.js
+
+import React from 'react';
+import { combineReducers, createStore } from 'redux';
+import { Provider } from 'react-redux';
+import { createModelReducer } from 'redux-simple-form';
+
+import LoginForm from './forms/login-form';
+
+const store = createStore(combineReducers({
+  user: createModelReducer('user')
+}));
+
+export default class App extends React.Component {
+  render() {
+    return (
+      <Provider store={ store }>
+        <LoginForm />
+      </Provider>
+    )
+  }
+}
+`}
+
+${js`
+// forms/login-form.js
+
 import React from 'react';
 import { connect } from 'react-redux';
 import { Field } from 'redux-simple-form';
 
 class LoginForm extends React.Component {
   render() {
+    let { user } = this.props;
+
     return (
       <form>
         <Field model="user.username">
@@ -42,11 +73,13 @@ class LoginForm extends React.Component {
           Log in as { user.username }
         </button>
       </form>
-    );
+    )
   }
 }
 
-export default connect(s => ({ user: s.user }))(LoginForm);
+const selector = (state) => ({ user: state.user });
+
+export default connect(selector)(LoginForm);
 `}
 `;
 

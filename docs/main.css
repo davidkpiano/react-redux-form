@@ -130,6 +130,11 @@ html, body, #app {
   padding-right: calc(50% - 500px);
   overflow-y: scroll;
   animation: fade-in 0.3s ease-in-out; }
+  .rsf-layout-content hr {
+    border-style: solid;
+    border-width: 0;
+    border-top-width: 1px;
+    border-color: #EDEDED; }
   .rsf-layout-content code:not([class]) {
     display: inline-block;
     background: rgba(39, 46, 53, 0.1);

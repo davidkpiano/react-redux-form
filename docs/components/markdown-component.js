@@ -7,3 +7,7 @@ const Markdown = ({ content }) => <div
   }} />;
 
 export default Markdown;
+
+export function js(string) {
+  return `<pre><code class="hljs javascript">${hljs.highlight('javascript', string[0].trim()).value}</code></pre>`;
+}

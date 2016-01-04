@@ -108,6 +108,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _actionsPage2 = _interopRequireDefault(_actionsPage);
 
+	var _apiPage = __webpack_require__(695);
+
+	var _apiPage2 = _interopRequireDefault(_apiPage);
+
 	var _syncValidationRecipe = __webpack_require__(507);
 
 	var _syncValidationRecipe2 = _interopRequireDefault(_syncValidationRecipe);
@@ -199,6 +203,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  ParseRecipe: _parseRecipe2.default
 	};
 
+	var apiReference = ['actions'];
+
 	var Docs = function Docs(props) {
 	  return _react2.default.createElement(
 	    'main',
@@ -228,6 +234,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	            'RSF Actions'
 	          )
 	        )
+	      ),
+	      _react2.default.createElement(
+	        'h6',
+	        { className: 'rsf-heading' },
+	        'API Reference'
+	      ),
+	      _react2.default.createElement(
+	        'ul',
+	        { className: 'rsf-list' },
+	        apiReference.map(function (item) {
+	          return _react2.default.createElement(
+	            'li',
+	            { className: 'rsf-item' },
+	            _react2.default.createElement(
+	              _reactRouter.Link,
+	              { className: 'rsf-anchor',
+	                to: 'api/' + item },
+	              (0, _startCase2.default)(item)
+	            )
+	          );
+	        })
 	      ),
 	      _react2.default.createElement(
 	        'h6',
@@ -290,6 +317,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	            { path: '/', component: Docs },
 	            _react2.default.createElement(_reactRouter.IndexRoute, { component: _introPage2.default }),
 	            _react2.default.createElement(_reactRouter.Route, { path: 'actions', component: _actionsPage2.default }),
+	            _react2.default.createElement(_reactRouter.Route, { path: 'api/:item', component: _apiPage2.default }),
 	            _react2.default.createElement(
 	              _reactRouter.Route,
 	              { path: 'recipe', component: Recipes },
@@ -56123,7 +56151,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	var _templateObject = _taggedTemplateLiteral(['\nimport React from \'react\';\nimport { connect } from \'react-redux\';\nimport { Field } from \'redux-simple-form\';\n\nclass LoginForm extends React.Component {\n  render() {\n    return (\n      <form>\n        <Field model="user.username">\n          <label>Username</label>\n          <input type="text" />\n        </Field>\n\n        <Field model="user.password">\n          <label>Password</label>\n          <input type="password" />\n        </Field>\n\n        <button>\n          Log in as { user.username }\n        </button>\n      </form>\n    );\n  }\n}\n\nexport default connect(s => ({ user: s.user }))(LoginForm);\n'], ['\nimport React from \'react\';\nimport { connect } from \'react-redux\';\nimport { Field } from \'redux-simple-form\';\n\nclass LoginForm extends React.Component {\n  render() {\n    return (\n      <form>\n        <Field model="user.username">\n          <label>Username</label>\n          <input type="text" />\n        </Field>\n\n        <Field model="user.password">\n          <label>Password</label>\n          <input type="password" />\n        </Field>\n\n        <button>\n          Log in as { user.username }\n        </button>\n      </form>\n    );\n  }\n}\n\nexport default connect(s => ({ user: s.user }))(LoginForm);\n']);
+	var _templateObject = _taggedTemplateLiteral(['\n// app.js\n\nimport React from \'react\';\nimport { combineReducers, createStore } from \'redux\';\nimport { Provider } from \'react-redux\';\nimport { createModelReducer } from \'redux-simple-form\';\n\nimport LoginForm from \'./forms/login-form\';\n\nconst store = createStore(combineReducers({\n  user: createModelReducer(\'user\')\n}));\n\nexport default class App extends React.Component {\n  render() {\n    return (\n      <Provider store={ store }>\n        <LoginForm />\n      </Provider>\n    )\n  }\n}\n'], ['\n// app.js\n\nimport React from \'react\';\nimport { combineReducers, createStore } from \'redux\';\nimport { Provider } from \'react-redux\';\nimport { createModelReducer } from \'redux-simple-form\';\n\nimport LoginForm from \'./forms/login-form\';\n\nconst store = createStore(combineReducers({\n  user: createModelReducer(\'user\')\n}));\n\nexport default class App extends React.Component {\n  render() {\n    return (\n      <Provider store={ store }>\n        <LoginForm />\n      </Provider>\n    )\n  }\n}\n']),
+	    _templateObject2 = _taggedTemplateLiteral(['\n// forms/login-form.js\n\nimport React from \'react\';\nimport { connect } from \'react-redux\';\nimport { Field } from \'redux-simple-form\';\n\nclass LoginForm extends React.Component {\n  render() {\n    let { user } = this.props;\n\n    return (\n      <form>\n        <Field model="user.username">\n          <label>Username</label>\n          <input type="text" />\n        </Field>\n\n        <Field model="user.password">\n          <label>Password</label>\n          <input type="password" />\n        </Field>\n\n        <button>\n          Log in as { user.username }\n        </button>\n      </form>\n    )\n  }\n}\n\nconst selector = (state) => ({ user: state.user });\n\nexport default connect(selector)(LoginForm);\n'], ['\n// forms/login-form.js\n\nimport React from \'react\';\nimport { connect } from \'react-redux\';\nimport { Field } from \'redux-simple-form\';\n\nclass LoginForm extends React.Component {\n  render() {\n    let { user } = this.props;\n\n    return (\n      <form>\n        <Field model="user.username">\n          <label>Username</label>\n          <input type="text" />\n        </Field>\n\n        <Field model="user.password">\n          <label>Password</label>\n          <input type="password" />\n        </Field>\n\n        <button>\n          Log in as { user.username }\n        </button>\n      </form>\n    )\n  }\n}\n\nconst selector = (state) => ({ user: state.user });\n\nexport default connect(selector)(LoginForm);\n']);
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
@@ -56145,7 +56174,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return '<pre><code class="hljs javascript">' + hljs.highlight('javascript', code[0]).value + '</code></pre>';
 	};
 
-	var content = '\n# redux simple form\n\nA simple, flexible, and powerful way to create complex forms\nwith React and Redux.\n\nHeavily inspired by Angular\'s forms and controls.\n\n**Getting Started**\n1. Install the prerequisites:\n  - `npm install react redux react-redux --save`\n  - (recommended) `npm install redux-thunk --save`\n1. `npm install redux-simple-form --save`\n\n' + js(_templateObject) + '\n';
+	var content = '\n# redux simple form\n\nA simple, flexible, and powerful way to create complex forms\nwith React and Redux.\n\nHeavily inspired by Angular\'s forms and controls.\n\n**Getting Started**\n1. Install the prerequisites:\n  - `npm install react redux react-redux --save`\n  - (recommended) `npm install redux-thunk --save`\n1. `npm install redux-simple-form --save`\n\n**Full Example**\n\n' + js(_templateObject) + '\n\n' + js(_templateObject2) + '\n';
 
 	var IntroPage = function IntroPage() {
 	  return _react2.default.createElement(_markdownComponent2.default, { content: content });
@@ -57794,6 +57823,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.js = js;
 
 	var _react = __webpack_require__(1);
 
@@ -57814,6 +57844,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.default = Markdown;
+	function js(string) {
+	  return '<pre><code class="hljs javascript">' + hljs.highlight('javascript', string[0].trim()).value + '</code></pre>';
+	}
 
 /***/ },
 /* 694 */
@@ -57850,6 +57883,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.default = IntroPage;
+
+/***/ },
+/* 695 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _templateObject = _taggedTemplateLiteral(['\nimport {\n  createModelReducer,\n  actions\n} from \'redux-simple-form\';\n\nconst userReducer = createModelReducer(\'user\');\n\nlet initialState = { name: \'\', age: 0 };\n\nuserReducer(initialState, actions.change(\'user.name\', \'Billy\'));\n// => { name: \'Billy\', age: 0 }\n'], ['\nimport {\n  createModelReducer,\n  actions\n} from \'redux-simple-form\';\n\nconst userReducer = createModelReducer(\'user\');\n\nlet initialState = { name: \'\', age: 0 };\n\nuserReducer(initialState, actions.change(\'user.name\', \'Billy\'));\n// => { name: \'Billy\', age: 0 }\n']),
+	    _templateObject2 = _taggedTemplateLiteral(['\nimport {\n  actions\n} from \'redux-simple-form\';\n\n// assuming this is a connected component\nconst Newsletter = (props) => {\n  let { newsletterForm, dispatch } = props;\n\n  return <form>\n    <input type="email"\n      onFocus={() => dispatch(actions.focus(\'newsletter.email\'))} />\n    { newsletterForm.field(\'email\').focus &&\n      <div>We\'re focused on emailing you stuff!</div>\n    }\n  </form>;\n}\n'], ['\nimport {\n  actions\n} from \'redux-simple-form\';\n\n// assuming this is a connected component\nconst Newsletter = (props) => {\n  let { newsletterForm, dispatch } = props;\n\n  return <form>\n    <input type="email"\n      onFocus={() => dispatch(actions.focus(\'newsletter.email\'))} />\n    { newsletterForm.field(\'email\').focus &&\n      <div>We\'re focused on emailing you stuff!</div>\n    }\n  </form>;\n}\n']),
+	    _templateObject3 = _taggedTemplateLiteral(['\nlet val = \'testing123\';\n\ndispatch(actions.setValidity(\'user.password\', {\n  required: (val) => val && val.length,\n  correct: (val) => val === \'hunter2\'\n}));\n\n// Field model errors will now look like:\n// errors: {\n//   required: false,\n//   correct: true\n// }\n'], ['\nlet val = \'testing123\';\n\ndispatch(actions.setValidity(\'user.password\', {\n  required: (val) => val && val.length,\n  correct: (val) => val === \'hunter2\'\n}));\n\n// Field model errors will now look like:\n// errors: {\n//   required: false,\n//   correct: true\n// }\n']);
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = ApiPage;
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _codeComponent = __webpack_require__(677);
+
+	var _codeComponent2 = _interopRequireDefault(_codeComponent);
+
+	var _markdownComponent = __webpack_require__(693);
+
+	var _markdownComponent2 = _interopRequireDefault(_markdownComponent);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
+
+	var itemMap = {
+	  'actions': '\n## Action Creators\n\n### `actions.change(model, value)`\nReturns an action object that, when handled by a `modelReducer`, changes the value of the respective model to the new `value`.\n\nWhen the change action is handled by a `formReducer`, the field model\'s `dirty` state is set to `true` and its corresponding `pristine` state is set to `false`.\n\n**Arguments:**\n- `model`: (String) the model whose value will be changed\n- `value`: (*) the value the model will be changed to\n\n' + (0, _markdownComponent.js)(_templateObject) + '\n\n------\n\n### `actions.focus(model)`\nReturns an action object that, when handled by a `formReducer`, changes the `focus` state of the field model in the form to `true`, as well as the corresponding `blur` state to `false`.\n\nThe "focus" state indicates that the field model is the currently focused field in the form.\n\n**Arguments:**\n- `model`: (String) the model indicated as focused\n\n' + (0, _markdownComponent.js)(_templateObject2) + '\n\n------\n\n### `actions.blur(model)`\nReturns an action object that, when handled by a `formReducer`, changes the `blur` state of the field model in the form to `true`, as well as the corresponding `focus` state to `false`. It also indicates that the field model has been `touched`, and will set that state to `true` and the `untouched` state to `false`.\n\nThe "blur" state indicates that the field model is not focused.\n\n**Arguments:**\n- `model`: (String) the model indicated as blurred\n\n------\n\n### `actions.setPristine(model)`\nReturns an action object that, when handled by a `formReducer`, changes the `pristine` state of the field model in the form to `true`, as well as the corresponding `dirty` state to `false`.\n\nThe "pristine" state indicates that the user has not interacted with this field model yet.\n\n**Arguments:**\n- `model`: (String) the model indicated as pristine\n\n------\n\n### `actions.setDirty(model)`\nReturns an action object that, when handled by a `formReducer`, changes the `dirty` state of the field model in the form to `true`, as well as the corresponding `pristine` state to `false`.\n\nThe "dirty" state indicates that the model value has been changed.\n\n**Arguments:**\n- `model`: (String) the model indicated as dirty\n\n------\n\n### `actions.setPending(model)`\nReturns an action object that, when handled by a `formReducer`, changes the `pending` state of the field model in the form to `true`. It simultaneously sets the `submitted` state to `false`.\n\nThis action is useful when asynchronously validating or submitting a model, and is representative of the state between the initial and final state of a field model.\n\n**Arguments:**\n- `model`: (String) the model indicated as pending\n\n------\n\n### `actions.setValidity(model, validity)`\nReturns an action object that, when handled by a `formReducer`, changes the `valid` state of the field model in the form to `true` or `false`, based on the `validity` (see below). It simultaneously sets the `errors` on the field model to the inverse of the `validity`.\n\nThe `validity` can be an object or a boolean value, indicating which aspects of the field model are valid. A validity object is a key/value pair where the values are functions that return a truthy (if valid) or falsey (if invalid) value.\n\n**Example:**\n' + (0, _markdownComponent.js)(_templateObject3) + '\n\n**Arguments:**\n- `model`: (String) the model indicated as pending\n- `validity`: (Boolean | Object) the validity of the model\n'
+	};
+
+	function ApiPage(props) {
+	  var item = props.params.item;
+
+	  return _react2.default.createElement(_markdownComponent2.default, { content: itemMap[item] });
+	}
 
 /***/ }
 /******/ ])
