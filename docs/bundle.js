@@ -57805,7 +57805,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var Markdown = function Markdown(_ref) {
 	  var content = _ref.content;
 	  return _react2.default.createElement('div', {
-	    className: 'rsf-layout-content',
 	    dangerouslySetInnerHTML: {
 	      __html: (0, _marked2.default)(content)
 	    } });

@@ -77,8 +77,10 @@ html, body, #app {
 .rsf-layout-content {
   flex-grow: 1;
   max-height: 100%;
-  overflow-y: scroll;
   padding: 1rem;
+  padding-left: calc(50% - 500px);
+  padding-right: calc(50% - 500px);
+  overflow-y: scroll;
   animation: fade-in 0.3s ease-in-out;
 
   h1 { @extend %heading--huge; }
@@ -223,9 +225,8 @@ html, body, #app {
 }
 
 .rsf-data {
-  background: #111;
-  color: white;
   font-size: 0.85rem;
+  border-left: 1px solid #eee;
 }
 
 .rsf-field {
