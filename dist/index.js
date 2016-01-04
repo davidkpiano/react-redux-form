@@ -26538,7 +26538,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return validator(validatingValue);
 	          });
 
-	          console.log(validity);
 	          dispatch((0, _fieldActions.setValidity)(model, validity));
 	        };
 

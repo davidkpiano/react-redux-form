@@ -59,7 +59,7 @@ const store = applyMiddleware(thunk)(createStore)(combineReducers({
   userForm: createFormReducer('user'),
   multiUser: createModelReducer('multiUser'),
   multiRecord: createModelReducer('multiRecord', [ {} ]),
-  parseUser: createModelReducer('parseUser'),
+  parseUser: createModelReducer('parseUser', { phone: '' }),
   order: createModelReducer('order', {
     shipping: {},
     billing: {}

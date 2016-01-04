@@ -99,8 +99,7 @@ class SyncValidationRecipe extends React.Component {
           validators={{
             required: isRequired,
             email: validator.isEmail
-          }}
-          validateOn="blur">
+          }}>
           <label>Email</label>
           <input type="text" />
           { (userForm.field('email').errors.required)
