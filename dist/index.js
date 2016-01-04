@@ -22452,8 +22452,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return (0, _set2.default)(state, ['fields', model], _extends({}, initialFieldState, (0, _get2.default)(state, ['fields', model]), props));
 	}
 
-	function getField(state, model) {
-	  return (0, _get2.default)(state, ['fields', model], initialFieldState);
+	function getField(state, field, model) {
+	  var result = (0, _get2.default)(state, ['fields', model + '.' + field], (0, _get2.default)(state, ['fields', field], initialFieldState));
+
+	  return result;
 	}
 
 	var initialFieldState = {
