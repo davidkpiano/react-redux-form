@@ -21,8 +21,15 @@ function setField(state, model, props) {
   });
 }
 
-function getField(state, model) {
-  return get(state, ['fields', model], initialFieldState);
+function getField(state, field, model) {
+  let result = get(
+    state,
+    ['fields', `${model}.${field}`],
+    get(
+      state,
+      ['fields', field], initialFieldState));
+
+  return result;
 }
 
 const initialFieldState = {
@@ -139,7 +146,7 @@ function createFormReducer(model, initialState = initialFormState) {
 
     return {
       ...form,
-      field: (model) => getField(form, model)
+      field: (field) => getField(form, field, model)
     }
   }
 }

@@ -43392,8 +43392,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return (0, _set2.default)(state, ['fields', model], _extends({}, initialFieldState, (0, _get2.default)(state, ['fields', model]), props));
 	}
 
-	function getField(state, model) {
-	  return (0, _get2.default)(state, ['fields', model], initialFieldState);
+	function getField(state, field, model) {
+	  var result = (0, _get2.default)(state, ['fields', model + '.' + field], (0, _get2.default)(state, ['fields', field], initialFieldState));
+
+	  return result;
 	}
 
 	var initialFieldState = {
@@ -43512,8 +43514,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    return _extends({}, form, {
-	      field: function field(model) {
-	        return getField(form, model);
+	      field: function field(_field) {
+	        return getField(form, _field, model);
 	      }
 	    });
 	  };
@@ -49970,12 +49972,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
-	      var user3 = _props.user3;
-	      var user3Form = _props.user3Form;
+	      var user = _props.user;
+	      var userForm = _props.userForm;
 
+	      console.log(userForm);
 	      return _react2.default.createElement(
 	        _recipeComponent2.default,
-	        { model: 'user3' },
+	        { model: 'user' },
 	        _react2.default.createElement(
 	          'h2',
 	          null,
@@ -49983,30 +49986,30 @@ return /******/ (function(modules) { // webpackBootstrap
 	        ),
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
-	          { model: 'user3.password' },
+	          { model: 'user.password' },
 	          _react2.default.createElement(
 	            'label',
-	            { htmlFor: '' },
+	            null,
 	            'Password'
 	          ),
-	          _react2.default.createElement('input', { type: 'password', name: '', id: '' })
+	          _react2.default.createElement('input', { type: 'password' })
 	        ),
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
-	          { model: 'user3.confirm_password',
+	          { model: 'user.confirm_password',
 	            validators: {
 	              match: function match(val) {
-	                return val === user3.password;
+	                return val === user.password;
 	              }
 	            },
 	            validateOn: 'blur' },
 	          _react2.default.createElement(
 	            'label',
-	            { htmlFor: '' },
+	            null,
 	            'Confirm password'
 	          ),
-	          _react2.default.createElement('input', { type: 'password', name: '', id: '' }),
-	          user3Form.field('user3.confirm_password').errors.match && _react2.default.createElement(
+	          _react2.default.createElement('input', { type: 'password' }),
+	          userForm.field('confirm_password').errors.match && _react2.default.createElement(
 	            'div',
 	            { className: 'rsf-error' },
 	            'Passwords don\'t match.'
@@ -56142,7 +56145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return '<pre><code class="hljs javascript">' + hljs.highlight('javascript', code[0]).value + '</code></pre>';
 	};
 
-	var content = '\n# redux simple form\n\nA simple, flexible, and powerful way to create complex forms\nwith React and Redux.\n\n**Getting Started**\n1. Install the prerequisites:\n  - `npm install react redux react-redux --save`\n  - (recommended) `npm install redux-thunk --save`\n1. `npm install redux-simple-form --save`\n\n' + js(_templateObject) + '\n';
+	var content = '\n# redux simple form\n\nA simple, flexible, and powerful way to create complex forms\nwith React and Redux.\n\nHeavily inspired by Angular\'s forms and controls.\n\n**Getting Started**\n1. Install the prerequisites:\n  - `npm install react redux react-redux --save`\n  - (recommended) `npm install redux-thunk --save`\n1. `npm install redux-simple-form --save`\n\n' + js(_templateObject) + '\n';
 
 	var IntroPage = function IntroPage() {
 	  return _react2.default.createElement(_markdownComponent2.default, { content: content });

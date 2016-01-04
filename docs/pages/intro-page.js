@@ -11,6 +11,8 @@ const content =
 A simple, flexible, and powerful way to create complex forms
 with React and Redux.
 
+Heavily inspired by Angular's forms and controls.
+
 **Getting Started**
 1. Install the prerequisites:
   - \`npm install react redux react-redux --save\`

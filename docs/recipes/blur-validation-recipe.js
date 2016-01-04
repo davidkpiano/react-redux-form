@@ -10,23 +10,25 @@ const isRequired = (value) => !validator.isNull(value);
 
 class BlurValidationRecipe extends React.Component {
   render() {
-    let { user3, user3Form } = this.props;
+    let { user, userForm } = this.props;
 
+    console.log(userForm);
     return (
-      <Recipe model="user3">
+      <Recipe model="user">
         <h2>Blur Validation</h2>
-        <Field model="user3.password">
-          <label htmlFor="">Password</label>
-          <input type="password" name="" id=""/>
+        <Field model="user.password">
+          <label>Password</label>
+          <input type="password" />
         </Field>
-        <Field model="user3.confirm_password"
+
+        <Field model="user.confirm_password"
           validators={{
-            match: (val) => val === user3.password
+            match: (val) => val === user.password
           }}
           validateOn="blur">
-          <label htmlFor="">Confirm password</label>
-          <input type="password" name="" id=""/>
-          { user3Form.field('user3.confirm_password').errors.match
+          <label>Confirm password</label>
+          <input type="password" />
+          { userForm.field('confirm_password').errors.match
             && <div className="rsf-error">Passwords don't match.</div>
           }
         </Field>
