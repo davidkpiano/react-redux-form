@@ -1,9 +1,6 @@
 import React from 'react';
 
-import Markdown from '../components/markdown-component';
-
-const js = (code) => `<pre><code class="hljs javascript">${hljs.highlight('javascript', code[0]).value}
-</code></pre>`;
+import Markdown, { js } from '../components/markdown-component';
 
 const content =
 `

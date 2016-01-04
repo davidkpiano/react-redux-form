@@ -10,19 +10,8 @@ import {
   Link,
   hashHistory
 } from 'react-router';
-import {
-  Field,
-  createModelReducer,
-  createFormReducer,
-  modelActions,
-  fieldActions
-} from 'redux-simple-form';
-import validator from 'validator';
 import kebabCase from 'lodash/string/kebabCase';
 import startCase from 'lodash/string/startCase';
-
-import Recipe from './components/recipe-component';
-import Code from './components/code-component';
 
 import IntroPage from './pages/intro-page';
 import ActionsPage from './pages/actions-page';
@@ -37,6 +26,11 @@ import DeepRecipe from './recipes/deep-recipe';
 import MultiRecipe from './recipes/multi-recipe';
 import MultiRecordRecipe from './recipes/multi-record-recipe';
 import ParseRecipe from './recipes/parse-recipe';
+
+import {
+  createModelReducer,
+  createFormReducer
+} from 'redux-simple-form';
 
 import './scss/main.scss';
 

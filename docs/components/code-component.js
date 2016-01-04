@@ -2,10 +2,10 @@ import React from 'react';
 import '../vendor/prism.js';
 
 export default function Code({ content, className }) {
-  return <pre className="language-jsx">
+  return <pre className={`language-jsx ${className || ''}`}>
     <code className="language-jsx"
       dangerouslySetInnerHTML={{
-        __html: hljs.highlight('javascript', content).value + '\n'
+        __html: Prism.highlight(content.trim(), Prism.languages.jsx) + '\n'
       }} />
   </pre>;
 }

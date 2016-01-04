@@ -6,6 +6,9 @@ import validator from 'validator';
 
 import Recipe from '../components/recipe-component';
 
+const code = `
+import validator from 'validator';
+
 const isRequired = (value) => !validator.isNull(value);
 
 class SyncValidationRecipe extends React.Component {
@@ -13,7 +16,68 @@ class SyncValidationRecipe extends React.Component {
     let { user, userForm } = this.props;
 
     return (
-      <Recipe model="user">
+      <form>
+        <Field model="user.username"
+          validators={{
+            required: isRequired,
+            length: (v) => v && v.length > 15
+          }}
+          validateOn="blur">
+          <label>Username</label>
+          <input type="text"/>
+
+          { userForm.field('user.username').errors.required
+            && <div>Username is required</div>
+          }
+        </Field>
+
+        <Field model="user.email"
+          validators={{
+            required: isRequired,
+            email: validator.isEmail
+          }}
+          validateOn="blur">
+          <label>Email</label>
+          <input type="text" />
+
+          { (userForm.field('user.email').errors.required)
+          && <div>Email address is required</div> }
+          { (userForm.field('user.email').errors.email)
+          && <div>Must be valid email address</div> }
+        </Field>
+
+        <Field model="user.age"
+          parse={(val) => +val}
+          validators={{
+            required: isRequired,
+            number: validator.isInt,
+            minAge: (age) => age >= 18
+          }}
+          validateOn="blur">
+          <label>Age</label>
+          <input type="text" />
+
+          { (userForm.field('user.age').errors.required)
+          && <div>Age is required</div> }
+          { (userForm.field('user.age').errors.number)
+          && <div>Age must be a number</div> }
+          { (userForm.field('user.age').errors.minAge)
+          && <div>Must be 18 years or older</div> }
+        </Field>
+      </form>
+    );
+  }
+}
+`
+
+const isRequired = (value) => !validator.isNull(value);
+
+class SyncValidationRecipe extends React.Component {
+  render() {
+    let { user, userForm } = this.props;
+
+    return (
+      <Recipe model="user" code={code}>
         <h2>Sync Validation</h2>
         <Field model="user.username"
           validators={{
@@ -29,6 +93,7 @@ class SyncValidationRecipe extends React.Component {
           }
           </div>
         </Field>
+
         <Field model="user.email"
           validators={{
             required: isRequired,
@@ -42,6 +107,7 @@ class SyncValidationRecipe extends React.Component {
           { (userForm.field('user.email').errors.email)
           && <div className="rsf-error">Must be valid email address</div> }
         </Field>
+
         <Field model="user.age"
           parse={(val) => +val}
           validators={{
@@ -59,7 +125,6 @@ class SyncValidationRecipe extends React.Component {
           { (userForm.field('user.age').errors.minAge)
           && <div className="rsf-error">Must be 18 years or older</div> }
         </Field>
-        <button>Submit</button>
       </Recipe>
     );
   }

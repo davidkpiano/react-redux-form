@@ -84,7 +84,6 @@ class AutofillRecipe extends React.Component {
 
     return (
       <Recipe model="order" code={code}>
-        <h1>Autofill Recipe</h1>
         <h2>Billing Address</h2>
 
         <Field model="order.billing.address">
