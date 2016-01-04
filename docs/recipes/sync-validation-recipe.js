@@ -8,10 +8,11 @@ import Recipe from '../components/recipe-component';
 
 const code = `
 import validator from 'validator';
+import { Field } from 'redux-simple-form';
 
 const isRequired = (value) => !validator.isNull(value);
 
-class SyncValidationRecipe extends React.Component {
+class UserForm extends React.Component {
   render() {
     let { user, userForm } = this.props;
 
@@ -26,7 +27,7 @@ class SyncValidationRecipe extends React.Component {
           <label>Username</label>
           <input type="text"/>
 
-          { userForm.field('user.username').errors.required
+          { userForm.field('username').errors.required
             && <div>Username is required</div>
           }
         </Field>
@@ -40,9 +41,9 @@ class SyncValidationRecipe extends React.Component {
           <label>Email</label>
           <input type="text" />
 
-          { (userForm.field('user.email').errors.required)
+          { (userForm.field('email').errors.required)
           && <div>Email address is required</div> }
-          { (userForm.field('user.email').errors.email)
+          { (userForm.field('email').errors.email)
           && <div>Must be valid email address</div> }
         </Field>
 
@@ -57,11 +58,11 @@ class SyncValidationRecipe extends React.Component {
           <label>Age</label>
           <input type="text" />
 
-          { (userForm.field('user.age').errors.required)
+          { (userForm.field('age').errors.required)
           && <div>Age is required</div> }
-          { (userForm.field('user.age').errors.number)
+          { (userForm.field('age').errors.number)
           && <div>Age must be a number</div> }
-          { (userForm.field('user.age').errors.minAge)
+          { (userForm.field('age').errors.minAge)
           && <div>Must be 18 years or older</div> }
         </Field>
       </form>
@@ -88,7 +89,7 @@ class SyncValidationRecipe extends React.Component {
           <label>Username</label>
           <input type="text"/>
           <div className="rsf-error">
-          { userForm.field('user.username').errors.required
+          { userForm.field('username').errors.required
             && 'Username is required'
           }
           </div>
@@ -102,9 +103,9 @@ class SyncValidationRecipe extends React.Component {
           validateOn="blur">
           <label>Email</label>
           <input type="text" />
-          { (userForm.field('user.email').errors.required)
+          { (userForm.field('email').errors.required)
           && <div className="rsf-error">Email address is required</div> }
-          { (userForm.field('user.email').errors.email)
+          { (userForm.field('email').errors.email)
           && <div className="rsf-error">Must be valid email address</div> }
         </Field>
 
@@ -118,11 +119,11 @@ class SyncValidationRecipe extends React.Component {
           validateOn="blur">
           <label>Age</label>
           <input type="text" />
-          { (userForm.field('user.age').errors.required)
+          { (userForm.field('age').errors.required)
           && <div className="rsf-error">Age is required</div> }
-          { (userForm.field('user.age').errors.number)
+          { (userForm.field('age').errors.number)
           && <div className="rsf-error">Age must be a number</div> }
-          { (userForm.field('user.age').errors.minAge)
+          { (userForm.field('age').errors.minAge)
           && <div className="rsf-error">Must be 18 years or older</div> }
         </Field>
       </Recipe>
