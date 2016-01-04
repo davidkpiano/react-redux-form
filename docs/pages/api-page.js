@@ -3,7 +3,7 @@ import Code from '../components/code-component';
 import Markdown, { js } from '../components/markdown-component';
 
 const itemMap = {
-'actions': `
+'action creators': `
 ## Action Creators
 
 ### \`actions.change(model, value)\`

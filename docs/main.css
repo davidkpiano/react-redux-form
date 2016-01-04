@@ -1,73 +1,107 @@
-/*
+/* http://prismjs.com/download.html?themes=prism-okaidia&languages=markup+css+clike+javascript+json */
+/**
+ * okaidia theme for JavaScript, CSS and HTML
+ * Loosely based on Monokai textmate theme by http://www.monokai.nl/
+ * @author ocodia
+ */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #f8f8f2;
+  text-shadow: 0 1px rgba(0, 0, 0, 0.3);
+  font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+  font-size: 0.8rem;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none; }
 
-Monokai Sublime style. Derived from Monokai by noformnocontent http://nn.mit-license.org/
+/* Code blocks */
+pre[class*="language-"] {
+  padding: 1em;
+  margin: .5em 0;
+  overflow: auto;
+  border-radius: 0.3em; }
 
-*/
-.hljs {
-  display: block;
-  overflow-x: auto;
-  padding: 0.5em;
-  background: #23241f; }
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+  background: #272822; }
 
-.hljs,
-.hljs-tag,
-.hljs-subst {
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+  padding: .1em;
+  border-radius: .3em;
+  white-space: normal; }
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: slategray; }
+
+.token.punctuation {
   color: #f8f8f2; }
 
-.hljs-strong,
-.hljs-emphasis {
-  color: #a8a8a2; }
+.namespace {
+  opacity: .7; }
 
-.hljs-bullet,
-.hljs-quote,
-.hljs-number,
-.hljs-regexp,
-.hljs-literal,
-.hljs-link {
-  color: #ae81ff; }
-
-.hljs-code,
-.hljs-title,
-.hljs-section,
-.hljs-selector-class {
-  color: #a6e22e; }
-
-.hljs-strong {
-  font-weight: bold; }
-
-.hljs-emphasis {
-  font-style: italic; }
-
-.hljs-keyword,
-.hljs-selector-tag,
-.hljs-name,
-.hljs-attr {
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol,
+.token.deleted {
   color: #f92672; }
 
-.hljs-symbol,
-.hljs-attribute {
-  color: #66d9ef; }
+.token.boolean,
+.token.number {
+  color: #ae81ff; }
 
-.hljs-params,
-.hljs-class .hljs-title {
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #a6e22e; }
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
   color: #f8f8f2; }
 
-.hljs-string,
-.hljs-type,
-.hljs-built_in,
-.hljs-builtin-name,
-.hljs-selector-id,
-.hljs-selector-attr,
-.hljs-selector-pseudo,
-.hljs-addition,
-.hljs-variable,
-.hljs-template-variable {
+.token.atrule,
+.token.attr-value,
+.token.function {
   color: #e6db74; }
 
-.hljs-comment,
-.hljs-deletion,
-.hljs-meta {
-  color: #75715e; }
+.token.keyword {
+  color: #66d9ef; }
+
+.token.regex,
+.token.important {
+  color: #fd971f; }
+
+.token.important,
+.token.bold {
+  font-weight: bold; }
+
+.token.italic {
+  font-style: italic; }
+
+.token.entity {
+  cursor: help; }
 
 html, body, #app {
   height: 100%;

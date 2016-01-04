@@ -97,7 +97,8 @@ const recipeComponents = {
 };
 
 const apiReference = [
-  'actions'
+  'action creators',
+  'action thunk creators'
 ]
 
 const Docs = (props) => (
@@ -143,7 +144,7 @@ const Docs = (props) => (
   </main>
 );
 
-const Recipes = (props) => <div className="rsf-layout-content recipes">{props.children}</div>;
+const Recipes = (props) => <div>{props.children}</div>;
 
 class App extends React.Component {
   render() {

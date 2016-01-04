@@ -1,5 +1,7 @@
 import React from 'react';
 import marked from 'marked';
+import '../vendor/prism.js';
+
 
 const Markdown = ({ content }) => <div
   dangerouslySetInnerHTML={{
@@ -9,5 +11,5 @@ const Markdown = ({ content }) => <div
 export default Markdown;
 
 export function js(string) {
-  return `<pre><code class="hljs javascript">${hljs.highlight('javascript', string[0].trim()).value}</code></pre>`;
+  return `<pre class="language-jsx"><code class="language-jsx">${Prism.highlight(string[0].trim(), Prism.languages.jsx)}</code></pre>`;
 }
