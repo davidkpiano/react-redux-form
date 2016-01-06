@@ -26,6 +26,7 @@
     "babel-preset-react": "^6.3.13",
     "babel-preset-stage-0": "^6.3.13",
     "chai": "^3.4.1",
+    "chai-subset": "^1.2.0",
     "mocha": "^2.3.4",
     "redux-thunk": "^1.0.3",
     "should": "^8.0.2",

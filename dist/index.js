@@ -22532,7 +22532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      case actionTypes.SET_VALIDITY:
 	        var errors = (0, _isPlainObject2.default)(action.validity) ? _extends({}, getField(form, action.model).errors, (0, _mapValues2.default)(action.validity, function (valid) {
 	          return !valid;
-	        })) : action.validity;
+	        })) : !action.validity;
 
 	        setField(form, action.model, {
 	          errors: errors,
@@ -22574,8 +22574,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    return _extends({}, form, {
-	      field: function field(model) {
-	        return getField(form, model);
+	      field: function field(_field) {
+	        return getField(form, _field, model);
 	      }
 	    });
 	  };
