@@ -103,7 +103,7 @@ function createFormReducer(model, initialState = initialFormState) {
               ...getField(form, action.model).errors,
               ...mapValues(action.validity, (valid) => !valid)
             }
-          : action.validity;
+          : !action.validity;
 
         setField(form, action.model, {
           errors: errors,
