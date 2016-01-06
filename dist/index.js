@@ -22486,6 +22486,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
 	    var action = arguments[1];
 
+	    console.log(action);
+
 	    if (model && !(0, _startsWith2.default)(action.model, model)) {
 	      return state;
 	    }
@@ -26229,7 +26231,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.setSubmitted = exports.setPending = exports.asyncSetValidity = exports.setValidity = exports.setInitial = exports.setDirty = exports.setPristine = exports.validate = exports.blur = exports.focus = undefined;
+	exports.setUntouched = exports.setTouched = exports.setSubmitted = exports.setPending = exports.asyncSetValidity = exports.setValidity = exports.setInitial = exports.setDirty = exports.setPristine = exports.validate = exports.blur = exports.focus = undefined;
 
 	var _get = __webpack_require__(178);
 
@@ -26296,6 +26298,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
+	var setTouched = function setTouched(model) {
+	  return {
+	    type: 'rsf/setTouched',
+	    model: model
+	  };
+	};
+
+	var setUntouched = function setUntouched(model) {
+	  return {
+	    type: 'rsf/setUntouched',
+	    model: model
+	  };
+	};
+
 	var asyncSetValidity = function asyncSetValidity(model, validator) {
 	  return function (dispatch, getState) {
 	    var value = (0, _get2.default)(getState(), model);
@@ -26334,6 +26350,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.asyncSetValidity = asyncSetValidity;
 	exports.setPending = setPending;
 	exports.setSubmitted = setSubmitted;
+	exports.setTouched = setTouched;
+	exports.setUntouched = setUntouched;
 
 /***/ },
 /* 300 */
@@ -26455,11 +26473,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    };
 	  },
 	  'default': function _default(props) {
-	    return {
-	      children: props.children && props.children.length ? _react2.default.Children.map(props.children, function (child) {
-	        return undefined.createField(child, props);
-	      }) : props.children
-	    };
+	    return {};
 	  }
 	};
 

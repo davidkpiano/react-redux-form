@@ -77,6 +77,8 @@ class SyncValidationRecipe extends React.Component {
   render() {
     let { user, userForm } = this.props;
 
+    console.log(userForm.field('username'));
+
     return (
       <Recipe model="user" code={code}>
         <h2>Sync Validation</h2>
@@ -88,18 +90,17 @@ class SyncValidationRecipe extends React.Component {
           validateOn="blur">
           <label>Username</label>
           <input type="text"/>
-          <div className="rsf-error">
           { userForm.field('username').errors.required
-            && 'Username is required'
+            && <div className="rsf-error">Username is required</div>
           }
-          </div>
         </Field>
 
         <Field model="user.email"
           validators={{
             required: isRequired,
             email: validator.isEmail
-          }}>
+          }}
+          validateOn="blur">
           <label>Email</label>
           <input type="text" />
           { (userForm.field('email').errors.required)

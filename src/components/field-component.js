@@ -60,13 +60,7 @@ const controlPropsMap = {
   'select': (props) => ({
     name: props.model
   }),
-  'default': (props) => ({
-    children: (props.children && props.children.length)
-      ? React.Children.map(
-        props.children,
-        (child) => this.createField(child, props))
-      : props.children
-  })
+  'default': (props) => ({})
 };
 
 const changeMethod = (model, value, action = change, parser = (a) => a) => {
