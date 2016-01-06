@@ -10,6 +10,7 @@ import capitalize from 'lodash/string/capitalize';
 import identity from 'lodash/utility/identity';
 import mapValues from 'lodash/object/mapValues';
 import isEqual from 'lodash/lang/isEqual';
+import partial from 'lodash/function/partial';
 
 import {
   change,
@@ -36,6 +37,48 @@ function selector(state, { model }) {
     modelValue: get(state, model)
   };
 }
+
+const controlPropsMap = {
+  'text': (props) => ({
+    name: props.model,
+    defaultValue: props.modelValue
+  }),
+  'textarea': (props) => ({
+    name: props.model,
+    defaultValue: props.modelValue
+  }),
+  'checkbox': (props) => ({
+    name: model,
+    checked: isMulti(props.model)
+      ? contains(props.modelValue, props.value)
+      : !!props.modelValue
+  }),
+  'radio': (props) => ({
+    name: props.model,
+    checked: props.modelValue === props.value
+  }),
+  'select': (props) => ({
+    name: props.model
+  }),
+  'default': (props) => ({
+    children: (props.children && props.children.length)
+      ? React.Children.map(
+        props.children,
+        (child) => this.createField(child, props))
+      : props.children
+  })
+};
+
+const changeMethod = (model, value, action = change, parser = (a) => a) => {
+  return compose(partial(action, model), parser, getValue)(value);
+};
+
+const controlActionMap = {
+  'checkbox': (props) => isMulti(props.model)
+    ? xor
+    : toggle,
+  'default': () => change
+};
 
 class Field extends React.Component {
   createField(control, props) {
@@ -67,69 +110,78 @@ class Field extends React.Component {
       onChange: []
     };
 
-    let changeMethod = (model, value) => {
-      return change(model, (parse || ((a) => a))(getValue(value)));
-    };
+    let controlType = control.type === 'input'
+      ? control.props.type
+      : control.type;
+
+    let controlProps = (controlPropsMap[controlType] || controlPropsMap.default)(props);
+    let controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
+
+    // let changeMethod = (model, value) => {
+    //   return change(model, (parse || ((a) => a))(getValue(value)));
+    // };
+
+    let controlChangeMethod = changeMethod(props.model, props.value, controlAction, parse);
 
     let dispatchChange = control.props.hasOwnProperty('value')
-      ? () => dispatch(changeMethod(model, value))
-      : (e) => dispatch(changeMethod(model, e));
+      ? () => dispatch(controlChangeMethod(model, value))
+      : (e) => dispatch(controlChangeMethod(model, e));
 
-    switch (control.type) {
-      case 'input':
-      case 'textarea':
-        switch (control.props.type) {
-          case 'checkbox':
-            defaultProps = {
-              name: model,
-              checked: isMulti(model)
-                ? contains(modelValue, value)
-                : !!modelValue
-            };
+    // switch (control.type) {
+    //   case 'input':
+    //   case 'textarea':
+    //     switch (control.props.type) {
+    //       case 'checkbox':
+    //         defaultProps = {
+    //           name: model,
+    //           checked: isMulti(model)
+    //             ? contains(modelValue, value)
+    //             : !!modelValue
+    //         };
 
-            changeMethod = isMulti(model)
-              ? xor
-              : toggle;
+    //         changeMethod = isMulti(model)
+    //           ? xor
+    //           : toggle;
 
-            break;
+    //         break;
 
-          case 'radio':
-            defaultProps = {
-              name: model,
-              checked: modelValue === value
-            };
+    //       case 'radio':
+    //         defaultProps = {
+    //           name: model,
+    //           checked: modelValue === value
+    //         };
 
-            break;
+    //         break;
 
-          default:
-            defaultProps = {
-              name: model,
-              defaultValue: modelValue
-            };
+    //       default:
+    //         defaultProps = {
+    //           name: model,
+    //           defaultValue: modelValue
+    //         };
 
-            dispatchChange = (e) => dispatch(changeMethod(model, e));
+    //         dispatchChange = (e) => dispatch(changeMethod(model, e));
 
-            break;
-        }
-        break;
-      case 'select':
-        dispatchChange = (e) => dispatch(changeMethod(model, e));
+    //         break;
+    //     }
+    //     break;
+    //   case 'select':
+    //     dispatchChange = (e) => dispatch(changeMethod(model, e));
 
-        break;
+    //     break;
 
-      default:
-        if (control.props.children && control.props.children.length) {
-          return React.cloneElement(
-            control,
-            {
-              children: React.Children.map(
-                control.props.children,
-                (child) => this.createField(child, props)
-              )
-            });
-        }
-        return control;
-    }
+    //   default:
+    //     if (control.props.children && control.props.children.length) {
+    //       return React.cloneElement(
+    //         control,
+    //         {
+    //           children: React.Children.map(
+    //             control.props.children,
+    //             (child) => this.createField(child, props)
+    //           )
+    //         });
+    //     }
+    //     return control;
+    // }
 
     if (typeof props.updateOn === 'function') {
       dispatchChange = props.updateOn(dispatchChange);
@@ -171,7 +223,7 @@ class Field extends React.Component {
 
     return (
       <Control
-        {...defaultProps}
+        {...controlProps}
         {...mapValues(eventActions, (actions) => compose(...actions))}
         modelValue={modelValue}
         control={control} />

@@ -26389,6 +26389,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _isEqual2 = _interopRequireDefault(_isEqual);
 
+	var _partial = __webpack_require__(319);
+
+	var _partial2 = _interopRequireDefault(_partial);
+
 	var _modelActions = __webpack_require__(265);
 
 	var _fieldActions = __webpack_require__(299);
@@ -26420,6 +26424,63 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	}
 
+	var controlPropsMap = {
+	  'text': function text(props) {
+	    return {
+	      name: props.model,
+	      defaultValue: props.modelValue
+	    };
+	  },
+	  'textarea': function textarea(props) {
+	    return {
+	      name: props.model,
+	      defaultValue: props.modelValue
+	    };
+	  },
+	  'checkbox': function checkbox(props) {
+	    return {
+	      name: model,
+	      checked: (0, _utils.isMulti)(props.model) ? (0, _contains2.default)(props.modelValue, props.value) : !!props.modelValue
+	    };
+	  },
+	  'radio': function radio(props) {
+	    return {
+	      name: props.model,
+	      checked: props.modelValue === props.value
+	    };
+	  },
+	  'select': function select(props) {
+	    return {
+	      name: props.model
+	    };
+	  },
+	  'default': function _default(props) {
+	    return {
+	      children: props.children && props.children.length ? _react2.default.Children.map(props.children, function (child) {
+	        return undefined.createField(child, props);
+	      }) : props.children
+	    };
+	  }
+	};
+
+	var changeMethod = function changeMethod(model, value) {
+	  var action = arguments.length <= 2 || arguments[2] === undefined ? _modelActions.change : arguments[2];
+	  var parser = arguments.length <= 3 || arguments[3] === undefined ? function (a) {
+	    return a;
+	  } : arguments[3];
+
+	  return (0, _compose2.default)((0, _partial2.default)(action, model), parser, _utils.getValue)(value);
+	};
+
+	var controlActionMap = {
+	  'checkbox': function checkbox(props) {
+	    return (0, _utils.isMulti)(props.model) ? _modelActions.xor : _modelActions.toggle;
+	  },
+	  'default': function _default() {
+	    return _modelActions.change;
+	  }
+	};
+
 	var Field = (function (_React$Component) {
 	  _inherits(Field, _React$Component);
 
@@ -26432,8 +26493,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Field, [{
 	    key: 'createField',
 	    value: function createField(control, props) {
-	      var _this2 = this;
-
 	      if (!control || !control.props || Object.hasOwnProperty(control.props, 'modelValue')) return control;
 
 	      var dispatch = props.dispatch;
@@ -26460,70 +26519,78 @@ return /******/ (function(modules) { // webpackBootstrap
 	        onChange: []
 	      };
 
-	      var changeMethod = function changeMethod(model, value) {
-	        return (0, _modelActions.change)(model, (parse || function (a) {
-	          return a;
-	        })((0, _utils.getValue)(value)));
-	      };
+	      var controlType = control.type === 'input' ? control.props.type : control.type;
+
+	      var controlProps = (controlPropsMap[controlType] || controlPropsMap.default)(props);
+	      var controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
+
+	      // let changeMethod = (model, value) => {
+	      //   return change(model, (parse || ((a) => a))(getValue(value)));
+	      // };
+
+	      var controlChangeMethod = changeMethod(props.model, props.value, controlAction, parse);
 
 	      var dispatchChange = control.props.hasOwnProperty('value') ? function () {
-	        return dispatch(changeMethod(model, value));
+	        return dispatch(controlChangeMethod(model, value));
 	      } : function (e) {
-	        return dispatch(changeMethod(model, e));
+	        return dispatch(controlChangeMethod(model, e));
 	      };
 
-	      switch (control.type) {
-	        case 'input':
-	        case 'textarea':
-	          switch (control.props.type) {
-	            case 'checkbox':
-	              defaultProps = {
-	                name: model,
-	                checked: (0, _utils.isMulti)(model) ? (0, _contains2.default)(modelValue, value) : !!modelValue
-	              };
+	      // switch (control.type) {
+	      //   case 'input':
+	      //   case 'textarea':
+	      //     switch (control.props.type) {
+	      //       case 'checkbox':
+	      //         defaultProps = {
+	      //           name: model,
+	      //           checked: isMulti(model)
+	      //             ? contains(modelValue, value)
+	      //             : !!modelValue
+	      //         };
 
-	              changeMethod = (0, _utils.isMulti)(model) ? _modelActions.xor : _modelActions.toggle;
+	      //         changeMethod = isMulti(model)
+	      //           ? xor
+	      //           : toggle;
 
-	              break;
+	      //         break;
 
-	            case 'radio':
-	              defaultProps = {
-	                name: model,
-	                checked: modelValue === value
-	              };
+	      //       case 'radio':
+	      //         defaultProps = {
+	      //           name: model,
+	      //           checked: modelValue === value
+	      //         };
 
-	              break;
+	      //         break;
 
-	            default:
-	              defaultProps = {
-	                name: model,
-	                defaultValue: modelValue
-	              };
+	      //       default:
+	      //         defaultProps = {
+	      //           name: model,
+	      //           defaultValue: modelValue
+	      //         };
 
-	              dispatchChange = function (e) {
-	                return dispatch(changeMethod(model, e));
-	              };
+	      //         dispatchChange = (e) => dispatch(changeMethod(model, e));
 
-	              break;
-	          }
-	          break;
-	        case 'select':
-	          dispatchChange = function (e) {
-	            return dispatch(changeMethod(model, e));
-	          };
+	      //         break;
+	      //     }
+	      //     break;
+	      //   case 'select':
+	      //     dispatchChange = (e) => dispatch(changeMethod(model, e));
 
-	          break;
+	      //     break;
 
-	        default:
-	          if (control.props.children && control.props.children.length) {
-	            return _react2.default.cloneElement(control, {
-	              children: _react2.default.Children.map(control.props.children, function (child) {
-	                return _this2.createField(child, props);
-	              })
-	            });
-	          }
-	          return control;
-	      }
+	      //   default:
+	      //     if (control.props.children && control.props.children.length) {
+	      //       return React.cloneElement(
+	      //         control,
+	      //         {
+	      //           children: React.Children.map(
+	      //             control.props.children,
+	      //             (child) => this.createField(child, props)
+	      //           )
+	      //         });
+	      //     }
+	      //     return control;
+	      // }
 
 	      if (typeof props.updateOn === 'function') {
 	        dispatchChange = props.updateOn(dispatchChange);
@@ -26563,7 +26630,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        eventActions[asyncValidateOn].push(dispatchAsyncValidate);
 	      }
 
-	      return _react2.default.createElement(_controlComponent2.default, _extends({}, defaultProps, (0, _mapValues2.default)(eventActions, function (actions) {
+	      return _react2.default.createElement(_controlComponent2.default, _extends({}, controlProps, (0, _mapValues2.default)(eventActions, function (actions) {
 	        return _compose2.default.apply(undefined, _toConsumableArray(actions));
 	      }), {
 	        modelValue: modelValue,
@@ -26572,7 +26639,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this3 = this;
+	      var _this2 = this;
 
 	      var props = this.props;
 
@@ -26581,7 +26648,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          'div',
 	          props,
 	          _react2.default.Children.map(props.children, function (child) {
-	            return _this3.createField(child, props);
+	            return _this2.createField(child, props);
 	          })
 	        );
 	      }
@@ -27398,6 +27465,81 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	module.exports = isEqual;
+
+
+/***/ },
+/* 319 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var createPartial = __webpack_require__(320);
+
+	/** Used to compose bitmasks for wrapper metadata. */
+	var PARTIAL_FLAG = 32;
+
+	/**
+	 * Creates a function that invokes `func` with `partial` arguments prepended
+	 * to those provided to the new function. This method is like `_.bind` except
+	 * it does **not** alter the `this` binding.
+	 *
+	 * The `_.partial.placeholder` value, which defaults to `_` in monolithic
+	 * builds, may be used as a placeholder for partially applied arguments.
+	 *
+	 * **Note:** This method does not set the "length" property of partially
+	 * applied functions.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Function
+	 * @param {Function} func The function to partially apply arguments to.
+	 * @param {...*} [partials] The arguments to be partially applied.
+	 * @returns {Function} Returns the new partially applied function.
+	 * @example
+	 *
+	 * var greet = function(greeting, name) {
+	 *   return greeting + ' ' + name;
+	 * };
+	 *
+	 * var sayHelloTo = _.partial(greet, 'hello');
+	 * sayHelloTo('fred');
+	 * // => 'hello fred'
+	 *
+	 * // using placeholders
+	 * var greetFred = _.partial(greet, _, 'fred');
+	 * greetFred('hi');
+	 * // => 'hi fred'
+	 */
+	var partial = createPartial(PARTIAL_FLAG);
+
+	// Assign default placeholders.
+	partial.placeholder = {};
+
+	module.exports = partial;
+
+
+/***/ },
+/* 320 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var createWrapper = __webpack_require__(268),
+	    replaceHolders = __webpack_require__(288),
+	    restParam = __webpack_require__(298);
+
+	/**
+	 * Creates a `_.partial` or `_.partialRight` function.
+	 *
+	 * @private
+	 * @param {boolean} flag The partial bit flag.
+	 * @returns {Function} Returns the new partial function.
+	 */
+	function createPartial(flag) {
+	  var partialFunc = restParam(function(func, partials) {
+	    var holders = replaceHolders(partials, partialFunc.placeholder);
+	    return createWrapper(func, flag, undefined, partials, holders);
+	  });
+	  return partialFunc;
+	}
+
+	module.exports = createPartial;
 
 
 /***/ }
