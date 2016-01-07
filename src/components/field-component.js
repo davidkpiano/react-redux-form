@@ -43,7 +43,6 @@ const controlPropsMap = {
     name: props.model,
     defaultValue: props.modelValue
   }),
-  'password': (props) => controlPropsMap['text'](props),
   'textarea': (props) => ({
     name: props.model,
     defaultValue: props.modelValue
@@ -101,7 +100,9 @@ class Field extends React.Component {
     let validateOn = `on${capitalize(props.validateOn || 'change')}`;
     let asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
 
-    let defaultProps = {};
+    let defaultProps = {
+      ref: (controlDOMNode) => this._control = controlDOMNode
+    };
 
     let eventActions = {
       onFocus: [() => dispatch(focus(model))],
@@ -114,10 +115,15 @@ class Field extends React.Component {
       : control.type;
 
 
-    let createControlProps = controlPropsMap[controlType];
+    let createControlProps = controlPropsMap[controlType]
+      || (control.type === 'input' && controlPropsMap['text'])
+      || null;
 
     let controlProps = createControlProps
-      ? createControlProps(props)
+      ? {
+          ...defaultProps,
+          ...createControlProps(props)
+        }
       : null;
 
     if (!controlProps) {
