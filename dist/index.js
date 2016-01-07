@@ -22486,6 +22486,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
 	    var action = arguments[1];
 
+	    console.log(action);
+
 	    if (model && !(0, _startsWith2.default)(action.model, model)) {
 	      return state;
 	    }
@@ -24648,10 +24650,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _cloneDeep2 = _interopRequireDefault(_cloneDeep);
 
-	var _xor2 = __webpack_require__(217);
-
-	var _xor3 = _interopRequireDefault(_xor2);
-
 	var _filter2 = __webpack_require__(230);
 
 	var _filter3 = _interopRequireDefault(_filter2);
@@ -24663,6 +24661,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _pullAt2 = __webpack_require__(293);
 
 	var _pullAt3 = _interopRequireDefault(_pullAt2);
+
+	var _isEqual = __webpack_require__(318);
+
+	var _isEqual2 = _interopRequireDefault(_isEqual);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24691,7 +24693,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var xor = function xor(model, item) {
 	  return function (dispatch, getState) {
-	    var value = (0, _xor3.default)((0, _get2.default)(getState(), model, []), [getValue(item)]);
+	    var state = (0, _get2.default)(getState(), model, []);
+
+	    var stateWithoutItem = (0, _filter3.default)(state, function (stateItem) {
+	      return !(0, _isEqual2.default)(stateItem, item);
+	    });
+
+	    var value = state.length === stateWithoutItem.length ? [].concat(_toConsumableArray(state), [item]) : stateWithoutItem;
 
 	    dispatch({
 	      type: 'rsf/change',
@@ -26229,7 +26237,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.setSubmitted = exports.setPending = exports.asyncSetValidity = exports.setValidity = exports.setInitial = exports.setDirty = exports.setPristine = exports.validate = exports.blur = exports.focus = undefined;
+	exports.setUntouched = exports.setTouched = exports.setSubmitted = exports.setPending = exports.asyncSetValidity = exports.setValidity = exports.setInitial = exports.setDirty = exports.setPristine = exports.validate = exports.blur = exports.focus = undefined;
 
 	var _get = __webpack_require__(178);
 
@@ -26296,6 +26304,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
+	var setTouched = function setTouched(model) {
+	  return {
+	    type: 'rsf/setTouched',
+	    model: model
+	  };
+	};
+
+	var setUntouched = function setUntouched(model) {
+	  return {
+	    type: 'rsf/setUntouched',
+	    model: model
+	  };
+	};
+
 	var asyncSetValidity = function asyncSetValidity(model, validator) {
 	  return function (dispatch, getState) {
 	    var value = (0, _get2.default)(getState(), model);
@@ -26334,6 +26356,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.asyncSetValidity = asyncSetValidity;
 	exports.setPending = setPending;
 	exports.setSubmitted = setSubmitted;
+	exports.setTouched = setTouched;
+	exports.setUntouched = setUntouched;
 
 /***/ },
 /* 300 */
@@ -26431,6 +26455,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      defaultValue: props.modelValue
 	    };
 	  },
+	  'password': function password(props) {
+	    return controlPropsMap['text'](props);
+	  },
 	  'textarea': function textarea(props) {
 	    return {
 	      name: props.model,
@@ -26439,27 +26466,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  'checkbox': function checkbox(props) {
 	    return {
-	      name: model,
-	      checked: (0, _utils.isMulti)(props.model) ? (0, _contains2.default)(props.modelValue, props.value) : !!props.modelValue
+	      name: props.model,
+	      checked: (0, _utils.isMulti)(props.model) ? (props.modelValue || []).filter(function (item) {
+	        return (0, _isEqual2.default)(item, props.value);
+	      }).length : !!props.modelValue
 	    };
 	  },
 	  'radio': function radio(props) {
 	    return {
 	      name: props.model,
-	      checked: props.modelValue === props.value
+	      checked: (0, _isEqual2.default)(props.modelValue, props.value),
+	      value: props.value
 	    };
 	  },
 	  'select': function select(props) {
 	    return {
-	      name: props.model
+	      name: props.model,
+	      value: props.modelValue
 	    };
 	  },
 	  'default': function _default(props) {
-	    return {
-	      children: props.children && props.children.length ? _react2.default.Children.map(props.children, function (child) {
-	        return undefined.createField(child, props);
-	      }) : props.children
-	    };
+	    return {};
 	  }
 	};
 
@@ -26469,7 +26496,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return a;
 	  } : arguments[3];
 
-	  return (0, _compose2.default)((0, _partial2.default)(action, model), parser, _utils.getValue)(value);
+	  return (0, _compose2.default)((0, _partial2.default)(action, model), parser, _utils.getValue);
 	};
 
 	var controlActionMap = {
@@ -26493,6 +26520,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Field, [{
 	    key: 'createField',
 	    value: function createField(control, props) {
+	      var _this2 = this;
+
 	      if (!control || !control.props || Object.hasOwnProperty(control.props, 'modelValue')) return control;
 
 	      var dispatch = props.dispatch;
@@ -26521,76 +26550,27 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var controlType = control.type === 'input' ? control.props.type : control.type;
 
-	      var controlProps = (controlPropsMap[controlType] || controlPropsMap.default)(props);
-	      var controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
+	      var createControlProps = controlPropsMap[controlType];
 
-	      // let changeMethod = (model, value) => {
-	      //   return change(model, (parse || ((a) => a))(getValue(value)));
-	      // };
+	      var controlProps = createControlProps ? createControlProps(props) : null;
+
+	      if (!controlProps) {
+	        return _react2.default.cloneElement(control, {
+	          children: _react2.default.Children.map(control.props.children, function (child) {
+	            return _this2.createField(child, _extends({}, props, child.props));
+	          })
+	        });
+	      }
+
+	      var controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
 
 	      var controlChangeMethod = changeMethod(props.model, props.value, controlAction, parse);
 
-	      var dispatchChange = control.props.hasOwnProperty('value') ? function () {
-	        return dispatch(controlChangeMethod(model, value));
+	      var dispatchChange = control.props.hasOwnProperty('value') && controlType !== 'text' ? function () {
+	        return dispatch(controlChangeMethod(value));
 	      } : function (e) {
-	        return dispatch(controlChangeMethod(model, e));
+	        return dispatch(controlChangeMethod(e));
 	      };
-
-	      // switch (control.type) {
-	      //   case 'input':
-	      //   case 'textarea':
-	      //     switch (control.props.type) {
-	      //       case 'checkbox':
-	      //         defaultProps = {
-	      //           name: model,
-	      //           checked: isMulti(model)
-	      //             ? contains(modelValue, value)
-	      //             : !!modelValue
-	      //         };
-
-	      //         changeMethod = isMulti(model)
-	      //           ? xor
-	      //           : toggle;
-
-	      //         break;
-
-	      //       case 'radio':
-	      //         defaultProps = {
-	      //           name: model,
-	      //           checked: modelValue === value
-	      //         };
-
-	      //         break;
-
-	      //       default:
-	      //         defaultProps = {
-	      //           name: model,
-	      //           defaultValue: modelValue
-	      //         };
-
-	      //         dispatchChange = (e) => dispatch(changeMethod(model, e));
-
-	      //         break;
-	      //     }
-	      //     break;
-	      //   case 'select':
-	      //     dispatchChange = (e) => dispatch(changeMethod(model, e));
-
-	      //     break;
-
-	      //   default:
-	      //     if (control.props.children && control.props.children.length) {
-	      //       return React.cloneElement(
-	      //         control,
-	      //         {
-	      //           children: React.Children.map(
-	      //             control.props.children,
-	      //             (child) => this.createField(child, props)
-	      //           )
-	      //         });
-	      //     }
-	      //     return control;
-	      // }
 
 	      if (typeof props.updateOn === 'function') {
 	        dispatchChange = props.updateOn(dispatchChange);
@@ -26605,7 +26585,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	            return validator(validatingValue);
 	          });
 
-	          console.log(validity);
 	          dispatch((0, _fieldActions.setValidity)(model, validity));
 	        };
 
@@ -26639,7 +26618,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var props = this.props;
 
@@ -26648,7 +26627,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          'div',
 	          props,
 	          _react2.default.Children.map(props.children, function (child) {
-	            return _this2.createField(child, props);
+	            return _this3.createField(child, props);
 	          })
 	        );
 	      }

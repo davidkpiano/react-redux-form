@@ -2,10 +2,10 @@ import curry from 'lodash/function/curry';
 import endsWith from 'lodash/string/endsWith';
 import get from 'lodash/object/get';
 import cloneDeep from 'lodash/lang/cloneDeep';
-import _xor from 'lodash/array/xor';
 import _filter from 'lodash/collection/filter';
 import _map from 'lodash/collection/map';
 import _pullAt from 'lodash/array/pullAt';
+import isEqual from 'lodash/lang/isEqual';
 
 function isEvent(event) {
   return !!(event && event.stopPropagation && event.preventDefault);
@@ -29,7 +29,13 @@ const change = curry((model, value) => ({
 }));
 
 const xor = (model, item) => (dispatch, getState) => {
-  let value = _xor(get(getState(), model, []), [getValue(item)]);
+  let state = get(getState(), model, []);
+
+  let stateWithoutItem = _filter(state, (stateItem) => !isEqual(stateItem, item));
+
+  let value = state.length === stateWithoutItem.length
+    ? [...state, item]
+    : stateWithoutItem;
 
   dispatch({
     type: `rsf/change`,

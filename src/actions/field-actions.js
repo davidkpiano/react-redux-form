@@ -42,6 +42,16 @@ const setValidity = (model, validity) => ({
   validity
 });
 
+const setTouched = (model) => ({
+  type: 'rsf/setTouched',
+  model
+});
+
+const setUntouched = (model) => ({
+  type: 'rsf/setUntouched',
+  model
+});
+
 const asyncSetValidity = (model, validator) => {
   return (dispatch, getState) => {
     let value = get(getState(), model);
@@ -77,5 +87,7 @@ export {
   setValidity,
   asyncSetValidity,
   setPending,
-  setSubmitted
+  setSubmitted,
+  setTouched,
+  setUntouched
 }
