@@ -134,6 +134,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _parseRecipe2 = _interopRequireDefault(_parseRecipe);
 
+	var _variousControlsRecipe = __webpack_require__(598);
+
+	var _variousControlsRecipe2 = _interopRequireDefault(_variousControlsRecipe);
+
 	var _reduxSimpleForm = __webpack_require__(255);
 
 	__webpack_require__(596);
@@ -177,7 +181,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  })
 	}));
 
-	var recipes = ['SyncValidationRecipe', 'SubmitValidationRecipe', 'BlurValidationRecipe', 'AsyncBlurValidationRecipe', 'AutofillRecipe', 'DeepRecipe', 'MultiRecipe', 'MultiRecordRecipe', 'ParseRecipe'];
+	var recipes = ['SyncValidationRecipe', 'SubmitValidationRecipe', 'BlurValidationRecipe', 'AsyncBlurValidationRecipe', 'AutofillRecipe', 'DeepRecipe', 'MultiRecipe', 'MultiRecordRecipe', 'ParseRecipe', 'VariousControlsRecipe'];
 
 	var recipeComponents = {
 	  SyncValidationRecipe: _syncValidationRecipe2.default,
@@ -188,7 +192,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  DeepRecipe: _deepRecipe2.default,
 	  MultiRecipe: _multiRecipe2.default,
 	  MultiRecordRecipe: _multiRecordRecipe2.default,
-	  ParseRecipe: _parseRecipe2.default
+	  ParseRecipe: _parseRecipe2.default,
+	  VariousControlsRecipe: _variousControlsRecipe2.default
 	};
 
 	var apiReference = ['action creators', 'action thunk creators'];
@@ -52584,10 +52589,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _cloneDeep2 = _interopRequireDefault(_cloneDeep);
 
-	var _xor2 = __webpack_require__(471);
-
-	var _xor3 = _interopRequireDefault(_xor2);
-
 	var _filter2 = __webpack_require__(484);
 
 	var _filter3 = _interopRequireDefault(_filter2);
@@ -52599,6 +52600,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _pullAt2 = __webpack_require__(547);
 
 	var _pullAt3 = _interopRequireDefault(_pullAt2);
+
+	var _isEqual = __webpack_require__(570);
+
+	var _isEqual2 = _interopRequireDefault(_isEqual);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -52627,7 +52632,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var xor = function xor(model, item) {
 	  return function (dispatch, getState) {
-	    var value = (0, _xor3.default)((0, _get2.default)(getState(), model, []), [getValue(item)]);
+	    var state = (0, _get2.default)(getState(), model, []);
+
+	    var stateWithoutItem = (0, _filter3.default)(state, function (stateItem) {
+	      return !(0, _isEqual2.default)(stateItem, item);
+	    });
+
+	    var value = state.length === stateWithoutItem.length ? [].concat(_toConsumableArray(state), [item]) : stateWithoutItem;
 
 	    dispatch({
 	      type: 'rsf/change',
@@ -54383,6 +54394,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      defaultValue: props.modelValue
 	    };
 	  },
+	  'password': function password(props) {
+	    return controlPropsMap['text'](props);
+	  },
 	  'textarea': function textarea(props) {
 	    return {
 	      name: props.model,
@@ -54391,14 +54405,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  'checkbox': function checkbox(props) {
 	    return {
-	      name: model,
-	      checked: (0, _utils.isMulti)(props.model) ? (0, _contains2.default)(props.modelValue, props.value) : !!props.modelValue
+	      name: props.model,
+	      checked: (0, _utils.isMulti)(props.model) ? (props.modelValue || []).filter(function (item) {
+	        return (0, _isEqual2.default)(item, props.value);
+	      }).length : !!props.modelValue
 	    };
 	  },
 	  'radio': function radio(props) {
 	    return {
 	      name: props.model,
-	      checked: props.modelValue === props.value
+	      checked: (0, _isEqual2.default)(props.modelValue, props.value),
+	      value: props.value
 	    };
 	  },
 	  'select': function select(props) {
@@ -54417,7 +54434,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return a;
 	  } : arguments[3];
 
-	  return (0, _compose2.default)((0, _partial2.default)(action, model), parser, _utils.getValue)(value);
+	  return (0, _compose2.default)((0, _partial2.default)(action, model), parser, _utils.getValue);
 	};
 
 	var controlActionMap = {
@@ -54441,6 +54458,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  _createClass(Field, [{
 	    key: 'createField',
 	    value: function createField(control, props) {
+	      var _this2 = this;
+
 	      if (!control || !control.props || Object.hasOwnProperty(control.props, 'modelValue')) return control;
 
 	      var dispatch = props.dispatch;
@@ -54469,76 +54488,27 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var controlType = control.type === 'input' ? control.props.type : control.type;
 
-	      var controlProps = (controlPropsMap[controlType] || controlPropsMap.default)(props);
-	      var controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
+	      var createControlProps = controlPropsMap[controlType];
 
-	      // let changeMethod = (model, value) => {
-	      //   return change(model, (parse || ((a) => a))(getValue(value)));
-	      // };
+	      var controlProps = createControlProps ? createControlProps(props) : null;
+
+	      if (!controlProps) {
+	        return _react2.default.cloneElement(control, {
+	          children: _react2.default.Children.map(control.props.children, function (child) {
+	            return _this2.createField(child, _extends({}, props, child.props));
+	          })
+	        });
+	      }
+
+	      var controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
 
 	      var controlChangeMethod = changeMethod(props.model, props.value, controlAction, parse);
 
-	      var dispatchChange = control.props.hasOwnProperty('value') ? function () {
-	        return dispatch(controlChangeMethod(model, value));
+	      var dispatchChange = control.props.hasOwnProperty('value') && controlType !== 'text' ? function () {
+	        return dispatch(controlChangeMethod(value));
 	      } : function (e) {
-	        return dispatch(controlChangeMethod(model, e));
+	        return dispatch(controlChangeMethod(e));
 	      };
-
-	      // switch (control.type) {
-	      //   case 'input':
-	      //   case 'textarea':
-	      //     switch (control.props.type) {
-	      //       case 'checkbox':
-	      //         defaultProps = {
-	      //           name: model,
-	      //           checked: isMulti(model)
-	      //             ? contains(modelValue, value)
-	      //             : !!modelValue
-	      //         };
-
-	      //         changeMethod = isMulti(model)
-	      //           ? xor
-	      //           : toggle;
-
-	      //         break;
-
-	      //       case 'radio':
-	      //         defaultProps = {
-	      //           name: model,
-	      //           checked: modelValue === value
-	      //         };
-
-	      //         break;
-
-	      //       default:
-	      //         defaultProps = {
-	      //           name: model,
-	      //           defaultValue: modelValue
-	      //         };
-
-	      //         dispatchChange = (e) => dispatch(changeMethod(model, e));
-
-	      //         break;
-	      //     }
-	      //     break;
-	      //   case 'select':
-	      //     dispatchChange = (e) => dispatch(changeMethod(model, e));
-
-	      //     break;
-
-	      //   default:
-	      //     if (control.props.children && control.props.children.length) {
-	      //       return React.cloneElement(
-	      //         control,
-	      //         {
-	      //           children: React.Children.map(
-	      //             control.props.children,
-	      //             (child) => this.createField(child, props)
-	      //           )
-	      //         });
-	      //     }
-	      //     return control;
-	      // }
 
 	      if (typeof props.updateOn === 'function') {
 	        dispatchChange = props.updateOn(dispatchChange);
@@ -54586,7 +54556,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
+	      var _this3 = this;
 
 	      var props = this.props;
 
@@ -54595,7 +54565,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          'div',
 	          props,
 	          _react2.default.Children.map(props.children, function (child) {
-	            return _this2.createField(child, props);
+	            return _this3.createField(child, props);
 	          })
 	        );
 	      }
@@ -56886,12 +56856,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function fooSubmitAction(data) {
 	  return function (dispatch) {
-	    dispatch(_reduxSimpleForm.fieldActions.asyncSetValidity('submitValidUser', function (_, done) {
+	    dispatch(_reduxSimpleForm.actions.asyncSetValidity('submitValidUser', function (_, done) {
 	      fooAsyncSubmit(data).then(function (res) {
 	        done({
 	          credentials: true
 	        });
-	        dispatch(_reduxSimpleForm.fieldActions.setSubmitted('submitValidUser'));
+	        dispatch(_reduxSimpleForm.actions.setSubmitted('submitValidUser'));
 	      }).catch(function () {
 	        done({
 	          credentials: false
@@ -58118,6 +58088,203 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 597 */,
+/* 598 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(159);
+
+	var _reduxSimpleForm = __webpack_require__(255);
+
+	var _validator = __webpack_require__(575);
+
+	var _validator2 = _interopRequireDefault(_validator);
+
+	var _recipeComponent = __webpack_require__(576);
+
+	var _recipeComponent2 = _interopRequireDefault(_recipeComponent);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var VariousControlsRecipe = (function (_React$Component) {
+	  _inherits(VariousControlsRecipe, _React$Component);
+
+	  function VariousControlsRecipe() {
+	    _classCallCheck(this, VariousControlsRecipe);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(VariousControlsRecipe).apply(this, arguments));
+	  }
+
+	  _createClass(VariousControlsRecipe, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      var _props = this.props;
+	      var user = _props.user;
+	      var userForm = _props.userForm;
+	      var dispatch = _props.dispatch;
+
+	      return _react2.default.createElement(
+	        _recipeComponent2.default,
+	        { model: 'user', onSubmit: function onSubmit(e) {
+	            return _this2.handleSubmit(e);
+	          } },
+	        _react2.default.createElement(
+	          'h2',
+	          null,
+	          'Various Controls'
+	        ),
+	        _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'user.favoriteColor' },
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            'Favorite Color'
+	          ),
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            _react2.default.createElement('input', { type: 'radio', value: 'red' }),
+	            _react2.default.createElement(
+	              'span',
+	              null,
+	              'Red'
+	            )
+	          ),
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            _react2.default.createElement('input', { type: 'radio', value: 'white' }),
+	            _react2.default.createElement(
+	              'span',
+	              null,
+	              'White'
+	            )
+	          ),
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            _react2.default.createElement('input', { type: 'radio', value: 'blue' }),
+	            _react2.default.createElement(
+	              'span',
+	              null,
+	              'Blue'
+	            )
+	          )
+	        ),
+	        _react2.default.createElement(
+	          'a',
+	          { onClick: function onClick() {
+	              return dispatch(_reduxSimpleForm.actions.change('user.favoriteColor', 'red'));
+	            } },
+	          'Change color to Red'
+	        ),
+	        _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'user.languages[]' },
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            'Languages'
+	          ),
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            _react2.default.createElement('input', { type: 'checkbox', value: 'EN' }),
+	            _react2.default.createElement(
+	              'span',
+	              null,
+	              'English'
+	            )
+	          ),
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            _react2.default.createElement('input', { type: 'checkbox', value: 'ES' }),
+	            _react2.default.createElement(
+	              'span',
+	              null,
+	              'Spanish'
+	            )
+	          ),
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            _react2.default.createElement('input', { type: 'checkbox', value: 'FR' }),
+	            _react2.default.createElement(
+	              'span',
+	              null,
+	              'French'
+	            )
+	          )
+	        ),
+	        _react2.default.createElement(
+	          'a',
+	          { onClick: function onClick() {
+	              return dispatch(_reduxSimpleForm.actions.xor('user.languages', 'EN'));
+	            } },
+	          'Toggle English'
+	        ),
+	        _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'user.state[]' },
+	          _react2.default.createElement(
+	            'select',
+	            null,
+	            _react2.default.createElement(
+	              'option',
+	              { value: '' },
+	              'Select one'
+	            ),
+	            _react2.default.createElement(
+	              'option',
+	              { value: 'AK' },
+	              'Alaska'
+	            ),
+	            _react2.default.createElement(
+	              'option',
+	              { value: 'CA' },
+	              'California'
+	            ),
+	            _react2.default.createElement(
+	              'option',
+	              { value: 'FL' },
+	              'Florida'
+	            )
+	          )
+	        )
+	      );
+	    }
+	  }]);
+
+	  return VariousControlsRecipe;
+	})(_react2.default.Component);
+
+	exports.default = (0, _reactRedux.connect)(function (s) {
+	  return s;
+	})(VariousControlsRecipe);
 
 /***/ }
 /******/ ])

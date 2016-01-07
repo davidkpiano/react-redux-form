@@ -26,6 +26,7 @@ import DeepRecipe from './recipes/deep-recipe';
 import MultiRecipe from './recipes/multi-recipe';
 import MultiRecordRecipe from './recipes/multi-record-recipe';
 import ParseRecipe from './recipes/parse-recipe';
+import VariousControlsRecipe from './recipes/various-controls-recipe';
 
 import {
   createModelReducer,
@@ -76,6 +77,7 @@ const recipes = [
   'MultiRecipe',
   'MultiRecordRecipe',
   'ParseRecipe',
+  'VariousControlsRecipe'
 ];
 
 const recipeComponents = {
@@ -88,6 +90,7 @@ const recipeComponents = {
   MultiRecipe,
   MultiRecordRecipe,
   ParseRecipe,
+  VariousControlsRecipe
 };
 
 const apiReference = [

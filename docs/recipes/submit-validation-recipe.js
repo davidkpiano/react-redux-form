@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, Form, getField, fieldActions } from 'redux-simple-form';
+import { Field, Form, getField, actions } from 'redux-simple-form';
 
 import validator from 'validator';
 
@@ -30,13 +30,13 @@ function fooAsyncSubmit(data) {
 
 function fooSubmitAction(data) {
   return (dispatch) => {
-    dispatch(fieldActions.asyncSetValidity('submitValidUser', (_, done) => {
+    dispatch(actions.asyncSetValidity('submitValidUser', (_, done) => {
       fooAsyncSubmit(data)
         .then((res) => {
           done({
             credentials: true
           });
-          dispatch(fieldActions.setSubmitted('submitValidUser'));
+          dispatch(actions.setSubmitted('submitValidUser'));
         })
         .catch(() => {
           done({
