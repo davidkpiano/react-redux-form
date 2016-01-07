@@ -134,13 +134,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _parseRecipe2 = _interopRequireDefault(_parseRecipe);
 
-	var _variousControlsRecipe = __webpack_require__(598);
+	var _variousControlsRecipe = __webpack_require__(596);
 
 	var _variousControlsRecipe2 = _interopRequireDefault(_variousControlsRecipe);
 
 	var _reduxSimpleForm = __webpack_require__(255);
 
-	__webpack_require__(596);
+	__webpack_require__(597);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28121,11 +28121,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var modelActions = _interopRequireWildcard(_modelActions);
 
-	var _fieldActions = __webpack_require__(553);
+	var _fieldActions = __webpack_require__(554);
 
 	var fieldActions = _interopRequireWildcard(_fieldActions);
 
-	var _fieldComponent = __webpack_require__(554);
+	var _fieldComponent = __webpack_require__(555);
 
 	var _fieldComponent2 = _interopRequireDefault(_fieldComponent);
 
@@ -52601,7 +52601,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _pullAt3 = _interopRequireDefault(_pullAt2);
 
-	var _isEqual = __webpack_require__(570);
+	var _isEqual = __webpack_require__(553);
 
 	var _isEqual2 = _interopRequireDefault(_isEqual);
 
@@ -54171,6 +54171,66 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 553 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var baseIsEqual = __webpack_require__(489),
+	    bindCallback = __webpack_require__(468);
+
+	/**
+	 * Performs a deep comparison between two values to determine if they are
+	 * equivalent. If `customizer` is provided it's invoked to compare values.
+	 * If `customizer` returns `undefined` comparisons are handled by the method
+	 * instead. The `customizer` is bound to `thisArg` and invoked with up to
+	 * three arguments: (value, other [, index|key]).
+	 *
+	 * **Note:** This method supports comparing arrays, booleans, `Date` objects,
+	 * numbers, `Object` objects, regexes, and strings. Objects are compared by
+	 * their own, not inherited, enumerable properties. Functions and DOM nodes
+	 * are **not** supported. Provide a customizer function to extend support
+	 * for comparing other values.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @alias eq
+	 * @category Lang
+	 * @param {*} value The value to compare.
+	 * @param {*} other The other value to compare.
+	 * @param {Function} [customizer] The function to customize value comparisons.
+	 * @param {*} [thisArg] The `this` binding of `customizer`.
+	 * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+	 * @example
+	 *
+	 * var object = { 'user': 'fred' };
+	 * var other = { 'user': 'fred' };
+	 *
+	 * object == other;
+	 * // => false
+	 *
+	 * _.isEqual(object, other);
+	 * // => true
+	 *
+	 * // using a customizer callback
+	 * var array = ['hello', 'goodbye'];
+	 * var other = ['hi', 'goodbye'];
+	 *
+	 * _.isEqual(array, other, function(value, other) {
+	 *   if (_.every([value, other], RegExp.prototype.test, /^h(?:i|ello)$/)) {
+	 *     return true;
+	 *   }
+	 * });
+	 * // => true
+	 */
+	function isEqual(value, other, customizer, thisArg) {
+	  customizer = typeof customizer == 'function' ? bindCallback(customizer, thisArg, 3) : undefined;
+	  var result = customizer ? customizer(value, other) : undefined;
+	  return  result === undefined ? baseIsEqual(value, other, customizer) : !!result;
+	}
+
+	module.exports = isEqual;
+
+
+/***/ },
+/* 554 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -54299,7 +54359,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.setUntouched = setUntouched;
 
 /***/ },
-/* 554 */
+/* 555 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -54320,7 +54380,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _redux = __webpack_require__(420);
 
-	var _contains = __webpack_require__(555);
+	var _contains = __webpack_require__(556);
 
 	var _contains2 = _interopRequireDefault(_contains);
 
@@ -54328,15 +54388,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _get2 = _interopRequireDefault(_get);
 
-	var _defaults = __webpack_require__(560);
+	var _defaults = __webpack_require__(561);
 
 	var _defaults2 = _interopRequireDefault(_defaults);
 
-	var _compose = __webpack_require__(566);
+	var _compose = __webpack_require__(567);
 
 	var _compose2 = _interopRequireDefault(_compose);
 
-	var _capitalize = __webpack_require__(569);
+	var _capitalize = __webpack_require__(570);
 
 	var _capitalize2 = _interopRequireDefault(_capitalize);
 
@@ -54348,7 +54408,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _mapValues2 = _interopRequireDefault(_mapValues);
 
-	var _isEqual = __webpack_require__(570);
+	var _isEqual = __webpack_require__(553);
 
 	var _isEqual2 = _interopRequireDefault(_isEqual);
 
@@ -54358,7 +54418,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _modelActions = __webpack_require__(519);
 
-	var _fieldActions = __webpack_require__(553);
+	var _fieldActions = __webpack_require__(554);
 
 	var _controlComponent = __webpack_require__(573);
 
@@ -54393,9 +54453,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      name: props.model,
 	      defaultValue: props.modelValue
 	    };
-	  },
-	  'password': function password(props) {
-	    return controlPropsMap['text'](props);
 	  },
 	  'textarea': function textarea(props) {
 	    return {
@@ -54475,7 +54532,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var validateOn = 'on' + (0, _capitalize2.default)(props.validateOn || 'change');
 	      var asyncValidateOn = 'on' + (0, _capitalize2.default)(props.asyncValidateOn || 'blur');
 
-	      var defaultProps = {};
+	      var defaultProps = {
+	        ref: function ref(controlDOMNode) {
+	          return _this2._control = controlDOMNode;
+	        }
+	      };
 
 	      var eventActions = {
 	        onFocus: [function () {
@@ -54489,9 +54550,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var controlType = control.type === 'input' ? control.props.type : control.type;
 
-	      var createControlProps = controlPropsMap[controlType];
+	      var createControlProps = controlPropsMap[controlType] || control.type === 'input' && controlPropsMap['text'] || null;
 
-	      var controlProps = createControlProps ? createControlProps(props) : null;
+	      var controlProps = createControlProps ? _extends({}, defaultProps, createControlProps(props)) : null;
 
 	      if (!controlProps) {
 	        return _react2.default.cloneElement(control, {
@@ -54581,14 +54642,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = (0, _reactRedux.connect)(selector)(Field);
 
 /***/ },
-/* 555 */
+/* 556 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(556);
+	module.exports = __webpack_require__(557);
 
 
 /***/ },
-/* 556 */
+/* 557 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var baseIndexOf = __webpack_require__(474),
@@ -54596,8 +54657,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    isArray = __webpack_require__(438),
 	    isIterateeCall = __webpack_require__(515),
 	    isLength = __webpack_require__(443),
-	    isString = __webpack_require__(557),
-	    values = __webpack_require__(558);
+	    isString = __webpack_require__(558),
+	    values = __webpack_require__(559);
 
 	/* Native method references for those with the same name as other `lodash` methods. */
 	var nativeMax = Math.max;
@@ -54651,7 +54712,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 557 */
+/* 558 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isObjectLike = __webpack_require__(442);
@@ -54692,10 +54753,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 558 */
+/* 559 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseValues = __webpack_require__(559),
+	var baseValues = __webpack_require__(560),
 	    keys = __webpack_require__(454);
 
 	/**
@@ -54731,7 +54792,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 559 */
+/* 560 */
 /***/ function(module, exports) {
 
 	/**
@@ -54759,12 +54820,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 560 */
+/* 561 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assign = __webpack_require__(561),
-	    assignDefaults = __webpack_require__(564),
-	    createDefaults = __webpack_require__(565);
+	var assign = __webpack_require__(562),
+	    assignDefaults = __webpack_require__(565),
+	    createDefaults = __webpack_require__(566);
 
 	/**
 	 * Assigns own enumerable properties of source object(s) to the destination
@@ -54790,12 +54851,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 561 */
+/* 562 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assignWith = __webpack_require__(562),
+	var assignWith = __webpack_require__(563),
 	    baseAssign = __webpack_require__(452),
-	    createAssigner = __webpack_require__(563);
+	    createAssigner = __webpack_require__(564);
 
 	/**
 	 * Assigns own enumerable properties of source object(s) to the destination
@@ -54839,7 +54900,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 562 */
+/* 563 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var keys = __webpack_require__(454);
@@ -54877,7 +54938,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 563 */
+/* 564 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var bindCallback = __webpack_require__(468),
@@ -54924,7 +54985,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 564 */
+/* 565 */
 /***/ function(module, exports) {
 
 	/**
@@ -54943,7 +55004,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 565 */
+/* 566 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var restParam = __webpack_require__(552);
@@ -54971,17 +55032,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 566 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(567);
-
-
-/***/ },
 /* 567 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createFlow = __webpack_require__(568);
+	module.exports = __webpack_require__(568);
+
+
+/***/ },
+/* 568 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var createFlow = __webpack_require__(569);
 
 	/**
 	 * This method is like `_.flow` except that it creates a function that
@@ -55009,7 +55070,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 568 */
+/* 569 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var LodashWrapper = __webpack_require__(539),
@@ -55089,7 +55150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 569 */
+/* 570 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var baseToString = __webpack_require__(437);
@@ -55113,66 +55174,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	module.exports = capitalize;
-
-
-/***/ },
-/* 570 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseIsEqual = __webpack_require__(489),
-	    bindCallback = __webpack_require__(468);
-
-	/**
-	 * Performs a deep comparison between two values to determine if they are
-	 * equivalent. If `customizer` is provided it's invoked to compare values.
-	 * If `customizer` returns `undefined` comparisons are handled by the method
-	 * instead. The `customizer` is bound to `thisArg` and invoked with up to
-	 * three arguments: (value, other [, index|key]).
-	 *
-	 * **Note:** This method supports comparing arrays, booleans, `Date` objects,
-	 * numbers, `Object` objects, regexes, and strings. Objects are compared by
-	 * their own, not inherited, enumerable properties. Functions and DOM nodes
-	 * are **not** supported. Provide a customizer function to extend support
-	 * for comparing other values.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @alias eq
-	 * @category Lang
-	 * @param {*} value The value to compare.
-	 * @param {*} other The other value to compare.
-	 * @param {Function} [customizer] The function to customize value comparisons.
-	 * @param {*} [thisArg] The `this` binding of `customizer`.
-	 * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
-	 * @example
-	 *
-	 * var object = { 'user': 'fred' };
-	 * var other = { 'user': 'fred' };
-	 *
-	 * object == other;
-	 * // => false
-	 *
-	 * _.isEqual(object, other);
-	 * // => true
-	 *
-	 * // using a customizer callback
-	 * var array = ['hello', 'goodbye'];
-	 * var other = ['hi', 'goodbye'];
-	 *
-	 * _.isEqual(array, other, function(value, other) {
-	 *   if (_.every([value, other], RegExp.prototype.test, /^h(?:i|ello)$/)) {
-	 *     return true;
-	 *   }
-	 * });
-	 * // => true
-	 */
-	function isEqual(value, other, customizer, thisArg) {
-	  customizer = typeof customizer == 'function' ? bindCallback(customizer, thisArg, 3) : undefined;
-	  var result = customizer ? customizer(value, other) : undefined;
-	  return  result === undefined ? baseIsEqual(value, other, customizer) : !!result;
-	}
-
-	module.exports = isEqual;
 
 
 /***/ },
@@ -55272,7 +55273,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _redux = __webpack_require__(420);
 
-	var _contains = __webpack_require__(555);
+	var _contains = __webpack_require__(556);
 
 	var _contains2 = _interopRequireDefault(_contains);
 
@@ -55280,15 +55281,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _get2 = _interopRequireDefault(_get);
 
-	var _defaults = __webpack_require__(560);
+	var _defaults = __webpack_require__(561);
 
 	var _defaults2 = _interopRequireDefault(_defaults);
 
-	var _compose = __webpack_require__(566);
+	var _compose = __webpack_require__(567);
 
 	var _compose2 = _interopRequireDefault(_compose);
 
-	var _capitalize = __webpack_require__(569);
+	var _capitalize = __webpack_require__(570);
 
 	var _capitalize2 = _interopRequireDefault(_capitalize);
 
@@ -55304,7 +55305,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var modelActions = _interopRequireWildcard(_modelActions);
 
-	var _fieldActions = __webpack_require__(553);
+	var _fieldActions = __webpack_require__(554);
 
 	var fieldActions = _interopRequireWildcard(_fieldActions);
 
@@ -55345,6 +55346,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props = this.props;
 	      var children = _props.children;
 	      var control = _props.control;
+
+	      console.log(_extends({}, this.props, {
+	        onChange: this.handleChange
+	      }, control.props));
 
 	      return _react2.default.cloneElement(control, _extends({}, this.props, {
 	        onChange: this.handleChange
@@ -55388,7 +55393,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _get2 = _interopRequireDefault(_get);
 
-	var _fieldActions = __webpack_require__(553);
+	var _fieldActions = __webpack_require__(554);
 
 	var fieldActions = _interopRequireWildcard(_fieldActions);
 
@@ -58086,13 +58091,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 596 */
-/***/ function(module, exports) {
-
-	// removed by extract-text-webpack-plugin
-
-/***/ },
-/* 597 */,
-/* 598 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -58293,6 +58291,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = (0, _reactRedux.connect)(function (s) {
 	  return s;
 	})(VariousControlsRecipe);
+
+/***/ },
+/* 597 */
+/***/ function(module, exports) {
+
+	// removed by extract-text-webpack-plugin
 
 /***/ }
 /******/ ])

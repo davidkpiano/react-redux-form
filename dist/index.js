@@ -26455,9 +26455,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      defaultValue: props.modelValue
 	    };
 	  },
-	  'password': function password(props) {
-	    return controlPropsMap['text'](props);
-	  },
 	  'textarea': function textarea(props) {
 	    return {
 	      name: props.model,
@@ -26536,7 +26533,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var validateOn = 'on' + (0, _capitalize2.default)(props.validateOn || 'change');
 	      var asyncValidateOn = 'on' + (0, _capitalize2.default)(props.asyncValidateOn || 'blur');
 
-	      var defaultProps = {};
+	      var defaultProps = {
+	        ref: function ref(controlDOMNode) {
+	          return _this2._control = controlDOMNode;
+	        }
+	      };
 
 	      var eventActions = {
 	        onFocus: [function () {
@@ -26550,9 +26551,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var controlType = control.type === 'input' ? control.props.type : control.type;
 
-	      var createControlProps = controlPropsMap[controlType];
+	      var createControlProps = controlPropsMap[controlType] || control.type === 'input' && controlPropsMap['text'] || null;
 
-	      var controlProps = createControlProps ? createControlProps(props) : null;
+	      var controlProps = createControlProps ? _extends({}, defaultProps, createControlProps(props)) : null;
 
 	      if (!controlProps) {
 	        return _react2.default.cloneElement(control, {
@@ -27369,6 +27370,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props = this.props;
 	      var children = _props.children;
 	      var control = _props.control;
+
+	      console.log(_extends({}, this.props, {
+	        onChange: this.handleChange
+	      }, control.props));
 
 	      return _react2.default.cloneElement(control, _extends({}, this.props, {
 	        onChange: this.handleChange

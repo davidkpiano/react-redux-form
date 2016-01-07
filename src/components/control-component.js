@@ -30,6 +30,12 @@ class Control extends React.Component {
   render() {
     let { children, control } = this.props;
 
+    console.log({
+        ...this.props,
+        onChange: this.handleChange,
+        ...control.props
+      });
+
     return React.cloneElement(
       control,
       {
