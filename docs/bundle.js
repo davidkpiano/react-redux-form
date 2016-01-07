@@ -54420,7 +54420,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  'select': function select(props) {
 	    return {
-	      name: props.model
+	      name: props.model,
+	      value: props.modelValue
 	    };
 	  },
 	  'default': function _default(props) {
@@ -58195,8 +58196,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	          )
 	        ),
 	        _react2.default.createElement(
-	          'a',
-	          { onClick: function onClick() {
+	          'button',
+	          { type: 'button', onClick: function onClick() {
 	              return dispatch(_reduxSimpleForm.actions.change('user.favoriteColor', 'red'));
 	            } },
 	          'Change color to Red'
@@ -58241,15 +58242,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	          )
 	        ),
 	        _react2.default.createElement(
-	          'a',
-	          { onClick: function onClick() {
+	          'button',
+	          { type: 'button', onClick: function onClick() {
 	              return dispatch(_reduxSimpleForm.actions.xor('user.languages', 'EN'));
 	            } },
 	          'Toggle English'
 	        ),
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
-	          { model: 'user.state[]' },
+	          { model: 'user.state' },
 	          _react2.default.createElement(
 	            'select',
 	            null,
@@ -58274,6 +58275,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	              'Florida'
 	            )
 	          )
+	        ),
+	        _react2.default.createElement(
+	          'button',
+	          { type: 'button', onClick: function onClick() {
+	              return dispatch(_reduxSimpleForm.actions.change('user.state', 'FL'));
+	            } },
+	          'Choose Florida'
 	        )
 	      );
 	    }

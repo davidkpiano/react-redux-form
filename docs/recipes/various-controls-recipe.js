@@ -28,9 +28,9 @@ class VariousControlsRecipe extends React.Component {
             <span>Blue</span>
           </label>
         </Field>
-        <a onClick={() => dispatch(actions.change('user.favoriteColor', 'red'))}>
+        <button type="button" onClick={() => dispatch(actions.change('user.favoriteColor', 'red'))}>
           Change color to Red
-        </a>
+        </button>
 
         <Field model="user.languages[]">
           <label>Languages</label>
@@ -48,11 +48,11 @@ class VariousControlsRecipe extends React.Component {
           </label>
         </Field>
 
-        <a onClick={() => dispatch(actions.xor('user.languages', 'EN'))}>
+        <button type="button" onClick={() => dispatch(actions.xor('user.languages', 'EN'))}>
           Toggle English
-        </a>
+        </button>
 
-        <Field model="user.state[]">
+        <Field model="user.state">
           <select>
             <option value="">Select one</option>
             <option value="AK">Alaska</option>
@@ -60,6 +60,10 @@ class VariousControlsRecipe extends React.Component {
             <option value="FL">Florida</option>
           </select>
         </Field>
+
+        <button type="button" onClick={() => dispatch(actions.change('user.state', 'FL'))}>
+          Choose Florida
+        </button>
       </Recipe>
     );
   }

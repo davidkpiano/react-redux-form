@@ -62,7 +62,8 @@ const controlPropsMap = {
     value: props.value
   }),
   'select': (props) => ({
-    name: props.model
+    name: props.model,
+    value: props.modelValue
   }),
   'default': (props) => ({})
 };

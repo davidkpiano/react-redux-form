@@ -196,6 +196,9 @@ html, body, #app {
       border: 1px solid #5791c9; }
     .rsf-layout-content input:not([type="radio"]):not([type="checkbox"]).-error, .rsf-layout-content textarea.-error {
       border-color: red; }
+  .rsf-layout-content select {
+    display: block;
+    margin-bottom: 1rem; }
   .rsf-layout-content label {
     margin-bottom: 0.25rem;
     font-size: 0.8rem;
