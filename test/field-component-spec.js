@@ -33,8 +33,7 @@ describe('<Field /> component', () => {
         testForm: createFormReducer('test'),
         test: createModelReducer('test', { foo: 'bar' })
       }));
-      let actions = [];
-      let dispatch = (action) => actions.push(action);
+
       const foo = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Field model="test.foo">
@@ -72,10 +71,72 @@ describe('<Field /> component', () => {
 
         TestUtils.Simulate.change(node);
 
-        assert.containSubset(
+        assert.equal(
           store.getState().test.foo,
           'testing');
       });
     });
-  })
+  });
+
+  describe('with <input type="radio" />', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: createFormReducer('test'),
+      test: createModelReducer('test', { foo: 'two' })
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input type="radio" value="one" />
+          <input type="radio" value="two" />
+        </Field>
+      </Provider>
+    );
+
+    const [ radioOne, radioTwo ] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+    it('should initially set the radio button matching the initial state to checked', () => {
+      assert.equal(radioTwo.checked, true);
+      assert.equal(radioOne.checked, false);
+    });
+
+    it('should give each radio input a name attribute of the model', () => {
+      assert.equal(radioOne.name, 'test.foo');
+      assert.equal(radioTwo.name, 'test.foo');
+    });
+
+
+    it('should dispatch a change event when changed', () => {
+      TestUtils.Simulate.change(radioOne);
+
+      assert.equal(
+        store.getState().test.foo,
+        'one');
+
+      TestUtils.Simulate.change(radioTwo);
+
+      assert.equal(
+        store.getState().test.foo,
+        'two');
+    });
+
+    it('should check the appropriate radio button when model is externally changed', () => {
+      store.dispatch(actions.change('test.foo', 'one'));
+
+      assert.equal(radioOne.checked, true);
+      assert.equal(radioTwo.checked, false);
+
+      store.dispatch(actions.change('test.foo', 'two'));
+
+      assert.equal(radioTwo.checked, true);
+      assert.equal(radioOne.checked, false);
+    });
+
+    it('should uncheck all radio buttons that are not equal to the value', () => {
+      store.dispatch(actions.change('test.foo', 'three'));
+
+      assert.equal(radioOne.checked, false);
+      assert.equal(radioTwo.checked, false);
+    });
+  });
 });

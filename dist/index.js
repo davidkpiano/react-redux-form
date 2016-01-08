@@ -85,15 +85,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var modelActions = _interopRequireWildcard(_modelActions);
 
-	var _fieldActions = __webpack_require__(299);
+	var _fieldActions = __webpack_require__(300);
 
 	var fieldActions = _interopRequireWildcard(_fieldActions);
 
-	var _fieldComponent = __webpack_require__(300);
+	var _fieldComponent = __webpack_require__(301);
 
 	var _fieldComponent2 = _interopRequireDefault(_fieldComponent);
 
-	var _formComponent = __webpack_require__(316);
+	var _formComponent = __webpack_require__(320);
 
 	var _formComponent2 = _interopRequireDefault(_formComponent);
 
@@ -1125,7 +1125,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * will remain to ensure logic does not differ in production.
 	 */
 
-	var invariant = function (condition, format, a, b, c, d, e, f) {
+	function invariant(condition, format, a, b, c, d, e, f) {
 	  if (process.env.NODE_ENV !== 'production') {
 	    if (format === undefined) {
 	      throw new Error('invariant requires an error message argument');
@@ -1139,15 +1139,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      var args = [a, b, c, d, e, f];
 	      var argIndex = 0;
-	      error = new Error('Invariant Violation: ' + format.replace(/%s/g, function () {
+	      error = new Error(format.replace(/%s/g, function () {
 	        return args[argIndex++];
 	      }));
+	      error.name = 'Invariant Violation';
 	    }
 
 	    error.framesToPop = 1; // we don't care about invariant's own frame
 	    throw error;
 	  }
-	};
+	}
 
 	module.exports = invariant;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
@@ -10574,8 +10575,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    // autoCapitalize and autoCorrect are supported in Mobile Safari for
 	    // keyboard hints.
-	    autoCapitalize: null,
-	    autoCorrect: null,
+	    autoCapitalize: MUST_USE_ATTRIBUTE,
+	    autoCorrect: MUST_USE_ATTRIBUTE,
 	    // autoSave allows WebKit/Blink to persist values of input fields on page reloads
 	    autoSave: null,
 	    // color is for Safari mask-icon link
@@ -10606,9 +10607,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    httpEquiv: 'http-equiv'
 	  },
 	  DOMPropertyNames: {
-	    autoCapitalize: 'autocapitalize',
 	    autoComplete: 'autocomplete',
-	    autoCorrect: 'autocorrect',
 	    autoFocus: 'autofocus',
 	    autoPlay: 'autoplay',
 	    autoSave: 'autosave',
@@ -13687,7 +13686,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var value = LinkedValueUtils.getValue(props);
 
 	    if (value != null) {
-	      updateOptions(this, props, value);
+	      updateOptions(this, Boolean(props.multiple), value);
 	    }
 	  }
 	}
@@ -16722,11 +16721,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @typechecks
 	 */
 
+	/* eslint-disable fb-www/typeof-undefined */
+
 	/**
 	 * Same as document.activeElement but wraps in a try-catch block. In IE it is
 	 * not safe to call document.activeElement if there is nothing focused.
 	 *
-	 * The activeElement will be null only if the document or document body is not yet defined.
+	 * The activeElement will be null only if the document or document body is not
+	 * yet defined.
 	 */
 	'use strict';
 
@@ -16734,7 +16736,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (typeof document === 'undefined') {
 	    return null;
 	  }
-
 	  try {
 	    return document.activeElement || document.body;
 	  } catch (e) {
@@ -18474,7 +18475,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  'setValueForProperty': 'update attribute',
 	  'setValueForAttribute': 'update attribute',
 	  'deleteValueForProperty': 'remove attribute',
-	  'dangerouslyReplaceNodeWithMarkupByID': 'replace'
+	  'setValueForStyles': 'update styles',
+	  'replaceNodeWithMarkup': 'replace',
+	  'updateTextContent': 'set textContent'
 	};
 
 	function getTotalTime(measurements) {
@@ -18666,18 +18669,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	var performance = __webpack_require__(145);
-	var curPerformance = performance;
+
+	var performanceNow;
 
 	/**
 	 * Detect if we can use `window.performance.now()` and gracefully fallback to
 	 * `Date.now()` if it doesn't exist. We need to support Firefox < 15 for now
 	 * because of Facebook's testing infrastructure.
 	 */
-	if (!curPerformance || !curPerformance.now) {
-	  curPerformance = Date;
+	if (performance.now) {
+	  performanceNow = function () {
+	    return performance.now();
+	  };
+	} else {
+	  performanceNow = function () {
+	    return Date.now();
+	  };
 	}
-
-	var performanceNow = curPerformance.now.bind(curPerformance);
 
 	module.exports = performanceNow;
 
@@ -18726,7 +18734,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	module.exports = '0.14.3';
+	module.exports = '0.14.6';
 
 /***/ },
 /* 147 */
@@ -24662,7 +24670,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _pullAt3 = _interopRequireDefault(_pullAt2);
 
-	var _isEqual = __webpack_require__(318);
+	var _isEqual = __webpack_require__(299);
 
 	var _isEqual2 = _interopRequireDefault(_isEqual);
 
@@ -26232,6 +26240,66 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var baseIsEqual = __webpack_require__(235),
+	    bindCallback = __webpack_require__(214);
+
+	/**
+	 * Performs a deep comparison between two values to determine if they are
+	 * equivalent. If `customizer` is provided it's invoked to compare values.
+	 * If `customizer` returns `undefined` comparisons are handled by the method
+	 * instead. The `customizer` is bound to `thisArg` and invoked with up to
+	 * three arguments: (value, other [, index|key]).
+	 *
+	 * **Note:** This method supports comparing arrays, booleans, `Date` objects,
+	 * numbers, `Object` objects, regexes, and strings. Objects are compared by
+	 * their own, not inherited, enumerable properties. Functions and DOM nodes
+	 * are **not** supported. Provide a customizer function to extend support
+	 * for comparing other values.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @alias eq
+	 * @category Lang
+	 * @param {*} value The value to compare.
+	 * @param {*} other The other value to compare.
+	 * @param {Function} [customizer] The function to customize value comparisons.
+	 * @param {*} [thisArg] The `this` binding of `customizer`.
+	 * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
+	 * @example
+	 *
+	 * var object = { 'user': 'fred' };
+	 * var other = { 'user': 'fred' };
+	 *
+	 * object == other;
+	 * // => false
+	 *
+	 * _.isEqual(object, other);
+	 * // => true
+	 *
+	 * // using a customizer callback
+	 * var array = ['hello', 'goodbye'];
+	 * var other = ['hi', 'goodbye'];
+	 *
+	 * _.isEqual(array, other, function(value, other) {
+	 *   if (_.every([value, other], RegExp.prototype.test, /^h(?:i|ello)$/)) {
+	 *     return true;
+	 *   }
+	 * });
+	 * // => true
+	 */
+	function isEqual(value, other, customizer, thisArg) {
+	  customizer = typeof customizer == 'function' ? bindCallback(customizer, thisArg, 3) : undefined;
+	  var result = customizer ? customizer(value, other) : undefined;
+	  return  result === undefined ? baseIsEqual(value, other, customizer) : !!result;
+	}
+
+	module.exports = isEqual;
+
+
+/***/ },
+/* 300 */
+/***/ function(module, exports, __webpack_require__) {
+
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
@@ -26360,7 +26428,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.setUntouched = setUntouched;
 
 /***/ },
-/* 300 */
+/* 301 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -26381,7 +26449,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _redux = __webpack_require__(166);
 
-	var _contains = __webpack_require__(301);
+	var _contains = __webpack_require__(302);
 
 	var _contains2 = _interopRequireDefault(_contains);
 
@@ -26389,15 +26457,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _get2 = _interopRequireDefault(_get);
 
-	var _defaults = __webpack_require__(306);
+	var _defaults = __webpack_require__(307);
 
 	var _defaults2 = _interopRequireDefault(_defaults);
 
-	var _compose = __webpack_require__(312);
+	var _compose = __webpack_require__(313);
 
 	var _compose2 = _interopRequireDefault(_compose);
 
-	var _capitalize = __webpack_require__(315);
+	var _capitalize = __webpack_require__(316);
 
 	var _capitalize2 = _interopRequireDefault(_capitalize);
 
@@ -26409,19 +26477,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _mapValues2 = _interopRequireDefault(_mapValues);
 
-	var _isEqual = __webpack_require__(318);
+	var _isEqual = __webpack_require__(299);
 
 	var _isEqual2 = _interopRequireDefault(_isEqual);
 
-	var _partial = __webpack_require__(319);
+	var _partial = __webpack_require__(317);
 
 	var _partial2 = _interopRequireDefault(_partial);
 
 	var _modelActions = __webpack_require__(265);
 
-	var _fieldActions = __webpack_require__(299);
+	var _fieldActions = __webpack_require__(300);
 
-	var _controlComponent = __webpack_require__(317);
+	var _controlComponent = __webpack_require__(319);
 
 	var _controlComponent2 = _interopRequireDefault(_controlComponent);
 
@@ -26472,7 +26540,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  'radio': function radio(props) {
 	    return {
 	      name: props.model,
-	      checked: (0, _isEqual2.default)(props.modelValue, props.value),
+	      checked: (function () {
+	        console.log(props.modelValue, props.value);
+	        return (0, _isEqual2.default)(props.modelValue, props.value);
+	      })(),
 	      value: props.value
 	    };
 	  },
@@ -26553,7 +26624,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var createControlProps = controlPropsMap[controlType] || control.type === 'input' && controlPropsMap['text'] || null;
 
-	      var controlProps = createControlProps ? _extends({}, defaultProps, createControlProps(props)) : null;
+	      var controlProps = createControlProps ? _extends({}, defaultProps, createControlProps({
+	        model: model,
+	        modelValue: modelValue,
+	        value: value
+	      })) : null;
 
 	      if (!controlProps) {
 	        return _react2.default.cloneElement(control, {
@@ -26643,14 +26718,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = (0, _reactRedux.connect)(selector)(Field);
 
 /***/ },
-/* 301 */
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(302);
+	module.exports = __webpack_require__(303);
 
 
 /***/ },
-/* 302 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var baseIndexOf = __webpack_require__(220),
@@ -26658,8 +26733,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    isArray = __webpack_require__(184),
 	    isIterateeCall = __webpack_require__(261),
 	    isLength = __webpack_require__(189),
-	    isString = __webpack_require__(303),
-	    values = __webpack_require__(304);
+	    isString = __webpack_require__(304),
+	    values = __webpack_require__(305);
 
 	/* Native method references for those with the same name as other `lodash` methods. */
 	var nativeMax = Math.max;
@@ -26713,7 +26788,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 303 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var isObjectLike = __webpack_require__(188);
@@ -26754,10 +26829,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 304 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var baseValues = __webpack_require__(305),
+	var baseValues = __webpack_require__(306),
 	    keys = __webpack_require__(200);
 
 	/**
@@ -26793,7 +26868,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 305 */
+/* 306 */
 /***/ function(module, exports) {
 
 	/**
@@ -26821,12 +26896,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 306 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assign = __webpack_require__(307),
-	    assignDefaults = __webpack_require__(310),
-	    createDefaults = __webpack_require__(311);
+	var assign = __webpack_require__(308),
+	    assignDefaults = __webpack_require__(311),
+	    createDefaults = __webpack_require__(312);
 
 	/**
 	 * Assigns own enumerable properties of source object(s) to the destination
@@ -26852,12 +26927,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 307 */
+/* 308 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var assignWith = __webpack_require__(308),
+	var assignWith = __webpack_require__(309),
 	    baseAssign = __webpack_require__(198),
-	    createAssigner = __webpack_require__(309);
+	    createAssigner = __webpack_require__(310);
 
 	/**
 	 * Assigns own enumerable properties of source object(s) to the destination
@@ -26901,7 +26976,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 308 */
+/* 309 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var keys = __webpack_require__(200);
@@ -26939,7 +27014,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 309 */
+/* 310 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var bindCallback = __webpack_require__(214),
@@ -26986,7 +27061,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 310 */
+/* 311 */
 /***/ function(module, exports) {
 
 	/**
@@ -27005,7 +27080,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 311 */
+/* 312 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var restParam = __webpack_require__(298);
@@ -27033,17 +27108,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 312 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(313);
-
-
-/***/ },
 /* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var createFlow = __webpack_require__(314);
+	module.exports = __webpack_require__(314);
+
+
+/***/ },
+/* 314 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var createFlow = __webpack_require__(315);
 
 	/**
 	 * This method is like `_.flow` except that it creates a function that
@@ -27071,7 +27146,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 314 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var LodashWrapper = __webpack_require__(285),
@@ -27151,7 +27226,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 315 */
+/* 316 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var baseToString = __webpack_require__(183);
@@ -27178,7 +27253,198 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 316 */
+/* 317 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var createPartial = __webpack_require__(318);
+
+	/** Used to compose bitmasks for wrapper metadata. */
+	var PARTIAL_FLAG = 32;
+
+	/**
+	 * Creates a function that invokes `func` with `partial` arguments prepended
+	 * to those provided to the new function. This method is like `_.bind` except
+	 * it does **not** alter the `this` binding.
+	 *
+	 * The `_.partial.placeholder` value, which defaults to `_` in monolithic
+	 * builds, may be used as a placeholder for partially applied arguments.
+	 *
+	 * **Note:** This method does not set the "length" property of partially
+	 * applied functions.
+	 *
+	 * @static
+	 * @memberOf _
+	 * @category Function
+	 * @param {Function} func The function to partially apply arguments to.
+	 * @param {...*} [partials] The arguments to be partially applied.
+	 * @returns {Function} Returns the new partially applied function.
+	 * @example
+	 *
+	 * var greet = function(greeting, name) {
+	 *   return greeting + ' ' + name;
+	 * };
+	 *
+	 * var sayHelloTo = _.partial(greet, 'hello');
+	 * sayHelloTo('fred');
+	 * // => 'hello fred'
+	 *
+	 * // using placeholders
+	 * var greetFred = _.partial(greet, _, 'fred');
+	 * greetFred('hi');
+	 * // => 'hi fred'
+	 */
+	var partial = createPartial(PARTIAL_FLAG);
+
+	// Assign default placeholders.
+	partial.placeholder = {};
+
+	module.exports = partial;
+
+
+/***/ },
+/* 318 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var createWrapper = __webpack_require__(268),
+	    replaceHolders = __webpack_require__(288),
+	    restParam = __webpack_require__(298);
+
+	/**
+	 * Creates a `_.partial` or `_.partialRight` function.
+	 *
+	 * @private
+	 * @param {boolean} flag The partial bit flag.
+	 * @returns {Function} Returns the new partial function.
+	 */
+	function createPartial(flag) {
+	  var partialFunc = restParam(function(func, partials) {
+	    var holders = replaceHolders(partials, partialFunc.placeholder);
+	    return createWrapper(func, flag, undefined, partials, holders);
+	  });
+	  return partialFunc;
+	}
+
+	module.exports = createPartial;
+
+
+/***/ },
+/* 319 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(159);
+
+	var _redux = __webpack_require__(166);
+
+	var _contains = __webpack_require__(302);
+
+	var _contains2 = _interopRequireDefault(_contains);
+
+	var _get = __webpack_require__(178);
+
+	var _get2 = _interopRequireDefault(_get);
+
+	var _defaults = __webpack_require__(307);
+
+	var _defaults2 = _interopRequireDefault(_defaults);
+
+	var _compose = __webpack_require__(313);
+
+	var _compose2 = _interopRequireDefault(_compose);
+
+	var _capitalize = __webpack_require__(316);
+
+	var _capitalize2 = _interopRequireDefault(_capitalize);
+
+	var _identity = __webpack_require__(215);
+
+	var _identity2 = _interopRequireDefault(_identity);
+
+	var _mapValues = __webpack_require__(256);
+
+	var _mapValues2 = _interopRequireDefault(_mapValues);
+
+	var _modelActions = __webpack_require__(265);
+
+	var modelActions = _interopRequireWildcard(_modelActions);
+
+	var _fieldActions = __webpack_require__(300);
+
+	var fieldActions = _interopRequireWildcard(_fieldActions);
+
+	var _utils = __webpack_require__(263);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Control = (function (_React$Component) {
+	  _inherits(Control, _React$Component);
+
+	  function Control() {
+	    _classCallCheck(this, Control);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Control).apply(this, arguments));
+	  }
+
+	  _createClass(Control, [{
+	    key: 'componentWillMount',
+	    value: function componentWillMount() {
+	      var _this2 = this;
+
+	      this.handleChange = function (e) {
+	        e.persist && e.persist();
+	        return _this2.props.onChange(e);
+	      };
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var children = _props.children;
+	      var control = _props.control;
+
+	      console.log(_extends({}, this.props, {
+	        onChange: this.handleChange
+	      }, control.props));
+
+	      return _react2.default.cloneElement(control, _extends({}, this.props, {
+	        onChange: this.handleChange
+	      }, control.props));
+	    }
+	  }, {
+	    key: 'shouldComponentUpdate',
+	    value: function shouldComponentUpdate(nextProps) {
+	      return this.props.modelValue !== nextProps.modelValue;
+	    }
+	  }]);
+
+	  return Control;
+	})(_react2.default.Component);
+
+	exports.default = Control;
+
+/***/ },
+/* 320 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -27203,7 +27469,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _get2 = _interopRequireDefault(_get);
 
-	var _fieldActions = __webpack_require__(299);
+	var _fieldActions = __webpack_require__(300);
 
 	var fieldActions = _interopRequireWildcard(_fieldActions);
 
@@ -27274,257 +27540,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.default = (0, _reactRedux.connect)(function (s) {
 	  return s;
 	})(Form);
-
-/***/ },
-/* 317 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	var _reactRedux = __webpack_require__(159);
-
-	var _redux = __webpack_require__(166);
-
-	var _contains = __webpack_require__(301);
-
-	var _contains2 = _interopRequireDefault(_contains);
-
-	var _get = __webpack_require__(178);
-
-	var _get2 = _interopRequireDefault(_get);
-
-	var _defaults = __webpack_require__(306);
-
-	var _defaults2 = _interopRequireDefault(_defaults);
-
-	var _compose = __webpack_require__(312);
-
-	var _compose2 = _interopRequireDefault(_compose);
-
-	var _capitalize = __webpack_require__(315);
-
-	var _capitalize2 = _interopRequireDefault(_capitalize);
-
-	var _identity = __webpack_require__(215);
-
-	var _identity2 = _interopRequireDefault(_identity);
-
-	var _mapValues = __webpack_require__(256);
-
-	var _mapValues2 = _interopRequireDefault(_mapValues);
-
-	var _modelActions = __webpack_require__(265);
-
-	var modelActions = _interopRequireWildcard(_modelActions);
-
-	var _fieldActions = __webpack_require__(299);
-
-	var fieldActions = _interopRequireWildcard(_fieldActions);
-
-	var _utils = __webpack_require__(263);
-
-	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var Control = (function (_React$Component) {
-	  _inherits(Control, _React$Component);
-
-	  function Control() {
-	    _classCallCheck(this, Control);
-
-	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Control).apply(this, arguments));
-	  }
-
-	  _createClass(Control, [{
-	    key: 'componentWillMount',
-	    value: function componentWillMount() {
-	      var _this2 = this;
-
-	      this.handleChange = function (e) {
-	        e.persist && e.persist();
-	        return _this2.props.onChange(e);
-	      };
-	    }
-	  }, {
-	    key: 'render',
-	    value: function render() {
-	      var _props = this.props;
-	      var children = _props.children;
-	      var control = _props.control;
-
-	      console.log(_extends({}, this.props, {
-	        onChange: this.handleChange
-	      }, control.props));
-
-	      return _react2.default.cloneElement(control, _extends({}, this.props, {
-	        onChange: this.handleChange
-	      }, control.props));
-	    }
-	  }, {
-	    key: 'shouldComponentUpdate',
-	    value: function shouldComponentUpdate(nextProps) {
-	      return this.props.modelValue !== nextProps.modelValue;
-	    }
-	  }]);
-
-	  return Control;
-	})(_react2.default.Component);
-
-	exports.default = Control;
-
-/***/ },
-/* 318 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseIsEqual = __webpack_require__(235),
-	    bindCallback = __webpack_require__(214);
-
-	/**
-	 * Performs a deep comparison between two values to determine if they are
-	 * equivalent. If `customizer` is provided it's invoked to compare values.
-	 * If `customizer` returns `undefined` comparisons are handled by the method
-	 * instead. The `customizer` is bound to `thisArg` and invoked with up to
-	 * three arguments: (value, other [, index|key]).
-	 *
-	 * **Note:** This method supports comparing arrays, booleans, `Date` objects,
-	 * numbers, `Object` objects, regexes, and strings. Objects are compared by
-	 * their own, not inherited, enumerable properties. Functions and DOM nodes
-	 * are **not** supported. Provide a customizer function to extend support
-	 * for comparing other values.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @alias eq
-	 * @category Lang
-	 * @param {*} value The value to compare.
-	 * @param {*} other The other value to compare.
-	 * @param {Function} [customizer] The function to customize value comparisons.
-	 * @param {*} [thisArg] The `this` binding of `customizer`.
-	 * @returns {boolean} Returns `true` if the values are equivalent, else `false`.
-	 * @example
-	 *
-	 * var object = { 'user': 'fred' };
-	 * var other = { 'user': 'fred' };
-	 *
-	 * object == other;
-	 * // => false
-	 *
-	 * _.isEqual(object, other);
-	 * // => true
-	 *
-	 * // using a customizer callback
-	 * var array = ['hello', 'goodbye'];
-	 * var other = ['hi', 'goodbye'];
-	 *
-	 * _.isEqual(array, other, function(value, other) {
-	 *   if (_.every([value, other], RegExp.prototype.test, /^h(?:i|ello)$/)) {
-	 *     return true;
-	 *   }
-	 * });
-	 * // => true
-	 */
-	function isEqual(value, other, customizer, thisArg) {
-	  customizer = typeof customizer == 'function' ? bindCallback(customizer, thisArg, 3) : undefined;
-	  var result = customizer ? customizer(value, other) : undefined;
-	  return  result === undefined ? baseIsEqual(value, other, customizer) : !!result;
-	}
-
-	module.exports = isEqual;
-
-
-/***/ },
-/* 319 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var createPartial = __webpack_require__(320);
-
-	/** Used to compose bitmasks for wrapper metadata. */
-	var PARTIAL_FLAG = 32;
-
-	/**
-	 * Creates a function that invokes `func` with `partial` arguments prepended
-	 * to those provided to the new function. This method is like `_.bind` except
-	 * it does **not** alter the `this` binding.
-	 *
-	 * The `_.partial.placeholder` value, which defaults to `_` in monolithic
-	 * builds, may be used as a placeholder for partially applied arguments.
-	 *
-	 * **Note:** This method does not set the "length" property of partially
-	 * applied functions.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @category Function
-	 * @param {Function} func The function to partially apply arguments to.
-	 * @param {...*} [partials] The arguments to be partially applied.
-	 * @returns {Function} Returns the new partially applied function.
-	 * @example
-	 *
-	 * var greet = function(greeting, name) {
-	 *   return greeting + ' ' + name;
-	 * };
-	 *
-	 * var sayHelloTo = _.partial(greet, 'hello');
-	 * sayHelloTo('fred');
-	 * // => 'hello fred'
-	 *
-	 * // using placeholders
-	 * var greetFred = _.partial(greet, _, 'fred');
-	 * greetFred('hi');
-	 * // => 'hi fred'
-	 */
-	var partial = createPartial(PARTIAL_FLAG);
-
-	// Assign default placeholders.
-	partial.placeholder = {};
-
-	module.exports = partial;
-
-
-/***/ },
-/* 320 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var createWrapper = __webpack_require__(268),
-	    replaceHolders = __webpack_require__(288),
-	    restParam = __webpack_require__(298);
-
-	/**
-	 * Creates a `_.partial` or `_.partialRight` function.
-	 *
-	 * @private
-	 * @param {boolean} flag The partial bit flag.
-	 * @returns {Function} Returns the new partial function.
-	 */
-	function createPartial(flag) {
-	  var partialFunc = restParam(function(func, partials) {
-	    var holders = replaceHolders(partials, partialFunc.placeholder);
-	    return createWrapper(func, flag, undefined, partials, holders);
-	  });
-	  return partialFunc;
-	}
-
-	module.exports = createPartial;
-
 
 /***/ }
 /******/ ])

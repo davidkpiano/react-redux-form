@@ -57,7 +57,10 @@ const controlPropsMap = {
   }),
   'radio': (props) => ({
     name: props.model,
-    checked: isEqual(props.modelValue, props.value),
+    checked: (() => {
+      console.log(props.modelValue, props.value);
+      return isEqual(props.modelValue, props.value)
+    })(),
     value: props.value
   }),
   'select': (props) => ({
@@ -122,7 +125,11 @@ class Field extends React.Component {
     let controlProps = createControlProps
       ? {
           ...defaultProps,
-          ...createControlProps(props)
+          ...createControlProps({
+            model,
+            modelValue,
+            value
+          })
         }
       : null;
 
