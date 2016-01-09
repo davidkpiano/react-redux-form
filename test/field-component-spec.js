@@ -28,7 +28,7 @@ describe('<Field /> component', () => {
   ];
 
   textFieldElements.map(([element, type]) => {
-    describe(`<${element} ${type ? 'type="' + type + '"' : ''}/>`, () => {
+    describe(`with <${element} ${type ? 'type="' + type + '"' : ''}/>`, () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         testForm: createFormReducer('test'),
         test: createModelReducer('test', { foo: 'bar' })
@@ -260,4 +260,28 @@ describe('<Field /> component', () => {
         [2, 3]);
     });
   });
+
+  describe('with <select>', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: createFormReducer('test'),
+      test: createModelReducer('test', {
+        foo: [1]
+      })
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo[]">
+          <select>
+            <option value={1} />
+            <option value={2} />
+            <option value={3} />
+          </select>
+        </Field>
+      </Provider>
+    );
+
+    
+  });
+
 });

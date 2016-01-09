@@ -58,14 +58,13 @@ const controlPropsMap = {
   'radio': (props) => ({
     name: props.model,
     checked: (() => {
-      console.log(props.modelValue, props.value);
       return isEqual(props.modelValue, props.value)
     })(),
     value: props.value
   }),
   'select': (props) => ({
     name: props.model,
-    value: props.modelValue
+    // value: props.modelValue
   }),
   'default': (props) => ({})
 };

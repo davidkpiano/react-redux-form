@@ -52494,6 +52494,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 	function isMulti(model) {
 	  return (0, _endsWith2.default)(model, '[]');
 	}
@@ -52514,8 +52516,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return !!(event && event.stopPropagation && event.preventDefault);
 	}
 
-	function getValue(event) {
-	  return isEvent(event) ? event.target.value : event;
+	function getValue(value) {
+	  return isEvent(value) ? getEventValue(value) : value;
+	}
+
+	function getEventValue(event) {
+	  // return event.target.value;
+	  return event.target.multiple ? [].concat(_toConsumableArray(event.target.selectedOptions)).map(function (option) {
+	    return option.value;
+	  }) : event.target.value;
 	}
 
 	exports.isMulti = isMulti;
@@ -54480,7 +54489,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return {
 	      name: props.model,
 	      checked: (function () {
-	        console.log(props.modelValue, props.value);
 	        return (0, _isEqual2.default)(props.modelValue, props.value);
 	      })(),
 	      value: props.value
@@ -54488,10 +54496,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  'select': function select(props) {
 	    return {
-	      name: props.model,
-	      value: props.modelValue
+	      name: props.model
 	    };
 	  },
+	  // value: props.modelValue
 	  'default': function _default(props) {
 	    return {};
 	  }
@@ -58295,6 +58303,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	              return dispatch(_reduxSimpleForm.actions.change('user.state', 'FL'));
 	            } },
 	          'Choose Florida'
+	        ),
+	        _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'user.multiple[]' },
+	          _react2.default.createElement(
+	            'select',
+	            { multiple: true },
+	            _react2.default.createElement(
+	              'option',
+	              { value: '1' },
+	              'Item 1'
+	            ),
+	            _react2.default.createElement(
+	              'option',
+	              { value: '2' },
+	              'Item 2'
+	            ),
+	            _react2.default.createElement(
+	              'option',
+	              { value: '3' },
+	              'Item 3'
+	            )
+	          )
 	        )
 	      );
 	    }

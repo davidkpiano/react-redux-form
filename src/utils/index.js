@@ -27,10 +27,17 @@ function isEvent(event) {
   return !!(event && event.stopPropagation && event.preventDefault);
 }
 
-function getValue(event) {
-  return isEvent(event)
-    ? event.target.value
-    : event;
+function getValue(value) {
+  return isEvent(value)
+    ? getEventValue(value)
+    : value;
+}
+
+function getEventValue(event) {
+  // return event.target.value;
+  return event.target.multiple
+    ? [...event.target.selectedOptions].map((option) => option.value)
+    : event.target.value
 }
 
 
