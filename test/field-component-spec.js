@@ -139,4 +139,125 @@ describe('<Field /> component', () => {
       assert.equal(radioTwo.checked, false);
     });
   });
+
+  describe('with <input type="checkbox" /> (single toggle)', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: createFormReducer('test'),
+      test: createModelReducer('test', {
+        foo: true
+      })
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input type="checkbox" />
+        </Field>
+      </Provider>
+    );
+
+    const checkbox = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    it('should initially set the checkbox to checked if the model is truthy', () => {
+      assert.equal(checkbox.checked, true);
+    });
+
+    it('should give each radio input a name attribute of the model', () => {
+      assert.equal(checkbox.name, 'test.foo');
+    });
+
+
+    it('should dispatch a change event when changed', () => {
+      TestUtils.Simulate.change(checkbox);
+
+      assert.equal(
+        store.getState().test.foo,
+        false);
+
+      TestUtils.Simulate.change(checkbox);
+
+      assert.equal(
+        store.getState().test.foo,
+        true);
+    });
+
+    it('should check/uncheck the checkbox when model is externally changed', () => {
+      store.dispatch(actions.change('test.foo', true));
+
+      assert.equal(checkbox.checked, true);
+
+      store.dispatch(actions.change('test.foo', false));
+
+      assert.equal(checkbox.checked, false);
+    });
+
+    it('should uncheck the checkbox for any falsey value', () => {
+      store.dispatch(actions.change('test.foo', ''));
+
+      assert.equal(checkbox.checked, false);
+    });
+  });
+
+  describe('with <input type="checkbox" /> (multi toggle)', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: createFormReducer('test'),
+      test: createModelReducer('test', {
+        foo: [1]
+      })
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo[]">
+          <input type="checkbox" value={1} />
+          <input type="checkbox" value={2} />
+          <input type="checkbox" value={3} />
+        </Field>
+      </Provider>
+    );
+
+    const checkboxes = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+    it('should initially set the checkbox to checked if the model is truthy', () => {
+      assert.equal(checkboxes[0].checked, true);
+    });
+
+    it('should give each checkbox a name attribute of the model', () => {
+      checkboxes.forEach((checkbox) => {
+        assert.equal(checkbox.name, 'test.foo[]');
+      })
+    });
+
+    it('should dispatch a change event when changed', () => {
+      TestUtils.Simulate.change(checkboxes[0]);
+
+      assert.sameMembers(
+        store.getState().test.foo,
+        []);
+
+      TestUtils.Simulate.change(checkboxes[1]);
+
+      assert.sameMembers(
+        store.getState().test.foo,
+        [2]);
+
+      TestUtils.Simulate.change(checkboxes[0]);
+
+      assert.sameMembers(
+        store.getState().test.foo,
+        [1, 2]);
+
+      TestUtils.Simulate.change(checkboxes[2]);
+
+      assert.sameMembers(
+        store.getState().test.foo,
+        [1, 2, 3]);
+
+      TestUtils.Simulate.change(checkboxes[0]);
+
+      assert.sameMembers(
+        store.getState().test.foo,
+        [2, 3]);
+    });
+  });
 });
