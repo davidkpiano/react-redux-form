@@ -11,12 +11,23 @@ const { assert } = chai;
 import { actions, createFormReducer, initialFieldState } from '../src';
 
 describe('RSF field actions', () => {
+  describe('reset()', () => {
+    it('should set the field to the initial field state', () => {
+      const reducer = createFormReducer('test');
+
+      assert.containSubset(
+        reducer({}, actions.reset('test.foo'))
+          .field('foo'),
+        initialFieldState);
+    });
+  });
+
   describe('focus()', () => {
     it('should set the focus state of the field to true and the blur state to false', () => {    
       const reducer = createFormReducer('test');
 
       assert.containSubset(
-        reducer(initialFieldState, actions.focus('test.foo'))
+        reducer(undefined, actions.focus('test.foo'))
           .field('foo'),
         {
           focus: true,
@@ -30,7 +41,7 @@ describe('RSF field actions', () => {
       const reducer = createFormReducer('test');
 
       assert.containSubset(
-        reducer(initialFieldState, actions.blur('test.foo'))
+        reducer(undefined, actions.blur('test.foo'))
           .field('foo'),
         {
           blur: true,
@@ -46,8 +57,39 @@ describe('RSF field actions', () => {
       const reducer = createFormReducer('test');
 
       assert.containSubset(
-        reducer(initialFieldState, actions.setPristine('test.foo'))
+        reducer(undefined, actions.setPristine('test.foo'))
           .field('foo'),
+        {
+          pristine: true,
+          dirty: false
+        });
+    });
+
+    it('should set the pristine state of the form to true and the dirty state to false if every field is pristine', () => {
+      const reducer = createFormReducer('test');
+
+      let actualPristine = reducer(undefined, actions.setPristine('test.foo'));
+
+      assert.containSubset(
+        actualPristine,
+        {
+          pristine: true,
+          dirty: false
+        });
+
+      let actualDirty = reducer(actualPristine, actions.setDirty('test.bar'));
+
+      assert.containSubset(
+        actualDirty,
+        {
+          pristine: false,
+          dirty: true
+        });
+
+      let actualMultiplePristine = reducer(actualDirty, actions.setPristine('test.bar'));
+
+      assert.containSubset(
+        actualMultiplePristine,
         {
           pristine: true,
           dirty: false
@@ -60,13 +102,24 @@ describe('RSF field actions', () => {
       const reducer = createFormReducer('test');
 
       assert.containSubset(
-        reducer(initialFieldState, actions.setDirty('test.foo'))
+        reducer(undefined, actions.setDirty('test.foo'))
           .field('foo'),
         {
           dirty: true,
           pristine: false
         });
     });
+
+    it('should set the dirty state of the form to true and the pristine state to false', () => {
+      const reducer = createFormReducer('test');
+
+      assert.containSubset(
+        reducer(undefined, actions.setDirty('test.foo')),
+        {
+          dirty: true,
+          pristine: false
+        });
+    })
   });
 
   describe('setPending()', () => {
@@ -74,10 +127,54 @@ describe('RSF field actions', () => {
       const reducer = createFormReducer('test');
 
       assert.containSubset(
-        reducer(initialFieldState, actions.setPending('test.foo'))
+        reducer(undefined, actions.setPending('test.foo'))
           .field('foo'),
         {
           pending: true,
+          submitted: false
+        });
+    });
+
+    it('should set the pending state of the field to the specified state', () => {
+      const reducer = createFormReducer('test');
+
+      let actualPending = reducer(undefined, actions.setPending('test.foo', true));
+
+      assert.containSubset(
+        actualPending
+          .field('foo'),
+        {
+          pending: true,
+          submitted: false
+        });
+
+      let actualNotPending = reducer(actualPending, actions.setPending('test.foo', false));
+
+      assert.containSubset(
+        actualNotPending
+          .field('foo'),
+        {
+          pending: false,
+          submitted: false
+        });
+    });
+
+    it('should work with forms', () => {
+      const reducer = createFormReducer('test');
+
+      let actualPending = reducer(undefined, actions.setPending('test'));
+
+      assert.containSubset(
+        actualPending,
+        {
+          pending: true,
+          submitted: false
+        });
+
+      assert.containSubset(
+        reducer(actualPending, actions.setPending('test', false)),
+        {
+          pending: false,
           submitted: false
         });
     });
@@ -88,10 +185,56 @@ describe('RSF field actions', () => {
       const reducer = createFormReducer('test');
 
       assert.containSubset(
-        reducer(initialFieldState, actions.setSubmitted('test.foo'))
+        reducer(undefined, actions.setSubmitted('test.foo'))
           .field('foo'),
         {
           submitted: true,
+          pending: false
+        });
+    });
+
+    it('should set the submitted state of the field to the specified state', () => {
+      const reducer = createFormReducer('test');
+
+      let actualSubmitted = reducer(undefined, actions.setSubmitted('test.foo', true));
+
+      assert.containSubset(
+        actualSubmitted
+          .field('foo'),
+        {
+          submitted: true,
+          pending: false
+        });
+
+      let actualNotSubmitted = reducer(actualSubmitted, actions.setSubmitted('test.foo', false));
+
+      assert.containSubset(
+        actualNotSubmitted
+          .field('foo'),
+        {
+          submitted: false,
+          pending: false
+        });
+    });
+
+    it('should work with forms', () => {
+      const reducer = createFormReducer('test');
+
+      let actualSubmitted = reducer(undefined, actions.setSubmitted('test', true));
+
+      assert.containSubset(
+        actualSubmitted,
+        {
+          submitted: true,
+          pending: false
+        });
+
+      let actualNotSubmitted = reducer(actualSubmitted, actions.setSubmitted('test', false));
+
+      assert.containSubset(
+        actualNotSubmitted,
+        {
+          submitted: false,
           pending: false
         });
     });
@@ -102,7 +245,7 @@ describe('RSF field actions', () => {
       const reducer = createFormReducer('test');
 
       assert.containSubset(
-        reducer(initialFieldState, actions.setTouched('test.foo'))
+        reducer(undefined, actions.setTouched('test.foo'))
           .field('foo'),
         {
           touched: true,
@@ -118,7 +261,7 @@ describe('RSF field actions', () => {
       const reducer = createFormReducer('test');
 
       assert.containSubset(
-        reducer(initialFieldState, actions.setUntouched('test.foo'))
+        reducer(undefined, actions.setUntouched('test.foo'))
           .field('foo'),
         {
           untouched: true,
@@ -132,14 +275,14 @@ describe('RSF field actions', () => {
       const reducer = createFormReducer('test');
 
       assert.containSubset(
-        reducer(initialFieldState, actions.setValidity('test.foo', true))
+        reducer(undefined, actions.setValidity('test.foo', true))
           .field('foo'),
         {
           errors: false
         });
 
       assert.containSubset(
-        reducer(initialFieldState, actions.setValidity('test.foo', false))
+        reducer(undefined, actions.setValidity('test.foo', false))
           .field('foo'),
         {
           errors: true
@@ -155,7 +298,7 @@ describe('RSF field actions', () => {
       }
 
       assert.containSubset(
-        reducer(initialFieldState, actions.setValidity('test.foo', validity))
+        reducer(undefined, actions.setValidity('test.foo', validity))
           .field('foo'),
         {
           errors: {
@@ -173,12 +316,19 @@ describe('RSF field actions', () => {
         two: true
       };
 
+      let actualForm = reducer(undefined, actions.setValidity('test.foo', validity));
+
       assert.containSubset(
-        reducer(initialFieldState, actions.setValidity('test.foo', validity))
-          .field('foo'),
+        actualForm.field('foo'),
         {
           valid: true
         });
+
+      assert.containSubset(
+        actualForm,
+        {
+          valid: true
+        }, 'form should be valid if all fields are valid');
     });
 
     it('should set the valid state to false if any value in validity object are false', () => {
@@ -190,11 +340,41 @@ describe('RSF field actions', () => {
         three: false
       };
 
+      let actualForm = reducer(undefined, actions.setValidity('test.foo', validity));
+
       assert.containSubset(
-        reducer(initialFieldState, actions.setValidity('test.foo', validity))
-          .field('foo'),
+        actualForm.field('foo'),
         {
           valid: false
+        });
+
+      assert.containSubset(
+        actualForm,
+        {
+          valid: false
+        }, 'form should be invalid if any fields are invalid');
+    });
+
+    it('should be able to set the validity of a form', () => {
+      const reducer = createFormReducer('test');
+
+      let validity = {
+        foo: true,
+        baz: false
+      };
+
+      let actual = reducer(
+        initialFieldState,
+        actions.setValidity('test', validity));
+
+      assert.containSubset(
+        actual,
+        {
+          valid: false,
+          errors: {
+            foo: false,
+            baz: true
+          }
         });
     });
   });
@@ -205,7 +385,7 @@ describe('RSF field actions', () => {
       const dispatch = (action) => {
         if (action.type === 'rsf/setValidity') {        
           testDone(assert.containSubset(
-            reducer(initialFieldState, action)
+            reducer(undefined, action)
               .field('foo'),
               {
               valid: false,

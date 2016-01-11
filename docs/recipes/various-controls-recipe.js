@@ -64,6 +64,14 @@ class VariousControlsRecipe extends React.Component {
         <button type="button" onClick={() => dispatch(actions.change('user.state', 'FL'))}>
           Choose Florida
         </button>
+
+        <Field model="user.multiple[]">
+          <select multiple>
+            <option value="1">Item 1</option>
+            <option value="2">Item 2</option>
+            <option value="3">Item 3</option>
+          </select>
+        </Field>
       </Recipe>
     );
   }

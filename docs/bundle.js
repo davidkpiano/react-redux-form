@@ -27960,7 +27960,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var code = '\nimport validator from \'validator\';\nimport { Field } from \'redux-simple-form\';\n\nconst isRequired = (value) => !validator.isNull(value);\n\nclass UserForm extends React.Component {\n  render() {\n    let { user, userForm } = this.props;\n\n    return (\n      <form>\n        <Field model="user.username"\n          validators={{\n            required: isRequired,\n            length: (v) => v && v.length > 15\n          }}\n          validateOn="blur">\n          <label>Username</label>\n          <input type="text"/>\n\n          { userForm.field(\'username\').errors.required\n            && <div>Username is required</div>\n          }\n        </Field>\n\n        <Field model="user.email"\n          validators={{\n            required: isRequired,\n            email: validator.isEmail\n          }}\n          validateOn="blur">\n          <label>Email</label>\n          <input type="text" />\n\n          { (userForm.field(\'email\').errors.required)\n          && <div>Email address is required</div> }\n          { (userForm.field(\'email\').errors.email)\n          && <div>Must be valid email address</div> }\n        </Field>\n\n        <Field model="user.age"\n          parse={(val) => +val}\n          validators={{\n            required: isRequired,\n            number: validator.isInt,\n            minAge: (age) => age >= 18\n          }}\n          validateOn="blur">\n          <label>Age</label>\n          <input type="text" />\n\n          { (userForm.field(\'age\').errors.required)\n          && <div>Age is required</div> }\n          { (userForm.field(\'age\').errors.number)\n          && <div>Age must be a number</div> }\n          { (userForm.field(\'age\').errors.minAge)\n          && <div>Must be 18 years or older</div> }\n        </Field>\n      </form>\n    );\n  }\n}\n';
+	var code = '\nimport validator from \'validator\';\nimport { Field } from \'redux-simple-form\';\n\nconst isRequired = (value) => !validator.isNull(value);\n\nclass UserForm extends React.Component {\n  render() {\n    let { user, userForm } = this.props;\n\n    return (\n      <form>\n        <Field model="user.username"\n          validators={{\n            required: isRequired,\n            length: (v) => v && v.length > 15\n          }}\n          validateOn="blur">\n          <label>Username</label>\n          <input type="text"/>\n\n          { userForm.field(\'username\').errors.required\n            && <div>Username is required</div>\n          }\n        </Field>\n\n        <Field model="user.email"\n          validators={{\n            required: isRequired,\n            email: validator.isEmail\n          }}\n          validateOn="blur">\n          <label>Email</label>\n          <input type="text" />\n\n          { (userForm.field(\'email\').errors.required)\n          && <div>Email address is required</div> }\n          { (userForm.field(\'email\').errors.email)\n          && <div>Must be valid email address</div> }\n        </Field>\n\n        <Field model="user.age"\n          parser={(val) => +val}\n          validators={{\n            required: isRequired,\n            number: validator.isInt,\n            minAge: (age) => age >= 18\n          }}\n          validateOn="blur">\n          <label>Age</label>\n          <input type="text" />\n\n          { (userForm.field(\'age\').errors.required)\n          && <div>Age is required</div> }\n          { (userForm.field(\'age\').errors.number)\n          && <div>Age must be a number</div> }\n          { (userForm.field(\'age\').errors.minAge)\n          && <div>Must be 18 years or older</div> }\n        </Field>\n      </form>\n    );\n  }\n}\n';
 
 	var isRequired = function isRequired(value) {
 	  return !_validator2.default.isNull(value);
@@ -27981,6 +27981,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props = this.props;
 	      var user = _props.user;
 	      var userForm = _props.userForm;
+	      var dispatch = _props.dispatch;
 
 	      console.log(userForm.field('username'));
 
@@ -27992,6 +27993,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          null,
 	          'Sync Validation'
 	        ),
+	        _react2.default.createElement('input', { type: 'text', onFocus: function onFocus() {
+	            return dispatch(_reduxSimpleForm.actions.focus('user.test'));
+	          } }),
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
 	          { model: 'user.username',
@@ -28042,7 +28046,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
 	          { model: 'user.age',
-	            parse: function parse(val) {
+	            parser: function parser(val) {
 	              return +val;
 	            },
 	            validators: {
@@ -28097,7 +28101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getField = exports.Form = exports.Field = exports.actions = exports.createFormReducer = exports.createModelReducer = undefined;
+	exports.initialFieldState = exports.getField = exports.Form = exports.Field = exports.actions = exports.createFormReducer = exports.createModelReducer = undefined;
 
 	var _react = __webpack_require__(256);
 
@@ -28145,6 +28149,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Field = _fieldComponent2.default;
 	exports.Form = _formComponent2.default;
 	exports.getField = _formReducer.getField;
+	exports.initialFieldState = _formReducer.initialFieldState;
 
 /***/ },
 /* 256 */
@@ -29064,7 +29069,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * will remain to ensure logic does not differ in production.
 	 */
 
-	var invariant = function (condition, format, a, b, c, d, e, f) {
+	function invariant(condition, format, a, b, c, d, e, f) {
 	  if (process.env.NODE_ENV !== 'production') {
 	    if (format === undefined) {
 	      throw new Error('invariant requires an error message argument');
@@ -29078,15 +29083,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	    } else {
 	      var args = [a, b, c, d, e, f];
 	      var argIndex = 0;
-	      error = new Error('Invariant Violation: ' + format.replace(/%s/g, function () {
+	      error = new Error(format.replace(/%s/g, function () {
 	        return args[argIndex++];
 	      }));
+	      error.name = 'Invariant Violation';
 	    }
 
 	    error.framesToPop = 1; // we don't care about invariant's own frame
 	    throw error;
 	  }
-	};
+	}
 
 	module.exports = invariant;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4)))
@@ -38513,8 +38519,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	     */
 	    // autoCapitalize and autoCorrect are supported in Mobile Safari for
 	    // keyboard hints.
-	    autoCapitalize: null,
-	    autoCorrect: null,
+	    autoCapitalize: MUST_USE_ATTRIBUTE,
+	    autoCorrect: MUST_USE_ATTRIBUTE,
 	    // autoSave allows WebKit/Blink to persist values of input fields on page reloads
 	    autoSave: null,
 	    // color is for Safari mask-icon link
@@ -38545,9 +38551,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    httpEquiv: 'http-equiv'
 	  },
 	  DOMPropertyNames: {
-	    autoCapitalize: 'autocapitalize',
 	    autoComplete: 'autocomplete',
-	    autoCorrect: 'autocorrect',
 	    autoFocus: 'autofocus',
 	    autoPlay: 'autoplay',
 	    autoSave: 'autosave',
@@ -41626,7 +41630,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var value = LinkedValueUtils.getValue(props);
 
 	    if (value != null) {
-	      updateOptions(this, props, value);
+	      updateOptions(this, Boolean(props.multiple), value);
 	    }
 	  }
 	}
@@ -44661,11 +44665,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	 * @typechecks
 	 */
 
+	/* eslint-disable fb-www/typeof-undefined */
+
 	/**
 	 * Same as document.activeElement but wraps in a try-catch block. In IE it is
 	 * not safe to call document.activeElement if there is nothing focused.
 	 *
-	 * The activeElement will be null only if the document or document body is not yet defined.
+	 * The activeElement will be null only if the document or document body is not
+	 * yet defined.
 	 */
 	'use strict';
 
@@ -44673,7 +44680,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (typeof document === 'undefined') {
 	    return null;
 	  }
-
 	  try {
 	    return document.activeElement || document.body;
 	  } catch (e) {
@@ -46413,7 +46419,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  'setValueForProperty': 'update attribute',
 	  'setValueForAttribute': 'update attribute',
 	  'deleteValueForProperty': 'remove attribute',
-	  'dangerouslyReplaceNodeWithMarkupByID': 'replace'
+	  'setValueForStyles': 'update styles',
+	  'replaceNodeWithMarkup': 'replace',
+	  'updateTextContent': 'set textContent'
 	};
 
 	function getTotalTime(measurements) {
@@ -46605,18 +46613,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	var performance = __webpack_require__(399);
-	var curPerformance = performance;
+
+	var performanceNow;
 
 	/**
 	 * Detect if we can use `window.performance.now()` and gracefully fallback to
 	 * `Date.now()` if it doesn't exist. We need to support Firefox < 15 for now
 	 * because of Facebook's testing infrastructure.
 	 */
-	if (!curPerformance || !curPerformance.now) {
-	  curPerformance = Date;
+	if (performance.now) {
+	  performanceNow = function () {
+	    return performance.now();
+	  };
+	} else {
+	  performanceNow = function () {
+	    return Date.now();
+	  };
 	}
-
-	var performanceNow = curPerformance.now.bind(curPerformance);
 
 	module.exports = performanceNow;
 
@@ -46665,7 +46678,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	module.exports = '0.14.3';
+	module.exports = '0.14.6';
 
 /***/ },
 /* 401 */
@@ -48839,6 +48852,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
+	var _actionTypes = __webpack_require__(516);
+
+	var actionTypes = _interopRequireWildcard(_actionTypes);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function getSuperState(model, state) {
@@ -48861,23 +48880,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var collection = (0, _get2.default)(superState, action.model, []);
 
 	    switch (action.type) {
-	      case 'rsf/change':
-	        switch (action.method) {
-	          default:
-	          case 'change':
-	            if (action.model === model) {
-	              return action.value;
-	            }
-
-	            (0, _set2.default)(superState, action.model, action.value);
-
-	            return (0, _get2.default)(superState, model);
-
-	          case 'reset':
-	            (0, _set2.default)(superState, action.model, (0, _get2.default)(getSuperState(model, initialState), action.model));
-
-	            return (0, _get2.default)(superState, model);
+	      case actionTypes.CHANGE:
+	        if (action.model === model) {
+	          return action.value;
 	        }
+
+	        (0, _set2.default)(superState, action.model, action.value);
+
+	        return (0, _get2.default)(superState, model);
+
+	      case actionTypes.RESET:
+	        (0, _set2.default)(superState, action.model, (0, _get2.default)(getSuperState(model, initialState), action.model));
+
+	        return (0, _get2.default)(superState, model);
 
 	      default:
 	        return state;
@@ -50339,10 +50354,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _set2 = _interopRequireDefault(_set);
 
-	var _xor = __webpack_require__(471);
-
-	var _xor2 = _interopRequireDefault(_xor);
-
 	var _startsWith = __webpack_require__(447);
 
 	var _startsWith2 = _interopRequireDefault(_startsWith);
@@ -50351,10 +50362,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _cloneDeep2 = _interopRequireDefault(_cloneDeep);
 
-	var _isArray = __webpack_require__(438);
-
-	var _isArray2 = _interopRequireDefault(_isArray);
-
 	var _isPlainObject = __webpack_require__(481);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
@@ -50362,14 +50369,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _isBoolean = __webpack_require__(483);
 
 	var _isBoolean2 = _interopRequireDefault(_isBoolean);
-
-	var _filter = __webpack_require__(484);
-
-	var _filter2 = _interopRequireDefault(_filter);
-
-	var _map = __webpack_require__(507);
-
-	var _map2 = _interopRequireDefault(_map);
 
 	var _mapValues = __webpack_require__(510);
 
@@ -50392,9 +50391,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function getField(state, field, model) {
-	  var result = (0, _get2.default)(state, ['fields', model + '.' + field], (0, _get2.default)(state, ['fields', field], initialFieldState));
-
-	  return result;
+	  return (0, _get2.default)(state, ['fields', model + '.' + field], (0, _get2.default)(state, ['fields', field], initialFieldState));
 	}
 
 	var initialFieldState = {
@@ -50411,12 +50408,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  errors: {}
 	};
 
-	var initialFormState = {
+	var initialFormState = _extends({}, initialFieldState, {
 	  fields: {},
 	  field: function field() {
 	    return initialFieldState;
 	  }
-	};
+	});
 
 	function createFormReducer(model) {
 	  var initialState = arguments.length <= 1 || arguments[1] === undefined ? initialFormState : arguments[1];
@@ -50425,13 +50422,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
 	    var action = arguments[1];
 
-	    console.log(action);
-
 	    if (model && !(0, _startsWith2.default)(action.model, model)) {
 	      return state;
 	    }
 
-	    var form = (0, _cloneDeep2.default)(state);
+	    console.log(action);
 
 	    switch (action.type) {
 	      case actionTypes.FOCUS:
@@ -50508,9 +50503,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        break;
 
 	      case actionTypes.SET_INITIAL:
-	      default:
+	      case actionTypes.RESET:
 	        setField(form, action.model, initialFieldState);
 
+	        break;
+
+	      default:
 	        break;
 	    }
 
@@ -50526,47 +50524,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.initialFieldState = initialFieldState;
 
 /***/ },
-/* 471 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var arrayPush = __webpack_require__(472),
-	    baseDifference = __webpack_require__(473),
-	    baseUniq = __webpack_require__(480),
-	    isArrayLike = __webpack_require__(455);
-
-	/**
-	 * Creates an array of unique values that is the [symmetric difference](https://en.wikipedia.org/wiki/Symmetric_difference)
-	 * of the provided arrays.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @category Array
-	 * @param {...Array} [arrays] The arrays to inspect.
-	 * @returns {Array} Returns the new array of values.
-	 * @example
-	 *
-	 * _.xor([1, 2], [4, 2]);
-	 * // => [1, 4]
-	 */
-	function xor() {
-	  var index = -1,
-	      length = arguments.length;
-
-	  while (++index < length) {
-	    var array = arguments[index];
-	    if (isArrayLike(array)) {
-	      var result = result
-	        ? arrayPush(baseDifference(result, array), baseDifference(array, result))
-	        : array;
-	    }
-	  }
-	  return result ? baseUniq(result) : [];
-	}
-
-	module.exports = xor;
-
-
-/***/ },
+/* 471 */,
 /* 472 */
 /***/ function(module, exports) {
 
@@ -50593,67 +50551,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 473 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseIndexOf = __webpack_require__(474),
-	    cacheIndexOf = __webpack_require__(476),
-	    createCache = __webpack_require__(477);
-
-	/** Used as the size to enable large array optimizations. */
-	var LARGE_ARRAY_SIZE = 200;
-
-	/**
-	 * The base implementation of `_.difference` which accepts a single array
-	 * of values to exclude.
-	 *
-	 * @private
-	 * @param {Array} array The array to inspect.
-	 * @param {Array} values The values to exclude.
-	 * @returns {Array} Returns the new array of filtered values.
-	 */
-	function baseDifference(array, values) {
-	  var length = array ? array.length : 0,
-	      result = [];
-
-	  if (!length) {
-	    return result;
-	  }
-	  var index = -1,
-	      indexOf = baseIndexOf,
-	      isCommon = true,
-	      cache = (isCommon && values.length >= LARGE_ARRAY_SIZE) ? createCache(values) : null,
-	      valuesLength = values.length;
-
-	  if (cache) {
-	    indexOf = cacheIndexOf;
-	    isCommon = false;
-	    values = cache;
-	  }
-	  outer:
-	  while (++index < length) {
-	    var value = array[index];
-
-	    if (isCommon && value === value) {
-	      var valuesIndex = valuesLength;
-	      while (valuesIndex--) {
-	        if (values[valuesIndex] === value) {
-	          continue outer;
-	        }
-	      }
-	      result.push(value);
-	    }
-	    else if (indexOf(values, value, 0) < 0) {
-	      result.push(value);
-	    }
-	  }
-	  return result;
-	}
-
-	module.exports = baseDifference;
-
-
-/***/ },
+/* 473 */,
 /* 474 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -50716,187 +50614,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 476 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isObject = __webpack_require__(435);
-
-	/**
-	 * Checks if `value` is in `cache` mimicking the return signature of
-	 * `_.indexOf` by returning `0` if the value is found, else `-1`.
-	 *
-	 * @private
-	 * @param {Object} cache The cache to search.
-	 * @param {*} value The value to search for.
-	 * @returns {number} Returns `0` if `value` is found, else `-1`.
-	 */
-	function cacheIndexOf(cache, value) {
-	  var data = cache.data,
-	      result = (typeof value == 'string' || isObject(value)) ? data.set.has(value) : data.hash[value];
-
-	  return result ? 0 : -1;
-	}
-
-	module.exports = cacheIndexOf;
-
-
-/***/ },
-/* 477 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {var SetCache = __webpack_require__(478),
-	    getNative = __webpack_require__(439);
-
-	/** Native method references. */
-	var Set = getNative(global, 'Set');
-
-	/* Native method references for those with the same name as other `lodash` methods. */
-	var nativeCreate = getNative(Object, 'create');
-
-	/**
-	 * Creates a `Set` cache object to optimize linear searches of large arrays.
-	 *
-	 * @private
-	 * @param {Array} [values] The values to cache.
-	 * @returns {null|Object} Returns the new cache object if `Set` is supported, else `null`.
-	 */
-	function createCache(values) {
-	  return (nativeCreate && Set) ? new SetCache(values) : null;
-	}
-
-	module.exports = createCache;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 478 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {var cachePush = __webpack_require__(479),
-	    getNative = __webpack_require__(439);
-
-	/** Native method references. */
-	var Set = getNative(global, 'Set');
-
-	/* Native method references for those with the same name as other `lodash` methods. */
-	var nativeCreate = getNative(Object, 'create');
-
-	/**
-	 *
-	 * Creates a cache object to store unique values.
-	 *
-	 * @private
-	 * @param {Array} [values] The values to cache.
-	 */
-	function SetCache(values) {
-	  var length = values ? values.length : 0;
-
-	  this.data = { 'hash': nativeCreate(null), 'set': new Set };
-	  while (length--) {
-	    this.push(values[length]);
-	  }
-	}
-
-	// Add functions to the `Set` cache.
-	SetCache.prototype.push = cachePush;
-
-	module.exports = SetCache;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 479 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isObject = __webpack_require__(435);
-
-	/**
-	 * Adds `value` to the cache.
-	 *
-	 * @private
-	 * @name push
-	 * @memberOf SetCache
-	 * @param {*} value The value to cache.
-	 */
-	function cachePush(value) {
-	  var data = this.data;
-	  if (typeof value == 'string' || isObject(value)) {
-	    data.set.add(value);
-	  } else {
-	    data.hash[value] = true;
-	  }
-	}
-
-	module.exports = cachePush;
-
-
-/***/ },
-/* 480 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseIndexOf = __webpack_require__(474),
-	    cacheIndexOf = __webpack_require__(476),
-	    createCache = __webpack_require__(477);
-
-	/** Used as the size to enable large array optimizations. */
-	var LARGE_ARRAY_SIZE = 200;
-
-	/**
-	 * The base implementation of `_.uniq` without support for callback shorthands
-	 * and `this` binding.
-	 *
-	 * @private
-	 * @param {Array} array The array to inspect.
-	 * @param {Function} [iteratee] The function invoked per iteration.
-	 * @returns {Array} Returns the new duplicate free array.
-	 */
-	function baseUniq(array, iteratee) {
-	  var index = -1,
-	      indexOf = baseIndexOf,
-	      length = array.length,
-	      isCommon = true,
-	      isLarge = isCommon && length >= LARGE_ARRAY_SIZE,
-	      seen = isLarge ? createCache() : null,
-	      result = [];
-
-	  if (seen) {
-	    indexOf = cacheIndexOf;
-	    isCommon = false;
-	  } else {
-	    isLarge = false;
-	    seen = iteratee ? [] : result;
-	  }
-	  outer:
-	  while (++index < length) {
-	    var value = array[index],
-	        computed = iteratee ? iteratee(value, index, array) : value;
-
-	    if (isCommon && value === value) {
-	      var seenIndex = seen.length;
-	      while (seenIndex--) {
-	        if (seen[seenIndex] === computed) {
-	          continue outer;
-	        }
-	      }
-	      if (iteratee) {
-	        seen.push(computed);
-	      }
-	      result.push(value);
-	    }
-	    else if (indexOf(seen, computed, 0) < 0) {
-	      if (iteratee || isLarge) {
-	        seen.push(computed);
-	      }
-	      result.push(value);
-	    }
-	  }
-	  return result;
-	}
-
-	module.exports = baseUniq;
-
-
-/***/ },
+/* 476 */,
+/* 477 */,
+/* 478 */,
+/* 479 */,
+/* 480 */,
 /* 481 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -52442,6 +52164,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	var CHANGE = 'rsf/change';
+	var RESET = 'rsf/reset';
 	var FOCUS = 'rsf/focus';
 	var BLUR = 'rsf/blur';
 	var VALIDATE = 'rsf/validate';
@@ -52455,6 +52178,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var SET_SUBMITTED = 'rsf/setSubmitted';
 
 	exports.CHANGE = CHANGE;
+	exports.RESET = RESET;
 	exports.FOCUS = FOCUS;
 	exports.BLUR = BLUR;
 	exports.VALIDATE = VALIDATE;
@@ -52486,6 +52210,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 	function isMulti(model) {
 	  return (0, _endsWith2.default)(model, '[]');
 	}
@@ -52506,8 +52232,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return !!(event && event.stopPropagation && event.preventDefault);
 	}
 
-	function getValue(event) {
-	  return isEvent(event) ? event.target.value : event;
+	function getValue(value) {
+	  return isEvent(value) ? getEventValue(value) : value;
+	}
+
+	function getEventValue(event) {
+	  // return event.target.value;
+	  return event.target.multiple ? [].concat(_toConsumableArray(event.target.selectedOptions)).map(function (option) {
+	    return option.value;
+	  }) : event.target.value;
 	}
 
 	exports.isMulti = isMulti;
@@ -52571,7 +52304,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.remove = exports.push = exports.map = exports.reset = exports.filter = exports.toggle = exports.xor = exports.change = undefined;
+	exports.remove = exports.push = exports.map = exports.filter = exports.toggle = exports.xor = exports.reset = exports.change = undefined;
 
 	var _curry = __webpack_require__(520);
 
@@ -52692,8 +52425,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var reset = function reset(model) {
 	  return {
-	    type: 'rsf/change',
-	    method: 'reset',
+	    type: 'rsf/reset',
 	    model: model
 	  };
 	};
@@ -52729,6 +52461,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.change = change;
+	exports.reset = reset;
 	exports.xor = xor;
 	exports.toggle = toggle;
 	exports.filter = filter;
@@ -54471,7 +54204,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  'radio': function radio(props) {
 	    return {
 	      name: props.model,
-	      checked: (0, _isEqual2.default)(props.modelValue, props.value),
+	      checked: (function () {
+	        return (0, _isEqual2.default)(props.modelValue, props.value);
+	      })(),
 	      value: props.value
 	    };
 	  },
@@ -54525,7 +54260,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var modelValue = props.modelValue;
 	      var validators = props.validators;
 	      var asyncValidators = props.asyncValidators;
-	      var parse = props.parse;
+	      var parser = props.parser;
 
 	      var value = control.props.value;
 	      var updateOn = typeof props.updateOn === 'function' ? 'onChange' : 'on' + (0, _capitalize2.default)(props.updateOn || 'change');
@@ -54552,7 +54287,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var createControlProps = controlPropsMap[controlType] || control.type === 'input' && controlPropsMap['text'] || null;
 
-	      var controlProps = createControlProps ? _extends({}, defaultProps, createControlProps(props)) : null;
+	      var controlProps = createControlProps ? _extends({}, defaultProps, createControlProps({
+	        model: model,
+	        modelValue: modelValue,
+	        value: value
+	      })) : null;
 
 	      if (!controlProps) {
 	        return _react2.default.cloneElement(control, {
@@ -54564,7 +54303,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
 
-	      var controlChangeMethod = changeMethod(props.model, props.value, controlAction, parse);
+	      var controlChangeMethod = changeMethod(props.model, props.value, controlAction, parser);
 
 	      var dispatchChange = control.props.hasOwnProperty('value') && controlType !== 'text' ? function () {
 	        return dispatch(controlChangeMethod(value));
@@ -54639,6 +54378,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Field;
 	})(_react2.default.Component);
 
+	Field.propTypes = {
+	  model: _react2.default.PropTypes.string.isRequired,
+	  updateOn: _react2.default.PropTypes.oneOfType([_react2.default.PropTypes.func, _react2.default.PropTypes.oneOf(['change', 'blur', 'focus'])]),
+	  validators: _react2.default.PropTypes.object,
+	  asyncValidators: _react2.default.PropTypes.object,
+	  parser: _react2.default.PropTypes.func
+	};
 	exports.default = (0, _reactRedux.connect)(selector)(Field);
 
 /***/ },
@@ -55346,10 +55092,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props = this.props;
 	      var children = _props.children;
 	      var control = _props.control;
-
-	      console.log(_extends({}, this.props, {
-	        onChange: this.handleChange
-	      }, control.props));
 
 	      return _react2.default.cloneElement(control, _extends({}, this.props, {
 	        onChange: this.handleChange
@@ -57423,7 +57165,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        user6.phones.map(function (phone, i) {
 	          return _react2.default.createElement(
 	            _reduxSimpleForm.Field,
-	            { model: 'user6.phones[' + i + ']' },
+	            { model: 'user6.phones[' + i + ']', key: i },
 	            _react2.default.createElement('input', { type: 'text' })
 	          );
 	        }),
@@ -57437,7 +57179,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        user6.children.map(function (child, i) {
 	          return _react2.default.createElement(
 	            'div',
-	            null,
+	            { key: i },
 	            _react2.default.createElement(
 	              _reduxSimpleForm.Field,
 	              { model: 'user6.children[' + i + '].name' },
@@ -57712,7 +57454,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  _react2.default.createElement(
 	                    _reduxSimpleForm.Field,
 	                    { model: 'multiRecord[' + i + '].quantity',
-	                      parse: function parse(a) {
+	                      parser: function parser(a) {
 	                        return +a;
 	                      } },
 	                    _react2.default.createElement('input', { type: 'text' })
@@ -57724,7 +57466,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  _react2.default.createElement(
 	                    _reduxSimpleForm.Field,
 	                    { model: 'multiRecord[' + i + '].price',
-	                      parse: function parse(a) {
+	                      parser: function parser(a) {
 	                        return +a;
 	                      } },
 	                    _react2.default.createElement('input', { type: 'text' })
@@ -58049,7 +57791,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
 	          { model: 'parseUser.age',
-	            parse: function parse(val) {
+	            parser: function parser(val) {
 	              return +val;
 	            },
 	            updateOn: 'blur' },
@@ -58063,7 +57805,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
 	          { model: 'parseUser.phone',
-	            parse: function parse(val) {
+	            parser: function parser(val) {
 	              return val.replace(/\D+/g, '').substring(0, 10);
 	            } },
 	          _react2.default.createElement(
@@ -58280,6 +58022,29 @@ return /******/ (function(modules) { // webpackBootstrap
 	              return dispatch(_reduxSimpleForm.actions.change('user.state', 'FL'));
 	            } },
 	          'Choose Florida'
+	        ),
+	        _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'user.multiple[]' },
+	          _react2.default.createElement(
+	            'select',
+	            { multiple: true },
+	            _react2.default.createElement(
+	              'option',
+	              { value: '1' },
+	              'Item 1'
+	            ),
+	            _react2.default.createElement(
+	              'option',
+	              { value: '2' },
+	              'Item 2'
+	            ),
+	            _react2.default.createElement(
+	              'option',
+	              { value: '3' },
+	              'Item 3'
+	            )
+	          )
 	        )
 	      );
 	    }

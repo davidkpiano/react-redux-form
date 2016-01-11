@@ -1,5 +1,6 @@
 
 const CHANGE = 'rsf/change';
+const RESET = 'rsf/reset';
 const FOCUS = 'rsf/focus';
 const BLUR = 'rsf/blur';
 const VALIDATE = 'rsf/validate';
@@ -14,6 +15,7 @@ const SET_SUBMITTED = 'rsf/setSubmitted';
 
 export {
   CHANGE,
+  RESET,
   FOCUS,
   BLUR,
   VALIDATE,

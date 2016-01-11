@@ -198,7 +198,8 @@ html, body, #app {
       border-color: red; }
   .rsf-layout-content select {
     display: block;
-    margin-bottom: 1rem; }
+    margin-bottom: 1rem;
+    width: 100%; }
   .rsf-layout-content label {
     margin-bottom: 0.25rem;
     font-size: 0.8rem;

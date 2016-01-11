@@ -22,6 +22,54 @@ describe('RSF model actions', () => {
     });
   });
 
+  describe('reset()', () => {
+    it('should reset the model to the initial state provided in the reducer', () => {
+      const reducer = createModelReducer('test', {
+        foo: 'initial'
+      });
+
+      let actual = reducer({ foo: 'bar' }, actions.reset('test.foo'));
+
+      assert.deepEqual(actual, { foo: 'initial' });
+    });
+
+    it('should set the model to undefined if an initial state was not provided from a deep model', () => {
+      const reducer = createModelReducer('test', {
+        foo: 'initial'
+      });
+
+      let actual = reducer({ bar: { baz: 'uninitialized' } }, actions.reset('test.bar.baz'));
+
+      assert.isDefined(actual.bar);
+
+      assert.isUndefined(actual.bar.baz);
+    });
+
+    it('should set the model to undefined if an initial state was not provided', () => {
+      const reducer = createModelReducer('test', {
+        foo: 'initial'
+      });
+
+      let actual = reducer({ bar: 'uninitialized' }, actions.reset('test.bar'));
+
+      assert.isUndefined(actual.bar);
+    });
+
+    it('should be able to reset an entire model', () => {
+      const initialState = {
+        foo: 'test foo',
+        bar: 'test bar',
+        baz: { one: 'two' }
+      };
+
+      const reducer = createModelReducer('test', initialState);
+
+      let actual = reducer({}, actions.reset('test'));
+
+      assert.deepEqual(actual, initialState);
+    });
+  });
+
   describe('thunk action creators', () => {
     let actionTests = {
       push: [

@@ -57,7 +57,9 @@ const controlPropsMap = {
   }),
   'radio': (props) => ({
     name: props.model,
-    checked: isEqual(props.modelValue, props.value),
+    checked: (() => {
+      return isEqual(props.modelValue, props.value)
+    })(),
     value: props.value
   }),
   'select': (props) => ({
@@ -79,6 +81,21 @@ const controlActionMap = {
 };
 
 class Field extends React.Component {
+  static propTypes = {
+    model: React.PropTypes.string.isRequired,
+    updateOn: React.PropTypes.oneOfType([
+      React.PropTypes.func,
+      React.PropTypes.oneOf([
+        'change',
+        'blur',
+        'focus'
+      ])
+    ]),
+    validators: React.PropTypes.object,
+    asyncValidators: React.PropTypes.object,
+    parser: React.PropTypes.func
+  };
+
   createField(control, props) {
     if (!control
       || !control.props
@@ -91,7 +108,7 @@ class Field extends React.Component {
       modelValue,
       validators,
       asyncValidators,
-      parse
+      parser
     } = props;
     let value = control.props.value;
     let updateOn = (typeof props.updateOn === 'function')
@@ -122,7 +139,11 @@ class Field extends React.Component {
     let controlProps = createControlProps
       ? {
           ...defaultProps,
-          ...createControlProps(props)
+          ...createControlProps({
+            model,
+            modelValue,
+            value
+          })
         }
       : null;
 
@@ -139,7 +160,7 @@ class Field extends React.Component {
 
     let controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
 
-    let controlChangeMethod = changeMethod(props.model, props.value, controlAction, parse);
+    let controlChangeMethod = changeMethod(props.model, props.value, controlAction, parser);
 
     let dispatchChange = control.props.hasOwnProperty('value')
       && controlType !== 'text'
@@ -196,9 +217,14 @@ class Field extends React.Component {
     let { props } = this;
 
     if (props.children.length > 1) {
-      return <div {...props}>
-        { React.Children.map(props.children, (child) => this.createField(child, props)) }
-      </div>
+      return (
+        <div {...props}>
+          { React.Children.map(
+            props.children,
+            (child) => this.createField(child, props))
+          }
+        </div>
+      );
     }
 
     return this.createField(React.Children.only(props.children), props);

@@ -18,7 +18,6 @@ import {
   getValue
 } from '../utils';
 
-
 class Control extends React.Component {
   componentWillMount() {
     this.handleChange = (e) => {
@@ -29,12 +28,6 @@ class Control extends React.Component {
 
   render() {
     let { children, control } = this.props;
-
-    console.log({
-        ...this.props,
-        onChange: this.handleChange,
-        ...control.props
-      });
 
     return React.cloneElement(
       control,

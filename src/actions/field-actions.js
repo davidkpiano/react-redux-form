@@ -1,54 +1,56 @@
 import get from 'lodash/object/get';
 
+import * as actionTypes from '../action-types';
+
 const focus = (model) => ({
-  type: 'rsf/focus',
+  type: actionTypes.FOCUS,
   model
 });
 
 const blur = (model) => ({
-  type: 'rsf/blur',
+  type: actionTypes.BLUR,
   model
 });
 
 const validate = (model) => ({
-  type: 'rsf/validate',
+  type: actionTypes.VALIDATE,
   model
 });
 
 const setPristine = (model) => ({
-  type: 'rsf/setPristine',
+  type: actionTypes.SET_PRISTINE,
   model
 });
 
 const setDirty = (model) => ({
-  type: 'rsf/setDirty',
+  type: actionTypes.SET_DIRTY,
   model
 });
 
 const setInitial = (model) => ({
-  type: 'rsf/setInitial',
+  type: actionTypes.SET_INITIAL,
   model
 });
 
 const setPending = (model, pending = true) => ({
-  type: 'rsf/setPending',
+  type: actionTypes.SET_PENDING,
   model,
   pending
 });
 
 const setValidity = (model, validity) => ({
-  type: 'rsf/setValidity',
+  type: actionTypes.SET_VALIDITY,
   model,
   validity
 });
 
 const setTouched = (model) => ({
-  type: 'rsf/setTouched',
+  type: actionTypes.SET_TOUCHED,
   model
 });
 
 const setUntouched = (model) => ({
-  type: 'rsf/setUntouched',
+  type: actionTypes.SET_UNTOUCHED,
   model
 });
 
@@ -72,7 +74,7 @@ const asyncSetValidity = (model, validator) => {
 }
 
 const setSubmitted = (model, submitted = true) => ({
-  type: 'rsf/setSubmitted',
+  type: actionTypes.SET_SUBMITTED,
   model,
   submitted
 });

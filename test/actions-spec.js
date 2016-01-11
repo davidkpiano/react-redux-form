@@ -22,6 +22,17 @@ describe('RSF model action creators', () => {
     });
   });
 
+  describe('actions.reset()', () => {
+    it('should return an action', () => {
+      assert.deepEqual(
+        actions.reset('foo.bar'),
+        {
+          type: 'rsf/reset',
+          model: 'foo.bar',
+        });
+    });
+  });
+
   describe('actions.xor() thunk', () => {
     it('should return a function that dispatches a change event', (done) => {
       let fn = actions.xor('foo.bar', 2);
