@@ -11,6 +11,17 @@ const { assert } = chai;
 import { actions, createFormReducer, initialFieldState } from '../src';
 
 describe('RSF field actions', () => {
+  describe('reset()', () => {
+    it('should set the field to the initial field state', () => {
+      const reducer = createFormReducer('test');
+
+      assert.containSubset(
+        reducer({}, actions.reset('test.foo'))
+          .field('foo'),
+        initialFieldState);
+    });
+  });
+
   describe('focus()', () => {
     it('should set the focus state of the field to true and the blur state to false', () => {    
       const reducer = createFormReducer('test');

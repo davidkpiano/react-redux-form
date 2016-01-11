@@ -213,17 +213,18 @@ class Field extends React.Component {
     );
   }
 
-  // shouldComponentUpdate() {
-  //   return false;
-  // }
-
   render() {
     let { props } = this;
 
     if (props.children.length > 1) {
-      return <div {...props}>
-        { React.Children.map(props.children, (child) => this.createField(child, props)) }
-      </div>
+      return (
+        <div {...props}>
+          { React.Children.map(
+            props.children,
+            (child) => this.createField(child, props))
+          }
+        </div>
+      );
     }
 
     return this.createField(React.Children.only(props.children), props);

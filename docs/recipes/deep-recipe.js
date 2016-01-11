@@ -17,7 +17,7 @@ class DeepRecipe extends React.Component {
         </Field>
         <label htmlFor="">Phones</label>
         { user6.phones.map((phone, i) =>         
-          <Field model={`user6.phones[${i}]`}>
+          <Field model={`user6.phones[${i}]`} key={i}>
             <input type="text" />
           </Field>
         )}
@@ -26,7 +26,7 @@ class DeepRecipe extends React.Component {
         </button>
 
         { user6.children.map((child, i) =>
-          <div>    
+          <div key={i}>    
             <Field model={`user6.children[${i}].name`}>
               <label htmlFor="">Child name</label>
               <input type="text" />

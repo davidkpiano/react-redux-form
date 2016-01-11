@@ -77,8 +77,7 @@ const filter = (model, iteratee = (a) => a) => (dispatch, getState) => {
 };
 
 const reset = (model) => ({
-  type: `rsf/change`,
-  method: 'reset',
+  type: `rsf/reset`,
   model
 });
 
@@ -107,6 +106,7 @@ const remove = (model, index) => (dispatch, getState) => {
 
 export {
   change,
+  reset,
   xor,
   toggle,
   filter,

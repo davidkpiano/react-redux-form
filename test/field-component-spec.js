@@ -27,6 +27,29 @@ describe('<Field /> component', () => {
     ['textarea']
   ];
 
+  it('should wrap child components in a <div> if more than one', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: createFormReducer('test'),
+        test: createModelReducer('test', { foo: 'bar' })
+      }));
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <label />
+          <input />
+        </Field>
+      </Provider>
+    );
+
+    const div = TestUtils.findRenderedDOMComponentWithTag(field, 'div');
+
+    assert.ok(div);
+
+    assert.equal(
+      div.props.children.length,
+      2);
+  });
+
   textFieldElements.map(([element, type]) => {
     describe(`with <${element} ${type ? 'type="' + type + '"' : ''}/>`, () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({

@@ -27981,6 +27981,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props = this.props;
 	      var user = _props.user;
 	      var userForm = _props.userForm;
+	      var dispatch = _props.dispatch;
 
 	      console.log(userForm.field('username'));
 
@@ -27992,6 +27993,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          null,
 	          'Sync Validation'
 	        ),
+	        _react2.default.createElement('input', { type: 'text', onFocus: function onFocus() {
+	            return dispatch(_reduxSimpleForm.actions.focus('user.test'));
+	          } }),
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
 	          { model: 'user.username',
@@ -28097,7 +28101,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getField = exports.Form = exports.Field = exports.actions = exports.createFormReducer = exports.createModelReducer = undefined;
+	exports.initialFieldState = exports.getField = exports.Form = exports.Field = exports.actions = exports.createFormReducer = exports.createModelReducer = undefined;
 
 	var _react = __webpack_require__(256);
 
@@ -28145,6 +28149,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.Field = _fieldComponent2.default;
 	exports.Form = _formComponent2.default;
 	exports.getField = _formReducer.getField;
+	exports.initialFieldState = _formReducer.initialFieldState;
 
 /***/ },
 /* 256 */
@@ -48847,6 +48852,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _isArray2 = _interopRequireDefault(_isArray);
 
+	var _actionTypes = __webpack_require__(516);
+
+	var actionTypes = _interopRequireWildcard(_actionTypes);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function getSuperState(model, state) {
@@ -48869,23 +48880,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var collection = (0, _get2.default)(superState, action.model, []);
 
 	    switch (action.type) {
-	      case 'rsf/change':
-	        switch (action.method) {
-	          default:
-	          case 'change':
-	            if (action.model === model) {
-	              return action.value;
-	            }
-
-	            (0, _set2.default)(superState, action.model, action.value);
-
-	            return (0, _get2.default)(superState, model);
-
-	          case 'reset':
-	            (0, _set2.default)(superState, action.model, (0, _get2.default)(getSuperState(model, initialState), action.model));
-
-	            return (0, _get2.default)(superState, model);
+	      case actionTypes.CHANGE:
+	        if (action.model === model) {
+	          return action.value;
 	        }
+
+	        (0, _set2.default)(superState, action.model, action.value);
+
+	        return (0, _get2.default)(superState, model);
+
+	      case actionTypes.RESET:
+	        (0, _set2.default)(superState, action.model, (0, _get2.default)(getSuperState(model, initialState), action.model));
+
+	        return (0, _get2.default)(superState, model);
 
 	      default:
 	        return state;
@@ -50347,10 +50354,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _set2 = _interopRequireDefault(_set);
 
-	var _xor = __webpack_require__(471);
-
-	var _xor2 = _interopRequireDefault(_xor);
-
 	var _startsWith = __webpack_require__(447);
 
 	var _startsWith2 = _interopRequireDefault(_startsWith);
@@ -50359,10 +50362,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _cloneDeep2 = _interopRequireDefault(_cloneDeep);
 
-	var _isArray = __webpack_require__(438);
-
-	var _isArray2 = _interopRequireDefault(_isArray);
-
 	var _isPlainObject = __webpack_require__(481);
 
 	var _isPlainObject2 = _interopRequireDefault(_isPlainObject);
@@ -50370,14 +50369,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _isBoolean = __webpack_require__(483);
 
 	var _isBoolean2 = _interopRequireDefault(_isBoolean);
-
-	var _filter = __webpack_require__(484);
-
-	var _filter2 = _interopRequireDefault(_filter);
-
-	var _map = __webpack_require__(507);
-
-	var _map2 = _interopRequireDefault(_map);
 
 	var _mapValues = __webpack_require__(510);
 
@@ -50433,11 +50424,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
 	    var action = arguments[1];
 
-	    console.log(action);
-
 	    if (model && !(0, _startsWith2.default)(action.model, model)) {
 	      return state;
 	    }
+
+	    console.log(action);
 
 	    var form = (0, _cloneDeep2.default)(state);
 
@@ -50516,9 +50507,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	        break;
 
 	      case actionTypes.SET_INITIAL:
-	      default:
+	      case actionTypes.RESET:
 	        setField(form, action.model, initialFieldState);
 
+	        break;
+
+	      default:
 	        break;
 	    }
 
@@ -50534,47 +50528,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.initialFieldState = initialFieldState;
 
 /***/ },
-/* 471 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var arrayPush = __webpack_require__(472),
-	    baseDifference = __webpack_require__(473),
-	    baseUniq = __webpack_require__(480),
-	    isArrayLike = __webpack_require__(455);
-
-	/**
-	 * Creates an array of unique values that is the [symmetric difference](https://en.wikipedia.org/wiki/Symmetric_difference)
-	 * of the provided arrays.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @category Array
-	 * @param {...Array} [arrays] The arrays to inspect.
-	 * @returns {Array} Returns the new array of values.
-	 * @example
-	 *
-	 * _.xor([1, 2], [4, 2]);
-	 * // => [1, 4]
-	 */
-	function xor() {
-	  var index = -1,
-	      length = arguments.length;
-
-	  while (++index < length) {
-	    var array = arguments[index];
-	    if (isArrayLike(array)) {
-	      var result = result
-	        ? arrayPush(baseDifference(result, array), baseDifference(array, result))
-	        : array;
-	    }
-	  }
-	  return result ? baseUniq(result) : [];
-	}
-
-	module.exports = xor;
-
-
-/***/ },
+/* 471 */,
 /* 472 */
 /***/ function(module, exports) {
 
@@ -50601,67 +50555,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 473 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseIndexOf = __webpack_require__(474),
-	    cacheIndexOf = __webpack_require__(476),
-	    createCache = __webpack_require__(477);
-
-	/** Used as the size to enable large array optimizations. */
-	var LARGE_ARRAY_SIZE = 200;
-
-	/**
-	 * The base implementation of `_.difference` which accepts a single array
-	 * of values to exclude.
-	 *
-	 * @private
-	 * @param {Array} array The array to inspect.
-	 * @param {Array} values The values to exclude.
-	 * @returns {Array} Returns the new array of filtered values.
-	 */
-	function baseDifference(array, values) {
-	  var length = array ? array.length : 0,
-	      result = [];
-
-	  if (!length) {
-	    return result;
-	  }
-	  var index = -1,
-	      indexOf = baseIndexOf,
-	      isCommon = true,
-	      cache = (isCommon && values.length >= LARGE_ARRAY_SIZE) ? createCache(values) : null,
-	      valuesLength = values.length;
-
-	  if (cache) {
-	    indexOf = cacheIndexOf;
-	    isCommon = false;
-	    values = cache;
-	  }
-	  outer:
-	  while (++index < length) {
-	    var value = array[index];
-
-	    if (isCommon && value === value) {
-	      var valuesIndex = valuesLength;
-	      while (valuesIndex--) {
-	        if (values[valuesIndex] === value) {
-	          continue outer;
-	        }
-	      }
-	      result.push(value);
-	    }
-	    else if (indexOf(values, value, 0) < 0) {
-	      result.push(value);
-	    }
-	  }
-	  return result;
-	}
-
-	module.exports = baseDifference;
-
-
-/***/ },
+/* 473 */,
 /* 474 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -50724,187 +50618,11 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 476 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isObject = __webpack_require__(435);
-
-	/**
-	 * Checks if `value` is in `cache` mimicking the return signature of
-	 * `_.indexOf` by returning `0` if the value is found, else `-1`.
-	 *
-	 * @private
-	 * @param {Object} cache The cache to search.
-	 * @param {*} value The value to search for.
-	 * @returns {number} Returns `0` if `value` is found, else `-1`.
-	 */
-	function cacheIndexOf(cache, value) {
-	  var data = cache.data,
-	      result = (typeof value == 'string' || isObject(value)) ? data.set.has(value) : data.hash[value];
-
-	  return result ? 0 : -1;
-	}
-
-	module.exports = cacheIndexOf;
-
-
-/***/ },
-/* 477 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {var SetCache = __webpack_require__(478),
-	    getNative = __webpack_require__(439);
-
-	/** Native method references. */
-	var Set = getNative(global, 'Set');
-
-	/* Native method references for those with the same name as other `lodash` methods. */
-	var nativeCreate = getNative(Object, 'create');
-
-	/**
-	 * Creates a `Set` cache object to optimize linear searches of large arrays.
-	 *
-	 * @private
-	 * @param {Array} [values] The values to cache.
-	 * @returns {null|Object} Returns the new cache object if `Set` is supported, else `null`.
-	 */
-	function createCache(values) {
-	  return (nativeCreate && Set) ? new SetCache(values) : null;
-	}
-
-	module.exports = createCache;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 478 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(global) {var cachePush = __webpack_require__(479),
-	    getNative = __webpack_require__(439);
-
-	/** Native method references. */
-	var Set = getNative(global, 'Set');
-
-	/* Native method references for those with the same name as other `lodash` methods. */
-	var nativeCreate = getNative(Object, 'create');
-
-	/**
-	 *
-	 * Creates a cache object to store unique values.
-	 *
-	 * @private
-	 * @param {Array} [values] The values to cache.
-	 */
-	function SetCache(values) {
-	  var length = values ? values.length : 0;
-
-	  this.data = { 'hash': nativeCreate(null), 'set': new Set };
-	  while (length--) {
-	    this.push(values[length]);
-	  }
-	}
-
-	// Add functions to the `Set` cache.
-	SetCache.prototype.push = cachePush;
-
-	module.exports = SetCache;
-
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
-
-/***/ },
-/* 479 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var isObject = __webpack_require__(435);
-
-	/**
-	 * Adds `value` to the cache.
-	 *
-	 * @private
-	 * @name push
-	 * @memberOf SetCache
-	 * @param {*} value The value to cache.
-	 */
-	function cachePush(value) {
-	  var data = this.data;
-	  if (typeof value == 'string' || isObject(value)) {
-	    data.set.add(value);
-	  } else {
-	    data.hash[value] = true;
-	  }
-	}
-
-	module.exports = cachePush;
-
-
-/***/ },
-/* 480 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var baseIndexOf = __webpack_require__(474),
-	    cacheIndexOf = __webpack_require__(476),
-	    createCache = __webpack_require__(477);
-
-	/** Used as the size to enable large array optimizations. */
-	var LARGE_ARRAY_SIZE = 200;
-
-	/**
-	 * The base implementation of `_.uniq` without support for callback shorthands
-	 * and `this` binding.
-	 *
-	 * @private
-	 * @param {Array} array The array to inspect.
-	 * @param {Function} [iteratee] The function invoked per iteration.
-	 * @returns {Array} Returns the new duplicate free array.
-	 */
-	function baseUniq(array, iteratee) {
-	  var index = -1,
-	      indexOf = baseIndexOf,
-	      length = array.length,
-	      isCommon = true,
-	      isLarge = isCommon && length >= LARGE_ARRAY_SIZE,
-	      seen = isLarge ? createCache() : null,
-	      result = [];
-
-	  if (seen) {
-	    indexOf = cacheIndexOf;
-	    isCommon = false;
-	  } else {
-	    isLarge = false;
-	    seen = iteratee ? [] : result;
-	  }
-	  outer:
-	  while (++index < length) {
-	    var value = array[index],
-	        computed = iteratee ? iteratee(value, index, array) : value;
-
-	    if (isCommon && value === value) {
-	      var seenIndex = seen.length;
-	      while (seenIndex--) {
-	        if (seen[seenIndex] === computed) {
-	          continue outer;
-	        }
-	      }
-	      if (iteratee) {
-	        seen.push(computed);
-	      }
-	      result.push(value);
-	    }
-	    else if (indexOf(seen, computed, 0) < 0) {
-	      if (iteratee || isLarge) {
-	        seen.push(computed);
-	      }
-	      result.push(value);
-	    }
-	  }
-	  return result;
-	}
-
-	module.exports = baseUniq;
-
-
-/***/ },
+/* 476 */,
+/* 477 */,
+/* 478 */,
+/* 479 */,
+/* 480 */,
 /* 481 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -52450,6 +52168,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	var CHANGE = 'rsf/change';
+	var RESET = 'rsf/reset';
 	var FOCUS = 'rsf/focus';
 	var BLUR = 'rsf/blur';
 	var VALIDATE = 'rsf/validate';
@@ -52463,6 +52182,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var SET_SUBMITTED = 'rsf/setSubmitted';
 
 	exports.CHANGE = CHANGE;
+	exports.RESET = RESET;
 	exports.FOCUS = FOCUS;
 	exports.BLUR = BLUR;
 	exports.VALIDATE = VALIDATE;
@@ -52588,7 +52308,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.remove = exports.push = exports.map = exports.reset = exports.filter = exports.toggle = exports.xor = exports.change = undefined;
+	exports.remove = exports.push = exports.map = exports.filter = exports.toggle = exports.xor = exports.reset = exports.change = undefined;
 
 	var _curry = __webpack_require__(520);
 
@@ -52709,8 +52429,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var reset = function reset(model) {
 	  return {
-	    type: 'rsf/change',
-	    method: 'reset',
+	    type: 'rsf/reset',
 	    model: model
 	  };
 	};
@@ -52746,6 +52465,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.change = change;
+	exports.reset = reset;
 	exports.xor = xor;
 	exports.toggle = toggle;
 	exports.filter = filter;
@@ -54638,11 +54358,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        modelValue: modelValue,
 	        control: control }));
 	    }
-
-	    // shouldComponentUpdate() {
-	    //   return false;
-	    // }
-
 	  }, {
 	    key: 'render',
 	    value: function render() {
@@ -55381,10 +55096,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var _props = this.props;
 	      var children = _props.children;
 	      var control = _props.control;
-
-	      console.log(_extends({}, this.props, {
-	        onChange: this.handleChange
-	      }, control.props));
 
 	      return _react2.default.cloneElement(control, _extends({}, this.props, {
 	        onChange: this.handleChange
@@ -57458,7 +57169,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        user6.phones.map(function (phone, i) {
 	          return _react2.default.createElement(
 	            _reduxSimpleForm.Field,
-	            { model: 'user6.phones[' + i + ']' },
+	            { model: 'user6.phones[' + i + ']', key: i },
 	            _react2.default.createElement('input', { type: 'text' })
 	          );
 	        }),
@@ -57472,7 +57183,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        user6.children.map(function (child, i) {
 	          return _react2.default.createElement(
 	            'div',
-	            null,
+	            { key: i },
 	            _react2.default.createElement(
 	              _reduxSimpleForm.Field,
 	              { model: 'user6.children[' + i + '].name' },

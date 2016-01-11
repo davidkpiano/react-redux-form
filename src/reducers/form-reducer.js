@@ -1,13 +1,9 @@
 import get from 'lodash/object/get';
 import set from 'lodash/object/set';
-import xor from 'lodash/array/xor';
 import startsWith from 'lodash/string/startsWith';
 import cloneDeep from 'lodash/lang/cloneDeep';
-import isArray from 'lodash/lang/isArray';
 import isPlainObject from 'lodash/lang/isPlainObject';
 import isBoolean from 'lodash/lang/isBoolean';
-import filter from 'lodash/collection/filter';
-import map from 'lodash/collection/map';
 import mapValues from 'lodash/object/mapValues';
 import every from 'lodash/collection/every';
 
@@ -53,11 +49,11 @@ const initialFormState = {
 
 function createFormReducer(model, initialState = initialFormState) {
   return (state = initialState, action) => {
-    console.log(action);
-    
     if (model && !startsWith(action.model, model)) {
       return state;
     }
+
+    console.log(action);
 
     let form = cloneDeep(state);
 
@@ -139,9 +135,12 @@ function createFormReducer(model, initialState = initialFormState) {
         break;
 
       case actionTypes.SET_INITIAL:
-      default:
+      case actionTypes.RESET:
         setField(form, action.model, initialFieldState);
 
+        break;
+
+      default:
         break;
     }
 

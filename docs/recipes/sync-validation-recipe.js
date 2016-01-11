@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field } from 'redux-simple-form';
+import { Field, actions } from 'redux-simple-form';
 
 import validator from 'validator';
 
@@ -75,13 +75,14 @@ const isRequired = (value) => !validator.isNull(value);
 
 class SyncValidationRecipe extends React.Component {
   render() {
-    let { user, userForm } = this.props;
+    let { user, userForm, dispatch } = this.props;
 
     console.log(userForm.field('username'));
 
     return (
       <Recipe model="user" code={code}>
         <h2>Sync Validation</h2>
+        <input type="text" onFocus={()=>dispatch(actions.focus('user.test'))}/>
         <Field model="user.username"
           validators={{
             required: isRequired,
