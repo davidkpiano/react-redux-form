@@ -20928,7 +20928,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialState : arguments[0];
 	    var action = arguments[1];
 
-	    if (model && !(0, _startsWith2.default)(action.model, model)) {
+	    if (!(0, _startsWith2.default)(action.model, model)) {
 	      return state;
 	    }
 
@@ -22515,12 +22515,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	function createFormReducer(model) {
-
 	  return function () {
 	    var state = arguments.length <= 0 || arguments[0] === undefined ? initialFormState : arguments[0];
 	    var action = arguments[1];
 
-	    if (model && !(0, _startsWith2.default)(action.model, model)) {
+	    if (!(0, _startsWith2.default)(action.model, model)) {
 	      return state;
 	    }
 

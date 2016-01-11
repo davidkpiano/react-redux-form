@@ -51,9 +51,8 @@ const initialFormState = {
 };
 
 function createFormReducer(model) {
-
   return (state = initialFormState, action) => {
-    if (model && !startsWith(action.model, model)) {
+    if (!startsWith(action.model, model)) {
       return state;
     }
 

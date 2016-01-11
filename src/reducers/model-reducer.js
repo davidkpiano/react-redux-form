@@ -15,7 +15,7 @@ function getSuperState(model, state) {
 
 function createModelReducer(model, initialState = {}) {
   return (state = initialState, action) => {
-    if (model && !startsWith(action.model, model)) {
+    if (!startsWith(action.model, model)) {
       return state;
     }
 
