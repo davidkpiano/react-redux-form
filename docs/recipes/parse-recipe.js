@@ -32,13 +32,13 @@ class ParseRecipe extends React.Component {
       <Recipe model="parseUser">
         <h2>Parse View Values</h2>
         <Field model="parseUser.age"
-          parse={(val) => +val}
+          parser={(val) => +val}
           updateOn="blur">
           <label>Age</label>
           <input type="text" />
         </Field>
         <Field model="parseUser.phone"
-          parse={(val) => val.replace(/\D+/g, '').substring(0, 10)}>
+          parser={(val) => val.replace(/\D+/g, '').substring(0, 10)}>
           <label>Phone Number</label>
           <input type="text" value={ formatPhone(parseUser.phone) }/>
         </Field>

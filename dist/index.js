@@ -26605,7 +26605,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var modelValue = props.modelValue;
 	      var validators = props.validators;
 	      var asyncValidators = props.asyncValidators;
-	      var parse = props.parse;
+	      var parser = props.parser;
 
 	      var value = control.props.value;
 	      var updateOn = typeof props.updateOn === 'function' ? 'onChange' : 'on' + (0, _capitalize2.default)(props.updateOn || 'change');
@@ -26648,7 +26648,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
 
-	      var controlChangeMethod = changeMethod(props.model, props.value, controlAction, parse);
+	      var controlChangeMethod = changeMethod(props.model, props.value, controlAction, parser);
 
 	      var dispatchChange = control.props.hasOwnProperty('value') && controlType !== 'text' ? function () {
 	        return dispatch(controlChangeMethod(value));
@@ -26699,6 +26699,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        modelValue: modelValue,
 	        control: control }));
 	    }
+
+	    // shouldComponentUpdate() {
+	    //   return false;
+	    // }
+
 	  }, {
 	    key: 'render',
 	    value: function render() {
@@ -26723,6 +26728,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Field;
 	})(_react2.default.Component);
 
+	Field.propTypes = {
+	  model: _react2.default.PropTypes.string.isRequired,
+	  updateOn: _react2.default.PropTypes.oneOfType([_react2.default.PropTypes.func, _react2.default.PropTypes.oneOf(['change', 'blur', 'focus'])]),
+	  validators: _react2.default.PropTypes.object,
+	  asyncValidators: _react2.default.PropTypes.object,
+	  parser: _react2.default.PropTypes.func
+	};
 	exports.default = (0, _reactRedux.connect)(selector)(Field);
 
 /***/ },

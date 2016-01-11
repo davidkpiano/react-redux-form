@@ -27960,7 +27960,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	var code = '\nimport validator from \'validator\';\nimport { Field } from \'redux-simple-form\';\n\nconst isRequired = (value) => !validator.isNull(value);\n\nclass UserForm extends React.Component {\n  render() {\n    let { user, userForm } = this.props;\n\n    return (\n      <form>\n        <Field model="user.username"\n          validators={{\n            required: isRequired,\n            length: (v) => v && v.length > 15\n          }}\n          validateOn="blur">\n          <label>Username</label>\n          <input type="text"/>\n\n          { userForm.field(\'username\').errors.required\n            && <div>Username is required</div>\n          }\n        </Field>\n\n        <Field model="user.email"\n          validators={{\n            required: isRequired,\n            email: validator.isEmail\n          }}\n          validateOn="blur">\n          <label>Email</label>\n          <input type="text" />\n\n          { (userForm.field(\'email\').errors.required)\n          && <div>Email address is required</div> }\n          { (userForm.field(\'email\').errors.email)\n          && <div>Must be valid email address</div> }\n        </Field>\n\n        <Field model="user.age"\n          parse={(val) => +val}\n          validators={{\n            required: isRequired,\n            number: validator.isInt,\n            minAge: (age) => age >= 18\n          }}\n          validateOn="blur">\n          <label>Age</label>\n          <input type="text" />\n\n          { (userForm.field(\'age\').errors.required)\n          && <div>Age is required</div> }\n          { (userForm.field(\'age\').errors.number)\n          && <div>Age must be a number</div> }\n          { (userForm.field(\'age\').errors.minAge)\n          && <div>Must be 18 years or older</div> }\n        </Field>\n      </form>\n    );\n  }\n}\n';
+	var code = '\nimport validator from \'validator\';\nimport { Field } from \'redux-simple-form\';\n\nconst isRequired = (value) => !validator.isNull(value);\n\nclass UserForm extends React.Component {\n  render() {\n    let { user, userForm } = this.props;\n\n    return (\n      <form>\n        <Field model="user.username"\n          validators={{\n            required: isRequired,\n            length: (v) => v && v.length > 15\n          }}\n          validateOn="blur">\n          <label>Username</label>\n          <input type="text"/>\n\n          { userForm.field(\'username\').errors.required\n            && <div>Username is required</div>\n          }\n        </Field>\n\n        <Field model="user.email"\n          validators={{\n            required: isRequired,\n            email: validator.isEmail\n          }}\n          validateOn="blur">\n          <label>Email</label>\n          <input type="text" />\n\n          { (userForm.field(\'email\').errors.required)\n          && <div>Email address is required</div> }\n          { (userForm.field(\'email\').errors.email)\n          && <div>Must be valid email address</div> }\n        </Field>\n\n        <Field model="user.age"\n          parser={(val) => +val}\n          validators={{\n            required: isRequired,\n            number: validator.isInt,\n            minAge: (age) => age >= 18\n          }}\n          validateOn="blur">\n          <label>Age</label>\n          <input type="text" />\n\n          { (userForm.field(\'age\').errors.required)\n          && <div>Age is required</div> }\n          { (userForm.field(\'age\').errors.number)\n          && <div>Age must be a number</div> }\n          { (userForm.field(\'age\').errors.minAge)\n          && <div>Must be 18 years or older</div> }\n        </Field>\n      </form>\n    );\n  }\n}\n';
 
 	var isRequired = function isRequired(value) {
 	  return !_validator2.default.isNull(value);
@@ -28042,7 +28042,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
 	          { model: 'user.age',
-	            parse: function parse(val) {
+	            parser: function parser(val) {
 	              return +val;
 	            },
 	            validators: {
@@ -54544,7 +54544,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var modelValue = props.modelValue;
 	      var validators = props.validators;
 	      var asyncValidators = props.asyncValidators;
-	      var parse = props.parse;
+	      var parser = props.parser;
 
 	      var value = control.props.value;
 	      var updateOn = typeof props.updateOn === 'function' ? 'onChange' : 'on' + (0, _capitalize2.default)(props.updateOn || 'change');
@@ -54587,7 +54587,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
 
-	      var controlChangeMethod = changeMethod(props.model, props.value, controlAction, parse);
+	      var controlChangeMethod = changeMethod(props.model, props.value, controlAction, parser);
 
 	      var dispatchChange = control.props.hasOwnProperty('value') && controlType !== 'text' ? function () {
 	        return dispatch(controlChangeMethod(value));
@@ -54638,6 +54638,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        modelValue: modelValue,
 	        control: control }));
 	    }
+
+	    // shouldComponentUpdate() {
+	    //   return false;
+	    // }
+
 	  }, {
 	    key: 'render',
 	    value: function render() {
@@ -54662,6 +54667,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return Field;
 	})(_react2.default.Component);
 
+	Field.propTypes = {
+	  model: _react2.default.PropTypes.string.isRequired,
+	  updateOn: _react2.default.PropTypes.oneOfType([_react2.default.PropTypes.func, _react2.default.PropTypes.oneOf(['change', 'blur', 'focus'])]),
+	  validators: _react2.default.PropTypes.object,
+	  asyncValidators: _react2.default.PropTypes.object,
+	  parser: _react2.default.PropTypes.func
+	};
 	exports.default = (0, _reactRedux.connect)(selector)(Field);
 
 /***/ },
@@ -57735,7 +57747,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  _react2.default.createElement(
 	                    _reduxSimpleForm.Field,
 	                    { model: 'multiRecord[' + i + '].quantity',
-	                      parse: function parse(a) {
+	                      parser: function parser(a) {
 	                        return +a;
 	                      } },
 	                    _react2.default.createElement('input', { type: 'text' })
@@ -57747,7 +57759,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                  _react2.default.createElement(
 	                    _reduxSimpleForm.Field,
 	                    { model: 'multiRecord[' + i + '].price',
-	                      parse: function parse(a) {
+	                      parser: function parser(a) {
 	                        return +a;
 	                      } },
 	                    _react2.default.createElement('input', { type: 'text' })
@@ -58072,7 +58084,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
 	          { model: 'parseUser.age',
-	            parse: function parse(val) {
+	            parser: function parser(val) {
 	              return +val;
 	            },
 	            updateOn: 'blur' },
@@ -58086,7 +58098,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
 	          { model: 'parseUser.phone',
-	            parse: function parse(val) {
+	            parser: function parser(val) {
 	              return val.replace(/\D+/g, '').substring(0, 10);
 	            } },
 	          _react2.default.createElement(

@@ -48,7 +48,7 @@ class UserForm extends React.Component {
         </Field>
 
         <Field model="user.age"
-          parse={(val) => +val}
+          parser={(val) => +val}
           validators={{
             required: isRequired,
             number: validator.isInt,
@@ -110,7 +110,7 @@ class SyncValidationRecipe extends React.Component {
         </Field>
 
         <Field model="user.age"
-          parse={(val) => +val}
+          parser={(val) => +val}
           validators={{
             required: isRequired,
             number: validator.isInt,

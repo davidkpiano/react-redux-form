@@ -37,13 +37,13 @@ class MultiRecordRecipe extends React.Component {
               </td>
               <td>
                 <Field model={`multiRecord[${i}].quantity`}
-                  parse={a => +a}>
+                  parser={a => +a}>
                   <input type="text" />
                 </Field>
               </td>
               <td>
                 <Field model={`multiRecord[${i}].price`}
-                  parse={a => +a}>
+                  parser={a => +a}>
                   <input type="text" />
                 </Field>
               </td>
