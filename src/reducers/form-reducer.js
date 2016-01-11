@@ -10,6 +10,10 @@ import every from 'lodash/collection/every';
 import * as actionTypes from '../action-types';
 
 function setField(state, model, props) {
+  if (state.model === model) {
+    return Object.assign(state, props);
+  };
+
   return set(state, ['fields', model], {
     ...initialFieldState,
     ...get(state, ['fields', model]),
@@ -18,14 +22,12 @@ function setField(state, model, props) {
 }
 
 function getField(state, field, model) {
-  let result = get(
+  return get(
     state,
     ['fields', `${model}.${field}`],
     get(
       state,
       ['fields', field], initialFieldState));
-
-  return result;
 }
 
 const initialFieldState = {
@@ -43,19 +45,24 @@ const initialFieldState = {
 };
 
 const initialFormState = {
+  ...initialFieldState,
   fields: {},
   field: () => initialFieldState
 };
 
-function createFormReducer(model, initialState = initialFormState) {
-  return (state = initialState, action) => {
+function createFormReducer(model) {
+
+  return (state = initialFormState, action) => {
     if (model && !startsWith(action.model, model)) {
       return state;
     }
 
     console.log(action);
 
-    let form = cloneDeep(state);
+    let form = cloneDeep({
+      ...state,
+      model: model
+    });
 
     switch (action.type) {
       case actionTypes.FOCUS:
@@ -69,6 +76,11 @@ function createFormReducer(model, initialState = initialFormState) {
       case actionTypes.CHANGE:
       case actionTypes.SET_DIRTY:
         setField(form, action.model, {
+          dirty: true,
+          pristine: false
+        });
+
+        Object.assign(form, {
           dirty: true,
           pristine: false
         });
@@ -109,12 +121,24 @@ function createFormReducer(model, initialState = initialFormState) {
             : every(errors, (error) => !error)
         });
 
+        Object.assign(form, {
+          valid: every(mapValues(form.fields, (field) => field.valid))
+            && every(form.errors, (error) => !error)
+        });
+
         break;
 
       case actionTypes.SET_PRISTINE:
         setField(form, action.model, {
           dirty: false,
           pristine: true
+        });
+
+        let formIsPristine = every(mapValues(form.fields, (field) => field.pristine));
+
+        Object.assign(form, {
+          pristine: formIsPristine,
+          dirty: !formIsPristine
         });
 
         break;
@@ -153,5 +177,6 @@ function createFormReducer(model, initialState = initialFormState) {
 
 export {
   createFormReducer,
-  initialFieldState
+  initialFieldState,
+  initialFormState
 }

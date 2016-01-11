@@ -50391,9 +50391,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function getField(state, field, model) {
-	  var result = (0, _get2.default)(state, ['fields', model + '.' + field], (0, _get2.default)(state, ['fields', field], initialFieldState));
-
-	  return result;
+	  return (0, _get2.default)(state, ['fields', model + '.' + field], (0, _get2.default)(state, ['fields', field], initialFieldState));
 	}
 
 	var initialFieldState = {
@@ -50410,12 +50408,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	  errors: {}
 	};
 
-	var initialFormState = {
+	var initialFormState = _extends({}, initialFieldState, {
 	  fields: {},
 	  field: function field() {
 	    return initialFieldState;
 	  }
-	};
+	});
 
 	function createFormReducer(model) {
 	  var initialState = arguments.length <= 1 || arguments[1] === undefined ? initialFormState : arguments[1];
@@ -50429,8 +50427,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    console.log(action);
-
-	    var form = (0, _cloneDeep2.default)(state);
 
 	    switch (action.type) {
 	      case actionTypes.FOCUS:
