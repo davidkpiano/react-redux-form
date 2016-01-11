@@ -134,6 +134,50 @@ describe('RSF field actions', () => {
           submitted: false
         });
     });
+
+    it('should set the pending state of the field to the specified state', () => {
+      const reducer = createFormReducer('test');
+
+      let actualPending = reducer(undefined, actions.setPending('test.foo', true));
+
+      assert.containSubset(
+        actualPending
+          .field('foo'),
+        {
+          pending: true,
+          submitted: false
+        });
+
+      let actualNotPending = reducer(actualPending, actions.setPending('test.foo', false));
+
+      assert.containSubset(
+        actualNotPending
+          .field('foo'),
+        {
+          pending: false,
+          submitted: false
+        });
+    });
+
+    it('should work with forms', () => {
+      const reducer = createFormReducer('test');
+
+      let actualPending = reducer(undefined, actions.setPending('test'));
+
+      assert.containSubset(
+        actualPending,
+        {
+          pending: true,
+          submitted: false
+        });
+
+      assert.containSubset(
+        reducer(actualPending, actions.setPending('test', false)),
+        {
+          pending: false,
+          submitted: false
+        });
+    });
   });
 
   describe('setSubmitted()', () => {
@@ -145,6 +189,52 @@ describe('RSF field actions', () => {
           .field('foo'),
         {
           submitted: true,
+          pending: false
+        });
+    });
+
+    it('should set the submitted state of the field to the specified state', () => {
+      const reducer = createFormReducer('test');
+
+      let actualSubmitted = reducer(undefined, actions.setSubmitted('test.foo', true));
+
+      assert.containSubset(
+        actualSubmitted
+          .field('foo'),
+        {
+          submitted: true,
+          pending: false
+        });
+
+      let actualNotSubmitted = reducer(actualSubmitted, actions.setSubmitted('test.foo', false));
+
+      assert.containSubset(
+        actualNotSubmitted
+          .field('foo'),
+        {
+          submitted: false,
+          pending: false
+        });
+    });
+
+    it('should work with forms', () => {
+      const reducer = createFormReducer('test');
+
+      let actualSubmitted = reducer(undefined, actions.setSubmitted('test', true));
+
+      assert.containSubset(
+        actualSubmitted,
+        {
+          submitted: true,
+          pending: false
+        });
+
+      let actualNotSubmitted = reducer(actualSubmitted, actions.setSubmitted('test', false));
+
+      assert.containSubset(
+        actualNotSubmitted,
+        {
+          submitted: false,
           pending: false
         });
     });
