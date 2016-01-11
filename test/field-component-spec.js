@@ -34,7 +34,7 @@ describe('<Field /> component', () => {
         test: createModelReducer('test', { foo: 'bar' })
       }));
 
-      const foo = TestUtils.renderIntoDocument(
+      const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Field model="test.foo">
             { React.createElement(element, { type }) }
@@ -42,7 +42,7 @@ describe('<Field /> component', () => {
         </Provider>
       );
 
-      const node = TestUtils.findRenderedDOMComponentWithTag(foo, element);
+      const node = TestUtils.findRenderedDOMComponentWithTag(field, element);
 
       it('should have an initial value from the model\'s initialState', () => {
         assert.equal(
@@ -259,29 +259,58 @@ describe('<Field /> component', () => {
         store.getState().test.foo,
         [2, 3]);
     });
+
+    it('should check the appropriate checkboxes when model is externally changed', () => {
+      store.dispatch(actions.change('test.foo', [1, 2]));
+
+      assert.isTrue(checkboxes[0].checked);
+      assert.isTrue(checkboxes[1].checked);
+      assert.isFalse(checkboxes[2].checked);
+    });
   });
 
   describe('with <select>', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
       test: createModelReducer('test', {
-        foo: [1]
+        foo: "one"
       })
     }));
 
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Field model="test.foo[]">
+        <Field model="test.foo">
           <select>
-            <option value={1} />
-            <option value={2} />
-            <option value={3} />
+            <option value="one" />
+            <option value="two" />
+            <option value="three" />
           </select>
         </Field>
       </Provider>
     );
 
-    
-  });
+    const select = TestUtils.findRenderedDOMComponentWithTag(field, 'select');
+    const options = TestUtils.scryRenderedDOMComponentsWithTag(field, 'option');
 
+    it('should select the option that matches the initial state of the model', () => {
+      assert.isTrue(options[0].selected);
+      assert.isFalse(options[1].selected);
+      assert.equal(select.value, 'one');
+    });
+
+    it('should dispatch a change event when changed', () => {
+      TestUtils.Simulate.change(options[1]);
+
+      assert.equal(
+        store.getState().test.foo,
+        'two');
+    });
+
+    it('should select the appropriate <option> when model is externally changed', () => {
+      store.dispatch(actions.change('test.foo', 'three'));
+
+      assert.isTrue(options[2].selected);
+      assert.equal(select.value, 'three');
+    });
+  });
 });

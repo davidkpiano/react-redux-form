@@ -26557,10 +26557,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  'select': function select(props) {
 	    return {
-	      name: props.model
+	      name: props.model,
+	      value: props.modelValue
 	    };
 	  },
-	  // value: props.modelValue
 	  'default': function _default(props) {
 	    return {};
 	  }
