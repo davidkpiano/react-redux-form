@@ -23936,7 +23936,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getValue = exports.isTouched = exports.isPristine = exports.isFocused = exports.isMulti = undefined;
+	exports.getEventValue = exports.getValue = exports.isTouched = exports.isPristine = exports.isFocused = exports.isMulti = undefined;
 
 	var _formReducer = __webpack_require__(217);
 
@@ -23973,7 +23973,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function getEventValue(event) {
-	  // return event.target.value;
 	  return event.target.multiple ? [].concat(_toConsumableArray(event.target.selectedOptions)).map(function (option) {
 	    return option.value;
 	  }) : event.target.value;
@@ -23984,6 +23983,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.isPristine = isPristine;
 	exports.isTouched = isTouched;
 	exports.getValue = getValue;
+	exports.getEventValue = getEventValue;
 
 /***/ },
 /* 248 */
@@ -24042,10 +24042,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.remove = exports.push = exports.map = exports.filter = exports.toggle = exports.xor = exports.reset = exports.change = undefined;
 
-	var _curry = __webpack_require__(250);
-
-	var _curry2 = _interopRequireDefault(_curry);
-
 	var _endsWith = __webpack_require__(248);
 
 	var _endsWith2 = _interopRequireDefault(_endsWith);
@@ -24074,6 +24070,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _isEqual2 = _interopRequireDefault(_isEqual);
 
+	var _actionTypes = __webpack_require__(216);
+
+	var actionTypes = _interopRequireWildcard(_actionTypes);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -24090,14 +24092,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return (0, _endsWith2.default)(model, '[]');
 	}
 
-	var change = (0, _curry2.default)(function (model, value) {
+	var change = function change(model, value) {
 	  return {
-	    type: 'rsf/change',
+	    type: actionTypes.CHANGE,
 	    model: model,
 	    value: getValue(value),
 	    multi: isMulti(model)
 	  };
-	});
+	};
 
 	var xor = function xor(model, item) {
 	  return function (dispatch, getState) {
@@ -24110,7 +24112,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var value = state.length === stateWithoutItem.length ? [].concat(_toConsumableArray(state), [item]) : stateWithoutItem;
 
 	    dispatch({
-	      type: 'rsf/change',
+	      type: actionTypes.CHANGE,
 	      model: model,
 	      value: value
 	    });
@@ -24124,7 +24126,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var value = [].concat(_toConsumableArray(collection), [item]);
 
 	    dispatch({
-	      type: 'rsf/change',
+	      type: actionTypes.CHANGE,
 	      model: model,
 	      value: value
 	    });
@@ -24136,7 +24138,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var value = !(0, _get2.default)(getState(), model);
 
 	    dispatch({
-	      type: 'rsf/change',
+	      type: actionTypes.CHANGE,
 	      model: model,
 	      value: value
 	    });
@@ -24152,7 +24154,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var value = (0, _filter3.default)(collection, iteratee);
 
 	    dispatch({
-	      type: 'rsf/change',
+	      type: actionTypes.CHANGE,
 	      model: model,
 	      value: value
 	    });
@@ -24161,7 +24163,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var reset = function reset(model) {
 	  return {
-	    type: 'rsf/reset',
+	    type: actionTypes.RESET,
 	    model: model
 	  };
 	};
@@ -24175,7 +24177,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var value = (0, _map3.default)(collection, iteratee);
 
 	    dispatch({
-	      type: 'rsf/change',
+	      type: actionTypes.CHANGE,
 	      model: model,
 	      value: value
 	    });
@@ -24189,7 +24191,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var value = ((0, _pullAt3.default)(collection, index), collection);
 
 	    dispatch({
-	      type: 'rsf/change',
+	      type: actionTypes.CHANGE,
 	      model: model,
 	      value: value
 	    });
@@ -24207,92 +24209,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.remove = remove;
 
 /***/ },
-/* 250 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var createCurry = __webpack_require__(251);
-
-	/** Used to compose bitmasks for wrapper metadata. */
-	var CURRY_FLAG = 8;
-
-	/**
-	 * Creates a function that accepts one or more arguments of `func` that when
-	 * called either invokes `func` returning its result, if all `func` arguments
-	 * have been provided, or returns a function that accepts one or more of the
-	 * remaining `func` arguments, and so on. The arity of `func` may be specified
-	 * if `func.length` is not sufficient.
-	 *
-	 * The `_.curry.placeholder` value, which defaults to `_` in monolithic builds,
-	 * may be used as a placeholder for provided arguments.
-	 *
-	 * **Note:** This method does not set the "length" property of curried functions.
-	 *
-	 * @static
-	 * @memberOf _
-	 * @category Function
-	 * @param {Function} func The function to curry.
-	 * @param {number} [arity=func.length] The arity of `func`.
-	 * @param- {Object} [guard] Enables use as a callback for functions like `_.map`.
-	 * @returns {Function} Returns the new curried function.
-	 * @example
-	 *
-	 * var abc = function(a, b, c) {
-	 *   return [a, b, c];
-	 * };
-	 *
-	 * var curried = _.curry(abc);
-	 *
-	 * curried(1)(2)(3);
-	 * // => [1, 2, 3]
-	 *
-	 * curried(1, 2)(3);
-	 * // => [1, 2, 3]
-	 *
-	 * curried(1, 2, 3);
-	 * // => [1, 2, 3]
-	 *
-	 * // using placeholders
-	 * curried(1)(_, 3)(2);
-	 * // => [1, 2, 3]
-	 */
-	var curry = createCurry(CURRY_FLAG);
-
-	// Assign default placeholders.
-	curry.placeholder = {};
-
-	module.exports = curry;
-
-
-/***/ },
-/* 251 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var createWrapper = __webpack_require__(252),
-	    isIterateeCall = __webpack_require__(246);
-
-	/**
-	 * Creates a `_.curry` or `_.curryRight` function.
-	 *
-	 * @private
-	 * @param {boolean} flag The curry bit flag.
-	 * @returns {Function} Returns the new curry function.
-	 */
-	function createCurry(flag) {
-	  function curryFunc(func, arity, guard) {
-	    if (guard && isIterateeCall(func, arity, guard)) {
-	      arity = undefined;
-	    }
-	    var result = createWrapper(func, flag, undefined, undefined, undefined, undefined, undefined, arity);
-	    result.placeholder = curryFunc.placeholder;
-	    return result;
-	  }
-	  return curryFunc;
-	}
-
-	module.exports = createCurry;
-
-
-/***/ },
+/* 250 */,
+/* 251 */,
 /* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -25993,46 +25911,52 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _get2 = _interopRequireDefault(_get);
 
+	var _actionTypes = __webpack_require__(216);
+
+	var actionTypes = _interopRequireWildcard(_actionTypes);
+
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var focus = function focus(model) {
 	  return {
-	    type: 'rsf/focus',
+	    type: actionTypes.FOCUS,
 	    model: model
 	  };
 	};
 
 	var blur = function blur(model) {
 	  return {
-	    type: 'rsf/blur',
+	    type: actionTypes.BLUR,
 	    model: model
 	  };
 	};
 
 	var validate = function validate(model) {
 	  return {
-	    type: 'rsf/validate',
+	    type: actionTypes.VALIDATE,
 	    model: model
 	  };
 	};
 
 	var setPristine = function setPristine(model) {
 	  return {
-	    type: 'rsf/setPristine',
+	    type: actionTypes.SET_PRISTINE,
 	    model: model
 	  };
 	};
 
 	var setDirty = function setDirty(model) {
 	  return {
-	    type: 'rsf/setDirty',
+	    type: actionTypes.SET_DIRTY,
 	    model: model
 	  };
 	};
 
 	var setInitial = function setInitial(model) {
 	  return {
-	    type: 'rsf/setInitial',
+	    type: actionTypes.SET_INITIAL,
 	    model: model
 	  };
 	};
@@ -26040,7 +25964,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var setPending = function setPending(model) {
 	  var pending = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 	  return {
-	    type: 'rsf/setPending',
+	    type: actionTypes.SET_PENDING,
 	    model: model,
 	    pending: pending
 	  };
@@ -26048,7 +25972,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var setValidity = function setValidity(model, validity) {
 	  return {
-	    type: 'rsf/setValidity',
+	    type: actionTypes.SET_VALIDITY,
 	    model: model,
 	    validity: validity
 	  };
@@ -26056,14 +25980,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var setTouched = function setTouched(model) {
 	  return {
-	    type: 'rsf/setTouched',
+	    type: actionTypes.SET_TOUCHED,
 	    model: model
 	  };
 	};
 
 	var setUntouched = function setUntouched(model) {
 	  return {
-	    type: 'rsf/setUntouched',
+	    type: actionTypes.SET_UNTOUCHED,
 	    model: model
 	  };
 	};
@@ -26090,7 +26014,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var setSubmitted = function setSubmitted(model) {
 	  var submitted = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 	  return {
-	    type: 'rsf/setSubmitted',
+	    type: actionTypes.SET_SUBMITTED,
 	    model: model,
 	    submitted: submitted
 	  };

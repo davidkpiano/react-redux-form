@@ -34,7 +34,6 @@ function getValue(value) {
 }
 
 function getEventValue(event) {
-  // return event.target.value;
   return event.target.multiple
     ? [...event.target.selectedOptions].map((option) => option.value)
     : event.target.value
@@ -47,4 +46,5 @@ export {
   isPristine,
   isTouched,
   getValue,
+  getEventValue
 }
