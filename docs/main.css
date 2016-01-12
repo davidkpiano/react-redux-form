@@ -252,11 +252,11 @@ html, body, #app {
   flex-direction: row;
   flex-wrap: wrap; }
   .rsf-recipe > .rsf-content, .rsf-recipe > .rsf-data {
-    padding: 1rem;
     flex-shrink: 0; }
   .rsf-recipe > .rsf-data {
     flex-basis: 40%; }
   .rsf-recipe > .rsf-content {
+    padding: 1rem;
     flex-basis: 60%; }
   .rsf-recipe > .rsf-code {
     flex-basis: 100%; }
@@ -267,6 +267,12 @@ html, body, #app {
 .rsf-data {
   font-size: 0.85rem;
   border-left: 1px solid #eee; }
+  .rsf-data > pre {
+    padding: 1rem;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-bottom: 1px solid #EDEDED;
+    margin: 0; }
 
 .rsf-field {
   margin-bottom: 0.5rem; }
@@ -276,3 +282,23 @@ html, body, #app {
   font-size: 0.8rem;
   display: block;
   margin-top: 0.25rem; }
+
+.rsf-success {
+  color: green;
+  font-size: 0.8rem;
+  display: block;
+  margin-top: 0.25rem; }
+
+.rsf-tab {
+  padding: 0.5rem;
+  border-bottom: 3px solid transparent;
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  font-size: 0.5rem;
+  font-weight: 700;
+  cursor: pointer; }
+  .rsf-tab:hover {
+    border-color: rgba(255, 165, 0, 0.3); }
+  .rsf-tab.-active {
+    border-color: orange; }

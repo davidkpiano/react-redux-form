@@ -17,10 +17,12 @@ class AsyncBlurValidationRecipe extends React.Component {
     return (
       <Recipe model="user4">
         <h2>Async Blur Validation</h2>
+        <p>Try not to type in my username, "davidkpiano." I've already claimed it.</p>
         <Field model="user4.username"
           validators={{
-            required: (val) => false
+            required: (val) => val.length
           }}
+          validateOn="blur"
           asyncValidators={{
             available: isAvailable
           }}
@@ -28,11 +30,11 @@ class AsyncBlurValidationRecipe extends React.Component {
           <label htmlFor="">Username</label>
           <input type="text" name="" id=""/>
         </Field>
-        { user4Form.field('user4.username').pending
+        { user4Form.field('username').pending
           ? <div className="rsf-error">Checking username...</div>
-          : user4Form.field('user4.username').errors.available
+          : user4Form.field('username').errors.available
             ? <div className="rsf-error">Sorry, that username isn't available.</div>
-            : user4Form.field('user4.username').touched
+            : user4Form.field('username').touched
               && <div className="rsf-success">That username looks great!</div>
         }
       </Recipe>

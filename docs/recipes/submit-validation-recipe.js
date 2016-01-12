@@ -59,29 +59,29 @@ class SyncValidationRecipe extends React.Component {
 
     return (
       <Recipe model="submitValidUser" onSubmit={(e) => this.handleSubmit(e)}>
-        <h2>Submit Validation</h2>
+        <h2>Validation on Submit</h2>
         <Field model="submitValidUser.username">
           <label>Username</label>
           <input type="text" />
         </Field>
-        { submitValidUserForm.field('submitValidUser.username').pending &&
+        { submitValidUserForm.field('username').pending &&
           <span>Validating...</span>
         }
-        { submitValidUserForm.field('submitValidUser.username').errors.available &&
+        { submitValidUserForm.field('username').errors.available &&
           <span>Sorry, that username is taken.</span>
         }
         <Field model="submitValidUser.password">
           <label>Password</label>
           <input type="password" />
         </Field>
-        { submitValidUserForm.field('submitValidUser').errors.credentials
+        { submitValidUserForm.errors.credentials
           && <div className="rsf-error">Those credentials are incorrect.</div>
         }
         {
-          submitValidUserForm.field('submitValidUser').submitted
+          submitValidUserForm.submitted
           ? <div>You are now logged in.</div>
-          : <button disabled={ submitValidUserForm.field('submitValidUser').pending }>
-              Submit
+          : <button disabled={ submitValidUserForm.pending }>
+              { submitValidUserForm.pending ? 'Submitting...' : 'Submit' }
             </button>
         }
       </Recipe>

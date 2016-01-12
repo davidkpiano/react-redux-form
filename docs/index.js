@@ -12,6 +12,7 @@ import {
 } from 'react-router';
 import kebabCase from 'lodash/string/kebabCase';
 import startCase from 'lodash/string/startCase';
+import map from 'lodash/collection/map';
 
 import IntroPage from './pages/intro-page';
 import ActionsPage from './pages/actions-page';
@@ -68,30 +69,17 @@ const store = applyMiddleware(thunk)(createStore)(combineReducers({
   }),
 }));
 
-const recipes = [
-  'SyncValidationRecipe',
-  'SubmitValidationRecipe',
-  'BlurValidationRecipe',
-  'AsyncBlurValidationRecipe',
-  'AutofillRecipe',
-  'DeepRecipe',
-  'MultiRecipe',
-  'MultiRecordRecipe',
-  'ParseRecipe',
-  'VariousControlsRecipe'
-];
-
-const recipeComponents = {
-  SyncValidationRecipe,
-  SubmitValidationRecipe,
-  BlurValidationRecipe,
-  AsyncBlurValidationRecipe,
-  AutofillRecipe,
-  DeepRecipe,
-  MultiRecipe,
-  MultiRecordRecipe,
-  ParseRecipe,
-  VariousControlsRecipe
+const recipes = {
+  'Sync Validation': SyncValidationRecipe,
+  'Validation on Submit': SubmitValidationRecipe,
+  'Validation on Blur': BlurValidationRecipe,
+  'Async Validation': AsyncBlurValidationRecipe,
+  'Autofill Fields': AutofillRecipe,
+  'Deep Fields': DeepRecipe,
+  'Multiple Fields': MultiRecipe,
+  'Multiple Records': MultiRecordRecipe,
+  'Parse Fields': ParseRecipe,
+  'Various Controls': VariousControlsRecipe
 };
 
 const apiReference = [
@@ -130,11 +118,11 @@ const Docs = (props) => (
       </ul>
       <h6 className="rsf-heading">Recipes</h6>
       <ul className="rsf-list">
-        { recipes.map((recipe) =>
+        { map(recipes, (_, recipeName) =>
           <li className="rsf-item">
             <Link className="rsf-anchor"
-              to={`recipe/${kebabCase(recipe)}`}>
-              { startCase(recipe) }
+              to={`recipe/${kebabCase(recipeName)}`}>
+              { recipeName }
             </Link>
           </li>
         )}
@@ -159,9 +147,9 @@ class App extends React.Component {
             <Route path="model-reducer" component={ ModelReducerPage }/>
             <Route path="api/:item" component={ ApiPage } />
             <Route path="recipe" component={ Recipes }>
-            { recipes.map((recipe) => 
-              <Route path={kebabCase(recipe)}
-                component={recipeComponents[recipe]} />
+            { map(recipes, (recipe, recipeName) => 
+              <Route path={kebabCase(recipeName)}
+                component={recipe} />
             )}
             </Route>
           </Route>

@@ -82,7 +82,6 @@ class SyncValidationRecipe extends React.Component {
     return (
       <Recipe model="user" code={code}>
         <h2>Sync Validation</h2>
-        <input type="text" onFocus={()=>dispatch(actions.focus('user.test'))}/>
         <Field model="user.username"
           validators={{
             required: isRequired,
