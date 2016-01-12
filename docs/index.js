@@ -15,6 +15,7 @@ import startCase from 'lodash/string/startCase';
 
 import IntroPage from './pages/intro-page';
 import ActionsPage from './pages/actions-page';
+import ModelReducerPage from './pages/model-reducer-page';
 import ApiPage from './pages/api-page';
 
 import SyncValidationRecipe from './recipes/sync-validation-recipe';
@@ -107,8 +108,11 @@ const Docs = (props) => (
           <Link className="rsf-anchor" to="/">
             Getting Started
           </Link>
+          <Link className="rsf-anchor" to="model-reducer">
+            Model Reducer
+          </Link>
           <Link className="rsf-anchor" to="actions">
-            RSF Actions
+            Working with Actions
           </Link>
         </li>
       </ul>
@@ -151,6 +155,7 @@ class App extends React.Component {
           <Route path="/" component={ Docs }>
             <IndexRoute component={ IntroPage } />
             <Route path="actions" component={ ActionsPage }/>
+            <Route path="model-reducer" component={ ModelReducerPage }/>
             <Route path="api/:item" component={ ApiPage } />
             <Route path="recipe" component={ Recipes }>
             { recipes.map((recipe) => 

@@ -7,14 +7,17 @@ const content =
 ## Actions
 
 Redux Simple Form is built around a single action that describes all
-changes to your models, the \`change(model, value)\` action.
+changes to your models, the \`actions.change(model, value)\` action:
+
+${js`
+<input type="text"
+  onChange={(e) => dispatch(actions.change('user.name', e))} />
+`}
 
 ${js`
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  actions
-} from 'redux-simple-form';
+import { actions } from 'redux-simple-form';
 
 export default class UserForm extends React.Component {
   render() {
