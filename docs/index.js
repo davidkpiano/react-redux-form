@@ -96,7 +96,8 @@ const recipeComponents = {
 
 const apiReference = [
   'action creators',
-  'action thunk creators'
+  'action thunk creators',
+  'reducers'
 ]
 
 const Docs = (props) => (
