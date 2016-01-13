@@ -106,7 +106,8 @@ class Field extends React.Component {
       modelValue,
       validators,
       asyncValidators,
-      parser
+      parser,
+      updateOn: updater = identity
     } = props;
     let value = control.props.value;
     let updateOn = (typeof props.updateOn === 'function')
@@ -165,38 +166,34 @@ class Field extends React.Component {
       ? () => dispatch(controlChangeMethod(value))
       : (e) => dispatch(controlChangeMethod(e));
 
-    if (typeof props.updateOn === 'function') {
-      dispatchChange = props.updateOn(dispatchChange);
-    }
-
-    eventActions[updateOn].push(dispatchChange);
+    eventActions[updateOn].push(updater(dispatchChange));
 
     if (validators) {
-      let dispatchValidate = (e) => {
-        let validatingValue = control.props.hasOwnProperty('value')
-          ? value
-          : e.target.value;
+      let dispatchValidate = (value) => {
+        console.log(value, validateOn);
+
         let validity = mapValues(validators,
-          (validator) => validator(validatingValue));
+          (validator) => validator(getValue(value)));
 
         dispatch(setValidity(model, validity));
+
+        return value;
       }
 
       eventActions[validateOn].push(dispatchValidate);
     }
 
     if (asyncValidators) {
-      let dispatchAsyncValidate = (e) => {
-        let validatingValue = control.props.hasOwnProperty('value')
-          ? value
-          : e.target.value;
-
+      let dispatchAsyncValidate = (value) => {
+        console.log(value);
         mapValues(asyncValidators,
-          (validator, key) => dispatch(asyncSetValidity(model, (value, done) => {
+          (validator, key) => dispatch(asyncSetValidity(model, (_, done) => {
             const outerDone = (valid) => done({ [key]: valid });
 
-            validator(value, outerDone);
+            validator(getValue(value), outerDone);
           })));
+
+        return value;
       }
 
       eventActions[asyncValidateOn].push(dispatchAsyncValidate);

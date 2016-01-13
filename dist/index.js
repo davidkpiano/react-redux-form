@@ -25132,6 +25132,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var validators = props.validators;
 	      var asyncValidators = props.asyncValidators;
 	      var parser = props.parser;
+	      var _props$updateOn = props.updateOn;
+	      var updater = _props$updateOn === undefined ? _identity2.default : _props$updateOn;
 
 	      var value = control.props.value;
 	      var updateOn = typeof props.updateOn === 'function' ? 'onChange' : 'on' + (0, _capitalize2.default)(props.updateOn || 'change');
@@ -25182,38 +25184,38 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return dispatch(controlChangeMethod(e));
 	      };
 
-	      if (typeof props.updateOn === 'function') {
-	        dispatchChange = props.updateOn(dispatchChange);
-	      }
-
-	      eventActions[updateOn].push(dispatchChange);
+	      eventActions[updateOn].push(updater(dispatchChange));
 
 	      if (validators) {
-	        var dispatchValidate = function dispatchValidate(e) {
-	          var validatingValue = control.props.hasOwnProperty('value') ? value : e.target.value;
+	        var dispatchValidate = function dispatchValidate(value) {
+	          console.log(value, validateOn);
+
 	          var validity = (0, _mapValues2.default)(validators, function (validator) {
-	            return validator(validatingValue);
+	            return validator((0, _utils.getValue)(value));
 	          });
 
 	          dispatch((0, _fieldActions.setValidity)(model, validity));
+
+	          return value;
 	        };
 
 	        eventActions[validateOn].push(dispatchValidate);
 	      }
 
 	      if (asyncValidators) {
-	        var dispatchAsyncValidate = function dispatchAsyncValidate(e) {
-	          var validatingValue = control.props.hasOwnProperty('value') ? value : e.target.value;
-
+	        var dispatchAsyncValidate = function dispatchAsyncValidate(value) {
+	          console.log(value);
 	          (0, _mapValues2.default)(asyncValidators, function (validator, key) {
-	            return dispatch((0, _fieldActions.asyncSetValidity)(model, function (value, done) {
+	            return dispatch((0, _fieldActions.asyncSetValidity)(model, function (_, done) {
 	              var outerDone = function outerDone(valid) {
 	                return done(_defineProperty({}, key, valid));
 	              };
 
-	              validator(value, outerDone);
+	              validator((0, _utils.getValue)(value), outerDone);
 	            }));
 	          });
+
+	          return value;
 	        };
 
 	        eventActions[asyncValidateOn].push(dispatchAsyncValidate);
