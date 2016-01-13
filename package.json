@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "webpack -w src/index.js dist/index.js --config webpack.config.base.js",
-    "test": "mocha -w --require babel-core/register",
+    "test": "mocha -w --require babel-core/register --require ./test/spec-setup.js",
     "build": "webpack -p src/index.js dist/index.js --config webpack.config.prod.js"
   },
   "repository": {

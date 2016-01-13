@@ -24979,17 +24979,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _redux = __webpack_require__(166);
 
-	var _contains = __webpack_require__(266);
-
-	var _contains2 = _interopRequireDefault(_contains);
-
 	var _get = __webpack_require__(178);
 
 	var _get2 = _interopRequireDefault(_get);
-
-	var _defaults = __webpack_require__(273);
-
-	var _defaults2 = _interopRequireDefault(_defaults);
 
 	var _compose = __webpack_require__(279);
 
@@ -25070,9 +25062,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  'radio': function radio(props) {
 	    return {
 	      name: props.model,
-	      checked: (function () {
-	        return (0, _isEqual2.default)(props.modelValue, props.value);
-	      })(),
+	      checked: (0, _isEqual2.default)(props.modelValue, props.value),
 	      value: props.value
 	    };
 	  },
@@ -25089,9 +25079,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var changeMethod = function changeMethod(model, value) {
 	  var action = arguments.length <= 2 || arguments[2] === undefined ? _modelActions.change : arguments[2];
-	  var parser = arguments.length <= 3 || arguments[3] === undefined ? function (a) {
-	    return a;
-	  } : arguments[3];
+	  var parser = arguments.length <= 3 || arguments[3] === undefined ? _identity2.default : arguments[3];
 
 	  return (0, _compose2.default)((0, _partial2.default)(action, model), parser, _utils.getValue);
 	};

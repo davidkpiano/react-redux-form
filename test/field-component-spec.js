@@ -7,12 +7,6 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
-import jsdom from 'jsdom';
-
-global.document = jsdom.jsdom('<!doctype html><html><body></body></html>');
-global.window = document.defaultView;
-global.navigator = {userAgent: 'node.js'};
-
 chai.use(chaiSubset);
 
 const { assert } = chai;

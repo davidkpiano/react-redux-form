@@ -2,9 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import contains from 'lodash/collection/contains';
 import get from 'lodash/object/get';
-import defaults from 'lodash/object/defaults';
 import compose from 'lodash/function/compose';
 import capitalize from 'lodash/string/capitalize';
 import identity from 'lodash/utility/identity';
@@ -57,9 +55,7 @@ const controlPropsMap = {
   }),
   'radio': (props) => ({
     name: props.model,
-    checked: (() => {
-      return isEqual(props.modelValue, props.value)
-    })(),
+    checked: isEqual(props.modelValue, props.value),
     value: props.value
   }),
   'select': (props) => ({
@@ -69,7 +65,7 @@ const controlPropsMap = {
   'default': (props) => ({})
 };
 
-const changeMethod = (model, value, action = change, parser = (a) => a) => {
+const changeMethod = (model, value, action = change, parser = identity) => {
   return compose(partial(action, model), parser, getValue);
 };
 
