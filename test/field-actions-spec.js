@@ -11,12 +11,25 @@ const { assert } = chai;
 import { actions, createFormReducer, initialFieldState } from '../src';
 
 describe('RSF field actions', () => {
+  describe('setViewValue()', () => {
+    it('should set the view value of the field', () => {
+      const reducer = createFormReducer('test');
+
+      assert.containSubset(
+        reducer(undefined, actions.setViewValue('test.foo', 'bar'))
+          .field('foo'),
+        {
+          viewValue: 'bar'
+        });
+    });
+  });
+
   describe('reset()', () => {
     it('should set the field to the initial field state', () => {
       const reducer = createFormReducer('test');
 
       assert.containSubset(
-        reducer({}, actions.reset('test.foo'))
+        reducer(undefined, actions.reset('test.foo'))
           .field('foo'),
         initialFieldState);
     });

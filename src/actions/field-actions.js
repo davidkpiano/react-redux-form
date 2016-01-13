@@ -79,6 +79,12 @@ const setSubmitted = (model, submitted = true) => ({
   submitted
 });
 
+const setViewValue = (model, value) => ({
+  type: actionTypes.SET_VIEW_VALUE,
+  model,
+  value
+});
+
 export {
   focus,
   blur,
@@ -91,5 +97,6 @@ export {
   setPending,
   setSubmitted,
   setTouched,
-  setUntouched
+  setUntouched,
+  setViewValue
 }

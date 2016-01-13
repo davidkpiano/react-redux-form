@@ -15,11 +15,13 @@ import {
   toggle,
   xor
 } from '../actions/model-actions';
+
 import {
   focus,
   blur,
   setValidity,
-  asyncSetValidity
+  asyncSetValidity,
+  setViewValue
 } from '../actions/field-actions';
 
 import Control from './control-component';

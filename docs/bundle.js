@@ -50370,6 +50370,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	var SET_PENDING = 'rsf/setPending';
 	var SET_VALIDITY = 'rsf/setValidity';
 	var SET_SUBMITTED = 'rsf/setSubmitted';
+	var SET_VIEW_VALUE = 'rsf/setViewValue';
 
 	exports.CHANGE = CHANGE;
 	exports.RESET = RESET;
@@ -50384,6 +50385,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.SET_VALIDITY = SET_VALIDITY;
 	exports.SET_PENDING = SET_PENDING;
 	exports.SET_SUBMITTED = SET_SUBMITTED;
+	exports.SET_VIEW_VALUE = SET_VIEW_VALUE;
 
 /***/ },
 /* 471 */
@@ -50451,6 +50453,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	var initialFieldState = {
+	  viewValue: null,
 	  focus: false,
 	  blur: true,
 	  pristine: true,
@@ -50587,6 +50590,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        setField(form, action.model, initialFieldState);
 
 	        break;
+
+	      case actionTypes.SET_VIEW_VALUE:
+	        setField(form, action.model, {
+	          viewValue: action.value
+	        });
 
 	      default:
 	        break;
@@ -52786,7 +52794,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.setUntouched = exports.setTouched = exports.setSubmitted = exports.setPending = exports.asyncSetValidity = exports.setValidity = exports.setInitial = exports.setDirty = exports.setPristine = exports.validate = exports.blur = exports.focus = undefined;
+	exports.setViewValue = exports.setUntouched = exports.setTouched = exports.setSubmitted = exports.setPending = exports.asyncSetValidity = exports.setValidity = exports.setInitial = exports.setDirty = exports.setPristine = exports.validate = exports.blur = exports.focus = undefined;
 
 	var _get = __webpack_require__(432);
 
@@ -52901,6 +52909,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 	};
 
+	var setViewValue = function setViewValue(model, value) {
+	  return {
+	    type: actionTypes.SET_VIEW_VALUE,
+	    model: model,
+	    value: value
+	  };
+	};
+
 	exports.focus = focus;
 	exports.blur = blur;
 	exports.validate = validate;
@@ -52913,6 +52929,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	exports.setSubmitted = setSubmitted;
 	exports.setTouched = setTouched;
 	exports.setUntouched = setUntouched;
+	exports.setViewValue = setViewValue;
 
 /***/ },
 /* 519 */

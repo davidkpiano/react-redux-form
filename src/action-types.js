@@ -12,6 +12,7 @@ const SET_INITIAL = 'rsf/setInitial';
 const SET_PENDING = 'rsf/setPending';
 const SET_VALIDITY = 'rsf/setValidity';
 const SET_SUBMITTED = 'rsf/setSubmitted';
+const SET_VIEW_VALUE = 'rsf/setViewValue';
 
 export {
   CHANGE,
@@ -27,4 +28,5 @@ export {
   SET_VALIDITY,
   SET_PENDING,
   SET_SUBMITTED,
+  SET_VIEW_VALUE
 }

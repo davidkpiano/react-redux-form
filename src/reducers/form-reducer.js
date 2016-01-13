@@ -31,6 +31,7 @@ function getField(state, field, model) {
 }
 
 const initialFieldState = {
+  viewValue: null,
   focus: false,
   blur: true,
   pristine: true,
@@ -162,6 +163,11 @@ function createFormReducer(model) {
         setField(form, action.model, initialFieldState);
 
         break;
+
+      case actionTypes.SET_VIEW_VALUE:
+        setField(form, action.model, {
+          viewValue: action.value
+        });
 
       default:
         break;
