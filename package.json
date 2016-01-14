@@ -1,6 +1,6 @@
 {
   "name": "redux-simple-form",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Simple Redux Forms",
   "main": "src/index.js",
   "scripts": {
