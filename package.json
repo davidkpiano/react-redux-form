@@ -4,9 +4,15 @@
   "description": "Simple Redux Forms",
   "main": "src/index.js",
   "scripts": {
-    "start": "webpack -w src/index.js dist/index.js --config webpack.config.base.js",
-    "test": "mocha -w --require babel-core/register --require ./test/spec-setup.js",
-    "build": "webpack -p src/index.js dist/index.js --config webpack.config.prod.js"
+    "start": "npm run build",
+    "test": "mocha --require babel-core/register --require ./test/spec-setup.js",
+    "test:watch": "mocha -w --require babel-core/register --require ./test/spec-setup.js",
+    "build": "npm run build:umd && npm run build:lib",
+    "build:umd": "webpack -p src/index.js dist/index.js --config webpack.config.prod.js",
+    "build:lib": "babel src --out-dir lib",
+    "preversion": "npm run test",
+    "prepublish": "npm test && npm run build",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
