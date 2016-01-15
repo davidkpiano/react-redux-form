@@ -2,7 +2,7 @@
   "name": "redux-simple-form",
   "version": "0.1.0",
   "description": "Simple Redux Forms",
-  "main": "src/index.js",
+  "main": "lib/index.js",
   "scripts": {
     "start": "npm run build",
     "test": "mocha --require babel-core/register --require ./test/spec-setup.js",
