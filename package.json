@@ -8,6 +8,7 @@
     "test": "mocha --require babel-core/register --require ./test/spec-setup.js",
     "test:watch": "mocha -w --require babel-core/register --require ./test/spec-setup.js",
     "build": "npm run build:umd && npm run build:lib",
+    "build:watch": "webpack -w src/index.js dist/index.js --config webpack.config.base.js",
     "build:umd": "webpack -p src/index.js dist/index.js --config webpack.config.prod.js",
     "build:lib": "babel src --out-dir lib",
     "preversion": "npm run test",
@@ -43,7 +44,7 @@
     "webpack": "^1.12.9"
   },
   "dependencies": {
-    "lodash": "^3.10.1",
+    "lodash": "^4.0.0",
     "react": "^0.14.6",
     "react-dom": "^0.14.3",
     "react-redux": "^4.0.0",
