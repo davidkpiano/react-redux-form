@@ -77,6 +77,11 @@ describe('RSF model actions', () => {
           init: { foo: [123] },
           params: ['test.foo', 456],
           expected: { foo: [123, 456] }
+        },
+        {
+          init: { },
+          params: ['test.foo', 456],
+          expected: { foo: [456] }
         }
       ],
       xor: [

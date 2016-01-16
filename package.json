@@ -8,6 +8,7 @@
     "test": "mocha --require babel-core/register --require ./test/spec-setup.js",
     "test:watch": "mocha -w --require babel-core/register --require ./test/spec-setup.js",
     "build": "npm run build:umd && npm run build:lib",
+    "build:link": "babel -w src --out-dir lib",
     "build:watch": "webpack -w src/index.js dist/index.js --config webpack.config.base.js",
     "build:umd": "webpack -p src/index.js dist/index.js --config webpack.config.prod.js",
     "build:lib": "babel src --out-dir lib",
