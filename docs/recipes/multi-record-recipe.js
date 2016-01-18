@@ -30,8 +30,7 @@ class MultiRecordRecipe extends React.Component {
                 </Field>
               </td>
               <td>
-                <Field model={`multiRecord[${i}].description`}
-                  updateOn={(change) => debounce(change, 1000)}>
+                <Field model={`multiRecord[${i}].description`}>
                   <input type="text" />
                 </Field>
               </td>
