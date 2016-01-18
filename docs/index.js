@@ -29,6 +29,7 @@ import MultiRecipe from './recipes/multi-recipe';
 import MultiRecordRecipe from './recipes/multi-record-recipe';
 import ParseRecipe from './recipes/parse-recipe';
 import VariousControlsRecipe from './recipes/various-controls-recipe';
+import DynamicFieldRecipe from './recipes/dynamic-field-recipe';
 
 import {
   createModelReducer,
@@ -79,7 +80,8 @@ const recipes = {
   'Multiple Fields': MultiRecipe,
   'Multiple Records': MultiRecordRecipe,
   'Parse Fields': ParseRecipe,
-  'Various Controls': VariousControlsRecipe
+  'Various Controls': VariousControlsRecipe,
+  'Dynamic Fields': DynamicFieldRecipe
 };
 
 const apiReference = [

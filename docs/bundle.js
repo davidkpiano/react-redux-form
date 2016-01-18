@@ -146,6 +146,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _variousControlsRecipe2 = _interopRequireDefault(_variousControlsRecipe);
 
+	var _dynamicFieldRecipe = __webpack_require__(624);
+
+	var _dynamicFieldRecipe2 = _interopRequireDefault(_dynamicFieldRecipe);
+
 	var _reduxSimpleForm = __webpack_require__(297);
 
 	__webpack_require__(622);
@@ -199,7 +203,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  'Multiple Fields': _multiRecipe2.default,
 	  'Multiple Records': _multiRecordRecipe2.default,
 	  'Parse Fields': _parseRecipe2.default,
-	  'Various Controls': _variousControlsRecipe2.default
+	  'Various Controls': _variousControlsRecipe2.default,
+	  'Dynamic Fields': _dynamicFieldRecipe2.default
 	};
 
 	var apiReference = ['action creators', 'action thunk creators', 'reducers'];
@@ -59688,6 +59693,96 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	// removed by extract-text-webpack-plugin
+
+/***/ },
+/* 623 */,
+/* 624 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _reactRedux = __webpack_require__(159);
+
+	var _reduxSimpleForm = __webpack_require__(297);
+
+	var _recipeComponent = __webpack_require__(609);
+
+	var _recipeComponent2 = _interopRequireDefault(_recipeComponent);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var DynamicFieldRecipe = (function (_React$Component) {
+	  _inherits(DynamicFieldRecipe, _React$Component);
+
+	  function DynamicFieldRecipe() {
+	    _classCallCheck(this, DynamicFieldRecipe);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(DynamicFieldRecipe).apply(this, arguments));
+	  }
+
+	  _createClass(DynamicFieldRecipe, [{
+	    key: 'render',
+	    value: function render() {
+	      var _props = this.props;
+	      var user = _props.user;
+	      var dispatch = _props.dispatch;
+
+	      return _react2.default.createElement(
+	        _recipeComponent2.default,
+	        { model: 'user' },
+	        _react2.default.createElement(
+	          'h2',
+	          null,
+	          'Dynamic Fields'
+	        ),
+	        _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'user.customField' },
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            'Field name:'
+	          ),
+	          _react2.default.createElement('input', { type: 'text' })
+	        ),
+	        user.customField && _react2.default.createElement(
+	          _reduxSimpleForm.Field,
+	          { model: 'user.' + user.customField },
+	          _react2.default.createElement(
+	            'label',
+	            null,
+	            'Edit user.',
+	            user.customField,
+	            ':'
+	          ),
+	          _react2.default.createElement('input', { type: 'text', value: user[user.customField] })
+	        )
+	      );
+	    }
+	  }]);
+
+	  return DynamicFieldRecipe;
+	})(_react2.default.Component);
+
+	exports.default = (0, _reactRedux.connect)(function (s) {
+	  return s;
+	})(DynamicFieldRecipe);
 
 /***/ }
 /******/ ])
