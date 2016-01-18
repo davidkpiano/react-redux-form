@@ -14,6 +14,8 @@ import * as fieldActions from './actions/field-actions';
 import Field from './components/field-component';
 import Form from './components/form-component';
 
+import * as actionTypes from './action-types';
+
 const actions = {
   ...modelActions,
   ...fieldActions
@@ -26,5 +28,6 @@ export {
   Field,
   Form,
   getField,
+  actionTypes,
   initialFieldState
 }

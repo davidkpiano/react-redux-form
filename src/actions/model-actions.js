@@ -47,7 +47,7 @@ const xor = (model, item) => (dispatch, getState) => {
 
 const push = (model, item = null) => (dispatch, getState) => {
   let collection = get(getState(), model);
-  let value = [...collection, item];
+  let value = [...(collection || []), item];
 
   dispatch({
     type: actionTypes.CHANGE,
