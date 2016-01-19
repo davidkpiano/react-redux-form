@@ -3,6 +3,7 @@ import set from 'lodash/object/set';
 import startsWith from 'lodash/string/startsWith';
 import cloneDeep from 'lodash/lang/cloneDeep';
 import isArray from 'lodash/lang/isArray';
+import toPath from 'lodash/internal/toPath';
 
 import * as actionTypes from '../action-types';
 
@@ -15,7 +16,9 @@ function getSuperState(model, state) {
 
 function createModelReducer(model, initialState = {}) {
   return (state = initialState, action) => {
-    if (!startsWith(action.model, model)) {
+    let path = toPath(action.model);
+
+    if (path[0] !== model) {
       return state;
     }
 

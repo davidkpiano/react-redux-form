@@ -50,6 +50,7 @@
     "react-dom": "^0.14.3",
     "react-redux": "^4.0.0",
     "redux": "^3.0.4",
-    "redux-ignore": "^1.2.1"
+    "redux-ignore": "^1.2.1",
+    "seamless-immutable": "^5.0.1"
   }
 }
