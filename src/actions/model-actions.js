@@ -68,7 +68,7 @@ const toggle = (model) => (dispatch, getState) => {
 
 const filter = (model, iteratee = (a) => a) => (dispatch, getState) => {
   let collection = get(getState(), model);
-  let value = _filter(collection, iteratee);
+  let value = collection.filter(iteratee);
 
   dispatch({  
     type: actionTypes.CHANGE,
