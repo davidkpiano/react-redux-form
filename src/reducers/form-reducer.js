@@ -1,11 +1,13 @@
 import get from 'lodash/get';
 import set from 'lodash/set';
+import toPath from 'lodash/toPath';
 import startsWith from 'lodash/startsWith';
 import cloneDeep from 'lodash/cloneDeep';
 import isPlainObject from 'lodash/isPlainObject';
 import isBoolean from 'lodash/isBoolean';
 import mapValues from 'lodash/mapValues';
 import every from 'lodash/every';
+import Immutable from 'seamless-immutable';
 
 import * as actionTypes from '../action-types';
 
@@ -22,12 +24,13 @@ function setField(state, model, props) {
 }
 
 function getField(state, field, model) {
+  console.log(model);
   return get(
     state,
     ['fields', `${model}.${field}`],
     get(
       state,
-      ['fields', field], initialFieldState));
+      ['fields', field], {foo:model}));
 }
 
 const initialFieldState = {
@@ -53,48 +56,63 @@ const initialFormState = {
 
 function createFormReducer(model) {
   return (state = initialFormState, action) => {
-    if (!startsWith(action.model, model)) {
+    let path = toPath(action.model);
+
+    if (path[0] !== model) {
       return state;
     }
 
-    console.log(action);
-
     let form = cloneDeep({
       ...state,
-      model: model
+      model: model,
+      field: (field) => getField(form, field, model)
     });
+
+    let iform = Immutable(form);
 
     switch (action.type) {
       case actionTypes.FOCUS:
-        setField(form, action.model, {
-          focus: true,
-          blur: false
-        });
+        form = iform.merge({
+          fields: {
+            [action.model]: {
+              ...initialFieldState,
+              focus: true,
+              blur: false
+            }
+          }
+        }, { deep: true });
 
         break;
 
       case actionTypes.CHANGE:
       case actionTypes.SET_DIRTY:
-        setField(form, action.model, {
+        form = iform.merge({
           dirty: true,
-          pristine: false
-        });
-
-        Object.assign(form, {
-          dirty: true,
-          pristine: false
-        });
+          pristine: false,
+          fields: {
+            [action.model]: {
+              ...initialFieldState,
+              dirty: true,
+              pristine: false
+            }
+          }
+        }, { deep: true });
 
         break;
 
       case actionTypes.BLUR:
       case actionTypes.SET_TOUCHED:
-        setField(form, action.model, {
-          touched: true,
-          untouched: false,
-          focus: false,
-          blur: true,
-        });
+        form = iform.merge({
+          fields: {
+            [action.model]: {
+              ...initialFieldState,
+              touched: true,
+              untouched: false,
+              focus: false,
+              blur: true
+            }
+          }
+        }, { deep: true });
 
         break;
 
