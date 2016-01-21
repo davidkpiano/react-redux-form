@@ -1,4 +1,5 @@
 # Redux Simple Form
+[![Build Status](https://travis-ci.org/davidkpiano/redux-simple-form.svg?branch=master)](https://travis-ci.org/davidkpiano/redux-simple-form)
 
 **Still in development! Read the [latest docs](http://davidkpiano.github.io/redux-simple-form)**
 
