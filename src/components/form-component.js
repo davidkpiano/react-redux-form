@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import mapValues from 'lodash/object/mapValues';
-import get from 'lodash/object/get';
+import mapValues from 'lodash/mapValues';
+import get from 'lodash/get';
 
 import * as fieldActions from '../actions/field-actions';
 

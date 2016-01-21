@@ -2,13 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import get from 'lodash/object/get';
-import compose from 'lodash/function/compose';
-import capitalize from 'lodash/string/capitalize';
-import identity from 'lodash/utility/identity';
-import mapValues from 'lodash/object/mapValues';
-import isEqual from 'lodash/lang/isEqual';
-import partial from 'lodash/function/partial';
+import get from 'lodash/get';
+import { compose } from 'redux';
+import capitalize from 'lodash/capitalize';
+import identity from 'lodash/identity';
+import mapValues from 'lodash/mapValues';
+import isEqual from 'lodash/isEqual';
+import partial from 'lodash/partial';
 
 import {
   change,

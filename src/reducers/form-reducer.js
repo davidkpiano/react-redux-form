@@ -1,11 +1,11 @@
-import get from 'lodash/object/get';
-import set from 'lodash/object/set';
-import startsWith from 'lodash/string/startsWith';
-import cloneDeep from 'lodash/lang/cloneDeep';
-import isPlainObject from 'lodash/lang/isPlainObject';
-import isBoolean from 'lodash/lang/isBoolean';
-import mapValues from 'lodash/object/mapValues';
-import every from 'lodash/collection/every';
+import get from 'lodash/get';
+import set from 'lodash/set';
+import startsWith from 'lodash/startsWith';
+import cloneDeep from 'lodash/cloneDeep';
+import isPlainObject from 'lodash/isPlainObject';
+import isBoolean from 'lodash/isBoolean';
+import mapValues from 'lodash/mapValues';
+import every from 'lodash/every';
 
 import * as actionTypes from '../action-types';
 

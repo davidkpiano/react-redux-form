@@ -1,9 +1,9 @@
-import get from 'lodash/object/get';
-import set from 'lodash/object/set';
-import startsWith from 'lodash/string/startsWith';
-import cloneDeep from 'lodash/lang/cloneDeep';
-import isArray from 'lodash/lang/isArray';
-import toPath from 'lodash/internal/toPath';
+import get from 'lodash/get';
+import set from 'lodash/set';
+import startsWith from 'lodash/startsWith';
+import cloneDeep from 'lodash/cloneDeep';
+import isArray from 'lodash/isArray';
+import toPath from 'lodash/toPath';
 import Immutable from 'seamless-immutable';
 
 import * as actionTypes from '../action-types';

@@ -1,10 +1,10 @@
-import endsWith from 'lodash/string/endsWith';
-import get from 'lodash/object/get';
-import cloneDeep from 'lodash/lang/cloneDeep';
-import _filter from 'lodash/collection/filter';
-import _map from 'lodash/collection/map';
-import _pullAt from 'lodash/array/pullAt';
-import isEqual from 'lodash/lang/isEqual';
+import endsWith from 'lodash/endsWith';
+import get from 'lodash/get';
+import cloneDeep from 'lodash/cloneDeep';
+import _filter from 'lodash/filter';
+import _map from 'lodash/map';
+import _pullAt from 'lodash/pullAt';
+import isEqual from 'lodash/isEqual';
 
 import * as actionTypes from '../action-types';
 
