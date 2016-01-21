@@ -20943,6 +20943,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return state;
 	    }
 
+	    var localPath = path.slice(1);
 	    var immutableState = (0, _seamlessImmutable2.default)(state);
 
 	    switch (action.type) {
@@ -20951,11 +20952,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return action.value;
 	        }
 
-	        return immutableState.setIn(path.slice(1), action.value);
+	        return immutableState.setIn(localPath, action.value);
 
 	      case actionTypes.RESET:
-	        var localPath = path.slice(1);
-
 	        if (!localPath.length) {
 	          return initialState;
 	        }

@@ -16,6 +16,7 @@ function createModelReducer(model, initialState = {}) {
       return state;
     }
 
+    let localPath = path.slice(1);
     let immutableState = Immutable(state);
 
     switch (action.type) {
@@ -25,12 +26,10 @@ function createModelReducer(model, initialState = {}) {
         }
 
         return immutableState.setIn(
-          path.slice(1),
+          localPath,
           action.value);
 
       case actionTypes.RESET:
-        let localPath = path.slice(1);
-
         if (!localPath.length) {
           return initialState;
         }
