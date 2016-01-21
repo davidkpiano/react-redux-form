@@ -11,7 +11,7 @@ chai.use(chaiSubset);
 
 const { assert } = chai;
 
-import { Field, actions, createFormReducer, createModelReducer, initialFieldState } from '../src';
+import { Field, actions, createFormReducer, createModelReducer, initialFieldState } from '../lib';
 
 describe('<Field /> component', () => {
   const textFieldElements = [

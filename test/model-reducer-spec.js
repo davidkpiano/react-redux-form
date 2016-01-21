@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import should from 'should';
 
-import { actions, createModelReducer } from '../src';
+import { actions, createModelReducer } from '../lib';
 
 describe('createModelReducer()', () => {
   it('should create a reducer given a model', () => {

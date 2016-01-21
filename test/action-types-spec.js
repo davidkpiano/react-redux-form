@@ -1,4 +1,4 @@
-import { actionTypes } from '../src/index';
+import { actionTypes } from '../lib/index';
 import { assert } from 'chai';
 
 describe('action types', () => {

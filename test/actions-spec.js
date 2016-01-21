@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import should from 'should';
 
-import actions from '../src/actions';
+import actions from '../lib/actions';
 
 describe('RSF model action creators', () => {
   describe('actions.change()', () => {  
