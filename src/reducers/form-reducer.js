@@ -1,8 +1,5 @@
 import get from 'lodash/get';
-import set from 'lodash/set';
 import toPath from 'lodash/toPath';
-import startsWith from 'lodash/startsWith';
-import cloneDeep from 'lodash/cloneDeep';
 import isPlainObject from 'lodash/isPlainObject';
 import isBoolean from 'lodash/isBoolean';
 import mapValues from 'lodash/mapValues';
@@ -13,14 +10,14 @@ import * as actionTypes from '../action-types';
 
 function setField(state, model, props) {
   if (state.model === model) {
-    return Object.assign(state, props);
+    return Immutable(state).merge(props);
   };
 
-  return set(state, ['fields', model], {
-    ...initialFieldState,
-    ...get(state, ['fields', model]),
-    ...props
-  });
+  return Immutable(state).merge({
+    fields: {
+      [model]: props
+    }
+  }, { deep: true });
 }
 
 function getField(state, field, model) {
@@ -30,7 +27,7 @@ function getField(state, field, model) {
     ['fields', `${model}.${field}`],
     get(
       state,
-      ['fields', field], {foo:model}));
+      ['fields', field], initialFieldState));
 }
 
 const initialFieldState = {
@@ -62,62 +59,48 @@ function createFormReducer(model) {
       return state;
     }
 
-    let form = cloneDeep({
+    let form = Immutable({
       ...state,
       model: model,
       field: (field) => getField(form, field, model)
     });
 
-    let iform = Immutable(form);
-
     switch (action.type) {
       case actionTypes.FOCUS:
-        form = iform.merge({
-          fields: {
-            [action.model]: {
-              ...initialFieldState,
-              focus: true,
-              blur: false
-            }
-          }
-        }, { deep: true });
+        form = setField(form, action.model, {
+          focus: true,
+          blur: false
+        });
 
         break;
 
       case actionTypes.CHANGE:
       case actionTypes.SET_DIRTY:
-        form = iform.merge({
+        form = form.merge({
           dirty: true,
-          pristine: false,
-          fields: {
-            [action.model]: {
-              ...initialFieldState,
-              dirty: true,
-              pristine: false
-            }
-          }
-        }, { deep: true });
+          pristine: false
+        });
+
+        form = setField(form, action.model, {
+          dirty: true,
+          pristine: false
+        });
 
         break;
 
       case actionTypes.BLUR:
       case actionTypes.SET_TOUCHED:
-        form = iform.merge({
-          fields: {
-            [action.model]: {
-              ...initialFieldState,
-              touched: true,
-              untouched: false,
-              focus: false,
-              blur: true
-            }
-          }
-        }, { deep: true });
+        form = setField(form, action.model, {
+          touched: true,
+          untouched: false,
+          focus: false,
+          blur: true
+        });
 
         break;
 
       case actionTypes.SET_PENDING:
-        setField(form, action.model, {
+        form = setField(form, action.model, {
           pending: action.pending,
           submitted: false
         });
@@ -132,14 +115,14 @@ function createFormReducer(model) {
             }
           : !action.validity;
 
-        setField(form, action.model, {
+        form = setField(form, action.model, {
           errors: errors,
           valid: isBoolean(errors)
             ? errors
             : every(errors, (error) => !error)
         });
 
-        Object.assign(form, {
+        form = form.merge({
           valid: every(mapValues(form.fields, (field) => field.valid))
             && every(form.errors, (error) => !error)
         });
@@ -147,14 +130,14 @@ function createFormReducer(model) {
         break;
 
       case actionTypes.SET_PRISTINE:
-        setField(form, action.model, {
+        form = setField(form, action.model, {
           dirty: false,
           pristine: true
         });
 
         let formIsPristine = every(mapValues(form.fields, (field) => field.pristine));
 
-        Object.assign(form, {
+        form = form.merge({
           pristine: formIsPristine,
           dirty: !formIsPristine
         });
@@ -162,7 +145,7 @@ function createFormReducer(model) {
         break;
 
       case actionTypes.SET_UNTOUCHED:
-        setField(form, action.model, {
+        form = setField(form, action.model, {
           touched: false,
           untouched: true
         });
@@ -170,7 +153,8 @@ function createFormReducer(model) {
         break;
 
       case actionTypes.SET_SUBMITTED:
-        setField(form, action.model, {
+        form = setField(form, action.model, {
+          pending: false,
           submitted: !!action.submitted
         });
 
@@ -178,12 +162,12 @@ function createFormReducer(model) {
 
       case actionTypes.SET_INITIAL:
       case actionTypes.RESET:
-        setField(form, action.model, initialFieldState);
+        form = setField(form, action.model, initialFieldState);
 
         break;
 
       case actionTypes.SET_VIEW_VALUE:
-        setField(form, action.model, {
+        form = setField(form, action.model, {
           viewValue: action.value
         });
 
@@ -191,10 +175,7 @@ function createFormReducer(model) {
         break;
     }
 
-    return {
-      ...form,
-      field: (field) => getField(form, field, model)
-    }
+    return form;
   }
 }
 

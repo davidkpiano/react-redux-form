@@ -21574,21 +21574,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _get2 = _interopRequireDefault(_get);
 
-	var _set = __webpack_require__(323);
-
-	var _set2 = _interopRequireDefault(_set);
-
 	var _toPath = __webpack_require__(405);
 
 	var _toPath2 = _interopRequireDefault(_toPath);
-
-	var _startsWith = __webpack_require__(329);
-
-	var _startsWith2 = _interopRequireDefault(_startsWith);
-
-	var _cloneDeep = __webpack_require__(334);
-
-	var _cloneDeep2 = _interopRequireDefault(_cloneDeep);
 
 	var _isPlainObject = __webpack_require__(407);
 
@@ -21622,15 +21610,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function setField(state, model, props) {
 	  if (state.model === model) {
-	    return Object.assign(state, props);
+	    return (0, _seamlessImmutable2.default)(state).merge(props);
 	  };
 
-	  return (0, _set2.default)(state, ['fields', model], _extends({}, initialFieldState, (0, _get2.default)(state, ['fields', model]), props));
+	  return (0, _seamlessImmutable2.default)(state).merge({
+	    fields: _defineProperty({}, model, props)
+	  }, { deep: true });
 	}
 
 	function getField(state, field, model) {
 	  console.log(model);
-	  return (0, _get2.default)(state, ['fields', model + '.' + field], (0, _get2.default)(state, ['fields', field], { foo: model }));
+	  return (0, _get2.default)(state, ['fields', model + '.' + field], (0, _get2.default)(state, ['fields', field], initialFieldState));
 	}
 
 	var initialFieldState = {
@@ -21666,54 +21656,49 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return state;
 	    }
 
-	    var form = (0, _cloneDeep2.default)(_extends({}, state, {
+	    var form = (0, _seamlessImmutable2.default)(_extends({}, state, {
 	      model: model,
 	      field: function field(_field) {
 	        return getField(form, _field, model);
 	      }
 	    }));
 
-	    var iform = (0, _seamlessImmutable2.default)(form);
-
 	    switch (action.type) {
 	      case actionTypes.FOCUS:
-	        form = iform.merge({
-	          fields: _defineProperty({}, action.model, _extends({}, initialFieldState, {
-	            focus: true,
-	            blur: false
-	          }))
-	        }, { deep: true });
+	        form = setField(form, action.model, {
+	          focus: true,
+	          blur: false
+	        });
 
 	        break;
 
 	      case actionTypes.CHANGE:
 	      case actionTypes.SET_DIRTY:
-	        form = iform.merge({
+	        form = form.merge({
 	          dirty: true,
-	          pristine: false,
-	          fields: _defineProperty({}, action.model, _extends({}, initialFieldState, {
-	            dirty: true,
-	            pristine: false
-	          }))
-	        }, { deep: true });
+	          pristine: false
+	        });
+
+	        form = setField(form, action.model, {
+	          dirty: true,
+	          pristine: false
+	        });
 
 	        break;
 
 	      case actionTypes.BLUR:
 	      case actionTypes.SET_TOUCHED:
-	        form = iform.merge({
-	          fields: _defineProperty({}, action.model, _extends({}, initialFieldState, {
-	            touched: true,
-	            untouched: false,
-	            focus: false,
-	            blur: true
-	          }))
-	        }, { deep: true });
+	        form = setField(form, action.model, {
+	          touched: true,
+	          untouched: false,
+	          focus: false,
+	          blur: true
+	        });
 
 	        break;
 
 	      case actionTypes.SET_PENDING:
-	        setField(form, action.model, {
+	        form = setField(form, action.model, {
 	          pending: action.pending,
 	          submitted: false
 	        });
@@ -21725,14 +21710,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return !valid;
 	        })) : !action.validity;
 
-	        setField(form, action.model, {
+	        form = setField(form, action.model, {
 	          errors: errors,
 	          valid: (0, _isBoolean2.default)(errors) ? errors : (0, _every2.default)(errors, function (error) {
 	            return !error;
 	          })
 	        });
 
-	        Object.assign(form, {
+	        form = form.merge({
 	          valid: (0, _every2.default)((0, _mapValues2.default)(form.fields, function (field) {
 	            return field.valid;
 	          })) && (0, _every2.default)(form.errors, function (error) {
@@ -21743,7 +21728,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        break;
 
 	      case actionTypes.SET_PRISTINE:
-	        setField(form, action.model, {
+	        form = setField(form, action.model, {
 	          dirty: false,
 	          pristine: true
 	        });
@@ -21752,7 +21737,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          return field.pristine;
 	        }));
 
-	        Object.assign(form, {
+	        form = form.merge({
 	          pristine: formIsPristine,
 	          dirty: !formIsPristine
 	        });
@@ -21760,7 +21745,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        break;
 
 	      case actionTypes.SET_UNTOUCHED:
-	        setField(form, action.model, {
+	        form = setField(form, action.model, {
 	          touched: false,
 	          untouched: true
 	        });
@@ -21768,7 +21753,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	        break;
 
 	      case actionTypes.SET_SUBMITTED:
-	        setField(form, action.model, {
+	        form = setField(form, action.model, {
+	          pending: false,
 	          submitted: !!action.submitted
 	        });
 
@@ -21776,12 +21762,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      case actionTypes.SET_INITIAL:
 	      case actionTypes.RESET:
-	        setField(form, action.model, initialFieldState);
+	        form = setField(form, action.model, initialFieldState);
 
 	        break;
 
 	      case actionTypes.SET_VIEW_VALUE:
-	        setField(form, action.model, {
+	        form = setField(form, action.model, {
 	          viewValue: action.value
 	        });
 
@@ -21789,11 +21775,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        break;
 	    }
 
-	    return _extends({}, form, {
-	      field: function field(_field2) {
-	        return getField(form, _field2, model);
-	      }
-	    });
+	    return form;
 	  };
 	}
 
