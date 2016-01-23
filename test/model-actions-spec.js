@@ -3,7 +3,7 @@ import should from 'should';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 
-import { actions, createModelReducer } from '../src';
+import { actions, createModelReducer } from '../lib';
 
 describe('RSF model actions', () => {
   describe('change()', () => {

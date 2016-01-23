@@ -1,27 +1,23 @@
-import get from 'lodash/object/get';
-import set from 'lodash/object/set';
-import startsWith from 'lodash/string/startsWith';
-import cloneDeep from 'lodash/lang/cloneDeep';
-import isArray from 'lodash/lang/isArray';
+import get from 'lodash/get';
+import set from 'lodash/set';
+import startsWith from 'lodash/startsWith';
+import cloneDeep from 'lodash/cloneDeep';
+import isArray from 'lodash/isArray';
+import toPath from 'lodash/toPath';
+import Immutable from 'seamless-immutable';
 
 import * as actionTypes from '../action-types';
 
-function getSuperState(model, state) {
-  return set(
-    {},
-    model,
-    cloneDeep(state));
-}
-
 function createModelReducer(model, initialState = {}) {
   return (state = initialState, action) => {
-    if (!startsWith(action.model, model)) {
+    let path = toPath(action.model);
+
+    if (path[0] !== model) {
       return state;
     }
 
-    let superState = getSuperState(model, state);
-
-    let collection = get(superState, action.model, []);
+    let localPath = path.slice(1);
+    let immutableState = Immutable(state);
 
     switch (action.type) {
       case actionTypes.CHANGE:
@@ -29,17 +25,21 @@ function createModelReducer(model, initialState = {}) {
           return action.value;
         }
 
-        set(superState, action.model, action.value);
-
-        return get(superState, model);
+        return immutableState.setIn(
+          localPath,
+          action.value);
 
       case actionTypes.RESET:
-        set(superState, action.model, get(getSuperState(model, initialState), action.model));
+        if (!localPath.length) {
+          return initialState;
+        }
 
-        return get(superState, model);
+        return immutableState.setIn(
+          localPath,
+          get(initialState, localPath));
 
       default:
-        return state;
+        return immutableState;
     }
   }
 }

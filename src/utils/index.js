@@ -1,7 +1,7 @@
 
 import { initialFieldState } from '../reducers/form-reducer';
 
-import endsWith from 'lodash/string/endsWith';
+import endsWith from 'lodash/endsWith';
 
 function isMulti(model) {
   return endsWith(model, '[]');
