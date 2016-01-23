@@ -52,6 +52,27 @@ export default store;
 
 \\* If you are not using the \`<Field />\` component, you may forego this requirement.
 
+### Updating Models
+
+The model reducer uses the \`action.model\` path to know where which part of the state should be updated.
+
+It uses [seamless-immutable's](todo) \`Immutable.setIn(path, value)\` and [lodash's](todo) \`_.toPath(path)\` under the hood to make these changes. For example, given this state:
+
+${js`
+const state = {
+  user: {  
+    firstName: 'John',
+    lastName: 'Smith',
+    phones: [
+      { number: '5551234567', type: 'home' },
+      { number: '5559876543', type: 'work' }
+    ]
+  }
+}
+`}
+
+A value from an object key can be retrieved with the path \`'user.firstName'\` and a value inside an array can be retrieved with \`'user.phones[1]'\`, and with even more granularity, \`'user.phones[1].number'\`.
+
 ### Custom Model Reducers
 
 Using \`createModelReducer()\` is *not required*, and you can implement your own functionality to respond to model changes:
@@ -73,11 +94,10 @@ const userReducer = (state = {}, action) => {
 }
 `}
 
-However, \`createModelReducer()\` is _really convenient_, as it uses lodash's \`get()\` and \`set()\` methods to efficiently update the model given a model string such as \`"foo.bar[2].baz"\`. You can **compose** reducer functions in order to have custom functionality:
+However, \`createModelReducer()\` is _really convenient_, as it uses [lodash](http://lodash.com/docs) and [seamless-immutable](http://github.com/rfeldman/seamless-immutable) to efficiently update the model given a model string such as \`"foo.bar[2].baz"\`. The new state derived from the model reducer can be used as an intermediate state, which can then be used to make custom state updates:
 
 ${js`
 import { createModelReducer } from 'redux-simple-form';
-import compose from 'lodash/function/compose';
 
 let initialState = {
   firstName: '',
@@ -95,7 +115,10 @@ const fullName = (state) => {
 }
 
 const userReducer = (state, action) => {
-  return compose(fullName, modelReducer)(state, action);
+  let model = modelReducer(state, action);
+  let newState = fullName(model);
+
+  return newState;
 }
 
 export default userReducer;

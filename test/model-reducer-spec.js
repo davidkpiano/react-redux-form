@@ -1,5 +1,6 @@
 import { assert } from 'chai';
 import should from 'should';
+import { compose } from 'redux';
 
 import { actions, createModelReducer } from '../lib';
 

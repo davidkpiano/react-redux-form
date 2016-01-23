@@ -17,6 +17,7 @@ import map from 'lodash/collection/map';
 import IntroPage from './pages/intro-page';
 import ActionsPage from './pages/actions-page';
 import ModelReducerPage from './pages/model-reducer-page';
+import FormReducerPage from './pages/form-reducer-page';
 import ApiPage from './pages/api-page';
 
 import SyncValidationRecipe from './recipes/sync-validation-recipe';
@@ -102,6 +103,9 @@ const Docs = (props) => (
           <Link className="rsf-anchor" to="model-reducer">
             Model Reducer
           </Link>
+          <Link className="rsf-anchor" to="form-reducer">
+            Form Reducer
+          </Link>
           <Link className="rsf-anchor" to="actions">
             Working with Actions
           </Link>
@@ -147,6 +151,7 @@ class App extends React.Component {
             <IndexRoute component={ IntroPage } />
             <Route path="actions" component={ ActionsPage }/>
             <Route path="model-reducer" component={ ModelReducerPage }/>
+            <Route path="form-reducer" component={ FormReducerPage }/>
             <Route path="api/:item" component={ ApiPage } />
             <Route path="recipe" component={ Recipes }>
             { map(recipes, (recipe, recipeName) => 
