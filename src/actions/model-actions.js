@@ -5,6 +5,7 @@ import _filter from 'lodash/filter';
 import _map from 'lodash/map';
 import _pullAt from 'lodash/pullAt';
 import isEqual from 'lodash/isEqual';
+import Immutable from 'seamless-immutable';
 
 import * as actionTypes from '../action-types';
 
@@ -105,6 +106,18 @@ const remove = (model, index) => (dispatch, getState) => {
   });
 };
 
+const merge = (model, values) => (dispatch, getState) => {
+  let immutableState = Immutable(get(getState(), model, {}));
+
+  let value = immutableState.merge(values);
+
+  dispatch({
+    type: actionTypes.CHANGE,
+    model,
+    value
+  });
+};
+
 export {
   change,
   reset,
@@ -114,5 +127,6 @@ export {
   reset,
   map,
   push,
-  remove
+  remove,
+  merge
 }

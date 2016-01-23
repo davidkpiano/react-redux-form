@@ -3,7 +3,7 @@ import should from 'should';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 
-import { actions, createModelReducer } from '../lib';
+import { actions, createModelReducer } from '../src';
 
 describe('RSF model actions', () => {
   describe('change()', () => {
@@ -123,11 +123,17 @@ describe('RSF model actions', () => {
           params: ['test.foo', 1],
           expected: { foo: ['first', 'third'] }
         }
+      ],
+      merge: [
+        {
+          init: { foo: { bar: 'baz', untouched: 'intact' } },
+          params: ['test.foo', { 'bar': 'new', 'one': 'two' }],
+          expected: { foo: { bar: 'new', 'one': 'two', 'untouched': 'intact' }}
+        }
       ]
     }
 
     Object.keys(actionTests).map((action) => {
-
       describe(`${action}()`, () => {
         actionTests[action].map((test) => {        
           let { init, params, expected } = test;
@@ -144,6 +150,6 @@ describe('RSF model actions', () => {
           });
         })
       });
-    })
-  })
-})
+    });
+  });
+});
