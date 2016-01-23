@@ -21619,7 +21619,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function getField(state, field, model) {
-	  console.log(model);
 	  return (0, _get2.default)(state, ['fields', model + '.' + field], (0, _get2.default)(state, ['fields', field], initialFieldState));
 	}
 

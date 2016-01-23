@@ -21,7 +21,6 @@ function setField(state, model, props) {
 }
 
 function getField(state, field, model) {
-  console.log(model);
   return get(
     state,
     ['fields', `${model}.${field}`],
