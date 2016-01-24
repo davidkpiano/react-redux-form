@@ -1,11 +1,11 @@
 # Redux Simple Form
 [![Build Status](https://travis-ci.org/davidkpiano/redux-simple-form.svg?branch=master)](https://travis-ci.org/davidkpiano/redux-simple-form)
 
-**Still in development! Read the [latest docs](http://davidkpiano.github.io/redux-simple-form)**
+**[Read the Full Documentation](http://davidkpiano.github.io/redux-simple-form)**
 
 Redux Simple Form is a collection of reducer creators and action creators that make implementing even the most complex and custom forms with React and Redux simple and performant.
 
-`npm install react redux redux-simple-form --save`
+`npm install redux-simple-form --save`
 
 ## Quick Start
 
