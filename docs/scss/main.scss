@@ -98,7 +98,8 @@ html, body, #app {
   code:not([class]) {
     display: inline-block;
     background: colors('code');
-    padding: 0.25rem;
+    padding: 0.1rem 0.25rem;
+    margin-bottom: 2px;
   }
 
   &.recipes {

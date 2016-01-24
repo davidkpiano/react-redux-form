@@ -171,7 +171,8 @@ html, body, #app {
   .rsf-layout-content code:not([class]) {
     display: inline-block;
     background: rgba(39, 46, 53, 0.1);
-    padding: 0.25rem; }
+    padding: 0.1rem 0.25rem;
+    margin-bottom: 2px; }
   .rsf-layout-content.recipes {
     padding: 0; }
   .rsf-layout-content div:not([class]) {

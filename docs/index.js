@@ -88,8 +88,9 @@ const recipes = {
 const apiReference = [
   'action creators',
   'action thunk creators',
-  'reducers'
-]
+  'reducers',
+  'field component'
+];
 
 const Docs = (props) => (
   <main className="rsf-layout-page">
@@ -116,7 +117,7 @@ const Docs = (props) => (
         { apiReference.map((item) =>
           <li className="rsf-item">
             <Link className="rsf-anchor"
-              to={`api/${item}`}>
+              to={`api/${kebabCase(item)}`}>
               { startCase(item) }
             </Link>
           </li>

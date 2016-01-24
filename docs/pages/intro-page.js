@@ -6,10 +6,29 @@ const content =
 `
 # redux simple form
 
-A simple, flexible, and powerful way to create complex forms
-with React and Redux.
+Redux Simple Form is **a collection of action creators and reducer creators**
+that makes building complex and custom forms with React and Redux simple. That's all.
 
-Heavily inspired by Angular's forms and controls.
+It also provides the helpful \`<Field model="..." />\` component for mapping controls to form and model changes quickly.
+
+${js`
+import { Field } from 'redux-simple-form';
+
+// in your component's render() method
+<Field model="user.name">
+  <input type="text" />
+</Field>
+`}
+
+Heavily inspired by Angular's forms and controls, Redux Simple Form:
+
+- handles model value changes for _any_ object/array
+- provides utility actions for manipulating state
+- handles control updates, such as focus, blur, pristine, etc.
+- keeps track of validity on _any part_ of your model
+- allows for completely dynamic and deep forms
+- **keeps your model state intact**, which allows you to
+have full control of your model reducer
 
 **Getting Started**
 1. Install the prerequisites:

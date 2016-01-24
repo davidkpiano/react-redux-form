@@ -3,7 +3,109 @@ import Code from '../components/code-component';
 import Markdown, { js } from '../components/markdown-component';
 
 const itemMap = {
-'action creators': `
+'field-component': `
+## Field Component
+
+### \`<Field>...</Field>\`
+
+${js`
+import { Field } from 'redux-simple-form';
+
+// inside a component's render() method ...
+<Field model="user.name">
+  <input type="text" />
+</Field>
+
+// a required field
+<Field model="user.email"
+  updateOn="blur"
+  validators={{
+    required: (val) => val.length
+  }}>
+  <input type="email" />
+</Field>
+`}
+
+The \`<Field />\` component is a helper component that wraps one or more controls and maps actions for the specified \`model\` to events on the controls. The supported controls are:
+
+- \`<input />\` - any text type
+- \`<textarea />\`
+- \`<input type="checkbox" />\`
+- \`<input type="radio" />\`
+- \`<select />\`
+- \`<select multiple/>\`
+
+The only required prop is \`model\`, which is a string that represents the model value in the store. The allowed props (including optional props) are:
+
+- \`model\` (String) - the string representing the store model value
+- \`updateOn\` (String | Function) - a function that decorates the default \`onChange\` function, or a string:
+  - "change"
+  - "blur"
+  - "focus"
+- \`validators\` (Object) - a validation object with key-validator pairs (see below)
+- \`asyncValidators\` (Object) - an async validation object with key-asyncValidator pairs (see below)
+- \`parser\` (Function) - a function that parses the value before updating the model.
+
+## Field Component properties
+
+### \`model\` property
+
+The string representing the model value in the store.
+
+${js`
+// in store.js
+export default createStore(combineReducers({
+  'user': createModelReducer('user', { name: '' })
+}));
+
+// in component's render() method
+<Field model="user.name">
+  <input type="text" />
+</Field>
+`}
+
+### \`updateOn\` property
+
+A string or function specifying when the component should dispatch a \`change(...)\` action. If a string, \`updateOn\` can be one of these values:
+
+- \`"change"\` - will dispatch in \`onChange\`
+- \`"blur"\` - will dispatch in \`onBlur\`
+- \`"focus"\` - will dispatch in \`onFocus\`
+
+So, \`<Field model="foo.bar" updateOn="blur">\` will only dispatch the \`change(...)\` action on blur.
+
+If \`updateOn\` is a function, the function given will be called with the \`change\` action creator. The function given will be called in \`onChange\`. For example:
+
+${js`
+import debounce from 'lodash/debounce';
+
+<Field model="test.bounce"
+  updateOn={(change) => debounce(change, 1000)}
+  <input type="text" />
+</Field>
+`}
+
+### \`validators\` property
+
+A map where the keys are validation keys, and the values are the corresponding functions that determine the validity of each key, given the model's value.
+
+For example, this field validates that a username exists and is longer than 4 characters:
+
+${js`
+<Field model="user.username"
+  validators={{
+    required: (val) => val.length,
+    length: (val) => val.length > 4
+  }}>
+  <input type="text" />
+</Field>
+`}
+
+
+`,
+
+
+'action-creators': `
 ## Action Creators
 
 ### \`actions.change(model, value)\`
@@ -27,6 +129,33 @@ let initialState = { name: '', age: 0 };
 
 userReducer(initialState, actions.change('user.name', 'Billy'));
 // => { name: 'Billy', age: 0 }
+`}
+
+------
+
+### \`actions.reset(model)\`
+Returns an action object that, when handled by a \`modelReducer\`, changes the value of the respective model to its initial \`value\`.
+
+**Arguments:**
+- \`model\`: (String) the model whose value will be reset
+
+${js`
+import {
+  createModelReducer,
+  actions
+} from 'redux-simple-form';
+
+const counterReducer = createModelReducer('counter');
+
+let initialState = { count: 10 };
+
+let nextState = counterReducer(initialState,
+  actions.change('counter.count', 42));
+// => { count: 42 }
+
+let resetState = counterReducer(nextState,
+  actions.reset('counter.count'));
+// => { count: 10 }
 `}
 
 ------
@@ -166,6 +295,80 @@ const userFormReducer = createFormReducer('user');
 
 export default userFormReducer;
 `}
+`,
+
+'action-thunk-creators': `
+## Action Thunk Creators
+
+These action creators require [redux-thunk-middleware](TODO) to work, as they use thunks to determine the next state.
+
+### \`actions.merge(model, values)\`
+Dispatches a \`change\` action that merges the \`values\` into the value specified by the \`model\`. Based on [seamless-immutable's \`Immutable.merge()\` method](TODO).
+
+**Arguments:**
+- \`model\`: (String) the object model to be updated.
+- \`values\`: (Object | Object[] | Objects...) the values that will be merged into the object represented by the \`model\`.
+
+------
+
+### \`actions.xor(model, item)\`
+Dispatches a \`change\` action that applies an "xor" operation to the array represented by the \`model\`; that is, it "toggles" an item in an array.
+
+If the model value contains \`item\`, it will be removed. If the model value doesn't contain \`item\`, it will be added.
+
+**Arguments:**
+- \`model\`: (String) the array model where the \`xor\` will be applied.
+- \`item\`: (*) the item to be "toggled" in the model value.
+
+------
+
+### \`actions.push(model, item)\`
+Dispatches a \`change\` action that "pushes" the \`item\` to the array represented by the \`model\`.
+
+**Arguments:**
+- \`model\`: (String) the array model where the \`item\` will be pushed.
+- \`item\`: (*) the item to be "pushed" in the model value.
+
+------
+
+### \`actions.toggle(model)\`
+Dispatches a \`change\` action that sets the \`model\` to true if it is falsey, and false if it is truthy.
+
+**Arguments:**
+- \`model\`: (String) the model whose value will be toggled.
+
+------
+
+### \`actions.filter(model, iteratee)\`
+Dispatches a \`change\` action that filters the array represented by the \`model\` through the \`iteratee\` function. This action works similar to [lodash's \`_.filter\` method](TODO).
+
+If no \`iteratee\` is specified, the identity function is used by default.
+
+**Arguments:**
+- \`model\`: (String) the array model to be filtered.
+- \`iteratee = identity\`: (Function) the filter iteratee function that filters the array represented by the model.
+
+------
+
+### \`actions.map(model, iteratee)\`
+Dispatches a \`change\` action that maps the array represented by the \`model\` through the \`iteratee\` function. This action works similar to [lodash's \`_.map\` method](TODO).
+
+If no \`iteratee\` is specified, the identity function is used by default.
+
+**Arguments:**
+- \`model\`: (String) the array model to be maped.
+- \`iteratee = identity\`: (Function) the map iteratee function that maps the array represented by the model.
+
+------
+
+### \`actions.remove(model, index)\`
+Dispatches a \`change\` action that removes the item at the specified \`index\` of the array represented by the \`model\`.
+
+**Arguments:**
+- \`model\`: (String) the array model to be updated.
+- \`index\`: (Number) the index that should be removed from the array.
+
+------
 `
 }
 
