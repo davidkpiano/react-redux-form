@@ -60,6 +60,7 @@ class SyncValidationRecipe extends React.Component {
     return (
       <Recipe model="submitValidUser" onSubmit={(e) => this.handleSubmit(e)}>
         <h2>Validation on Submit</h2>
+        <p>Psst... the username is <strong>John</strong> and the password is <strong>password</strong></p>
         <Field model="submitValidUser.username">
           <label>Username</label>
           <input type="text" />

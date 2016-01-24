@@ -1,5 +1,7 @@
 'use strict';
 
+var path = require('path');
+
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 module.exports = {
@@ -25,7 +27,10 @@ module.exports = {
     libraryTarget: 'umd'
   },
   resolve: {
-    extensions: ['', '.js']
+    extensions: ['', '.js'],
+    alias: {
+      'redux-simple-form': path.resolve(__dirname, '../src/index')
+    }
   },
   // devtool: 'inline-source-map'
 };

@@ -19,7 +19,16 @@ function impureSetField(state, model, props) {
     return merge(state, props);
   };
 
-  return set(state, ['fields'].concat(model), props);
+  return merge(state, {
+    fields: {
+      [model]: {
+        ...initialFieldState,
+        ...props
+      }
+    }
+  });
+
+  return result;
 }
 
 function getField(state, field, model) {
