@@ -42,16 +42,4 @@ describe('createModelReducer()', () => {
       reducer(undefined, actions.change('external.value', 'value')),
       model);
   });
-
-  it('should return an immutable state', () => {
-    const initialState = { foo: 'bar' };
-    const reducer = createModelReducer('test', initialState);
-    const result = reducer(undefined, {});
-
-    result.foo = 'changed';
-
-    assert.deepEqual(
-      result,
-      initialState);
-  });
 });
