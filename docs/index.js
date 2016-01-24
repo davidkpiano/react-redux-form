@@ -26,7 +26,7 @@ import BlurValidationRecipe from './recipes/blur-validation-recipe';
 import AsyncBlurValidationRecipe from './recipes/async-blur-validation-recipe';
 import AutofillRecipe from './recipes/autofill-recipe';
 import DeepRecipe from './recipes/deep-recipe';
-import MultiRecipe from './recipes/multi-recipe';
+import ComplexValuesRecipe from './recipes/complex-values-recipe';
 import MultiRecordRecipe from './recipes/multi-record-recipe';
 import ParseRecipe from './recipes/parse-recipe';
 import VariousControlsRecipe from './recipes/various-controls-recipe';
@@ -62,7 +62,6 @@ const store = applyMiddleware(thunk)(createStore)(combineReducers({
   user5Form: createFormReducer('user5'),
   user6: createModelReducer('user6', { phones: [ null ], children: [] }),
   userForm: createFormReducer('user'),
-  multiUser: createModelReducer('multiUser'),
   multiRecord: createModelReducer('multiRecord', [ {} ]),
   parseUser: createModelReducer('parseUser', { phone: '' }),
   order: createModelReducer('order', {
@@ -78,7 +77,7 @@ const recipes = {
   'Async Validation': AsyncBlurValidationRecipe,
   'Autofill Fields': AutofillRecipe,
   'Deep Fields': DeepRecipe,
-  'Multiple Fields': MultiRecipe,
+  'Complex Values': ComplexValuesRecipe,
   'Multiple Records': MultiRecordRecipe,
   'Parse Fields': ParseRecipe,
   'Various Controls': VariousControlsRecipe,

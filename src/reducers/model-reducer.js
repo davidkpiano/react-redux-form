@@ -2,9 +2,7 @@ import get from 'lodash/get';
 import set from 'lodash/set';
 import startsWith from 'lodash/startsWith';
 import cloneDeep from 'lodash/cloneDeep';
-import isArray from 'lodash/isArray';
 import toPath from 'lodash/toPath';
-import Immutable from 'seamless-immutable';
 
 import * as actionTypes from '../action-types';
 
@@ -17,29 +15,28 @@ function createModelReducer(model, initialState = {}) {
     }
 
     let localPath = path.slice(1);
-    let immutableState = Immutable(state);
+    let newState = cloneDeep(state);
 
     switch (action.type) {
       case actionTypes.CHANGE:
-        if (action.model === model) {
+        if (!localPath.length) {
           return action.value;
         }
 
-        return immutableState.setIn(
-          localPath,
-          action.value);
+        return set(newState, localPath, action.value);
 
       case actionTypes.RESET:
         if (!localPath.length) {
           return initialState;
         }
 
-        return immutableState.setIn(
+        return set(
+          newState,
           localPath,
           get(initialState, localPath));
 
       default:
-        return immutableState;
+        return newState;
     }
   }
 }

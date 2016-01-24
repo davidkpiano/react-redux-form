@@ -1,23 +1,25 @@
 import get from 'lodash/get';
+import set from 'lodash/set';
+import merge from 'lodash/merge';
 import toPath from 'lodash/toPath';
 import isPlainObject from 'lodash/isPlainObject';
 import isBoolean from 'lodash/isBoolean';
 import mapValues from 'lodash/mapValues';
 import every from 'lodash/every';
-import Immutable from 'seamless-immutable';
+import cloneDeep from 'lodash/cloneDeep';
 
 import * as actionTypes from '../action-types';
 
-function setField(state, model, props) {
+// Impure function! Use only inside formReducer for temporary state.
+// The form reducer is still pure; this impure side-effectful
+// function is to improve performance while doing deep updates to the
+// form state.
+function impureSetField(state, model, props) {
   if (state.model === model) {
-    return Immutable(state).merge(props);
+    return merge(state, props);
   };
 
-  return Immutable(state).merge({
-    fields: {
-      [model]: props
-    }
-  }, { deep: true });
+  return set(state, ['fields'].concat(model), props);
 }
 
 function getField(state, field, model) {
@@ -58,53 +60,44 @@ function createFormReducer(model) {
       return state;
     }
 
-    let form = Immutable({
-      ...state,
+    let form = merge(cloneDeep(state), {
       model: model,
       field: (field) => getField(form, field, model)
     });
 
     switch (action.type) {
       case actionTypes.FOCUS:
-        form = setField(form, action.model, {
+        return impureSetField(form, action.model, {
           focus: true,
           blur: false
         });
 
-        break;
-
       case actionTypes.CHANGE:
       case actionTypes.SET_DIRTY:
-        form = form.merge({
+        merge(form, {
+          dirty: true,
+          pristine: false,
+        });
+
+        return impureSetField(form, action.model, {
           dirty: true,
           pristine: false
         });
-
-        form = setField(form, action.model, {
-          dirty: true,
-          pristine: false
-        });
-
-        break;
 
       case actionTypes.BLUR:
       case actionTypes.SET_TOUCHED:
-        form = setField(form, action.model, {
+        return impureSetField(form, action.model, {
           touched: true,
           untouched: false,
           focus: false,
           blur: true
         });
 
-        break;
-
       case actionTypes.SET_PENDING:
-        form = setField(form, action.model, {
+        return impureSetField(form, action.model, {
           pending: action.pending,
           submitted: false
         });
-
-        break;
 
       case actionTypes.SET_VALIDITY:
         let errors = isPlainObject(action.validity)
@@ -114,14 +107,14 @@ function createFormReducer(model) {
             }
           : !action.validity;
 
-        form = setField(form, action.model, {
+        form = impureSetField(form, action.model, {
           errors: errors,
           valid: isBoolean(errors)
             ? errors
             : every(errors, (error) => !error)
         });
 
-        form = form.merge({
+        return merge(form, {
           valid: every(mapValues(form.fields, (field) => field.valid))
             && every(form.errors, (error) => !error)
         });
@@ -129,52 +122,42 @@ function createFormReducer(model) {
         break;
 
       case actionTypes.SET_PRISTINE:
-        form = setField(form, action.model, {
+        form = impureSetField(form, action.model, {
           dirty: false,
           pristine: true
         });
 
         let formIsPristine = every(mapValues(form.fields, (field) => field.pristine));
 
-        form = form.merge({
+        return merge(form, {
           pristine: formIsPristine,
           dirty: !formIsPristine
         });
 
-        break;
-
       case actionTypes.SET_UNTOUCHED:
-        form = setField(form, action.model, {
+        return impureSetField(form, action.model, {
           touched: false,
           untouched: true
         });
 
-        break;
-
       case actionTypes.SET_SUBMITTED:
-        form = setField(form, action.model, {
+        return impureSetField(form, action.model, {
           pending: false,
           submitted: !!action.submitted
         });
 
-        break;
-
       case actionTypes.SET_INITIAL:
       case actionTypes.RESET:
-        form = setField(form, action.model, initialFieldState);
-
-        break;
+        return impureSetField(form, action.model, initialFieldState);
 
       case actionTypes.SET_VIEW_VALUE:
-        form = setField(form, action.model, {
+        return impureSetField(form, action.model, {
           viewValue: action.value
         });
 
       default:
-        break;
+        return form;
     }
-
-    return form;
   }
 }
 

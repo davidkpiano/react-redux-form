@@ -1,6 +1,6 @@
 {
   "name": "redux-simple-form",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "Simple Redux Forms",
   "main": "lib/index.js",
   "scripts": {
@@ -49,8 +49,6 @@
     "react": "^0.14.6",
     "react-dom": "^0.14.3",
     "react-redux": "^4.0.0",
-    "redux": "^3.0.4",
-    "redux-ignore": "^1.2.1",
-    "seamless-immutable": "^5.0.1"
+    "redux": "^3.0.4"
   }
 }
