@@ -113,6 +113,9 @@ class Field extends React.Component {
     let updateOn = (typeof props.updateOn === 'function')
       ? 'onChange'
       : `on${capitalize(props.updateOn || 'change')}`;
+    let updaterFn = (typeof updater === 'function')
+      ? updater
+      : identity;
     let validateOn = `on${capitalize(props.validateOn || 'change')}`;
     let asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
 
@@ -166,7 +169,7 @@ class Field extends React.Component {
       ? () => dispatch(controlChangeMethod(value))
       : (e) => dispatch(controlChangeMethod(e));
 
-    eventActions[updateOn].push(updater(dispatchChange));
+    eventActions[updateOn].push(updaterFn(dispatchChange));
 
     if (validators) {
       let dispatchValidate = (value) => {
