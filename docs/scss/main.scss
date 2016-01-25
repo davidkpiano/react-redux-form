@@ -289,3 +289,30 @@ html, body, #app {
     border-color: orange;
   }
 }
+
+#redux-simple-form {
+  overflow: hidden;
+  
+  > span {
+    animation: move-up 0.6s cubic-bezier(.18,1,.18,1) both;
+    position: relative;
+    display: inline-block;
+  }
+
+  @for $i from 1 through 3 {
+    > span:nth-child(#{$i}) {
+      animation-delay: 0.1s * $i;
+    }
+  }
+}
+
+@keyframes move-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

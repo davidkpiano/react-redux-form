@@ -598,3 +598,24 @@ html, body, #app {
     border-color: rgba(255, 165, 0, 0.3); }
   .rsf-tab.-active {
     border-color: orange; }
+
+#redux-simple-form {
+  overflow: hidden; }
+  #redux-simple-form > span {
+    animation: move-up 0.6s cubic-bezier(0.18, 1, 0.18, 1) both;
+    position: relative;
+    display: inline-block; }
+  #redux-simple-form > span:nth-child(1) {
+    animation-delay: 0.1s; }
+  #redux-simple-form > span:nth-child(2) {
+    animation-delay: 0.2s; }
+  #redux-simple-form > span:nth-child(3) {
+    animation-delay: 0.3s; }
+
+@keyframes move-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0; }
+  to {
+    transform: translateY(0);
+    opacity: 1; } }

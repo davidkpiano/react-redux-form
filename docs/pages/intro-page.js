@@ -4,12 +4,16 @@ import Markdown, { js } from '../components/markdown-component';
 
 const content =
 `
-# redux simple form
+<h1 id="redux-simple-form"><span>redux</span> <span>simple</span> <span>form</span></h1>
+
+<iframe src="https://ghbtns.com/github-btn.html?user=davidkpiano&repo=redux-simple-form&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
+<iframe src="https://ghbtns.com/github-btn.html?user=davidkpiano&repo=redux-simple-form&type=fork&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
 
 Redux Simple Form is **a collection of action creators and reducer creators**
 that makes building complex and custom forms with React and Redux simple. That's all.
 
 It also provides the helpful \`<Field model="..." />\` component for mapping controls to form and model changes quickly.
+
 
 ${js`
 import { Field } from 'redux-simple-form';

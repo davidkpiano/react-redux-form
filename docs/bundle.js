@@ -27553,7 +27553,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
-	var content = '\n# redux simple form\n\nRedux Simple Form is **a collection of action creators and reducer creators**\nthat makes building complex and custom forms with React and Redux simple. That\'s all.\n\nIt also provides the helpful `<Field model="..." />` component for mapping controls to form and model changes quickly.\n\n' + (0, _markdownComponent.js)(_templateObject) + '\n\nHeavily inspired by Angular\'s forms and controls, Redux Simple Form:\n\n- handles model value changes for _any_ object/array\n- provides utility actions for manipulating state\n- handles control updates, such as focus, blur, pristine, etc.\n- keeps track of validity on _any part_ of your model\n- allows for completely dynamic and deep forms\n- **keeps your model state intact**, which allows you to\nhave full control of your model reducer\n\n**Getting Started**\n1. Install the prerequisites:\n  - `npm install react redux react-redux --save`\n  - (recommended) `npm install redux-thunk --save`\n1. `npm install redux-simple-form --save`\n\n**Full Example**\n\n' + (0, _markdownComponent.js)(_templateObject2) + '\n\n' + (0, _markdownComponent.js)(_templateObject3) + '\n';
+	var content = '\n<h1 id="redux-simple-form"><span>redux</span> <span>simple</span> <span>form</span></h1>\n\n<iframe src="https://ghbtns.com/github-btn.html?user=davidkpiano&repo=redux-simple-form&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>\n<iframe src="https://ghbtns.com/github-btn.html?user=davidkpiano&repo=redux-simple-form&type=fork&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>\n\nRedux Simple Form is **a collection of action creators and reducer creators**\nthat makes building complex and custom forms with React and Redux simple. That\'s all.\n\nIt also provides the helpful `<Field model="..." />` component for mapping controls to form and model changes quickly.\n\n\n' + (0, _markdownComponent.js)(_templateObject) + '\n\nHeavily inspired by Angular\'s forms and controls, Redux Simple Form:\n\n- handles model value changes for _any_ object/array\n- provides utility actions for manipulating state\n- handles control updates, such as focus, blur, pristine, etc.\n- keeps track of validity on _any part_ of your model\n- allows for completely dynamic and deep forms\n- **keeps your model state intact**, which allows you to\nhave full control of your model reducer\n\n**Getting Started**\n1. Install the prerequisites:\n  - `npm install react redux react-redux --save`\n  - (recommended) `npm install redux-thunk --save`\n1. `npm install redux-simple-form --save`\n\n**Full Example**\n\n' + (0, _markdownComponent.js)(_templateObject2) + '\n\n' + (0, _markdownComponent.js)(_templateObject3) + '\n';
 
 	var IntroPage = function IntroPage() {
 	  return _react2.default.createElement(_markdownComponent2.default, { content: content });
@@ -59406,6 +59406,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+	var code = '\nimport { Field } from \'redux-simple-form\';\n\nfunction isAvailable(value, done) {\n  setTimeout(() => {\n    done(value !== \'davidkpiano\')\n  }, 1000);\n}\n\nclass UserForm extends React.Component {\n  render() {\n    let { userForm } = this.props;\n\n    return (\n      <form>\n        <h2>Async Blur Validation</h2>\n        <p>Try not to type in my username, "davidkpiano." I\'ve already claimed it.</p>\n        <Field model="user.username"\n          asyncValidators={{\n            available: isAvailable\n          }}\n          asyncValidateOn="blur">\n          <label htmlFor="">Username</label>\n          <input type="text" />\n        </Field>\n        { userForm.field(\'username\').pending\n          ? <div>Checking username...</div>\n          : userForm.field(\'username\').errors.available\n            ? <div>Sorry, that username isn\'t available.</div>\n            : userForm.field(\'username\').touched\n              && <div>That username looks great!</div>\n        }\n      </form>\n    );\n  }\n}\n\nfunction mapStateToProps(state) {\n  return {\n    userForm: state.userForm\n  }\n}\n\nexport default connect(mapStateToProps)(UserForm);\n';
+
 	function isAvailable(value, done) {
 	  setTimeout(function () {
 	    done(value !== 'davidkpiano');
@@ -59444,12 +59446,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	        _react2.default.createElement(
 	          _reduxSimpleForm.Field,
 	          { model: 'user4.username',
-	            validators: {
-	              required: function required(val) {
-	                return val.length;
-	              }
-	            },
-	            validateOn: 'blur',
 	            asyncValidators: {
 	              available: isAvailable
 	            },
