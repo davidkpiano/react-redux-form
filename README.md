@@ -178,8 +178,6 @@ userReducer(initialState, actions.change('user.name', 'Billy'));
 // => { name: 'Billy', age: 0 }
 ```
 
-------
-
 ### `actions.reset(model)`
 Returns an action object that, when handled by a `modelReducer`, changes the value of the respective model to its initial `value`.
 
@@ -205,8 +203,6 @@ let resetState = counterReducer(nextState,
 // => { count: 10 }
 ```
 
-------
-
 ### `actions.focus(model)`
 Returns an action object that, when handled by a `formReducer`, changes the `focus` state of the field model in the form to `true`, as well as the corresponding `blur` state to `false`.
 
@@ -224,17 +220,17 @@ import {
 const Newsletter = (props) => {
   let { newsletterForm, dispatch } = props;
 
-  return <form>
-    <input type="email"
-      onFocus={() => dispatch(actions.focus('newsletter.email'))} />
-    { newsletterForm.field('email').focus &&
-      <div>We're focused on emailing you stuff!</div>
-    }
-  </form>;
+  return (
+    <form>
+      <input type="email"
+        onFocus={() => dispatch(actions.focus('newsletter.email'))} />
+      { newsletterForm.field('email').focus &&
+        <div>We're focused on emailing you stuff!</div>
+      }
+    </form>
+  );
 }
 ```
-
-------
 
 ### `actions.blur(model)`
 Returns an action object that, when handled by a `formReducer`, changes the `blur` state of the field model in the form to `true`, as well as the corresponding `focus` state to `false`. It also indicates that the field model has been `touched`, and will set that state to `true` and the `untouched` state to `false`.
@@ -244,8 +240,6 @@ The "blur" state indicates that the field model is not focused.
 **Arguments:**
 - `model`: (String) the model indicated as blurred
 
-------
-
 ### `actions.setPristine(model)`
 Returns an action object that, when handled by a `formReducer`, changes the `pristine` state of the field model in the form to `true`, as well as the corresponding `dirty` state to `false`.
 
@@ -253,8 +247,6 @@ The "pristine" state indicates that the user has not interacted with this field 
 
 **Arguments:**
 - `model`: (String) the model indicated as pristine
-
-------
 
 ### `actions.setDirty(model)`
 Returns an action object that, when handled by a `formReducer`, changes the `dirty` state of the field model in the form to `true`, as well as the corresponding `pristine` state to `false`.
@@ -264,8 +256,6 @@ The "dirty" state indicates that the model value has been changed.
 **Arguments:**
 - `model`: (String) the model indicated as dirty
 
-------
-
 ### `actions.setPending(model)`
 Returns an action object that, when handled by a `formReducer`, changes the `pending` state of the field model in the form to `true`. It simultaneously sets the `submitted` state to `false`.
 
@@ -273,8 +263,6 @@ This action is useful when asynchronously validating or submitting a model, and 
 
 **Arguments:**
 - `model`: (String) the model indicated as pending
-
-------
 
 ### `actions.setValidity(model, validity)`
 Returns an action object that, when handled by a `formReducer`, changes the `valid` state of the field model in the form to `true` or `false`, based on the `validity` (see below). It simultaneously sets the `errors` on the field model to the inverse of the `validity`.
@@ -345,16 +333,14 @@ export default userFormReducer;
 
 ## Action Thunk Creators
 
-These action creators require [redux-thunk-middleware](TODO) to work, as they use thunks to determine the next state.
+These action creators require [redux-thunk-middleware](https://github.com/gaearon/redux-thunk) to work, as they use thunks to determine the next state.
 
 ### `actions.merge(model, values)`
-Dispatches a `change` action that merges the `values` into the value specified by the `model`. Based on [seamless-immutable's `Immutable.merge()` method](TODO).
+Dispatches a `change` action that merges the `values` into the value specified by the `model`.
 
 **Arguments:**
 - `model`: (String) the object model to be updated.
 - `values`: (Object | Object[] | Objects...) the values that will be merged into the object represented by the `model`.
-
-------
 
 ### `actions.xor(model, item)`
 Dispatches a `change` action that applies an "xor" operation to the array represented by the `model`; that is, it "toggles" an item in an array.
@@ -365,8 +351,6 @@ If the model value contains `item`, it will be removed. If the model value doesn
 - `model`: (String) the array model where the `xor` will be applied.
 - `item`: (*) the item to be "toggled" in the model value.
 
-------
-
 ### `actions.push(model, item)`
 Dispatches a `change` action that "pushes" the `item` to the array represented by the `model`.
 
@@ -374,18 +358,14 @@ Dispatches a `change` action that "pushes" the `item` to the array represented b
 - `model`: (String) the array model where the `item` will be pushed.
 - `item`: (*) the item to be "pushed" in the model value.
 
-------
-
 ### `actions.toggle(model)`
 Dispatches a `change` action that sets the `model` to true if it is falsey, and false if it is truthy.
 
 **Arguments:**
 - `model`: (String) the model whose value will be toggled.
 
-------
-
 ### `actions.filter(model, iteratee)`
-Dispatches a `change` action that filters the array represented by the `model` through the `iteratee` function. This action works similar to [lodash's `_.filter` method](TODO).
+Dispatches a `change` action that filters the array represented by the `model` through the `iteratee` function. This action works similar to [lodash's `_.filter` method](https://lodash.com/docs#filter).
 
 If no `iteratee` is specified, the identity function is used by default.
 
@@ -393,18 +373,14 @@ If no `iteratee` is specified, the identity function is used by default.
 - `model`: (String) the array model to be filtered.
 - `iteratee = identity`: (Function) the filter iteratee function that filters the array represented by the model.
 
-------
-
 ### `actions.map(model, iteratee)`
-Dispatches a `change` action that maps the array represented by the `model` through the `iteratee` function. This action works similar to [lodash's `_.map` method](TODO).
+Dispatches a `change` action that maps the array represented by the `model` through the `iteratee` function. This action works similar to [lodash's `_.map` method](https://lodash.com/docs#map).
 
 If no `iteratee` is specified, the identity function is used by default.
 
 **Arguments:**
 - `model`: (String) the array model to be maped.
 - `iteratee = identity`: (Function) the map iteratee function that maps the array represented by the model.
-
-------
 
 ### `actions.remove(model, index)`
 Dispatches a `change` action that removes the item at the specified `index` of the array represented by the `model`.
@@ -413,4 +389,3 @@ Dispatches a `change` action that removes the item at the specified `index` of t
 - `model`: (String) the array model to be updated.
 - `index`: (Number) the index that should be removed from the array.
 
-------
