@@ -1,6 +1,6 @@
 {
   "name": "redux-simple-form",
-  "version": "0.1.7",
+  "version": "0.1.6",
   "description": "Simple Redux Forms",
   "main": "lib/index.js",
   "scripts": {
@@ -20,7 +20,13 @@
     "type": "git",
     "url": "git+https://github.com/davidkpiano/redux-simple-form.git"
   },
-  "author": "",
+  "keywords": [
+    "redux",
+    "form",
+    "react",
+    "reactjs"
+  ],
+  "author": "David Khourshid <davidkpiano@gmail.com> (http://github.com/davidkpiano)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/davidkpiano/redux-simple-form/issues"
