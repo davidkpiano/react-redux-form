@@ -1,4 +1,5 @@
 @import 'prism/theme-prism-okaidia';
+@import 'select';
 
 $colors: (
   'primary': #5791c9,
@@ -110,7 +111,7 @@ html, body, #app {
     margin-bottom: 1rem;
   }
 
-  input:not([type="radio"]):not([type="checkbox"]), textarea {
+  input:not([type="radio"]):not([type="checkbox"]):not([style]), textarea {
     font-size: 1rem;
     line-height: 1;
     padding: 0.5rem;
