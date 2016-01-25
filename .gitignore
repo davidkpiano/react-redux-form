@@ -27,4 +27,4 @@ build/Release
 node_modules
 
 # Docs
-docs
+docs/
