@@ -3,7 +3,7 @@
 
 ## [Read the Full Documentation](http://davidkpiano.github.io/react-redux-form)
 
-Redux Simple Form is a collection of reducer creators and action creators that make implementing even the most complex and custom forms with React and Redux simple and performant.
+React Redux Form is a collection of reducer creators and action creators that make implementing even the most complex and custom forms with React and Redux simple and performant.
 
 `npm install react-redux-form --save`
 
