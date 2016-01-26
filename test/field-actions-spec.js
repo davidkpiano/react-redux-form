@@ -424,13 +424,20 @@ describe('RSF field actions', () => {
       actions.asyncSetValidity('test.foo', validator)(dispatch, getState);
     });
 
-    it('should set pending to false when validating, and true when done validating', (testDone) => {
+    it('should set pending to true when validating, and false when done validating', (testDone) => {
       let pendingStates = [];
+      let executedActions = [];
+      let state = {};
 
       const reducer = createFormReducer('test');
       const dispatch = (action) => {
+        executedActions.push(action);
+        state = reducer(state, action);
+
         if (action.type === 'rsf/setPending') {
           pendingStates.push(action.pending);
+
+          assert.equal(state.field('test.foo').pending, action.pending);
           
           if (action.pending === false) { 
             testDone(assert.deepEqual(
