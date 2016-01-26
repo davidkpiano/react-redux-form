@@ -16,7 +16,7 @@ ${js`
   import React, { Component } from 'react';
   import { createStore } from 'redux';
   import { Provider } from 'react-redux';
-  import { createModelReducer } from 'redux-simple-form';
+  import { createModelReducer } from 'react-redux-form';
 
   const initialState = {
     firstName: '',

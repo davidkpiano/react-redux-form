@@ -4,10 +4,10 @@ import Markdown, { js } from '../components/markdown-component';
 
 const content =
 `
-<h1 id="redux-simple-form"><span>redux</span> <span>simple</span> <span>form</span></h1>
+<h1 id="react-redux-form"><span>react</span> <span>redux</span> <span>form</span></h1>
 
-<iframe src="https://ghbtns.com/github-btn.html?user=davidkpiano&repo=redux-simple-form&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
-<iframe src="https://ghbtns.com/github-btn.html?user=davidkpiano&repo=redux-simple-form&type=fork&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
+<iframe src="https://ghbtns.com/github-btn.html?user=davidkpiano&repo=react-redux-form&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
+<iframe src="https://ghbtns.com/github-btn.html?user=davidkpiano&repo=react-redux-form&type=fork&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
 
 Redux Simple Form is **a collection of action creators and reducer creators**
 that makes building complex and custom forms with React and Redux simple. That's all.
@@ -16,7 +16,7 @@ It also provides the helpful \`<Field model="..." />\` component for mapping con
 
 
 ${js`
-import { Field } from 'redux-simple-form';
+import { Field } from 'react-redux-form';
 
 // in your component's render() method
 <Field model="user.name">
@@ -38,7 +38,7 @@ have full control of your model reducer
 1. Install the prerequisites:
   - \`npm install react redux react-redux --save\`
   - (recommended) \`npm install redux-thunk --save\`
-1. \`npm install redux-simple-form --save\`
+1. \`npm install react-redux-form --save\`
 
 **Full Example**
 
@@ -48,7 +48,7 @@ ${js`
 import React from 'react';
 import { combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
-import { createModelReducer } from 'redux-simple-form';
+import { createModelReducer } from 'react-redux-form';
 
 import LoginForm from './forms/login-form';
 
@@ -72,7 +72,7 @@ ${js`
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field } from 'redux-simple-form';
+import { Field } from 'react-redux-form';
 
 class LoginForm extends React.Component {
   render() {

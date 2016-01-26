@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, Form, getField, actions } from 'redux-simple-form';
+import { Field, Form, getField, actions } from 'react-redux-form';
 
 import validator from 'validator';
 

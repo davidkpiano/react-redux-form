@@ -23,14 +23,11 @@ module.exports = {
     ]
   },
   output: {
-    library: 'redux-simple-form',
+    library: 'react-redux-form',
     libraryTarget: 'umd'
   },
   resolve: {
-    extensions: ['', '.js'],
-    alias: {
-      'redux-simple-form': path.resolve(__dirname, '../src/index')
-    }
+    extensions: ['', '.js']
   },
   // devtool: 'inline-source-map'
 };

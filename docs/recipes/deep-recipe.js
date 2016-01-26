@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, actions } from 'redux-simple-form';
+import { Field, actions } from 'react-redux-form';
 
 import Recipe from '../components/recipe-component';
 
 const code = `
-import { Field, actions } from 'redux-simple-form';
+import { Field, actions } from 'react-redux-form';
 
 // initial state of info:
 // { phones: [ null ], children: [ null ] }

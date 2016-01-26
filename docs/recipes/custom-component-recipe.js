@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, actions } from 'redux-simple-form';
+import { Field, actions } from 'react-redux-form';
 
 import Select from 'react-select';
 
@@ -8,7 +8,7 @@ import Recipe from '../components/recipe-component';
 
 const code = `
 import { connect } from 'react-redux';
-import { actions } from 'redux-simple-form';
+import { actions } from 'react-redux-form';
 import Select from 'react-select';
 
 const options = [

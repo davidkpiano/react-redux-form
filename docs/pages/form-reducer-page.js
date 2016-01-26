@@ -18,7 +18,7 @@ let initialUser = {
 You can create a form reducer that responds only to field actions to models that modify the user like this:
 
 ${js`
-import { createFormReducer } from 'redux-simple-form';
+import { createFormReducer } from 'react-redux-form';
 
 const userFormReducer = createFormReducer('user');
 `}

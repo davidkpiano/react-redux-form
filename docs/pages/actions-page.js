@@ -17,7 +17,7 @@ ${js`
 ${js`
 import React from 'react';
 import { connect } from 'react-redux';
-import { actions } from 'redux-simple-form';
+import { actions } from 'react-redux-form';
 
 export default class UserForm extends React.Component {
   render() {

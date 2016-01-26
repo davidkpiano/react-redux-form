@@ -36,7 +36,7 @@ import CustomComponentRecipe from './recipes/custom-component-recipe';
 import {
   createModelReducer,
   createFormReducer
-} from 'redux-simple-form';
+} from 'react-redux-form';
 
 import './scss/main.scss';
 

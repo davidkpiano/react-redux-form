@@ -18,7 +18,7 @@ let initialUser = {
 You can create a model reducer that responds only to changes to models that modify the user like this:
 
 ${js`
-import { createModelReducer } from 'redux-simple-form';
+import { createModelReducer } from 'react-redux-form';
 
 let initialUser = {
   firstName: '',
@@ -78,7 +78,7 @@ A value from an object key can be retrieved with the path \`'user.firstName'\` a
 Using \`createModelReducer()\` is *not required*, and you can implement your own functionality to respond to model changes:
 
 ${js`
-import { actionTypes } from 'redux-simple-form';
+import { actionTypes } from 'react-redux-form';
 
 const userReducer = (state = {}, action) => {
   if (action.type === actionTypes.CHANGE) {
@@ -97,7 +97,7 @@ const userReducer = (state = {}, action) => {
 However, \`createModelReducer()\` is _really convenient_, as it uses [lodash](http://lodash.com/docs) and [seamless-immutable](http://github.com/rfeldman/seamless-immutable) to efficiently update the model given a model string such as \`"foo.bar[2].baz"\`. The new state derived from the model reducer can be used as an intermediate state, which can then be used to make custom state updates:
 
 ${js`
-import { createModelReducer } from 'redux-simple-form';
+import { createModelReducer } from 'react-redux-form';
 
 let initialState = {
   firstName: '',

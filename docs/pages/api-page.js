@@ -9,7 +9,7 @@ const itemMap = {
 ### \`<Field>...</Field>\`
 
 ${js`
-import { Field } from 'redux-simple-form';
+import { Field } from 'react-redux-form';
 
 // inside a component's render() method ...
 <Field model="user.name">
@@ -121,7 +121,7 @@ ${js`
 import {
   createModelReducer,
   actions
-} from 'redux-simple-form';
+} from 'react-redux-form';
 
 const userReducer = createModelReducer('user');
 
@@ -143,7 +143,7 @@ ${js`
 import {
   createModelReducer,
   actions
-} from 'redux-simple-form';
+} from 'react-redux-form';
 
 const counterReducer = createModelReducer('counter');
 
@@ -171,7 +171,7 @@ The "focus" state indicates that the field model is the currently focused field 
 ${js`
 import {
   actions
-} from 'redux-simple-form';
+} from 'react-redux-form';
 
 // assuming this is a connected component
 const Newsletter = (props) => {
@@ -269,7 +269,7 @@ Returns a model reducer that only responds to \`change()\` and \`reset()\` actio
 
 **Example:**
 ${js`
-import { createModelReducer } from 'redux-simple-form';
+import { createModelReducer } from 'react-redux-form';
 
 const initialUserState = {
   firstName: '',
@@ -289,7 +289,7 @@ Returns a form reducer that only responds to any actions on the model or model's
 
 **Example:**
 ${js`
-import { createFormReducer } from 'redux-simple-form';
+import { createFormReducer } from 'react-redux-form';
 
 const userFormReducer = createFormReducer('user');
 

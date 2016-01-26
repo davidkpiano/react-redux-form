@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, actions } from 'redux-simple-form';
+import { Field, actions } from 'react-redux-form';
 import debounce from 'lodash/function/debounce';
 
 import Recipe from '../components/recipe-component';

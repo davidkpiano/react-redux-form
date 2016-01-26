@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field } from 'redux-simple-form';
+import { Field } from 'react-redux-form';
 
 import Recipe from '../components/recipe-component';
 
@@ -11,7 +11,7 @@ const hobbies = [
 ]
 
 const code = `
-import { Field } from 'redux-simple-form';
+import { Field } from 'react-redux-form';
 
 const hobbies = [
   { id: 1, name: 'piano' },

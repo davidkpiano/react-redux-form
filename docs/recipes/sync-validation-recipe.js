@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, actions } from 'redux-simple-form';
+import { Field, actions } from 'react-redux-form';
 
 import validator from 'validator';
 
@@ -8,7 +8,7 @@ import Recipe from '../components/recipe-component';
 
 const code = `
 import validator from 'validator';
-import { Field } from 'redux-simple-form';
+import { Field } from 'react-redux-form';
 
 const isRequired = (value) => !validator.isNull(value);
 
