@@ -1,11 +1,11 @@
-# Redux Simple Form
-[![Build Status](https://travis-ci.org/davidkpiano/redux-simple-form.svg?branch=master)](https://travis-ci.org/davidkpiano/redux-simple-form)
+# React Redux Form
+[![Build Status](https://travis-ci.org/davidkpiano/react-redux-form.svg?branch=master)](https://travis-ci.org/davidkpiano/react-redux-form)
 
-## [Read the Full Documentation](http://davidkpiano.github.io/redux-simple-form)
+## [Read the Full Documentation](http://davidkpiano.github.io/react-redux-form)
 
 Redux Simple Form is a collection of reducer creators and action creators that make implementing even the most complex and custom forms with React and Redux simple and performant.
 
-`npm install redux-simple-form --save`
+`npm install react-redux-form --save`
 
 ## Quick Start
 
@@ -13,7 +13,7 @@ Redux Simple Form is a collection of reducer creators and action creators that m
 import React from 'react';
 import { createStore, combineReducers } from 'redux';
 import  { Provider } from 'react-redux';
-import { createModelReducer, createFormReducer } from 'redux-simple-form';
+import { createModelReducer, createFormReducer } from 'react-redux-form';
 
 import MyForm from './components/my-form-component';
 
@@ -37,7 +37,7 @@ class App extends React.Component {
 // ./components/my-form-component.js'
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field } from 'redux-simple-form';
+import { Field } from 'react-redux-form';
 
 class MyForm extends React.Component {
   render() {
@@ -61,7 +61,7 @@ export default connect(state => ({ user: state.user }))(MyForm);
 ## `<Field>...</Field>` Component
 
 ```js
-import { Field } from 'redux-simple-form';
+import { Field } from 'react-redux-form';
 
 // inside a component's render() method ...
 <Field model="user.name">
@@ -168,7 +168,7 @@ When the change action is handled by a `formReducer`, the field model's `dirty` 
 import {
   createModelReducer,
   actions
-} from 'redux-simple-form';
+} from 'react-redux-form';
 
 const userReducer = createModelReducer('user');
 
@@ -188,7 +188,7 @@ Returns an action object that, when handled by a `modelReducer`, changes the val
 import {
   createModelReducer,
   actions
-} from 'redux-simple-form';
+} from 'react-redux-form';
 
 const counterReducer = createModelReducer('counter');
 
@@ -214,7 +214,7 @@ The "focus" state indicates that the field model is the currently focused field 
 ```js
 import {
   actions
-} from 'redux-simple-form';
+} from 'react-redux-form';
 
 // assuming this is a connected component
 const Newsletter = (props) => {
@@ -304,7 +304,7 @@ Returns a model reducer that only responds to `change()` and `reset()` actions o
 
 **Example:**
 ```js
-import { createModelReducer } from 'redux-simple-form';
+import { createModelReducer } from 'react-redux-form';
 
 const initialUserState = {
   firstName: '',
@@ -324,7 +324,7 @@ Returns a form reducer that only responds to any actions on the model or model's
 
 **Example:**
 ```js
-import { createFormReducer } from 'redux-simple-form';
+import { createFormReducer } from 'react-redux-form';
 
 const userFormReducer = createFormReducer('user');
 

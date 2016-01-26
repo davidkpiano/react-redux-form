@@ -1,7 +1,7 @@
 {
-  "name": "redux-simple-form",
+  "name": "react-redux-form",
   "version": "0.1.8",
-  "description": "Simple Redux Forms",
+  "description": "Create Forms Easily with React and Redux",
   "main": "lib/index.js",
   "scripts": {
     "start": "npm run build",
@@ -18,20 +18,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/davidkpiano/redux-simple-form.git"
+    "url": "git+https://github.com/davidkpiano/react-redux-form.git"
   },
   "keywords": [
     "redux",
     "form",
+    "redux-form",
+    "react-redux-form",
     "react",
     "reactjs"
   ],
   "author": "David Khourshid <davidkpiano@gmail.com> (http://github.com/davidkpiano)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/davidkpiano/redux-simple-form/issues"
+    "url": "https://github.com/davidkpiano/react-redux-form/issues"
   },
-  "homepage": "https://github.com/davidkpiano/redux-simple-form#readme",
+  "homepage": "https://github.com/davidkpiano/react-redux-form#readme",
   "devDependencies": {
     "babel": "^6.3.13",
     "babel-cli": "^6.3.17",

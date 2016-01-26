@@ -7,7 +7,7 @@ module.exports = {
     ]
   },
   output: {
-    library: 'redux-simple-form',
+    library: 'react-redux-form',
     libraryTarget: 'umd'
   },
   resolve: {
