@@ -9,10 +9,12 @@ const content =
 <iframe src="https://ghbtns.com/github-btn.html?user=davidkpiano&repo=react-redux-form&type=star&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
 <iframe src="https://ghbtns.com/github-btn.html?user=davidkpiano&repo=react-redux-form&type=fork&count=true" frameborder="0" scrolling="0" width="100px" height="20px"></iframe>
 
-Redux Simple Form is **a collection of action creators and reducer creators**
-that makes building complex and custom forms with React and Redux simple. That's all.
+React Redux Form is **a collection of action creators and reducer creators**
+that makes building complex and custom forms with React and Redux simple.
 
 It also provides the helpful \`<Field model="..." />\` component for mapping controls to form and model changes quickly.
+
+Instead of answering "How would I do this with this library?", React Redux Form answers "How would I do this in Redux?", and provides a thin layer to help abstract the pain points of creating complex, dynamic forms with Redux and React.
 
 
 ${js`
