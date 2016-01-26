@@ -61,7 +61,7 @@ const store = applyMiddleware(thunk)(createStore)(combineReducers({
   user4Form: createFormReducer('user4'),
   user5: createModelReducer('user5'),
   user5Form: createFormReducer('user5'),
-  user6: createModelReducer('user6', { phones: [ null ], children: [] }),
+  info: createModelReducer('info', { phones: [ null ], children: [ null ] }),
   userForm: createFormReducer('user'),
   multiRecord: createModelReducer('multiRecord', [ {} ]),
   parseUser: createModelReducer('parseUser', { phone: '' }),
@@ -115,8 +115,8 @@ const Docs = (props) => (
       </ul>
       <h6 className="rsf-heading">API Reference</h6>
       <ul className="rsf-list">
-        { apiReference.map((item) =>
-          <li className="rsf-item">
+        { apiReference.map((item, index) =>
+          <li className="rsf-item" key={ index }>
             <Link className="rsf-anchor"
               to={`api/${kebabCase(item)}`}>
               { startCase(item) }
@@ -127,7 +127,7 @@ const Docs = (props) => (
       <h6 className="rsf-heading">Recipes</h6>
       <ul className="rsf-list">
         { map(recipes, (_, recipeName) =>
-          <li className="rsf-item">
+          <li className="rsf-item" key={ recipeName }>
             <Link className="rsf-anchor"
               to={`recipe/${kebabCase(recipeName)}`}>
               { recipeName }
@@ -158,6 +158,7 @@ class App extends React.Component {
             <Route path="recipe" component={ Recipes }>
             { map(recipes, (recipe, recipeName) => 
               <Route path={kebabCase(recipeName)}
+                key={ recipeName }
                 component={recipe} />
             )}
             </Route>

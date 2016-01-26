@@ -58,13 +58,15 @@ function isAvailable(value, done) {
 
 class AsyncBlurValidationRecipe extends React.Component {
   render() {
-    let { user4, user4Form } = this.props;
+    let { user, userForm } = this.props;
+
+    console.log(userForm.field('user.username').pending);
 
     return (
-      <Recipe model="user4">
+      <Recipe model="user" code={code}>
         <h2>Async Blur Validation</h2>
         <p>Try not to type in my username, "davidkpiano." I've already claimed it.</p>
-        <Field model="user4.username"
+        <Field model="user.username"
           asyncValidators={{
             available: isAvailable
           }}
@@ -72,11 +74,11 @@ class AsyncBlurValidationRecipe extends React.Component {
           <label htmlFor="">Username</label>
           <input type="text" name="" id=""/>
         </Field>
-        { user4Form.field('username').pending
+        { userForm.field('username').pending
           ? <div className="rsf-error">Checking username...</div>
-          : user4Form.field('username').errors.available
+          : userForm.field('username').errors.available
             ? <div className="rsf-error">Sorry, that username isn't available.</div>
-            : user4Form.field('username').touched
+            : userForm.field('username').touched
               && <div className="rsf-success">That username looks great!</div>
         }
       </Recipe>

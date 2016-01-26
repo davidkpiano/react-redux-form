@@ -4,41 +4,93 @@ import { Field, actions } from 'redux-simple-form';
 
 import Recipe from '../components/recipe-component';
 
-class DeepRecipe extends React.Component {
+const code = `
+import { Field, actions } from 'redux-simple-form';
+
+// initial state of info:
+// { phones: [ null ], children: [ null ] }
+
+class InfoForm extends React.Component {
   render() {
-    let { user6, dispatch } = this.props;
+    let { info, dispatch } = this.props;
 
     return (
-      <Recipe model="user6">
+      <form>
         <h2>Deep Forms</h2>
-        <Field model="user6.firstName">
-          <label htmlFor="">First Name</label>
-          <input type="text" value={ user6.firstName }/>
-        </Field>
         <label htmlFor="">Phones</label>
-        { user6.phones.map((phone, i) =>         
-          <Field model={`user6.phones[${i}]`} key={i}>
+        { info.phones.map((phone, i) =>         
+          <Field model={\`info.phones[$\{i}]\`} key={i}>
             <input type="text" />
           </Field>
         )}
-        <button type="button" onClick={() => dispatch(actions.push('user6.phones', null))}>
+
+        <button type="button" onClick={() => dispatch(actions.push('info.phones', null))}>
           Add Phone
         </button>
 
-        { user6.children.map((child, i) =>
+        { info.children.map((child, i) =>
           <div key={i}>    
-            <Field model={`user6.children[${i}].name`}>
+            <Field model={\`info.children[$\{i}].name\`}>
               <label htmlFor="">Child name</label>
               <input type="text" />
             </Field>
-            <Field model={`user6.children[${i}].age`}>
+            <Field model={\`info.children[$\{i}].age\`}>
               <label htmlFor="">Child age</label>
               <input type="text" />
             </Field>
+            <hr/>
+          </div>
+        )}
+
+        <button type="button" onClick={() =>
+          dispatch(actions.push('info.children', null))}>
+          Add Child
+        </button>
+      </form>
+    );
+  }
+}
+
+function mapStateToProps(state) {
+  return { info: state.info };
+}
+
+export default connect(mapStateToProps)(InfoForm);
+`
+
+class DeepRecipe extends React.Component {
+  render() {
+    let { info, dispatch } = this.props;
+
+    return (
+      <Recipe model="info" code={code}>
+        <h2>Deep Forms</h2>
+        <label htmlFor="">Phones</label>
+        { info.phones.map((phone, i) =>         
+          <Field model={`info.phones[${i}]`} key={i}>
+            <input type="text" />
+          </Field>
+        )}
+        <br/>
+        <button type="button" onClick={() => dispatch(actions.push('info.phones', null))}>
+          Add Phone
+        </button>
+
+        { info.children.map((child, i) =>
+          <div key={i}>    
+            <Field model={`info.children[${i}].name`}>
+              <label htmlFor="">Child name</label>
+              <input type="text" />
+            </Field>
+            <Field model={`info.children[${i}].age`}>
+              <label htmlFor="">Child age</label>
+              <input type="text" />
+            </Field>
+            <hr/>
           </div>
         )}
         <br/>
-        <button type="button" onClick={() => dispatch(actions.push('user6.children', null))}>
+        <button type="button" onClick={() => dispatch(actions.push('info.children', null))}>
           Add Child
         </button>
       </Recipe>
