@@ -330,4 +330,51 @@ describe('<Field /> component', () => {
       assert.equal(select.value, 'three');
     });
   });
+
+  describe('async validation property', () => {
+    const formReducer = createFormReducer('test');
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: formReducer,
+        test: createModelReducer('test', {})
+      }));
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo"
+          asyncValidators={{
+            testValid: (val, done) => done(true)
+          }}
+          asyncValidateOn="blur">
+          <input type="text"/>
+        </Field>
+      </Provider>
+    );
+
+    const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+
+    it('should set the proper form state at various times', (done) => {
+      let expectedStates = [
+        { pending: true, valid: true },
+        { pending: false, valid: true }
+      ];
+
+      let actualStates = [];
+
+      store.subscribe(() => {
+        let state = store.getState();
+
+        actualStates.push(state.testForm.field('foo'));
+
+        if (actualStates.length == expectedStates.length) {
+          expectedStates.map((expected, i) => {
+            assert.containSubset(actualStates[i], expected);
+          });
+
+          done();
+        }
+      });
+
+      TestUtils.Simulate.blur(control);
+    })
+  });
 });
