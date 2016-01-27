@@ -225,7 +225,7 @@ const Newsletter = (props) => {
       <input type="email"
         onFocus={() => dispatch(actions.focus('newsletter.email'))} />
       { newsletterForm.field('email').focus &&
-        <div>We're focused on emailing you stuff!</div>
+        <div>We are focused on emailing you stuff!</div>
       }
     </form>
   );
