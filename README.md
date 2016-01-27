@@ -211,6 +211,7 @@ The "focus" state indicates that the field model is the currently focused field 
 **Arguments:**
 - `model`: (String) the model indicated as focused
 
+<<<<<<< HEAD
 ```js
 import {
   actions
@@ -232,6 +233,8 @@ const Newsletter = (props) => {
 }
 ```
 
+=======
+>>>>>>> master
 ### `actions.blur(model)`
 Returns an action object that, when handled by a `formReducer`, changes the `blur` state of the field model in the form to `true`, as well as the corresponding `focus` state to `false`. It also indicates that the field model has been `touched`, and will set that state to `true` and the `untouched` state to `false`.
 

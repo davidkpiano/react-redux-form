@@ -19,6 +19,7 @@ function setField(state, localPath, props) {
     fields: {
       [localPath.join('.')]: {
         ...initialFieldState,
+        ...getField(state, localPath),
         ...props
       }
     }

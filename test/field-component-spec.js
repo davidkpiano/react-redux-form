@@ -337,24 +337,26 @@ describe('<Field /> component', () => {
         testForm: formReducer,
         test: createModelReducer('test', {})
       }));
-    const field = TestUtils.renderIntoDocument(
-      <Provider store={store}>
-        <Field model="test.foo"
-          asyncValidators={{
-            testValid: (val, done) => done(true)
-          }}
-          asyncValidateOn="blur">
-          <input type="text"/>
-        </Field>
-      </Provider>
-    );
-
-    const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
 
-    it('should set the proper form state at various times', (done) => {
+    it('should set the proper field state for a valid async validation', (done) => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field model="test.foo"
+            asyncValidators={{
+              testValid: (val, done) => setTimeout(() => done(true), 10)
+            }}
+            asyncValidateOn="blur">
+            <input type="text"/>
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
       let expectedStates = [
-        { pending: true, valid: true },
+        { blur: true },
+        { pending: true, valid: true }, // initially valid
+        { pending: true, valid: true }, // true after validating
         { pending: false, valid: true }
       ];
 
@@ -367,7 +369,7 @@ describe('<Field /> component', () => {
 
         if (actualStates.length == expectedStates.length) {
           expectedStates.map((expected, i) => {
-            assert.containSubset(actualStates[i], expected);
+            assert.containSubset(actualStates[i], expected, `${i}`);
           });
 
           done();
@@ -375,6 +377,46 @@ describe('<Field /> component', () => {
       });
 
       TestUtils.Simulate.blur(control);
-    })
+    });
+
+    it('should set the proper field state for an invalid async validation', (done) => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field model="test.foo"
+            asyncValidators={{
+              testValid: (val, done) => setTimeout(() => done(false), 10)
+            }}
+            asyncValidateOn="blur">
+            <input type="text"/>
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+      let expectedStates = [
+        { blur: true },
+        { pending: true, valid: true }, // initially valid
+        { pending: true, valid: false }, // false after validating
+        { pending: false, valid: false }
+      ];
+
+      let actualStates = [];
+
+      store.subscribe(() => {
+        let state = store.getState();
+
+        actualStates.push(state.testForm.fields['foo']);
+
+        if (actualStates.length == expectedStates.length) {
+          expectedStates.map((expected, i) => {
+            assert.containSubset(actualStates[i], expected, `${i}`);
+          });
+
+          done();
+        }
+      });
+
+      TestUtils.Simulate.blur(control);
+    });
   });
 });
