@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import should from 'should';
 
-import { actions, createFormReducer, initialFieldState } from '../lib';
+import { actions, createFormReducer, initialFieldState, getField } from '../lib';
 
 describe('createFormReducer()', () => {
   it('should create a reducer given a model', () => {
@@ -16,17 +16,17 @@ describe('createFormReducer()', () => {
     assert.doesNotThrow(() => reducer(undefined, { type: 'ANY' }));
   });
 
-  describe('field() method', () => {
+  describe('getField() method', () => {
     it('should return an initialFieldState given an uninitialized model', () => {
       const reducer = createFormReducer('test');
 
       let actual = reducer(undefined, { type: 'ANY' });
 
-      assert.isFunction(actual.field);
+      assert.isFunction(getField);
 
-      assert.deepEqual(actual.field('test.any'), initialFieldState);
+      assert.deepEqual(getField(actual, 'any'), initialFieldState);
 
-      assert.isObject(actual.field('foo').errors);
+      assert.isObject(getField(actual, 'foo').errors);
     });
 
     it('should maintain the full fieldState of an updated model', () => {
@@ -34,13 +34,13 @@ describe('createFormReducer()', () => {
 
       let actual = reducer(undefined, actions.focus('test.foo'));
 
-      assert.deepEqual(actual.fields['foo'], {
+      assert.deepEqual(getField(actual, 'foo'), {
         ...initialFieldState,
         focus: true,
         blur: false
       });
 
-      assert.isObject(actual.fields['foo'].errors);
+      assert.isObject(getField(actual, 'foo').errors);
     });
   });
 });

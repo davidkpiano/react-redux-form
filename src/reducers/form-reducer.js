@@ -25,10 +25,12 @@ function setField(state, localPath, props) {
   });
 }
 
-function getField(state, localPath, model) {
+function getField(state, path) {
+  let localPath = toPath(path);
+
   return get(
     state,
-    localPath.join('.'),
+    ['fields', localPath.join('.')],
     initialFieldState);
 }
 
@@ -49,12 +51,18 @@ const initialFieldState = {
 
 const initialFormState = {
   ...initialFieldState,
-  fields: {},
-  field: () => initialFieldState
+  fields: {}
 };
 
+function createInitialFormState(model) {
+  return {
+    ...initialFormState,
+    model: model
+  };
+}
+
 function createFormReducer(model) {
-  return (state = initialFormState, action) => {
+  return (state = createInitialFormState(model), action) => {
     let path = toPath(action.model);
 
     if (path[0] !== model) {
@@ -158,16 +166,12 @@ function createFormReducer(model) {
       default:
         return form;
     }
-
-    return merge(form, {
-      model: model,
-      field: (field) => getField(form, field, model)
-    });
   }
 }
 
 export {
   createFormReducer,
   initialFieldState,
-  initialFormState
+  initialFormState,
+  getField
 }
