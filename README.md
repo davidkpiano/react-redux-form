@@ -211,27 +211,6 @@ The "focus" state indicates that the field model is the currently focused field 
 **Arguments:**
 - `model`: (String) the model indicated as focused
 
-```js
-import {
-  actions
-} from 'react-redux-form';
-
-// assuming this is a connected component
-const Newsletter = (props) => {
-  let { newsletterForm, dispatch } = props;
-
-  return (
-    <form>
-      <input type="email"
-        onFocus={() => dispatch(actions.focus('newsletter.email'))} />
-      { newsletterForm.field('email').focus &&
-        <div>We're focused on emailing you stuff!</div>
-      }
-    </form>
-  );
-}
-```
-
 ### `actions.blur(model)`
 Returns an action object that, when handled by a `formReducer`, changes the `blur` state of the field model in the form to `true`, as well as the corresponding `focus` state to `false`. It also indicates that the field model has been `touched`, and will set that state to `true` and the `untouched` state to `false`.
 
