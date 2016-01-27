@@ -173,8 +173,6 @@ class Field extends React.Component {
 
     if (validators) {
       let dispatchValidate = (value) => {
-        console.log(value, validateOn);
-
         let validity = mapValues(validators,
           (validator) => validator(getValue(value)));
 
@@ -188,7 +186,6 @@ class Field extends React.Component {
 
     if (asyncValidators) {
       let dispatchAsyncValidate = (value) => {
-        console.log(value);
         mapValues(asyncValidators,
           (validator, key) => dispatch(asyncSetValidity(model, (_, done) => {
             const outerDone = (valid) => done({ [key]: valid });
