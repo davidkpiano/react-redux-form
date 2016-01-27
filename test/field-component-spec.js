@@ -71,7 +71,7 @@ describe('<Field /> component', () => {
         TestUtils.Simulate.focus(node);
 
         assert.containSubset(
-          store.getState().testForm.field('test.foo'),
+          store.getState().testForm.fields['foo'],
           { focus: true, blur: false });
       });
 
@@ -79,7 +79,7 @@ describe('<Field /> component', () => {
         TestUtils.Simulate.blur(node);
 
         assert.containSubset(
-          store.getState().testForm.field('test.foo'),
+          store.getState().testForm.fields['foo'],
           { focus: false, blur: true });
       });
 
@@ -363,7 +363,7 @@ describe('<Field /> component', () => {
       store.subscribe(() => {
         let state = store.getState();
 
-        actualStates.push(state.testForm.field('foo'));
+        actualStates.push(state.testForm.fields['foo']);
 
         if (actualStates.length == expectedStates.length) {
           expectedStates.map((expected, i) => {

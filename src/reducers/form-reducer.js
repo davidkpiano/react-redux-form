@@ -10,34 +10,26 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import * as actionTypes from '../action-types';
 
-// Impure function! Use only inside formReducer for temporary state.
-// The form reducer is still pure; this impure side-effectful
-// function is to improve performance while doing deep updates to the
-// form state.
-function impureSetField(state, model, props) {
-  if (state.model === model) {
-    return merge(state, props);
+function setField(state, localPath, props) {
+  if (!localPath.length) {
+    return merge(cloneDeep(state), props);
   };
 
-  return merge(state, {
+  return merge(cloneDeep(state), {
     fields: {
-      [model]: {
+      [localPath.join('.')]: {
         ...initialFieldState,
         ...props
       }
     }
   });
-
-  return result;
 }
 
-function getField(state, field, model) {
+function getField(state, localPath, model) {
   return get(
     state,
-    ['fields', `${model}.${field}`],
-    get(
-      state,
-      ['fields', field], initialFieldState));
+    localPath.join('.'),
+    initialFieldState);
 }
 
 const initialFieldState = {
@@ -69,14 +61,13 @@ function createFormReducer(model) {
       return state;
     }
 
-    let form = merge(cloneDeep(state), {
-      model: model,
-      field: (field) => getField(form, field, model)
-    });
+    let localPath = path.slice(1);
+
+    let form = cloneDeep(state);
 
     switch (action.type) {
       case actionTypes.FOCUS:
-        return impureSetField(form, action.model, {
+        return setField(form, localPath, {
           focus: true,
           blur: false
         });
@@ -88,14 +79,14 @@ function createFormReducer(model) {
           pristine: false,
         });
 
-        return impureSetField(form, action.model, {
+        return setField(form, localPath, {
           dirty: true,
           pristine: false
         });
 
       case actionTypes.BLUR:
       case actionTypes.SET_TOUCHED:
-        return impureSetField(form, action.model, {
+        return setField(form, localPath, {
           touched: true,
           untouched: false,
           focus: false,
@@ -103,7 +94,7 @@ function createFormReducer(model) {
         });
 
       case actionTypes.SET_PENDING:
-        return impureSetField(form, action.model, {
+        return setField(form, localPath, {
           pending: action.pending,
           submitted: false
         });
@@ -111,12 +102,12 @@ function createFormReducer(model) {
       case actionTypes.SET_VALIDITY:
         let errors = isPlainObject(action.validity)
           ? {
-              ...getField(form, action.model).errors,
+              ...getField(form, localPath).errors,
               ...mapValues(action.validity, (valid) => !valid)
             }
           : !action.validity;
 
-        form = impureSetField(form, action.model, {
+        form = setField(form, localPath, {
           errors: errors,
           valid: isBoolean(errors)
             ? errors
@@ -131,7 +122,7 @@ function createFormReducer(model) {
         break;
 
       case actionTypes.SET_PRISTINE:
-        form = impureSetField(form, action.model, {
+        form = setField(form, localPath, {
           dirty: false,
           pristine: true
         });
@@ -144,29 +135,34 @@ function createFormReducer(model) {
         });
 
       case actionTypes.SET_UNTOUCHED:
-        return impureSetField(form, action.model, {
+        return setField(form, localPath, {
           touched: false,
           untouched: true
         });
 
       case actionTypes.SET_SUBMITTED:
-        return impureSetField(form, action.model, {
+        return setField(form, localPath, {
           pending: false,
           submitted: !!action.submitted
         });
 
       case actionTypes.SET_INITIAL:
       case actionTypes.RESET:
-        return impureSetField(form, action.model, initialFieldState);
+        return setField(form, localPath, initialFieldState);
 
       case actionTypes.SET_VIEW_VALUE:
-        return impureSetField(form, action.model, {
+        return setField(form, localPath, {
           viewValue: action.value
         });
 
       default:
         return form;
     }
+
+    return merge(form, {
+      model: model,
+      field: (field) => getField(form, field, model)
+    });
   }
 }
 

@@ -34,13 +34,13 @@ describe('createFormReducer()', () => {
 
       let actual = reducer(undefined, actions.focus('test.foo'));
 
-      assert.deepEqual(actual.field('foo'), {
+      assert.deepEqual(actual.fields['foo'], {
         ...initialFieldState,
         focus: true,
         blur: false
       });
 
-      assert.isObject(actual.field('foo').errors);
+      assert.isObject(actual.fields['foo'].errors);
     });
   });
 });

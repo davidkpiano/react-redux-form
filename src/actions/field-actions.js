@@ -63,7 +63,7 @@ const asyncSetValidity = (model, validator) => {
     const done = (validity) => {
       dispatch(setValidity(model, validity));
       dispatch(setPending(model, false));
-    };
+    }; 
 
     let immediateResult = validator(value, done);
 

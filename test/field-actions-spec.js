@@ -17,7 +17,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setViewValue('test.foo', 'bar'))
-          .field('foo'),
+          .fields['foo'],
         {
           viewValue: 'bar'
         });
@@ -30,7 +30,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.reset('test.foo'))
-          .field('foo'),
+          .fields['foo'],
         initialFieldState);
     });
   });
@@ -41,7 +41,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.focus('test.foo'))
-          .field('foo'),
+          .fields['foo'],
         {
           focus: true,
           blur: false
@@ -55,7 +55,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.blur('test.foo'))
-          .field('foo'),
+          .fields['foo'],
         {
           blur: true,
           focus: false,
@@ -71,7 +71,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setPristine('test.foo'))
-          .field('foo'),
+          .fields['foo'],
         {
           pristine: true,
           dirty: false
@@ -116,7 +116,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setDirty('test.foo'))
-          .field('foo'),
+          .fields['foo'],
         {
           dirty: true,
           pristine: false
@@ -141,7 +141,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setPending('test.foo'))
-          .field('foo'),
+          .fields['foo'],
         {
           pending: true,
           submitted: false
@@ -155,7 +155,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         actualPending
-          .field('foo'),
+          .fields['foo'],
         {
           pending: true,
           submitted: false
@@ -165,7 +165,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         actualNotPending
-          .field('foo'),
+          .fields['foo'],
         {
           pending: false,
           submitted: false
@@ -199,7 +199,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setSubmitted('test.foo'))
-          .field('foo'),
+          .fields['foo'],
         {
           submitted: true,
           pending: false
@@ -213,7 +213,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         actualSubmitted
-          .field('foo'),
+          .fields['foo'],
         {
           submitted: true,
           pending: false
@@ -223,7 +223,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         actualNotSubmitted
-          .field('foo'),
+          .fields['foo'],
         {
           submitted: false,
           pending: false
@@ -259,7 +259,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setTouched('test.foo'))
-          .field('foo'),
+          .fields['foo'],
         {
           touched: true,
           untouched: false,
@@ -275,7 +275,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setUntouched('test.foo'))
-          .field('foo'),
+          .fields['foo'],
         {
           untouched: true,
           touched: false
@@ -289,14 +289,14 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setValidity('test.foo', true))
-          .field('foo'),
+          .fields['foo'],
         {
           errors: false
         });
 
       assert.containSubset(
         reducer(undefined, actions.setValidity('test.foo', false))
-          .field('foo'),
+          .fields['foo'],
         {
           errors: true
         });
@@ -312,7 +312,7 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setValidity('test.foo', validity))
-          .field('foo'),
+          .fields['foo'],
         {
           errors: {
             good: false,
@@ -334,7 +334,7 @@ describe('RSF field actions', () => {
       console.log(actualForm.fields);
 
       assert.containSubset(
-        actualForm.field('foo'),
+        actualForm.fields['foo'],
         {
           valid: true
         });
@@ -358,7 +358,7 @@ describe('RSF field actions', () => {
       let actualForm = reducer(undefined, actions.setValidity('test.foo', validity));
 
       assert.containSubset(
-        actualForm.field('foo'),
+        actualForm.fields['foo'],
         {
           valid: false
         });
@@ -401,7 +401,7 @@ describe('RSF field actions', () => {
         if (action.type === 'rsf/setValidity') {        
           testDone(assert.containSubset(
             reducer(undefined, action)
-              .field('foo'),
+              .fields['foo'],
               {
               valid: false,
               errors: {
@@ -437,7 +437,7 @@ describe('RSF field actions', () => {
         if (action.type === 'rsf/setPending') {
           pendingStates.push(action.pending);
 
-          assert.equal(state.field('test.foo').pending, action.pending);
+          assert.equal(state.fields['foo'].pending, action.pending);
           
           if (action.pending === false) { 
             testDone(assert.deepEqual(
