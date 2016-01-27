@@ -7,14 +7,18 @@ import toPath from 'lodash/toPath';
 import * as actionTypes from '../action-types';
 
 function createModelReducer(model, initialState = {}) {
+  const modelPath = toPath(model);
+
   return (state = initialState, action) => {
+    if (!action.model) return state;
+
     let path = toPath(action.model);
 
-    if (path[0] !== model) {
+    if (path[0] !== modelPath[0]) {
       return state;
     }
 
-    let localPath = path.slice(1);
+    let localPath = path.slice(modelPath.length);
     let newState = cloneDeep(state);
 
     switch (action.type) {
