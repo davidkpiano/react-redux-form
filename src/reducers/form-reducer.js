@@ -68,7 +68,7 @@ function createFormReducer(model) {
     let path = toPath(action.model);
     let modelPath = toPath(model);
     if (!isEqual(path.slice(0, modelPath.length), modelPath)) {
-        return state;
+      return state;
     }
     let localPath = path.slice(modelPath.length);
 
