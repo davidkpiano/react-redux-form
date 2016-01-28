@@ -43,4 +43,14 @@ describe('createFormReducer()', () => {
       assert.isObject(getField(actual, 'foo').errors);
     });
   });
+
+  it('should be able to handle model at deep state path', () => {
+    const reducer = createFormReducer('forms.test');
+    let actual = reducer(undefined, actions.focus('forms.test.foo'));
+    assert.deepEqual(actual.fields.foo, {
+      ...initialFieldState,
+      focus: true,
+      blur: false
+    });
+  });  
 });

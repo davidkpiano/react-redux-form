@@ -7,6 +7,7 @@ import isBoolean from 'lodash/isBoolean';
 import mapValues from 'lodash/mapValues';
 import every from 'lodash/every';
 import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 
 import * as actionTypes from '../action-types';
 
@@ -65,12 +66,11 @@ function createInitialFormState(model) {
 function createFormReducer(model) {
   return (state = createInitialFormState(model), action) => {
     let path = toPath(action.model);
-
-    if (path[0] !== model) {
-      return state;
+    let modelPath = toPath(model);
+    if (!isEqual(path.slice(0, modelPath.length), modelPath)) {
+        return state;
     }
-
-    let localPath = path.slice(1);
+    let localPath = path.slice(modelPath.length);
 
     let form = cloneDeep(state);
 

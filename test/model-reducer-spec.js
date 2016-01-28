@@ -79,4 +79,14 @@ describe('createModelReducer()', () => {
       shallowReducer(undefined, actions.change('test.foo.bar[1]', 'two')),
       { original: 'untouched', foo: { bar: [1, 'two', 3] } });
   });
+  
+  it('should handle model at deep state path', () => {
+    const reducer = createModelReducer('forms.test');
+    assert.deepEqual(
+      reducer(undefined, actions.change('forms.test.foo', 'new')),
+      { foo: 'new' }
+    );
+
+  })
+
 });
