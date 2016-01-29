@@ -82,11 +82,15 @@ describe('createModelReducer()', () => {
   
   it('should handle model at deep state path', () => {
     const reducer = createModelReducer('forms.test');
+
     assert.deepEqual(
       reducer(undefined, actions.change('forms.test.foo', 'new')),
       { foo: 'new' }
     );
 
-  })
-
+    assert.deepEqual(
+      reducer(undefined, actions.change('forms.different.foo', 'new')),
+      {},
+      'should only change when base path is equal');
+  });
 });

@@ -64,12 +64,17 @@ function createInitialFormState(model) {
 }
 
 function createFormReducer(model) {
+  const modelPath = toPath(model);
+
   return (state = createInitialFormState(model), action) => {
+    if (!action.model) return state;
+    
     let path = toPath(action.model);
-    let modelPath = toPath(model);
+
     if (!isEqual(path.slice(0, modelPath.length), modelPath)) {
       return state;
     }
+
     let localPath = path.slice(modelPath.length);
 
     let form = cloneDeep(state);

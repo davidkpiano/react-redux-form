@@ -3,6 +3,7 @@ import set from 'lodash/set';
 import startsWith from 'lodash/startsWith';
 import cloneDeep from 'lodash/cloneDeep';
 import toPath from 'lodash/toPath';
+import isEqual from 'lodash/isEqual';
 
 import * as actionTypes from '../action-types';
 
@@ -14,7 +15,7 @@ function createModelReducer(model, initialState = {}) {
 
     let path = toPath(action.model);
 
-    if (path[0] !== modelPath[0]) {
+    if (!isEqual(path.slice(0, modelPath.length), modelPath)) {
       return state;
     }
 
