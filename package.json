@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "start": "npm run build",
-    "test": "mocha --require babel-core/register --require ./test/spec-setup.js",
+    "test": "npm run build:lib && mocha --require babel-core/register --require ./test/spec-setup.js",
     "test:watch": "mocha -w --require babel-core/register --require ./test/spec-setup.js",
     "build": "npm run build:umd && npm run build:lib",
     "build:link": "babel -w src --out-dir lib",
