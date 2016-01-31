@@ -1,22 +1,20 @@
-import get from 'lodash/get';
-import set from 'lodash/set';
-import merge from 'lodash/merge';
-import toPath from 'lodash/toPath';
-import isPlainObject from 'lodash/isPlainObject';
-import isBoolean from 'lodash/isBoolean';
-import mapValues from 'lodash/mapValues';
 import every from 'lodash/every';
-import cloneDeep from 'lodash/cloneDeep';
+import get from 'lodash/get';
+import icepick from 'icepick';
+import isBoolean from 'lodash/isBoolean';
 import isEqual from 'lodash/isEqual';
+import isPlainObject from 'lodash/isPlainObject';
+import mapValues from 'lodash/mapValues';
+import toPath from 'lodash/toPath';
 
 import * as actionTypes from '../action-types';
 
 function setField(state, localPath, props) {
   if (!localPath.length) {
-    return merge(cloneDeep(state), props);
-  };
+    return icepick.merge(state, props);
+  }
 
-  return merge(cloneDeep(state), {
+  return icepick.merge(state, {
     fields: {
       [localPath.join('.')]: {
         ...initialFieldState,
@@ -28,7 +26,7 @@ function setField(state, localPath, props) {
 }
 
 function getField(state, path) {
-  let localPath = toPath(path);
+  const localPath = toPath(path);
 
   return get(
     state,
@@ -59,7 +57,7 @@ const initialFormState = {
 function createInitialFormState(model) {
   return {
     ...initialFormState,
-    model: model
+    model
   };
 }
 
@@ -68,39 +66,37 @@ function createFormReducer(model) {
 
   return (state = createInitialFormState(model), action) => {
     if (!action.model) return state;
-    
-    let path = toPath(action.model);
+
+    const path = toPath(action.model);
 
     if (!isEqual(path.slice(0, modelPath.length), modelPath)) {
       return state;
     }
 
-    let localPath = path.slice(modelPath.length);
-
-    let form = cloneDeep(state);
+    const localPath = path.slice(modelPath.length);
 
     switch (action.type) {
       case actionTypes.FOCUS:
-        return setField(form, localPath, {
+        return setField(state, localPath, {
           focus: true,
           blur: false
         });
 
       case actionTypes.CHANGE:
       case actionTypes.SET_DIRTY:
-        merge(form, {
+        state = icepick.merge(state, {
           dirty: true,
           pristine: false,
         });
 
-        return setField(form, localPath, {
+        return setField(state, localPath, {
           dirty: true,
           pristine: false
         });
 
       case actionTypes.BLUR:
       case actionTypes.SET_TOUCHED:
-        return setField(form, localPath, {
+        return setField(state, localPath, {
           touched: true,
           untouched: false,
           focus: false,
@@ -108,71 +104,69 @@ function createFormReducer(model) {
         });
 
       case actionTypes.SET_PENDING:
-        return setField(form, localPath, {
+        return setField(state, localPath, {
           pending: action.pending,
           submitted: false
         });
 
       case actionTypes.SET_VALIDITY:
-        let errors = isPlainObject(action.validity)
+        const errors = isPlainObject(action.validity)
           ? {
-              ...getField(form, localPath).errors,
+              ...getField(state, localPath).errors,
               ...mapValues(action.validity, (valid) => !valid)
             }
           : !action.validity;
 
-        form = setField(form, localPath, {
-          errors: errors,
+        state = setField(state, localPath, {
+          errors,
           valid: isBoolean(errors)
             ? errors
             : every(errors, (error) => !error)
         });
 
-        return merge(form, {
-          valid: every(mapValues(form.fields, (field) => field.valid))
-            && every(form.errors, (error) => !error)
+        return icepick.merge(state, {
+          valid: every(mapValues(state.fields, (field) => field.valid))
+            && every(state.errors, (error) => !error)
         });
 
-        break;
-
       case actionTypes.SET_PRISTINE:
-        form = setField(form, localPath, {
+        state = setField(state, localPath, {
           dirty: false,
           pristine: true
         });
 
-        let formIsPristine = every(mapValues(form.fields, (field) => field.pristine));
+        const formIsPristine = every(mapValues(state.fields, (field) => field.pristine));
 
-        return merge(form, {
+        return icepick.merge(state, {
           pristine: formIsPristine,
           dirty: !formIsPristine
         });
 
       case actionTypes.SET_UNTOUCHED:
-        return setField(form, localPath, {
+        return setField(state, localPath, {
           touched: false,
           untouched: true
         });
 
       case actionTypes.SET_SUBMITTED:
-        return setField(form, localPath, {
+        return setField(state, localPath, {
           pending: false,
           submitted: !!action.submitted
         });
 
       case actionTypes.SET_INITIAL:
       case actionTypes.RESET:
-        return setField(form, localPath, initialFieldState);
+        return setField(state, localPath, initialFieldState);
 
       case actionTypes.SET_VIEW_VALUE:
-        return setField(form, localPath, {
+        return setField(state, localPath, {
           viewValue: action.value
         });
 
       default:
-        return form;
+        return state;
     }
-  }
+  };
 }
 
 export {
@@ -180,4 +174,4 @@ export {
   initialFieldState,
   initialFormState,
   getField
-}
+};

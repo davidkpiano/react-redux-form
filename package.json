@@ -53,6 +53,7 @@
     "webpack": "^1.12.9"
   },
   "dependencies": {
+    "icepick": "^1.1.0",
     "lodash": "^4.0.0",
     "react": "^0.14.6",
     "react-dom": "^0.14.3",

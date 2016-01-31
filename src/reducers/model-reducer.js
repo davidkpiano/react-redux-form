@@ -1,9 +1,7 @@
 import get from 'lodash/get';
-import set from 'lodash/set';
-import startsWith from 'lodash/startsWith';
-import cloneDeep from 'lodash/cloneDeep';
-import toPath from 'lodash/toPath';
+import icepick from 'icepick';
 import isEqual from 'lodash/isEqual';
+import toPath from 'lodash/toPath';
 
 import * as actionTypes from '../action-types';
 
@@ -13,14 +11,13 @@ function createModelReducer(model, initialState = {}) {
   return (state = initialState, action) => {
     if (!action.model) return state;
 
-    let path = toPath(action.model);
+    const path = toPath(action.model);
 
     if (!isEqual(path.slice(0, modelPath.length), modelPath)) {
       return state;
     }
 
-    let localPath = path.slice(modelPath.length);
-    let newState = cloneDeep(state);
+    const localPath = path.slice(modelPath.length);
 
     switch (action.type) {
       case actionTypes.CHANGE:
@@ -28,24 +25,24 @@ function createModelReducer(model, initialState = {}) {
           return action.value;
         }
 
-        return set(newState, localPath, action.value);
+        return icepick.setIn(state, localPath, action.value);
 
       case actionTypes.RESET:
         if (!localPath.length) {
           return initialState;
         }
 
-        return set(
-          newState,
+        return icepick.setIn(
+          state,
           localPath,
           get(initialState, localPath));
 
       default:
-        return newState;
+        return state;
     }
-  }
+  };
 }
 
 export {
   createModelReducer
-}
+};
