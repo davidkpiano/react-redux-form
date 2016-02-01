@@ -9,7 +9,7 @@ React Redux Form is a collection of reducer creators and action creators that ma
 
 ## Quick Start
 
-Be sure to read the [step-by-step](http://davidkpiano.github.io/react-redux-form/#/api/Step-by-Step) guide in the documentation.
+Be sure to read the [step-by-step](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-Step-by-Step) guide in the documentation.
 
 ```js
 import React from 'react';
