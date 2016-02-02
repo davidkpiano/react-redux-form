@@ -52,5 +52,5 @@ describe('createFormReducer()', () => {
       focus: true,
       blur: false
     });
-  });  
+  });
 });

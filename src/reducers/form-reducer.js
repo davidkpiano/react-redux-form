@@ -17,12 +17,23 @@ function setField(state, localPath, props) {
   return icepick.merge(state, {
     fields: {
       [localPath.join('.')]: {
-        ...initialFieldState,
         ...getField(state, localPath),
         ...props
       }
     }
   });
+}
+
+function resetField(state, localPath) {
+  if (!localPath.length) {
+    return initialFormState;
+  }
+
+  return icepick.setIn(state, [
+    'fields',
+    localPath.join('.')],
+    initialFieldState
+  );
 }
 
 function getField(state, path) {
@@ -156,7 +167,7 @@ function createFormReducer(model) {
 
       case actionTypes.SET_INITIAL:
       case actionTypes.RESET:
-        return setField(state, localPath, initialFieldState);
+        return resetField(state, localPath);
 
       case actionTypes.SET_VIEW_VALUE:
         return setField(state, localPath, {

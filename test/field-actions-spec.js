@@ -33,6 +33,42 @@ describe('RSF field actions', () => {
           .fields['foo'],
         initialFieldState);
     });
+
+    it('should reset all errors on the field', () => {
+      const reducer = createFormReducer('test');
+
+      const stateWithErrors = reducer(undefined, actions.setValidity('test.foo', {
+        valid: false,
+        required: true
+      }));
+
+      assert.deepEqual(stateWithErrors.fields.foo.errors, {
+        valid: true,
+        required: false
+      });
+
+      const stateAfterReset = reducer(stateWithErrors, actions.reset('test.foo'));
+
+      assert.deepEqual(stateAfterReset.fields.foo.errors, {});
+    });
+
+    it('should reset all errors on the form', () => {
+      const reducer = createFormReducer('test');
+
+      const stateWithErrors = reducer(undefined, actions.setValidity('test', {
+        valid: false,
+        required: true
+      }));
+
+      assert.deepEqual(stateWithErrors.errors, {
+        valid: true,
+        required: false
+      });
+
+      const stateAfterReset = reducer(stateWithErrors, actions.reset('test'));
+
+      assert.deepEqual(stateAfterReset.errors, {});
+    });
   });
 
   describe('focus()', () => {
