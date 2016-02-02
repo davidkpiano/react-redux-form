@@ -71,6 +71,11 @@ const changeMethod = (model, value, action = change, parser = identity) => {
   return compose(partial(action, model), parser, getValue);
 };
 
+const isReadOnlyValue = (control) => {
+  return control.type == 'input'
+    && ~['radio', 'checkbox'].indexOf(control.props.type);
+};
+
 const controlActionMap = {
   'checkbox': (props) => isMulti(props.model)
     ? xor
@@ -165,7 +170,7 @@ class Field extends React.Component {
     let controlChangeMethod = changeMethod(props.model, props.value, controlAction, parser);
 
     let dispatchChange = control.props.hasOwnProperty('value')
-      && controlType !== 'text'
+      && isReadOnlyValue(control)
       ? () => dispatch(controlChangeMethod(value))
       : (e) => dispatch(controlChangeMethod(e));
 

@@ -3,7 +3,7 @@ import chai from 'chai';
 import chaiSubset from 'chai-subset';
 import should from 'should';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
@@ -18,6 +18,7 @@ describe('<Field /> component', () => {
     ['input', 'text'],
     ['input', 'password'],
     ['input', 'number'],
+    ['input', 'color'],
     ['textarea']
   ];
 
@@ -90,6 +91,50 @@ describe('<Field /> component', () => {
 
         assert.equal(
           store.getState().test.foo,
+          'testing');
+      });
+    });
+
+    describe(`with a controlled <${element} ${type ? 'type="' + type + '"' : ''} /> component`, () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: createFormReducer('test'),
+        test: createModelReducer('test', { foo: 'bar' })
+      }));
+
+      const TestField = connect(s => s)((props) => {
+        let { test } = props;
+
+        return (
+          <Field model="test.foo">
+            { React.createElement(element, {
+              type: type,
+              value: test.foo
+            }) }
+          </Field>
+        );
+      });
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <TestField />
+        </Provider>
+      );
+
+      const node = TestUtils.findRenderedDOMComponentWithTag(field, element);
+
+      it('should have the initial value of the state', () => {
+        assert.equal(
+          node.value,
+          'bar');
+      });
+
+      it('should update the value when the controlled input is changed', () => {
+        TestUtils.Simulate.change(node, {
+          target: { value: 'testing' }
+        });
+
+        assert.equal(
+          node.value,
           'testing');
       });
     });
@@ -301,6 +346,11 @@ describe('<Field /> component', () => {
             <option value="one" />
             <option value="two" />
             <option value="three" />
+            <optgroup>
+              <option value="four" />
+              <option value="five" />
+              <option value="six" />
+            </optgroup>
           </select>
         </Field>
       </Provider>
@@ -328,6 +378,15 @@ describe('<Field /> component', () => {
 
       assert.isTrue(options[2].selected);
       assert.equal(select.value, 'three');
+    });
+
+    it('should work with <optgroup>', () => {
+      TestUtils.Simulate.change(options[3]);
+
+      assert.isTrue(options[3].selected);
+      assert.equal(
+        store.getState().test.foo,
+        'four');
     });
   });
 
