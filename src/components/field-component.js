@@ -84,6 +84,27 @@ const controlActionMap = {
   'default': () => change
 };
 
+function getControlType(control) {
+  let controlType = control.type === 'input'
+    ? control.props.type
+    : control.type;
+
+  if (!controlType || !isString(controlType)) {
+    controlType = (control.type.propTypes
+      && control.type.propTypes.onChange)
+      ? 'text'
+      : null;
+  }
+
+  if (!controlPropsMap[controlType]) {
+    controlType = control.type === 'input'
+      ? 'text'
+      : null;
+  }
+
+  return controlType;
+}
+
 class Field extends React.Component {
   static propTypes = {
     model: React.PropTypes.string.isRequired,
@@ -139,35 +160,9 @@ class Field extends React.Component {
       onChange: []
     };
 
-    let controlType = (this.props.type
-      || control.type === 'input')
-        ? control.props.type
-        : control.type;
+    let controlType = this.props.control || getControlType(control);
 
-    if (!controlType || !isString(controlType)) {
-      controlType = (control.type.propTypes
-        && control.type.propTypes.onChange)
-        ? (this.props.control || 'text')
-        : null;
-      console.log(controlType);
-    }
-
-    let createControlProps = controlPropsMap[controlType]
-      || (control.type === 'input' && controlPropsMap['text'])
-      || null;
-
-    let controlProps = createControlProps
-      ? {
-          ...defaultProps,
-          ...createControlProps({
-            model,
-            modelValue,
-            value
-          })
-        }
-      : null;
-
-    if (!controlProps) {
+    if (!controlType) {
       return React.cloneElement(
         control,
         {
@@ -177,6 +172,15 @@ class Field extends React.Component {
           )
         });
     }
+
+    let controlProps = {
+      ...defaultProps,
+      ...controlPropsMap[controlType]({
+        model,
+        modelValue,
+        value
+      })
+    };
 
     let controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
 

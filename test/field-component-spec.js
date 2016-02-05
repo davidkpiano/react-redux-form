@@ -507,8 +507,6 @@ describe('<Field /> with custom components', () => {
     handleChange(val) {
       let { onChange } = this.props;
 
-      console.log(val);
-
       return onChange(val);
     }
 
