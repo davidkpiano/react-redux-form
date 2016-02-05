@@ -9,6 +9,7 @@ import identity from 'lodash/identity';
 import mapValues from 'lodash/mapValues';
 import isEqual from 'lodash/isEqual';
 import partial from 'lodash/partial';
+import isString from 'lodash/isString';
 
 import {
   change,
@@ -96,7 +97,11 @@ class Field extends React.Component {
     ]),
     validators: React.PropTypes.object,
     asyncValidators: React.PropTypes.object,
-    parser: React.PropTypes.func
+    parser: React.PropTypes.func,
+    control: React.PropTypes.oneOfType([
+      React.PropTypes.func,
+      React.PropTypes.oneOf(Object.keys(controlPropsMap))
+    ])
   };
 
   createField(control, props) {
@@ -134,10 +139,18 @@ class Field extends React.Component {
       onChange: []
     };
 
-    let controlType = control.type === 'input'
-      ? control.props.type
-      : control.type;
+    let controlType = (this.props.type
+      || control.type === 'input')
+        ? control.props.type
+        : control.type;
 
+    if (!controlType || !isString(controlType)) {
+      controlType = (control.type.propTypes
+        && control.type.propTypes.onChange)
+        ? (this.props.control || 'text')
+        : null;
+      console.log(controlType);
+    }
 
     let createControlProps = controlPropsMap[controlType]
       || (control.type === 'input' && controlPropsMap['text'])

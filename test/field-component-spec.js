@@ -479,3 +479,107 @@ describe('<Field /> component', () => {
     });
   });
 });
+
+describe('<Field /> with custom components', () => {
+  class CustomInput extends React.Component {
+    static propTypes = {
+      onChange: React.PropTypes.func
+    };
+
+    handleChange(val) {
+      let { onChange } = this.props;
+
+      return onChange(val.toUpperCase());
+    }
+
+    render() {
+      return (
+        <input type="text" onChange={(e) => this.handleChange(e.target.value)} />
+      );
+    }
+  };
+
+  class CustomRadio extends React.Component {
+    static propTypes = {
+      onChange: React.PropTypes.func
+    };
+
+    handleChange(val) {
+      let { onChange } = this.props;
+
+      console.log(val);
+
+      return onChange(val);
+    }
+
+    render() {
+      return (
+        <input type="radio"
+          onChange={(e) => this.handleChange(e.target.value)}
+          value={ this.props.value }
+          checked={ this.props.checked } />
+      );
+    }
+  };
+
+  const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    testForm: createFormReducer('test'),
+    test: createModelReducer('test', {
+      input: 'bar',
+      radio: 'one'
+    })
+  }));
+
+  it('should adapt to controls that implement the "onChange" prop', () => {
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.input">
+          <label />
+          <CustomInput />
+        </Field>
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    TestUtils.Simulate.change(input, {
+      target: { value: 'testing' }
+    });
+
+    assert.equal(
+      store.getState().test.input,
+      'TESTING');
+  });
+
+  it('should change the control implementation based on the "control" prop', () => {
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.radio" control="radio">
+          <label />
+          <CustomRadio value="one" />
+          <CustomRadio value="two" />
+          <CustomRadio value="three" />
+        </Field>
+      </Provider>
+    );
+
+    const radios = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+    assert.equal(
+      store.getState().test.radio,
+      'one');
+
+    assert.equal(radios[0].checked, true);
+
+    TestUtils.Simulate.change(radios[1]);
+
+    assert.equal(
+      store.getState().test.radio,
+      'two');
+
+    assert.equal(radios[0].checked, false);
+    assert.equal(radios[1].checked, true);
+  });
+});
+
+

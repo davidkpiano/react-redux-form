@@ -367,8 +367,6 @@ describe('RSF field actions', () => {
 
       let actualForm = reducer(undefined, actions.setValidity('test.foo', validity));
 
-      console.log(actualForm.fields);
-
       assert.containSubset(
         actualForm.fields['foo'],
         {

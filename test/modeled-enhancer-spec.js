@@ -15,7 +15,6 @@ describe('modeled() reducer enhancer', () => {
   };
 
   const existingReducer = (state = initialState, action) => {
-    console.log(state);
     if (action.type === fullAction.type) {
       return {
         ...state,
