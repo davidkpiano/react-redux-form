@@ -15,6 +15,8 @@ import Form from './components/form-component';
 
 import * as actionTypes from './action-types';
 
+import modeled from './enhancers/modeled-enhancer';
+
 const actions = {
   ...modelActions,
   ...fieldActions
@@ -28,5 +30,6 @@ export {
   Form,
   getField,
   actionTypes,
-  initialFieldState
+  initialFieldState,
+  modeled
 }
