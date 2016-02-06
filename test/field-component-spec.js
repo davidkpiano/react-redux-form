@@ -520,11 +520,33 @@ describe('<Field /> with custom components', () => {
     }
   };
 
+  class CustomCheckbox extends React.Component {
+    static propTypes = {
+      onChange: React.PropTypes.func
+    };
+
+    handleChange(val) {
+      let { onChange } = this.props;
+
+      return onChange(val);
+    }
+
+    render() {
+      return (
+        <input type="checkbox"
+          onChange={(e) => this.handleChange(e.target.value)}
+          value={ this.props.value }
+          checked={ this.props.checked } />
+      );
+    }
+  };
+
   const store = applyMiddleware(thunk)(createStore)(combineReducers({
     testForm: createFormReducer('test'),
     test: createModelReducer('test', {
       input: 'bar',
-      radio: 'one'
+      radio: 'one',
+      checkbox: ['check one']
     })
   }));
 
@@ -549,7 +571,7 @@ describe('<Field /> with custom components', () => {
       'TESTING');
   });
 
-  it('should change the control implementation based on the "control" prop', () => {
+  it('should change the control implementation based on the "control" prop (radio)', () => {
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Field model="test.radio" control="radio">
@@ -577,6 +599,45 @@ describe('<Field /> with custom components', () => {
 
     assert.equal(radios[0].checked, false);
     assert.equal(radios[1].checked, true);
+  });
+
+  it('should change the control implementation based on the "control" prop (checkbox)', () => {
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.checkbox[]" control="checkbox">
+          <label />
+          <CustomCheckbox value="check one" />
+          <CustomCheckbox value="check two" />
+          <CustomCheckbox value="check three" />
+        </Field>
+      </Provider>
+    );
+
+    const checkboxes = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+    assert.deepEqual(
+      store.getState().test.checkbox,
+      ['check one']);
+
+    assert.equal(checkboxes[0].checked, true);
+
+    TestUtils.Simulate.change(checkboxes[1]);
+
+    assert.deepEqual(
+      store.getState().test.checkbox,
+      ['check one', 'check two']);
+
+    assert.equal(checkboxes[0].checked, true);
+    assert.equal(checkboxes[1].checked, true);
+
+    TestUtils.Simulate.change(checkboxes[0]);
+
+    assert.deepEqual(
+      store.getState().test.checkbox,
+      ['check two']);
+
+    assert.equal(checkboxes[0].checked, false);
+    assert.equal(checkboxes[1].checked, true);
   });
 });
 
