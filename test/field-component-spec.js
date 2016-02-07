@@ -571,10 +571,10 @@ describe('<Field /> with custom components', () => {
       'TESTING');
   });
 
-  it('should change the control implementation based on the "control" prop (radio)', () => {
+  it('should change the control implementation based on the "type" prop (radio)', () => {
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Field model="test.radio" control="radio">
+        <Field model="test.radio" type="radio">
           <label />
           <CustomRadio value="one" />
           <CustomRadio value="two" />
@@ -601,10 +601,10 @@ describe('<Field /> with custom components', () => {
     assert.equal(radios[1].checked, true);
   });
 
-  it('should change the control implementation based on the "control" prop (checkbox)', () => {
+  it('should change the control implementation based on the "type" prop (checkbox)', () => {
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Field model="test.checkbox[]" control="checkbox">
+        <Field model="test.checkbox[]" type="checkbox">
           <label />
           <CustomCheckbox value="check one" />
           <CustomCheckbox value="check two" />
