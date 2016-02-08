@@ -105,50 +105,19 @@ function getControlType(control) {
   return controlType;
 }
 
-function createField(control, props) {
-  if (!control
-    || !control.props
-    || Object.hasOwnProperty(control.props, 'modelValue')
-  ) return control;
-
+function createFieldProps(control, props) {
   let {
-    dispatch,
     model,
-    modelValue,
-    validators,
-    asyncValidators,
-    parser,
-    updateOn: updater = identity
+    modelValue
   } = props;
   let value = control.props.value;
-  let updateOn = (typeof props.updateOn === 'function')
-    ? 'onChange'
-    : `on${capitalize(props.updateOn || 'change')}`;
-  let updaterFn = (typeof updater === 'function')
-    ? updater
-    : identity;
-  let validateOn = `on${capitalize(props.validateOn || 'change')}`;
-  let asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
 
   let defaultProps = {};
-
-  let eventActions = {
-    onFocus: [() => dispatch(focus(model))],
-    onBlur: [() => dispatch(blur(model))],
-    onChange: []
-  };
 
   let controlType = props.type || getControlType(control);
 
   if (!controlType) {
-    return React.cloneElement(
-      control,
-      {
-        children: React.Children.map(
-          control.props.children,
-          (child) => createField(child, {...props, ...child.props})
-        )
-      });
+    return false;
   }
 
   let controlProps = {
@@ -160,9 +129,40 @@ function createField(control, props) {
     })
   };
 
+  return {
+    ...controlProps
+  }
+}
+
+function createFieldEventActions(control, props) {
+  let {
+    dispatch,
+    model
+  } = props;
+  let controlType = props.type || getControlType(control);
+  let value = control.props.value;
+
+  let updateOn = (typeof props.updateOn === 'function')
+    ? 'onChange'
+    : `on${capitalize(props.updateOn || 'change')}`;
+  let validateOn = `on${capitalize(props.validateOn || 'change')}`;
+  let asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
+
+  let updaterFn = (typeof updater === 'function')
+    ? updater
+    : identity;
+
+  let eventActions = {
+    onFocus: [() => dispatch(focus(model))],
+    onBlur: [() => dispatch(blur(model))],
+    onChange: []
+  };
+
   let controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
 
-  let controlChangeMethod = changeMethod(props.model, props.value, controlAction, parser);
+  let controlChangeMethod = changeMethod(
+    model,
+    props.value, controlAction, props.parser);
 
   let dispatchChange = control.props.hasOwnProperty('value')
     && isReadOnlyValue(control)
@@ -171,9 +171,9 @@ function createField(control, props) {
 
   eventActions[updateOn].push(updaterFn(dispatchChange));
 
-  if (validators) {
+  if (props.validators) {
     let dispatchValidate = (value) => {
-      let validity = mapValues(validators,
+      let validity = mapValues(props.validators,
         (validator) => validator(getValue(value)));
 
       dispatch(setValidity(model, validity));
@@ -184,9 +184,9 @@ function createField(control, props) {
     eventActions[validateOn].push(dispatchValidate);
   }
 
-  if (asyncValidators) {
+  if (props.asyncValidators) {
     let dispatchAsyncValidate = (value) => {
-      mapValues(asyncValidators,
+      mapValues(props.asyncValidators,
         (validator, key) => dispatch(asyncSetValidity(model, (_, done) => {
           const outerDone = (valid) => done({ [key]: valid });
 
@@ -199,11 +199,34 @@ function createField(control, props) {
     eventActions[asyncValidateOn].push(dispatchAsyncValidate);
   }
 
+  return eventActions;
+}
+
+function createField(control, props) {
+  if (!control
+    || !control.props
+    || Object.hasOwnProperty(control.props, 'modelValue')
+  ) return control;
+
+  const controlProps = createFieldProps(control, props);
+  const eventActions = createFieldEventActions(control, props);
+
+  if (!controlProps) {
+    return React.cloneElement(
+      control,
+      {
+        children: React.Children.map(
+          control.props.children,
+          (child) => createField(child, {...props, ...child.props})
+        )
+      });
+  }
+
   return (
     <Control
       {...controlProps}
       {...mapValues(eventActions, (actions) => compose(...actions))}
-      modelValue={modelValue}
+      modelValue={props.modelValue}
       control={control} />
   );
 }
