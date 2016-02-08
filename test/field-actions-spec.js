@@ -413,7 +413,7 @@ describe('RSF field actions', () => {
       };
 
       let actual = reducer(
-        initialFieldState,
+        undefined,
         actions.setValidity('test', validity));
 
       assert.containSubset(
@@ -461,12 +461,11 @@ describe('RSF field actions', () => {
     it('should set pending to true when validating, and false when done validating', (testDone) => {
       let pendingStates = [];
       let executedActions = [];
-      let state = {};
 
       const reducer = createFormReducer('test');
       const dispatch = (action) => {
         executedActions.push(action);
-        state = reducer(state, action);
+        let state = reducer(undefined, action);
 
         if (action.type === 'rsf/setPending') {
           pendingStates.push(action.pending);
