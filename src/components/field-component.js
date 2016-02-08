@@ -126,15 +126,14 @@ function createFieldProps(control, props) {
       model,
       modelValue,
       value
-    })
+    }),
+    ...sequenceEventActions(control, props)
   };
 
-  return {
-    ...controlProps
-  }
+  return controlProps;
 }
 
-function createFieldEventActions(control, props) {
+function sequenceEventActions(control, props) {
   let {
     dispatch,
     model
@@ -199,7 +198,7 @@ function createFieldEventActions(control, props) {
     eventActions[asyncValidateOn].push(dispatchAsyncValidate);
   }
 
-  return eventActions;
+  return mapValues(eventActions, (actions) => compose(...actions));
 }
 
 function createField(control, props) {
@@ -209,7 +208,7 @@ function createField(control, props) {
   ) return control;
 
   const controlProps = createFieldProps(control, props);
-  const eventActions = createFieldEventActions(control, props);
+  const eventActions = sequenceEventActions(control, props);
 
   if (!controlProps) {
     return React.cloneElement(
@@ -225,7 +224,6 @@ function createField(control, props) {
   return (
     <Control
       {...controlProps}
-      {...mapValues(eventActions, (actions) => compose(...actions))}
       modelValue={props.modelValue}
       control={control} />
   );
