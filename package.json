@@ -34,8 +34,7 @@
   },
   "homepage": "https://github.com/davidkpiano/react-redux-form#readme",
   "devDependencies": {
-    "babel": "^6.3.13",
-    "babel-cli": "^6.3.17",
+    "babel-cli": "^6.5.1",
     "babel-core": "^6.3.17",
     "babel-loader": "^6.2.0",
     "babel-preset-es2015": "^6.3.13",
