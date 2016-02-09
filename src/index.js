@@ -10,7 +10,7 @@ import { isPristine, isFocused } from './utils';
 import * as modelActions from './actions/model-actions';
 import * as fieldActions from './actions/field-actions';
 
-import Field from './components/field-component';
+import Field, { createFieldClass } from './components/field-component';
 import Form from './components/form-component';
 
 import * as actionTypes from './action-types';
@@ -25,6 +25,7 @@ const actions = {
 export {
   createModelReducer,
   createFormReducer,
+  createFieldClass,
   actions,
   Field,
   Form,

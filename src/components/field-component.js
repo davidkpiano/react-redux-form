@@ -10,6 +10,7 @@ import mapValues from 'lodash/mapValues';
 import isEqual from 'lodash/isEqual';
 import partial from 'lodash/partial';
 import isString from 'lodash/isString';
+import findKey from 'lodash/findKey';
 
 import {
   change,
@@ -68,14 +69,14 @@ const controlPropsMap = {
   'default': (props) => ({})
 };
 
-const changeMethod = (model, value, action = change, parser = identity) => {
+function changeMethod(model, value, action = change, parser = identity) {
   return compose(partial(action, model), parser, getValue);
-};
+}
 
-const isReadOnlyValue = (control) => {
+function isReadOnlyValue(control) {
   return control.type == 'input'
     && ~['radio', 'checkbox'].indexOf(control.props.type);
-};
+}
 
 const controlActionMap = {
   'checkbox': (props) => isMulti(props.model)
@@ -84,63 +85,55 @@ const controlActionMap = {
   'default': () => change
 };
 
-function getControlType(control, mapping) {
-  let mappedControlType = mapping[control.type.name] || control.type;
+function getControlType(control, options) {
+  let { controlTypesMap, controlPropsMap } = options;
+  let controlType = control.type.name || control.type;
+  let mappedControlType = controlTypesMap[controlType] || controlType;
 
-  let controlType = mappedControlType === 'input'
+  mappedControlType = mappedControlType === 'input'
     ? control.props.type
     : mappedControlType;
 
-  if (!controlType || !isString(controlType)) {
-    controlType = (control.type.propTypes
-      && control.type.propTypes.onChange)
+  if (!controlPropsMap[mappedControlType]) {
+    mappedControlType = control.type === 'input'
       ? 'text'
       : null;
   }
 
-  if (!controlPropsMap[controlType]) {
-    controlType = control.type === 'input'
-      ? 'text'
-      : null;
-  }
-
-  return controlType;
+  return mappedControlType;
 }
 
-function createFieldProps(control, props, mapping) {
+function createFieldProps(control, props, options) {
   let {
     model,
     modelValue
   } = props;
   let value = control.props.value;
 
-  let defaultProps = {};
+  let controlType = getControlType(control, options);
 
-  let controlType = props.type || getControlType(control, mapping);
+  let { controlPropsMap } = options;
 
   if (!controlType) {
     return false;
   }
 
-  let controlProps = {
-    ...defaultProps,
+  return {
     ...controlPropsMap[controlType]({
       model,
       modelValue,
       value
-    }),
-    ...sequenceEventActions(control, props, mapping)
+    }, control),
+    ...sequenceEventActions(control, props, options)
   };
-
-  return controlProps;
 }
 
-function sequenceEventActions(control, props, mapping) {
+function sequenceEventActions(control, props, options) {
   let {
     dispatch,
     model
   } = props;
-  let controlType = props.type || getControlType(control, mapping);
+  let controlType = props.type || getControlType(control, options);
   let value = control.props.value;
 
   let updateOn = (typeof props.updateOn === 'function')
@@ -203,14 +196,13 @@ function sequenceEventActions(control, props, mapping) {
   return mapValues(eventActions, (actions) => compose(...actions));
 }
 
-function createField(control, props, mapping) {
+function createFieldControlComponent(control, props, options) {
   if (!control
     || !control.props
     || Object.hasOwnProperty(control.props, 'modelValue')
   ) return control;
 
-  const controlProps = createFieldProps(control, props, mapping);
-  const eventActions = sequenceEventActions(control, props, mapping);
+  const controlProps = createFieldProps(control, props, options);
 
   if (!controlProps) {
     return React.cloneElement(
@@ -218,7 +210,10 @@ function createField(control, props, mapping) {
       {
         children: React.Children.map(
           control.props.children,
-          (child) => createField(child, {...props, ...child.props}, mapping)
+          (child) => createField(
+            child,
+            { ...props, ...child.props },
+            options)
         )
       });
   }
@@ -231,58 +226,51 @@ function createField(control, props, mapping) {
   );
 }
 
-class Field extends React.Component {
-  static propTypes = {
-    model: React.PropTypes.string.isRequired,
-    updateOn: React.PropTypes.oneOfType([
-      React.PropTypes.func,
-      React.PropTypes.oneOf([
-        'change',
-        'blur',
-        'focus'
+export function createFieldClass(_controlTypesMap = {}, _controlPropsMap = controlPropsMap) {
+  class Field extends React.Component {
+    static propTypes = {
+      model: React.PropTypes.string.isRequired,
+      updateOn: React.PropTypes.oneOfType([
+        React.PropTypes.func,
+        React.PropTypes.oneOf([
+          'change',
+          'blur',
+          'focus'
+        ])
+      ]),
+      validators: React.PropTypes.object,
+      asyncValidators: React.PropTypes.object,
+      parser: React.PropTypes.func,
+      control: React.PropTypes.oneOfType([
+        React.PropTypes.func,
+        React.PropTypes.string
       ])
-    ]),
-    validators: React.PropTypes.object,
-    asyncValidators: React.PropTypes.object,
-    parser: React.PropTypes.func,
-    control: React.PropTypes.oneOfType([
-      React.PropTypes.func,
-      React.PropTypes.oneOf(Object.keys(controlPropsMap))
-    ])
-  };
+    };
 
-  static mapControls = (mapping) => {
-    return connect(selector)(class CustomField extends Field {
-      constructor() {
-        super();
+    render() {
+      const { props } = this;
 
-        this.controlMapping = mapping;
+      const options = {
+        controlTypesMap: _controlTypesMap,
+        controlPropsMap: _controlPropsMap
+      };
+
+      if (props.children.length > 1) {
+        return (
+          <div {...props}>
+            { React.Children.map(
+              props.children,
+              (child) => createFieldControlComponent(child, props, options))
+            }
+          </div>
+        );
       }
-    })
-  };
 
-  constructor() {
-    super();
-
-    this.controlMapping = {};
-  }
-
-  render() {
-    const { props } = this;
-
-    if (props.children.length > 1) {
-      return (
-        <div {...props}>
-          { React.Children.map(
-            props.children,
-            (child) => createField(child, props, this.controlMapping))
-          }
-        </div>
-      );
+      return createFieldControlComponent(React.Children.only(props.children), props, options);
     }
-
-    return createField(React.Children.only(props.children), props, this.controlMapping);
   }
+
+  return connect(selector)(Field);
 }
 
-export default connect(selector)(Field);
+export default createFieldClass({}, controlPropsMap);

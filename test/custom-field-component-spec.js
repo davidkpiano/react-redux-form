@@ -13,12 +13,10 @@ const { assert } = chai;
 
 import { Input } from 'react-bootstrap';
 
-import { Field, actions, createFormReducer, createModelReducer, initialFieldState } from '../lib';
+import { Field, createFieldClass, actions, createFormReducer, createModelReducer, initialFieldState } from '../lib';
 
 describe('Custom <Field /> components', () => {
-  const BSField = Field.mapControls({
-    'Input': 'input'
-  });
+  const BSField = createFieldClass({ 'Input': 'input' });
 
   const store = applyMiddleware(thunk)(createStore)(combineReducers({
     testForm: createFormReducer('test'),
@@ -37,7 +35,6 @@ describe('Custom <Field /> components', () => {
         </BSField>
       </Provider>
     );
-
 
     const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
