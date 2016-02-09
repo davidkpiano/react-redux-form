@@ -640,5 +640,3 @@ describe('<Field /> with custom components', () => {
     assert.equal(checkboxes[1].checked, true);
   });
 });
-
-

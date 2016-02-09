@@ -84,10 +84,12 @@ const controlActionMap = {
   'default': () => change
 };
 
-function getControlType(control) {
-  let controlType = control.type === 'input'
+function getControlType(control, mapping) {
+  let mappedControlType = mapping[control.type.name] || control.type;
+
+  let controlType = mappedControlType === 'input'
     ? control.props.type
-    : control.type;
+    : mappedControlType;
 
   if (!controlType || !isString(controlType)) {
     controlType = (control.type.propTypes
@@ -105,7 +107,7 @@ function getControlType(control) {
   return controlType;
 }
 
-function createFieldProps(control, props) {
+function createFieldProps(control, props, mapping) {
   let {
     model,
     modelValue
@@ -114,7 +116,7 @@ function createFieldProps(control, props) {
 
   let defaultProps = {};
 
-  let controlType = props.type || getControlType(control);
+  let controlType = props.type || getControlType(control, mapping);
 
   if (!controlType) {
     return false;
@@ -127,18 +129,18 @@ function createFieldProps(control, props) {
       modelValue,
       value
     }),
-    ...sequenceEventActions(control, props)
+    ...sequenceEventActions(control, props, mapping)
   };
 
   return controlProps;
 }
 
-function sequenceEventActions(control, props) {
+function sequenceEventActions(control, props, mapping) {
   let {
     dispatch,
     model
   } = props;
-  let controlType = props.type || getControlType(control);
+  let controlType = props.type || getControlType(control, mapping);
   let value = control.props.value;
 
   let updateOn = (typeof props.updateOn === 'function')
@@ -201,14 +203,14 @@ function sequenceEventActions(control, props) {
   return mapValues(eventActions, (actions) => compose(...actions));
 }
 
-function createField(control, props) {
+function createField(control, props, mapping) {
   if (!control
     || !control.props
     || Object.hasOwnProperty(control.props, 'modelValue')
   ) return control;
 
-  const controlProps = createFieldProps(control, props);
-  const eventActions = sequenceEventActions(control, props);
+  const controlProps = createFieldProps(control, props, mapping);
+  const eventActions = sequenceEventActions(control, props, mapping);
 
   if (!controlProps) {
     return React.cloneElement(
@@ -216,7 +218,7 @@ function createField(control, props) {
       {
         children: React.Children.map(
           control.props.children,
-          (child) => createField(child, {...props, ...child.props})
+          (child) => createField(child, {...props, ...child.props}, mapping)
         )
       });
   }
@@ -249,6 +251,22 @@ class Field extends React.Component {
     ])
   };
 
+  static mapControls = (mapping) => {
+    return connect(selector)(class CustomField extends Field {
+      constructor() {
+        super();
+
+        this.controlMapping = mapping;
+      }
+    })
+  };
+
+  constructor() {
+    super();
+
+    this.controlMapping = {};
+  }
+
   render() {
     const { props } = this;
 
@@ -257,13 +275,13 @@ class Field extends React.Component {
         <div {...props}>
           { React.Children.map(
             props.children,
-            (child) => createField(child, props))
+            (child) => createField(child, props, this.controlMapping))
           }
         </div>
       );
     }
 
-    return createField(React.Children.only(props.children), props);
+    return createField(React.Children.only(props.children), props, this.controlMapping);
   }
 }
 
