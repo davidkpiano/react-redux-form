@@ -10,7 +10,7 @@ import { isPristine, isFocused } from './utils';
 import * as modelActions from './actions/model-actions';
 import * as fieldActions from './actions/field-actions';
 
-import Field, { createFieldClass } from './components/field-component';
+import Field, { createFieldClass, controlPropsMap } from './components/field-component';
 import Form from './components/form-component';
 
 import * as actionTypes from './action-types';
@@ -26,6 +26,7 @@ export {
   createModelReducer,
   createFormReducer,
   createFieldClass,
+  controlPropsMap,
   actions,
   Field,
   Form,

@@ -92,6 +92,14 @@ describe('<Field /> component', () => {
         assert.equal(
           store.getState().test.foo,
           'testing');
+
+        node.value = 'testing again';
+
+        TestUtils.Simulate.change(node);
+
+        assert.equal(
+          store.getState().test.foo,
+          'testing again');
       });
     });
 
@@ -390,13 +398,97 @@ describe('<Field /> component', () => {
     });
   });
 
-  describe('async validation property', () => {
+  describe('validators and validateOn property', () => {
     const formReducer = createFormReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        testForm: formReducer,
-        test: createModelReducer('test', {})
-      }));
+      testForm: formReducer,
+      test: createModelReducer('test', {})
+    }));
 
+    it('should set the proper field state for validation', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field model="test.foo"
+            validators={{
+              good: () => true,
+              bad: () => false,
+              custom: (val) => val !== 'invalid'
+            }}>
+            <input type="text"/>
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'valid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields['foo'].errors,
+        {
+          good: false,
+          bad: true,
+          custom: false
+        });
+
+      control.value = 'invalid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields['foo'].errors,
+        {
+          good: false,
+          bad: true,
+          custom: true
+        });
+    });
+
+    it('should validate on blur when validateOn prop is "blur"', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field model="test.blur"
+            validators={{
+              good: () => true,
+              bad: () => false,
+              custom: (val) => val !== 'invalid'
+            }}
+            validateOn="blur">
+            <input type="text"/>
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'valid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields['blur'].errors,
+        {}, 'should not validate upon change');
+
+      TestUtils.Simulate.blur(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields['blur'].errors,
+        {
+          good: false,
+          bad: true,
+          custom: false
+        }, 'should only validate upon blur');
+    });
+  });
+
+  describe('asyncValidators and asyncValidateOn property', () => {
+    const formReducer = createFormReducer('test');
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer,
+      test: createModelReducer('test', {})
+    }));
 
     it('should set the proper field state for a valid async validation', (done) => {
       const field = TestUtils.renderIntoDocument(

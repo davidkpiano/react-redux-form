@@ -23,7 +23,7 @@ describe('<Field /> components with react-bootstrap', () => {
   const store = applyMiddleware(thunk)(createStore)(combineReducers({
     testForm: createFormReducer('test'),
     test: createModelReducer('test', {
-      input: 'bar',
+      input: 'initial',
       radio: 'two',
       checkbox: ['check one']
     })
@@ -38,10 +38,13 @@ describe('<Field /> components with react-bootstrap', () => {
   ];
 
   textInputTypes.map((textInputType) => {  
-    it(`should work with <Input type="${textInputType} />`, () => {
+    describe(`<Input type="${textInputType} />`, () => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <BSField model="test.input">
+          <BSField model="test.input"
+            validators={{
+              length: (val) => val.length > 5
+            }}>
             <Input type={ textInputType } />
           </BSField>
         </Provider>
@@ -49,13 +52,55 @@ describe('<Field /> components with react-bootstrap', () => {
 
       const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
-      TestUtils.Simulate.change(input, {
-        target: { value: 'testing' }
+      it('should have an initial value from the model\'s initialState', () => {
+        assert.equal(
+          input.value,
+          'initial');
       });
 
-      assert.equal(
-        store.getState().test.input,
-        'testing')
+      it('should dispatch a focus event when focused', () => {    
+        TestUtils.Simulate.focus(input);
+
+        assert.containSubset(
+          store.getState().testForm.fields['input'],
+          { focus: true, blur: false });
+      });
+
+      it('should dispatch a blur event when blurred', () => {    
+        TestUtils.Simulate.blur(input);
+
+        assert.containSubset(
+          store.getState().testForm.fields['input'],
+          { focus: false, blur: true });
+      });
+
+      it('should reflect a change on the input in the state', () => {
+        input.value = 'testing';
+
+        TestUtils.Simulate.change(input);
+
+        assert.equal(
+          store.getState().test.input,
+          'testing');
+
+        input.value = 'testing again';
+
+        TestUtils.Simulate.change(input);
+
+        assert.equal(
+          store.getState().test.input,
+          'testing again')
+      });
+
+      it('should handle validation', () => {
+        input.value = 'four';
+
+        TestUtils.Simulate.change(input);
+
+        assert.deepEqual(
+          store.getState().testForm.fields.input.errors,
+          { length: true });
+      });
     });
   });
 

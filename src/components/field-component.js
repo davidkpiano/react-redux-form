@@ -40,33 +40,34 @@ function selector(state, { model }) {
   };
 }
 
-const controlPropsMap = {
-  'text': (props) => ({
+export const controlPropsMap = {
+  'text': (props, eventProps) => ({
     name: props.model,
-    defaultValue: props.modelValue
+    defaultValue: props.modelValue,
+    ...eventProps
   }),
-  'textarea': (props) => ({
-    name: props.model,
-    defaultValue: props.modelValue
-  }),
-  'checkbox': (props) => ({
+  'textarea': (props, eventProps) => controlPropsMap.text(props, eventProps),
+  'checkbox': (props, eventProps) => ({
     name: props.model,
     checked: isMulti(props.model)
       ? (props.modelValue || [])
-        .filter((item) => isEqual(item, props.value))
+        .filter((item, eventProps) => isEqual(item, props.value))
         .length
-      : !!props.modelValue
+      : !!props.modelValue,
+      ...eventProps
   }),
-  'radio': (props) => ({
+  'radio': (props, eventProps) => ({
     name: props.model,
     checked: isEqual(props.modelValue, props.value),
-    value: props.value
+    value: props.value,
+    ...eventProps
   }),
-  'select': (props) => ({
+  'select': (props, eventProps) => ({
     name: props.model,
-    value: props.modelValue
+    value: props.modelValue,
+    ...eventProps
   }),
-  'default': (props) => ({})
+  'default': (props, eventProps) => controlPropsMap.text(props, eventProps)
 };
 
 function changeMethod(model, value, action = change, parser = identity) {
@@ -90,17 +91,17 @@ function getControlType(control, options) {
   let controlType = control.type.name || control.type;
   let mappedControlType = controlTypesMap[controlType] || controlType;
 
-  mappedControlType = mappedControlType === 'input'
+  let finalControlType = mappedControlType === 'input'
     ? control.props.type
     : mappedControlType;
 
-  if (!controlPropsMap[mappedControlType]) {
-    mappedControlType = control.type === 'input'
+  if (!controlPropsMap[finalControlType]) {
+    finalControlType = mappedControlType === 'input'
       ? 'text'
       : null;
   }
 
-  return mappedControlType;
+  return finalControlType;
 }
 
 function createFieldProps(control, props, options) {
@@ -123,8 +124,7 @@ function createFieldProps(control, props, options) {
       model,
       modelValue,
       value
-    }, control),
-    ...sequenceEventActions(control, props, options)
+    }, sequenceEventActions(control, props, options))
   };
 }
 
@@ -226,7 +226,10 @@ function createFieldControlComponent(control, props, options) {
   );
 }
 
-export function createFieldClass(_controlTypesMap = {}, _controlPropsMap = controlPropsMap) {
+export function createFieldClass(
+  _controlTypesMap = {},
+  _controlPropsMap = controlPropsMap
+) {
   class Field extends React.Component {
     static propTypes = {
       model: React.PropTypes.string.isRequired,
