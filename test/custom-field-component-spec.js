@@ -20,7 +20,7 @@ import {
   controlPropsMap
 } from '../lib';
 
-describe('custom <Field /> components', () => {
+describe('custom <Field /> components with createFieldClass()', () => {
   const CustomField = createFieldClass({
     'CustomText': (props) => ({
       customOnChange: props.onChange
@@ -44,6 +44,10 @@ describe('custom <Field /> components', () => {
       );
     }
   }
+
+  it('should return a Field component class', () => {
+    assert.equal(CustomField.constructor, Field.constructor);
+  });
 
   it('should handle custom prop mappings', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
@@ -69,4 +73,29 @@ describe('custom <Field /> components', () => {
       store.getState().test.foo,
       'TESTING');
   });
-})
+
+  it('should continue to recognize native controls', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: createFormReducer('test'),
+      test: createModelReducer('test', { foo: 'bar' })
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <CustomField model="test.foo">
+          <input type="text" />
+        </CustomField>
+      </Provider>
+    );
+
+    const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    control.value = 'testing';
+
+    TestUtils.Simulate.change(control);
+
+    assert.equal(
+      store.getState().test.foo,
+      'testing');
+  });
+});
