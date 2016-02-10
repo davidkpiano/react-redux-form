@@ -41,33 +41,33 @@ function selector(state, { model }) {
 }
 
 export const controlPropsMap = {
-  'text': (props, eventProps) => ({
+  'text': (props) => ({
+    ...props,
     name: props.model,
-    defaultValue: props.modelValue,
-    ...eventProps
+    defaultValue: props.modelValue
   }),
-  'textarea': (props, eventProps) => controlPropsMap.text(props, eventProps),
-  'checkbox': (props, eventProps) => ({
+  'textarea': (props) => controlPropsMap.text(props),
+  'checkbox': (props) => ({
+    ...props,
     name: props.model,
     checked: isMulti(props.model)
       ? (props.modelValue || [])
         .filter((item, eventProps) => isEqual(item, props.value))
         .length
-      : !!props.modelValue,
-      ...eventProps
+      : !!props.modelValue
   }),
-  'radio': (props, eventProps) => ({
+  'radio': (props) => ({
+    ...props,
     name: props.model,
     checked: isEqual(props.modelValue, props.value),
-    value: props.value,
-    ...eventProps
+    value: props.value
   }),
-  'select': (props, eventProps) => ({
+  'select': (props) => ({
+    ...props,
     name: props.model,
-    value: props.modelValue,
-    ...eventProps
+    value: props.modelValue
   }),
-  'default': (props, eventProps) => controlPropsMap.text(props, eventProps)
+  'default': (props) => controlPropsMap.text(props)
 };
 
 function changeMethod(model, value, action = change, parser = identity) {
@@ -123,8 +123,9 @@ function createFieldProps(control, props, options) {
     ...controlPropsMap[controlType]({
       model,
       modelValue,
-      value
-    }, sequenceEventActions(control, props, options))
+      value,
+      ...sequenceEventActions(control, props, options)
+    })
   };
 }
 
@@ -227,8 +228,8 @@ function createFieldControlComponent(control, props, options) {
 }
 
 export function createFieldClass(
-  _controlTypesMap = {},
-  _controlPropsMap = controlPropsMap
+  customControlPropsMap = {},
+  customControlTypesMap = {}
 ) {
   class Field extends React.Component {
     static propTypes = {
@@ -254,8 +255,11 @@ export function createFieldClass(
       const { props } = this;
 
       const options = {
-        controlTypesMap: _controlTypesMap,
-        controlPropsMap: _controlPropsMap
+        controlPropsMap: {
+          ...controlPropsMap,
+          ...customControlPropsMap
+        },
+        controlTypesMap: customControlTypesMap
       };
 
       if (props.children.length > 1) {
@@ -276,4 +280,4 @@ export function createFieldClass(
   return connect(selector)(Field);
 }
 
-export default createFieldClass({}, controlPropsMap);
+export default createFieldClass(controlPropsMap);
