@@ -61,10 +61,10 @@ export default connect(state => ({ user: state.user }))(MyForm);
 
 ## Road map
 - [x] - ~~Deep states for form and model reducers~~
-- [ ] - React Native support
+- [x] - ~~React Native support~~
 - [ ] - Support for `<input type="file" />`
 - [ ] - Automatic model resetting for `<input type="reset" />`
-- [ ] - Support for `<input type="range" />`
-- [ ] - Support for `<input type="color" />`
+- [x] - ~~Support for `<input type="range" />`~~
+- [x] - ~~Support for `<input type="color" />`~~
 - [ ] - Support for `<progress />`
 - [ ] - Potential `<FieldSet />` component for grouping fields?
