@@ -20,6 +20,12 @@ import {
   controlPropsMap
 } from '../lib';
 
+describe('controlPropsMap', () => {
+  it('should exist', () => {
+    assert.ok(controlPropsMap);
+  });
+});
+
 describe('custom <Field /> components with createFieldClass()', () => {
   const CustomField = createFieldClass({
     'CustomText': (props) => ({

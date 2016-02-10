@@ -13,7 +13,8 @@
     "build:lib": "babel src --out-dir lib",
     "preversion": "npm run test",
     "prepublish": "npm test && npm run build",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "publish:beta": "npm publish --tag beta"
   },
   "repository": {
     "type": "git",
