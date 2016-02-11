@@ -3,6 +3,8 @@
 
 ## [Read the Full Documentation](http://davidkpiano.github.io/react-redux-form)
 
+Or [check out the wiki (available in the docs)!](https://github.com/davidkpiano/react-redux-form/wiki)
+
 React Redux Form is a collection of reducer creators and action creators that make implementing even the most complex and custom forms with React and Redux simple and performant.
 
 `npm install react-redux-form --save`
