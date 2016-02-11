@@ -211,7 +211,7 @@ function createFieldControlComponent(control, props, options) {
       {
         children: React.Children.map(
           control.props.children,
-          (child) => createField(
+          (child) => createFieldControlComponent(
             child,
             { ...props, ...child.props },
             options)

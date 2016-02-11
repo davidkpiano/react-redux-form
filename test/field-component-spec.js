@@ -45,6 +45,39 @@ describe('<Field /> component', () => {
       2);
   });
 
+  it('should recursively handle nested control components', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: createModelReducer('test', { foo: 'bar' })
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <div>
+            <label />
+            <input />
+          </div>
+        </Field>
+      </Provider>
+    );
+
+    const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    assert.equal(
+      control.value,
+      'bar',
+      'should set control to initial value');
+
+    control.value = 'testing';
+
+    TestUtils.Simulate.change(control);
+
+    assert.equal(
+      store.getState().test.foo,
+      'testing',
+      'should update state when control is changed');
+  });
+
   textFieldElements.map(([element, type]) => {
     describe(`with <${element} ${type ? 'type="' + type + '"' : ''}/>`, () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
