@@ -31,6 +31,8 @@ describe('custom <Field /> components with createFieldClass()', () => {
     'CustomText': (props) => ({
       customOnChange: props.onChange
     })
+  }, {
+    'FamiliarText': 'text'
   });
 
   class CustomText extends React.Component {
@@ -48,6 +50,18 @@ describe('custom <Field /> components with createFieldClass()', () => {
           <input onChange={(e) => this.handleChange(e)} />
         </div>
       );
+    }
+  }
+
+  class FamiliarText extends React.Component {
+    render() {
+      let { onChange } = this.props;
+
+      return (
+        <div>
+          <input onChange={(e) => onChange(e)} />
+        </div>
+      )
     }
   }
 
@@ -78,6 +92,31 @@ describe('custom <Field /> components with createFieldClass()', () => {
     assert.equal(
       store.getState().test.foo,
       'TESTING');
+  });
+
+  it('should handle string prop mappings', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: createFormReducer('test'),
+      test: createModelReducer('test', { foo: 'bar' })
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <CustomField model="test.foo">
+          <FamiliarText />
+        </CustomField>
+      </Provider>
+    );
+
+    const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    control.value = 'testing';
+
+    TestUtils.Simulate.change(control);
+
+    assert.equal(
+      store.getState().test.foo,
+      'testing');
   });
 
   it('should continue to recognize native controls', () => {
