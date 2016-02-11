@@ -86,9 +86,20 @@ const controlActionMap = {
   'default': () => change
 };
 
+function getControlDisplayName(control) {
+  try {
+    return control.constructor.displayName
+      || control.type.displayName
+      || control.type.name
+      || control.type + ''
+  } catch (e) {
+    return undefined;
+  }
+}
+
 function getControlType(control, options) {
   let { controlTypesMap, controlPropsMap } = options;
-  let controlType = control.type.name || control.type;
+  let controlType = getControlDisplayName(control);
   let mappedControlType = controlTypesMap[controlType] || controlType;
 
   let finalControlType = mappedControlType === 'input'
