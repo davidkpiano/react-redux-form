@@ -11,10 +11,6 @@ class Control extends React.Component {
         ...control.props
       });
   }
-
-  shouldComponentUpdate(nextProps) {
-    return this.props.modelValue !== nextProps.modelValue;
-  }
 }
 
 export default Control;
