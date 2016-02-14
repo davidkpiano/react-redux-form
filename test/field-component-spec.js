@@ -603,4 +603,53 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.blur(control);
     });
   });
+
+  describe('dynamic components', () => {
+    const formReducer = createFormReducer('test');
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer,
+      test: createModelReducer('test', {})
+    }));
+
+    class DynamicSelectForm extends React.Component {
+      constructor() {
+        super();
+
+        this.state = { options: [1, 2] };
+      }
+      render() {
+        return (
+          <div>
+            <button onClick={() => this.setState({ options: [1, 2, 3] })} />
+            <Field model="test.foo">
+              <select>
+              { this.state.options.map((option, i) => 
+                <option key={i} value={ option } />
+              )}
+              </select>
+            </Field>
+          </div>
+        )
+      }
+    }
+
+    it('should properly update dynamic components inside <Field>', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <DynamicSelectForm />
+        </Provider>
+      );
+
+      let options = TestUtils.scryRenderedDOMComponentsWithTag(field, 'option');
+      const button = TestUtils.findRenderedDOMComponentWithTag(field, 'button');
+
+      assert.equal(options.length, 2);
+
+      TestUtils.Simulate.click(button);
+
+      options = TestUtils.scryRenderedDOMComponentsWithTag(field, 'option');
+
+      assert.equal(options.length, 3);
+    });
+  });
 });
