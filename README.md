@@ -60,13 +60,3 @@ class MyForm extends React.Component {
 
 export default connect(state => ({ user: state.user }))(MyForm);
 ```
-
-## Road map
-- [x] - ~~Deep states for form and model reducers~~
-- [x] - ~~React Native support~~
-- [ ] - Support for `<input type="file" />`
-- [ ] - Automatic model resetting for `<input type="reset" />`
-- [x] - ~~Support for `<input type="range" />`~~
-- [x] - ~~Support for `<input type="color" />`~~
-- [ ] - Support for `<progress />`
-- [ ] - Potential `<FieldSet />` component for grouping fields?
