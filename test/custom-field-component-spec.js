@@ -17,22 +17,27 @@ import {
   actions,
   createFormReducer,
   createModelReducer,
-  controlPropsMap
+  controls
 } from '../lib';
 
-describe('controlPropsMap', () => {
+describe('controls props mapping', () => {
   it('should exist', () => {
-    assert.ok(controlPropsMap);
+    assert.ok(controls);
   });
 });
+
+describe('createFieldClass()', () => {
+  it('should exist as a function', () => {
+    assert.isFunction(createFieldClass);
+  });
+})
 
 describe('custom <Field /> components with createFieldClass()', () => {
   const CustomField = createFieldClass({
     'CustomText': (props) => ({
       customOnChange: props.onChange
-    })
-  }, {
-    'FamiliarText': 'text'
+    }),
+    'FamiliarText': controls.text
   });
 
   class CustomText extends React.Component {

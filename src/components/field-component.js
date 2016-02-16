@@ -86,33 +86,27 @@ const controlActionMap = {
   'default': () => change
 };
 
-function getControlDisplayName(control) {
+function getControlType(control, options) {
+  const { controlPropsMap } = options;
+
   try {
-    return control.constructor.displayName
+    let controlDisplayName = control.constructor.displayName
       || control.type.displayName
       || control.type.name
-      || control.type + ''
+      || control.type + '';
+
+    if (controlDisplayName === 'input') {
+      controlDisplayName = controlPropsMap[control.props.type]
+        ? control.props.type
+        : 'text';
+    }
+
+    return controlPropsMap[controlDisplayName]
+      ? controlDisplayName
+      : null;
   } catch (e) {
     return undefined;
   }
-}
-
-function getControlType(control, options) {
-  let { controlTypesMap, controlPropsMap } = options;
-  let controlType = getControlDisplayName(control);
-  let mappedControlType = controlTypesMap[controlType] || controlType;
-
-  let finalControlType = mappedControlType === 'input'
-    ? control.props.type
-    : mappedControlType;
-
-  if (!controlPropsMap[finalControlType]) {
-    finalControlType = mappedControlType === 'input'
-      ? 'text'
-      : null;
-  }
-
-  return finalControlType;
 }
 
 function createFieldProps(control, props, options) {
@@ -216,31 +210,26 @@ function createFieldControlComponent(control, props, options) {
 
   const controlProps = createFieldProps(control, props, options);
 
-  if (!controlProps) {
-    return React.cloneElement(
-      control,
-      {
-        children: React.Children.map(
-          control.props.children,
-          (child) => createFieldControlComponent(
-            child,
-            { ...props, ...child.props },
-            options)
-        )
-      });
-  }
-
-  return (
-    <Control
-      {...controlProps}
-      modelValue={props.modelValue}
-      control={control} />
-  );
+  return !controlProps
+    ? React.cloneElement(
+        control,
+        {
+          children: React.Children.map(
+            control.props.children,
+            (child) => createFieldControlComponent(
+              child,
+              { ...props, ...child.props },
+              options)
+          )
+        })
+    : <Control
+        {...controlProps}
+        modelValue={props.modelValue}
+        control={control} />;
 }
 
 export function createFieldClass(
-  customControlPropsMap = {},
-  customControlTypesMap = {}
+  customControlPropsMap = {}
 ) {
   class Field extends React.Component {
     static propTypes = {
@@ -269,8 +258,7 @@ export function createFieldClass(
         controlPropsMap: {
           ...controlPropsMap,
           ...customControlPropsMap
-        },
-        controlTypesMap: customControlTypesMap
+        }
       };
 
       if (props.children.length > 1) {

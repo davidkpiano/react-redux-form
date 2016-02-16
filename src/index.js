@@ -26,7 +26,7 @@ export {
   createModelReducer,
   createFormReducer,
   createFieldClass,
-  controlPropsMap,
+  controlPropsMap as controls,
   actions,
   Field,
   Form,
