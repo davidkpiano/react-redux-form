@@ -25,11 +25,19 @@ function createModelReducer(model, initialState = {}) {
           return action.value;
         }
 
+        if (isEqual(get(state, localPath), action.value)) {
+          return state;
+        }
+
         return icepick.setIn(state, localPath, action.value);
 
       case actionTypes.RESET:
         if (!localPath.length) {
           return initialState;
+        }
+
+        if (isEqual(get(state, localPath), get(initialState, localPath))) {
+          return state;
         }
 
         return icepick.setIn(

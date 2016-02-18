@@ -128,7 +128,7 @@ function createFieldProps(control, props, options) {
     ...controlPropsMap[controlType]({
       model,
       modelValue,
-      value,
+      ...control.props,
       ...sequenceEventActions(control, props, options)
     })
   };
