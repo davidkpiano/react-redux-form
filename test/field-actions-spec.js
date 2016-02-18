@@ -492,7 +492,35 @@ describe('RSF field actions', () => {
       actions.asyncSetValidity('test.foo', validator)(dispatch, getState);
     });
 
-    it('should set pending to true when validating, and false when done validating', (testDone) => {
+    it('should work with forms to asynchronously call setValidity() action', (testDone) => {
+      const reducer = createFormReducer('test');
+      const dispatch = (action) => {
+        if (action.type === 'rsf/setValidity') {        
+          testDone(assert.containSubset(
+            reducer(undefined, action),
+              {
+              valid: false,
+              errors: {
+                good: false,
+                bad: true
+              }
+            }));
+        }
+      };
+
+      const getState = () => ({
+        test: { foo: 5 }
+      });
+
+      let validator = ({ foo }, done) => done({
+        good: foo > 4,
+        bad: foo > 5
+      });
+
+      actions.asyncSetValidity('test', validator)(dispatch, getState);
+    });
+
+    it('should set pending to true for a field when validating, and false when done validating', (testDone) => {
       let pendingStates = [];
       let executedActions = [];
 
@@ -519,6 +547,35 @@ describe('RSF field actions', () => {
       let validator = (_, done) => done(true);
 
       actions.asyncSetValidity('test.foo', validator)(dispatch, getState);
+    });
+
+    it('should set pending to true for a form when validating, and false when done validating', (testDone) => {
+      let pendingStates = [];
+      let executedActions = [];
+
+      const reducer = createFormReducer('test');
+      const dispatch = (action) => {
+        executedActions.push(action);
+        let state = reducer(undefined, action);
+
+        if (action.type === 'rsf/setPending') {
+          pendingStates.push(action.pending);
+
+          assert.equal(state.pending, action.pending);
+          
+          if (action.pending === false) { 
+            testDone(assert.deepEqual(
+              pendingStates,
+              [true, false]));
+          }
+        }
+      };
+
+      const getState = () => ({});
+
+      let validator = (_, done) => done(true);
+
+      actions.asyncSetValidity('test', validator)(dispatch, getState);
     });
   });
 });
