@@ -80,7 +80,7 @@ ${js`
 import debounce from 'lodash/debounce';
 
 <Field model="test.bounce"
-  updateOn={(change) => debounce(change, 1000)}
+  updateOn={(change) => debounce(change, 1000)}>
   <input type="text" />
 </Field>
 `}
