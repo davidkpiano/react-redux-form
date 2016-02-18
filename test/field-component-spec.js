@@ -603,7 +603,7 @@ describe('<Field /> component', () => {
     });
   });
 
-  xdescribe('dynamic components', () => {
+  describe('dynamic components', () => {
     const formReducer = createFormReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer,

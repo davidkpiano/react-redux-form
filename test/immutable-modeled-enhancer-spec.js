@@ -47,8 +47,6 @@ describe('immutable modeled() reducer enhancer', () => {
   it('should respect the existing behavior of the existing reducer', () => {
     const modeledReducer = modeled(existingReducer, 'test');
 
-    console.log('ok', modeledReducer(undefined, fullAction));
-
     assert.ok(
       modeledReducer(undefined, fullAction)
         .equals(Immutable.fromJS({

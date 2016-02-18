@@ -149,12 +149,26 @@ function createFormReducer(model) {
         });
 
       case actionTypes.SET_PRISTINE:
-        state = setField(state, localPath, {
-          dirty: false,
-          pristine: true
-        });
+        let formIsPristine;
 
-        const formIsPristine = every(mapValues(state.fields, (field) => field.pristine));
+        if (!localPath.length) {
+          formIsPristine = true;
+
+          state = icepick.merge(state, {
+            fields: mapValues(state.fields, (field) => ({
+              ...field,
+              pristine: true,
+              dirty: false
+            }))
+          });
+        } else {        
+          state = setField(state, localPath, {
+            dirty: false,
+            pristine: true
+          });
+
+          formIsPristine = every(mapValues(state.fields, (field) => field.pristine));
+        }
 
         return icepick.merge(state, {
           pristine: formIsPristine,

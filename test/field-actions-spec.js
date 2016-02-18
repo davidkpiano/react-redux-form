@@ -7,7 +7,13 @@ chai.use(chaiSubset);
 
 const { assert } = chai;
 
-import { actions, createFormReducer, initialFieldState } from '../src';
+import {
+  actions,
+  createFormReducer,
+  initialFieldState
+} from '../lib';
+
+import { initialFormState } from '../lib/reducers/form-reducer';
 
 describe('RSF field actions', () => {
   describe('setViewValue()', () => {
@@ -31,6 +37,14 @@ describe('RSF field actions', () => {
         reducer(undefined, actions.reset('test.foo'))
           .fields['foo'],
         initialFieldState);
+    });
+
+    it('should be able to set the entire form to the initial state', () => {
+      const reducer = createFormReducer('test');
+
+      assert.containSubset(
+        reducer(undefined, actions.reset('test')),
+        initialFormState);
     });
 
     it('should reset all errors on the field', () => {
@@ -138,6 +152,27 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         actualMultiplePristine,
+        {
+          pristine: true,
+          dirty: false
+        });
+    });
+
+    it('should be able to set the pristine state of the form and each field to true', () => {
+      const reducer = createFormReducer('test');
+
+      let dirtyFormAndField = reducer(undefined, actions.setDirty('test.foo'));
+
+      assert.containSubset(
+        reducer(dirtyFormAndField, actions.setPristine('test')),
+        {
+          pristine: true,
+          dirty: false
+        });
+
+      assert.containSubset(
+        reducer(dirtyFormAndField, actions.setPristine('test'))
+          .fields['foo'],
         {
           pristine: true,
           dirty: false
