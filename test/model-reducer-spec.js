@@ -1,8 +1,12 @@
 import { assert } from 'chai';
-import should from 'should';
 import { compose } from 'redux';
 
 import { actions, createModelReducer } from '../lib';
+
+import {
+  createModelReducer as immutableCreateModelReducer
+} from '../lib/immutable';
+import Immutable from 'immutable';
 
 describe('createModelReducer()', () => {
   it('should create a reducer given a model', () => {
@@ -42,5 +46,55 @@ describe('createModelReducer()', () => {
     assert.deepEqual(
       reducer(undefined, actions.change('external.value', 'value')),
       model);
+  });
+
+  it('should update the state given a change action', () => {
+    const model = { foo: 'bar', one: 'two' };
+    const reducer = createModelReducer('test', model);
+
+    assert.deepEqual(
+      reducer(undefined, actions.change('test.foo', 'new')),
+      { foo: 'new', one: 'two' });
+  });
+
+  it('should be able to handle models with depth > 1', () => {
+    const model = { 'bar' : [1, 2, 3] };
+    const deepReducer = createModelReducer('test.foo');
+    const shallowReducer = (state = { original: 'untouched', foo: model }, action) => {
+      return {
+        ...state,
+        foo: deepReducer(state.foo, action)
+      };
+    }
+
+    assert.deepEqual(
+      shallowReducer(undefined, {}),
+      { original: 'untouched', foo: model });
+
+    assert.deepEqual(
+      shallowReducer(undefined, actions.change('test.foo', 'something else')),
+      { original: 'untouched', foo: 'something else' });
+
+    assert.deepEqual(
+      shallowReducer(undefined, actions.change('test.foo.bar', 'baz')),
+      { original: 'untouched', foo: { bar: 'baz' } });
+
+    assert.deepEqual(
+      shallowReducer(undefined, actions.change('test.foo.bar[1]', 'two')),
+      { original: 'untouched', foo: { bar: [1, 'two', 3] } });
+  });
+  
+  it('should handle model at deep state path', () => {
+    const reducer = createModelReducer('forms.test');
+
+    assert.deepEqual(
+      reducer(undefined, actions.change('forms.test.foo', 'new')),
+      { foo: 'new' }
+    );
+
+    assert.deepEqual(
+      reducer(undefined, actions.change('forms.different.foo', 'new')),
+      {},
+      'should only change when base path is equal');
   });
 });

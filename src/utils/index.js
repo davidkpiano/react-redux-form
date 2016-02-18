@@ -34,11 +34,12 @@ function getValue(value) {
 }
 
 function getEventValue(event) {
-  return event.target.multiple
-    ? [...event.target.selectedOptions].map((option) => option.value)
-    : event.target.value
+  return event.target
+    ? (event.target.multiple
+      ? [...event.target.selectedOptions].map((option) => option.value)
+      : event.target.value)
+    : (event.nativeEvent ? event.nativeEvent.text : undefined);
 }
-
 
 export {
   isMulti,

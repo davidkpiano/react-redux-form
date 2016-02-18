@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import should from 'should';
 
 import actions from '../lib/actions';
 

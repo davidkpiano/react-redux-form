@@ -1,6 +1,5 @@
 import chai from 'chai';
 import chaiSubset from 'chai-subset';
-import should from 'should';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 
@@ -8,7 +7,13 @@ chai.use(chaiSubset);
 
 const { assert } = chai;
 
-import { actions, createFormReducer, initialFieldState } from '../src';
+import {
+  actions,
+  createFormReducer,
+  initialFieldState
+} from '../lib';
+
+import { initialFormState } from '../lib/reducers/form-reducer';
 
 describe('RSF field actions', () => {
   describe('setViewValue()', () => {
@@ -32,6 +37,50 @@ describe('RSF field actions', () => {
         reducer(undefined, actions.reset('test.foo'))
           .fields['foo'],
         initialFieldState);
+    });
+
+    it('should be able to set the entire form to the initial state', () => {
+      const reducer = createFormReducer('test');
+
+      assert.containSubset(
+        reducer(undefined, actions.reset('test')),
+        initialFormState);
+    });
+
+    it('should reset all errors on the field', () => {
+      const reducer = createFormReducer('test');
+
+      const stateWithErrors = reducer(undefined, actions.setValidity('test.foo', {
+        valid: false,
+        required: true
+      }));
+
+      assert.deepEqual(stateWithErrors.fields.foo.errors, {
+        valid: true,
+        required: false
+      });
+
+      const stateAfterReset = reducer(stateWithErrors, actions.reset('test.foo'));
+
+      assert.deepEqual(stateAfterReset.fields.foo.errors, {});
+    });
+
+    it('should reset all errors on the form', () => {
+      const reducer = createFormReducer('test');
+
+      const stateWithErrors = reducer(undefined, actions.setValidity('test', {
+        valid: false,
+        required: true
+      }));
+
+      assert.deepEqual(stateWithErrors.errors, {
+        valid: true,
+        required: false
+      });
+
+      const stateAfterReset = reducer(stateWithErrors, actions.reset('test'));
+
+      assert.deepEqual(stateAfterReset.errors, {});
     });
   });
 
@@ -103,6 +152,27 @@ describe('RSF field actions', () => {
 
       assert.containSubset(
         actualMultiplePristine,
+        {
+          pristine: true,
+          dirty: false
+        });
+    });
+
+    it('should be able to set the pristine state of the form and each field to true', () => {
+      const reducer = createFormReducer('test');
+
+      let dirtyFormAndField = reducer(undefined, actions.setDirty('test.foo'));
+
+      assert.containSubset(
+        reducer(dirtyFormAndField, actions.setPristine('test')),
+        {
+          pristine: true,
+          dirty: false
+        });
+
+      assert.containSubset(
+        reducer(dirtyFormAndField, actions.setPristine('test'))
+          .fields['foo'],
         {
           pristine: true,
           dirty: false
@@ -331,8 +401,6 @@ describe('RSF field actions', () => {
 
       let actualForm = reducer(undefined, actions.setValidity('test.foo', validity));
 
-      console.log(actualForm.fields);
-
       assert.containSubset(
         actualForm.fields['foo'],
         {
@@ -379,7 +447,7 @@ describe('RSF field actions', () => {
       };
 
       let actual = reducer(
-        initialFieldState,
+        undefined,
         actions.setValidity('test', validity));
 
       assert.containSubset(
@@ -424,15 +492,42 @@ describe('RSF field actions', () => {
       actions.asyncSetValidity('test.foo', validator)(dispatch, getState);
     });
 
-    it('should set pending to true when validating, and false when done validating', (testDone) => {
+    it('should work with forms to asynchronously call setValidity() action', (testDone) => {
+      const reducer = createFormReducer('test');
+      const dispatch = (action) => {
+        if (action.type === 'rsf/setValidity') {        
+          testDone(assert.containSubset(
+            reducer(undefined, action),
+              {
+              valid: false,
+              errors: {
+                good: false,
+                bad: true
+              }
+            }));
+        }
+      };
+
+      const getState = () => ({
+        test: { foo: 5 }
+      });
+
+      let validator = ({ foo }, done) => done({
+        good: foo > 4,
+        bad: foo > 5
+      });
+
+      actions.asyncSetValidity('test', validator)(dispatch, getState);
+    });
+
+    it('should set pending to true for a field when validating, and false when done validating', (testDone) => {
       let pendingStates = [];
       let executedActions = [];
-      let state = {};
 
       const reducer = createFormReducer('test');
       const dispatch = (action) => {
         executedActions.push(action);
-        state = reducer(state, action);
+        let state = reducer(undefined, action);
 
         if (action.type === 'rsf/setPending') {
           pendingStates.push(action.pending);
@@ -452,6 +547,35 @@ describe('RSF field actions', () => {
       let validator = (_, done) => done(true);
 
       actions.asyncSetValidity('test.foo', validator)(dispatch, getState);
+    });
+
+    it('should set pending to true for a form when validating, and false when done validating', (testDone) => {
+      let pendingStates = [];
+      let executedActions = [];
+
+      const reducer = createFormReducer('test');
+      const dispatch = (action) => {
+        executedActions.push(action);
+        let state = reducer(undefined, action);
+
+        if (action.type === 'rsf/setPending') {
+          pendingStates.push(action.pending);
+
+          assert.equal(state.pending, action.pending);
+          
+          if (action.pending === false) { 
+            testDone(assert.deepEqual(
+              pendingStates,
+              [true, false]));
+          }
+        }
+      };
+
+      const getState = () => ({});
+
+      let validator = (_, done) => done(true);
+
+      actions.asyncSetValidity('test', validator)(dispatch, getState);
     });
   });
 });

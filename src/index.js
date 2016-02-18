@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { Provider, connect } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
@@ -11,10 +10,12 @@ import { isPristine, isFocused } from './utils';
 import * as modelActions from './actions/model-actions';
 import * as fieldActions from './actions/field-actions';
 
-import Field from './components/field-component';
+import Field, { createFieldClass, controlPropsMap } from './components/field-component';
 import Form from './components/form-component';
 
 import * as actionTypes from './action-types';
+
+import modeled from './enhancers/modeled-enhancer';
 
 const actions = {
   ...modelActions,
@@ -24,10 +25,13 @@ const actions = {
 export {
   createModelReducer,
   createFormReducer,
+  createFieldClass,
+  controlPropsMap as controls,
   actions,
   Field,
   Form,
   getField,
   actionTypes,
-  initialFieldState
+  initialFieldState,
+  modeled
 }
