@@ -1,5 +1,4 @@
 import { assert } from 'chai';
-import should from 'should';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 

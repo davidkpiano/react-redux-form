@@ -1,7 +1,6 @@
 import React from 'react';
 import chai from 'chai';
 import chaiSubset from 'chai-subset';
-import should from 'should';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';

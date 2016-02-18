@@ -1,6 +1,5 @@
 import chai from 'chai';
 import chaiSubset from 'chai-subset';
-import should from 'should';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 

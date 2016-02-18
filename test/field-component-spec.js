@@ -1,7 +1,6 @@
 import React from 'react';
 import chai from 'chai';
 import chaiSubset from 'chai-subset';
-import should from 'should';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';
@@ -604,7 +603,7 @@ describe('<Field /> component', () => {
     });
   });
 
-  describe('dynamic components', () => {
+  xdescribe('dynamic components', () => {
     const formReducer = createFormReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer,
