@@ -11,7 +11,7 @@ React Redux Form is a collection of reducer creators and action creators that ma
 
 ## Features
 
-- Separation of model state and form state
+- Separation of model state and form state for simplicity and performance
 - Ability to use [existing reducers](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-Using-Existing-Reducers) easily
 - Sync and async field [validation](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-Validation) at any part of the state
 - Convenient [`<Field>` component](http://davidkpiano.github.io/react-redux-form/#/api/API:-Field-Component) for automatically mapping props to native form controls
