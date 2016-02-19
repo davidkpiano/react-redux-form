@@ -9,6 +9,16 @@ React Redux Form is a collection of reducer creators and action creators that ma
 
 `npm install react-redux-form --save`
 
+## Features
+
+- Separation of model state and form state
+- Ability to use [existing reducers](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-Using-Existing-Reducers) easily
+- Sync and async field [validation](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-Validation) at any part of the state
+- Convenient [`<Field>` component](http://davidkpiano.github.io/react-redux-form/#/api/API:-Field-Component) for automatically mapping props to native form controls
+- Support for Immutable.JS: `import { createModelReducer } from 'react-redux-form/immutable'`
+- Support for [React-Native and custom components](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-React-Native-&-Custom-Components)
+- Multiple utility [model actions](http://davidkpiano.github.io/react-redux-form/#/api/API:-Action-Thunk-Creators)
+
 ## Quick Start
 
 Be sure to read the [step-by-step](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-Step-by-Step) guide in the documentation.
