@@ -6,6 +6,8 @@ import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
+import { Field as NativeField } from '../lib/native';
+
 chai.use(chaiSubset);
 
 const { assert } = chai;
@@ -146,5 +148,22 @@ describe('custom <Field /> components with createFieldClass()', () => {
     assert.equal(
       store.getState().test.foo,
       'testing');
+  });
+});
+
+describe('React Native <Field /> components', () => {
+  it('should exist', () => {
+    assert.ok(NativeField);
+  });
+
+  it('should map native components', () => {
+    // Placeholder div, for now
+    class TextField extends React.Component {
+      render() {
+        return <div />
+      }
+    }
+
+    assert.ok(<NativeField model="foo.bar"><TextField/></NativeField>);
   });
 });
