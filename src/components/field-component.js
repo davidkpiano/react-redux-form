@@ -42,30 +42,30 @@ function selector(state, { model }) {
 
 export const controlPropsMap = {
   'text': (props) => ({
-    ...props,
     name: props.model,
-    defaultValue: props.modelValue
+    defaultValue: props.modelValue,
+    ...props
   }),
   'textarea': (props) => controlPropsMap.text(props),
   'checkbox': (props) => ({
-    ...props,
     name: props.model,
     checked: isMulti(props.model)
       ? (props.modelValue || [])
         .filter((item, eventProps) => isEqual(item, props.value))
         .length
-      : !!props.modelValue
+      : !!props.modelValue,
+    ...props
   }),
   'radio': (props) => ({
-    ...props,
     name: props.model,
     checked: isEqual(props.modelValue, props.value),
-    value: props.value
+    value: props.value,
+    ...props
   }),
   'select': (props) => ({
-    ...props,
     name: props.model,
-    value: props.modelValue
+    value: props.modelValue,
+    ...props
   }),
   'default': (props) => controlPropsMap.text(props)
 };
@@ -231,6 +231,13 @@ function createFieldControlComponent(control, props, options) {
 export function createFieldClass(
   customControlPropsMap = {}
 ) {
+  const options = {
+    controlPropsMap: {
+      ...controlPropsMap,
+      ...customControlPropsMap
+    }
+  };
+
   class Field extends React.Component {
     static propTypes = {
       model: React.PropTypes.string.isRequired,
@@ -244,22 +251,11 @@ export function createFieldClass(
       ]),
       validators: React.PropTypes.object,
       asyncValidators: React.PropTypes.object,
-      parser: React.PropTypes.func,
-      control: React.PropTypes.oneOfType([
-        React.PropTypes.func,
-        React.PropTypes.string
-      ])
+      parser: React.PropTypes.func
     };
 
     render() {
       const { props } = this;
-
-      const options = {
-        controlPropsMap: {
-          ...controlPropsMap,
-          ...customControlPropsMap
-        }
-      };
 
       if (props.children.length > 1) {
         return (
