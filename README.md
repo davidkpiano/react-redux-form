@@ -26,7 +26,7 @@ Be sure to read the [step-by-step](http://davidkpiano.github.io/react-redux-form
 ```js
 import React from 'react';
 import { createStore, combineReducers } from 'redux';
-import{ Provider } from 'react-redux';
+import { Provider } from 'react-redux';
 import { createModelReducer, createFormReducer } from 'react-redux-form';
 
 import MyForm from './components/my-form-component';
