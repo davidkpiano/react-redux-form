@@ -53,6 +53,11 @@ function getField(state, path) {
     initialFieldState);
 }
 
+function formIsValid(formState) {
+  return every(mapValues(formState.fields, (field) => field.valid))
+    && every(formState.errors, (error) => !error);
+}
+
 const initialFieldState = {
   viewValue: null,
   focus: false,
@@ -65,6 +70,7 @@ const initialFieldState = {
   validating: false,
   pending: false,
   submitted: false,
+  validity: {},
   errors: {}
 };
 
@@ -93,6 +99,7 @@ function createFormReducer(model) {
     }
 
     const localPath = path.slice(modelPath.length);
+    let errors, validity;
 
     switch (action.type) {
       case actionTypes.FOCUS:
@@ -129,23 +136,59 @@ function createFormReducer(model) {
         });
 
       case actionTypes.SET_VALIDITY:
-        const errors = isPlainObject(action.validity)
-          ? {
-              ...getField(state, localPath).errors,
-              ...mapValues(action.validity, (valid) => !valid)
-            }
-          : !action.validity;
+        if (isPlainObject(action.validity)) {
+          errors = {
+            ...getField(state, localPath).errors,
+            ...mapValues(action.validity, (valid) => !valid)
+          };
+
+          validity = icepick.merge(
+            getField(state, localPath).validity,
+            action.validity);
+        } else {
+          validity = action.validity;
+          
+          errors = !action.validity;
+        }
 
         state = setField(state, localPath, {
           errors,
+          validity,
           valid: isBoolean(errors)
-            ? errors
+            ? !errors
             : every(errors, (error) => !error)
         });
 
         return icepick.merge(state, {
-          valid: every(mapValues(state.fields, (field) => field.valid))
-            && every(state.errors, (error) => !error)
+          valid: formIsValid(state)
+        });
+
+      case actionTypes.SET_ERRORS:
+        if (isPlainObject(action.errors)) {
+          validity = {
+            ...getField(state, localPath).validity,
+            ...mapValues(action.errors, (error) => !error)
+          };
+
+          errors = icepick.merge(
+            getField(state, localPath).errors,
+            action.errors);
+        } else {
+          validity = !action.errors;
+
+          errors = action.errors;
+        }
+
+        state = setField(state, localPath, {
+          errors,
+          validity,
+          valid: isBoolean(errors)
+            ? !errors
+            : every(errors, (error) => !error)
+        });
+
+        return icepick.merge(state, {
+          valid: formIsValid(state)
         });
 
       case actionTypes.SET_PRISTINE:

@@ -11,6 +11,7 @@ const SET_UNTOUCHED = 'rsf/setUntouched';
 const SET_INITIAL = 'rsf/setInitial';
 const SET_PENDING = 'rsf/setPending';
 const SET_VALIDITY = 'rsf/setValidity';
+const SET_ERRORS = 'rsf/setErrors';
 const SET_SUBMITTED = 'rsf/setSubmitted';
 const SET_VIEW_VALUE = 'rsf/setViewValue';
 
@@ -26,6 +27,7 @@ export {
   SET_UNTOUCHED,
   SET_INITIAL,
   SET_VALIDITY,
+  SET_ERRORS,
   SET_PENDING,
   SET_SUBMITTED,
   SET_VIEW_VALUE

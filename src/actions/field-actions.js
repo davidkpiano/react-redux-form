@@ -44,6 +44,12 @@ const setValidity = (model, validity) => ({
   validity
 });
 
+const setErrors = (model, errors) => ({
+  type: actionTypes.SET_ERRORS,
+  model,
+  errors
+});
+
 const setTouched = (model) => ({
   type: actionTypes.SET_TOUCHED,
   model
@@ -93,6 +99,7 @@ export {
   setDirty,
   setInitial,
   setValidity,
+  setErrors,
   asyncSetValidity,
   setPending,
   setSubmitted,

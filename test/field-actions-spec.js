@@ -460,6 +460,268 @@ describe('RSF field actions', () => {
           }
         });
     });
+
+    it('should be able to set the validity to a non-boolean value', () => {
+      const reducer = createFormReducer('test');
+
+      let validity = {
+        foo: 'truthy string',
+        baz: null // falsey value
+      };
+
+      let actual = reducer(
+        undefined,
+        actions.setValidity('test', validity));
+
+      assert.containSubset(
+        actual,
+        {
+          valid: false,
+          validity: {
+            foo: 'truthy string',
+            baz: null
+          },
+          errors: {
+            foo: false,
+            baz: true
+          }
+        });
+
+      actual = reducer(actual, actions.setValidity('test', {
+        foo: false
+      }));
+
+      assert.containSubset(
+        actual,
+        {
+          valid: false,
+          validity: {
+            foo: false,
+            baz: null
+          },
+          errors: {
+            foo: true,
+            baz: true
+          }
+        });
+
+      actual = reducer(actual, actions.setValidity('test', {
+        foo: 'truthy string',
+        baz: 100
+      }));
+
+      assert.containSubset(
+        actual,
+        {
+          valid: true,
+          validity: {
+            foo: 'truthy string',
+            baz: 100
+          },
+          errors: {
+            foo: false,
+            baz: false
+          }
+        });
+    });
+  });
+
+  describe('setErrors()', () => {
+    it('should set the errors state of the field', () => {
+      const reducer = createFormReducer('test');
+
+      assert.containSubset(
+        reducer(undefined, actions.setErrors('test.foo', true))
+          .fields['foo'],
+        {
+          errors: true,
+          validity: false,
+          valid: false
+        });
+
+      assert.containSubset(
+        reducer(undefined, actions.setErrors('test.foo', false))
+          .fields['foo'],
+        {
+          errors: false,
+          validity: true,
+          valid: true
+        });
+    });
+
+    it('should set the errors state of the field', () => {
+      const reducer = createFormReducer('test');
+
+      let errors = {
+        good: true,
+        bad: false
+      }
+
+      assert.containSubset(
+        reducer(undefined, actions.setErrors('test.foo', errors))
+          .fields['foo'],
+        {
+          errors: {
+            good: true,
+            bad: false
+          },
+          valid: false,
+          validity: {
+            good: false,
+            bad: true
+          }
+        });
+    });
+
+    it('should set the valid state to true if all values in error object are false', () => {
+      const reducer = createFormReducer('test');
+
+      let errors = {
+        one: false,
+        two: null,
+        three: 0
+      };
+
+      let actualForm = reducer(undefined, actions.setErrors('test.foo', errors));
+
+      assert.containSubset(
+        actualForm.fields['foo'],
+        {
+          valid: true,
+          validity: {
+            one: true,
+            two: true,
+            three: true
+          }
+        });
+
+      assert.containSubset(
+        actualForm,
+        {
+          valid: true
+        }, 'form should be valid if all fields are valid');
+    });
+
+    it('should set the valid state to false if any value in error object is true', () => {
+      const reducer = createFormReducer('test');
+
+      let errors = {
+        one: true,
+        two: false,
+        three: false
+      };
+
+      let actualForm = reducer(undefined, actions.setErrors('test.foo', errors));
+
+      assert.containSubset(
+        actualForm.fields['foo'],
+        {
+          valid: false,
+          errors: {
+            one: true,
+            two: false,
+            three: false
+          },
+          validity: {
+            one: false,
+            two: true,
+            three: true
+          }
+        });
+
+      assert.containSubset(
+        actualForm,
+        {
+          valid: false
+        }, 'form should be invalid if any fields are invalid');
+    });
+
+    it('should be able to set the errors of a form', () => {
+      const reducer = createFormReducer('test');
+
+      let errors = {
+        foo: true,
+        baz: false
+      };
+
+      let actual = reducer(
+        undefined,
+        actions.setErrors('test', errors));
+
+      assert.containSubset(
+        actual,
+        {
+          valid: false,
+          errors: {
+            foo: true,
+            baz: false
+          }
+        });
+    });
+
+    it('should be able to set the errors to a non-boolean value', () => {
+      const reducer = createFormReducer('test');
+
+      let errors = {
+        foo: 'foo is required',
+        baz: null // falsey value
+      };
+
+      let actual = reducer(
+        undefined,
+        actions.setErrors('test', errors));
+
+      assert.containSubset(
+        actual,
+        {
+          valid: false,
+          validity: {
+            foo: false,
+            baz: true
+          },
+          errors: {
+            foo: 'foo is required',
+            baz: null
+          }
+        });
+
+      actual = reducer(actual, actions.setErrors('test', {
+        foo: false
+      }));
+
+      assert.containSubset(
+        actual,
+        {
+          valid: true,
+          validity: {
+            foo: true,
+            baz: true
+          },
+          errors: {
+            foo: false,
+            baz: null
+          }
+        });
+
+      actual = reducer(actual, actions.setErrors('test', {
+        foo: 'foo is required',
+        baz: 'baz is also required'
+      }));
+
+      assert.containSubset(
+        actual,
+        {
+          valid: false,
+          validity: {
+            foo: false,
+            baz: false
+          },
+          errors: {
+            foo: 'foo is required',
+            baz: 'baz is also required'
+          }
+        });
+    });
   });
 
   describe('asyncSetValidity() (thunk)', () => {
