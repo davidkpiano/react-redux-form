@@ -228,6 +228,18 @@ function createFieldControlComponent(control, props, options) {
         control={control} />;
 }
 
+function getFieldWrapper(props) {
+  if (!props.component) {
+    if (props.className || props.children.length > 1) {
+      return 'div';
+    }
+
+    return null;
+  }
+
+  return props.component;
+}
+
 export function createFieldClass(
   customControlPropsMap = {}
 ) {
@@ -251,20 +263,24 @@ export function createFieldClass(
       ]),
       validators: React.PropTypes.object,
       asyncValidators: React.PropTypes.object,
-      parser: React.PropTypes.func
+      parser: React.PropTypes.func,
+      component: React.PropTypes.oneOfType([
+        React.PropTypes.func,
+        React.PropTypes.string
+      ])
     };
 
     render() {
       const { props } = this;
+      let component = getFieldWrapper(props);
 
-      if (props.children.length > 1) {
-        return (
-          <div {...props}>
-            { React.Children.map(
-              props.children,
-              (child) => createFieldControlComponent(child, props, options))
-            }
-          </div>
+      if (component) {
+        return React.createElement(
+          component,
+          props,
+          React.Children.map(
+            props.children,
+            (child) => createFieldControlComponent(child, props, options))
         );
       }
 

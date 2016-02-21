@@ -44,6 +44,25 @@ describe('<Field /> component', () => {
       2);
   });
 
+  it('should not wrap child components in a <div> if only one', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: createModelReducer('test', { foo: 'bar' })
+      }));
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input />
+        </Field>
+      </Provider>
+    );
+
+    assert.throws(() => {
+      TestUtils.findRenderedDOMComponentWithTag(field, 'div');
+    });
+
+    assert.ok(TestUtils.findRenderedDOMComponentWithTag(field, 'input'));
+  });
+
   it('should recursively handle nested control components', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: createModelReducer('test', { foo: 'bar' })
@@ -649,6 +668,78 @@ describe('<Field /> component', () => {
       options = TestUtils.scryRenderedDOMComponentsWithTag(field, 'option');
 
       assert.equal(options.length, 3);
+    });
+  });
+
+  describe('wrapper components with component property', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: createModelReducer('test', {})
+    }));
+
+    it('should wrap children with specified component (string)', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field component="div">
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const wrapper = TestUtils.findRenderedDOMComponentWithTag(field, 'div');
+
+      assert.ok(wrapper);
+    });
+
+    it('should wrap children with specified component (class)', () => {
+      class Wrapper extends React.Component {
+        render() {
+          return <main className="wrapper">{ this.props.children }</main>
+        }
+      }
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field component={Wrapper}>
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const wrapper = TestUtils.findRenderedDOMComponentWithClass(field, 'wrapper');
+
+      assert.ok(wrapper);
+    });
+
+    it('should wrap children with specified component (function)', () => {
+      function Wrapper(props) {
+        return <section className="wrapper">{props.children}</section>
+      }
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field component={Wrapper}>
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const wrapper = TestUtils.findRenderedDOMComponentWithClass(field, 'wrapper');
+
+      assert.ok(wrapper);
+    });
+
+    it('should wrap children with a <div> when provided with className', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field className="wrapper">
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const wrapper = TestUtils.findRenderedDOMComponentWithClass(field, 'wrapper');
+
+      assert.ok(wrapper);
     });
   });
 });
