@@ -1,7 +1,9 @@
 import chai from 'chai';
 import chaiSubset from 'chai-subset';
 import { createStore, applyMiddleware } from 'redux';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import isFunction from 'lodash/isFunction';
 
 chai.use(chaiSubset);
 
@@ -10,7 +12,8 @@ const { assert } = chai;
 import {
   actions,
   createFormReducer,
-  initialFieldState
+  initialFieldState,
+  actionTypes
 } from '../lib';
 
 import { initialFormState } from '../lib/reducers/form-reducer';
@@ -838,6 +841,56 @@ describe('RSF field actions', () => {
       let validator = (_, done) => done(true);
 
       actions.asyncSetValidity('test', validator)(dispatch, getState);
+    });
+  });
+
+  describe('submit() (thunk)', () => {
+    const reducer = createFormReducer('test');
+
+    const submitPromise = (val) => new Promise((resolve, reject) => {
+      if (val.valid) {
+        resolve(true);
+      } else {
+        reject(val.errors);
+      }
+    });
+
+    const mockStore = configureMockStore([ thunk ]);
+
+    it('should exist', () => {
+      assert.isFunction(actions.submit);
+    });
+
+    it('should be able to resolve a form as valid', (done) => {
+      const expectedActions = [
+        { type: actionTypes.SET_PENDING, pending: true, model: 'test' },
+        { type: actionTypes.SET_SUBMITTED, submitted: true, model: 'test' },
+        { type: actionTypes.SET_VALIDITY, validity: true, model: 'test' }
+      ];
+
+      const store = mockStore(() => ({}), expectedActions, done);
+
+      store.dispatch(actions.submit('test', submitPromise({ valid: true })));
+    });
+
+    it('should submit errors when form promise is rejected', (done) => {
+      const errors = {
+        foo: 'Foo is invalid',
+        bar: 'Bar is also invalid'
+      };
+
+      const expectedActions = [
+        { type: actionTypes.SET_PENDING, pending: true, model: 'test' },
+        { type: actionTypes.SET_PENDING, pending: false, model: 'test' },
+        { type: actionTypes.SET_ERRORS, errors: errors, model: 'test' }
+      ];
+
+      const store = mockStore(() => ({}), expectedActions, done);
+
+      store.dispatch(actions.submit('test', submitPromise({
+        valid: false,
+        errors: errors
+      })));
     });
   });
 });

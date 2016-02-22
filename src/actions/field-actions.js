@@ -91,6 +91,23 @@ const setViewValue = (model, value) => ({
   value
 });
 
+const submit = (model, promise) => {
+  return (dispatch) => {
+    dispatch(setPending(model, true));
+
+    promise.then(
+      (response) => {
+        dispatch(setSubmitted(model, true));
+        dispatch(setValidity(model, response));
+      },
+      (errors) => {
+        dispatch(setPending(model, false));
+        dispatch(setErrors(model, errors));
+      }
+    );
+  }
+}
+
 export {
   focus,
   blur,
@@ -105,5 +122,6 @@ export {
   setSubmitted,
   setTouched,
   setUntouched,
-  setViewValue
+  setViewValue,
+  submit
 }
