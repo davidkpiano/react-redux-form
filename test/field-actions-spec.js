@@ -662,7 +662,7 @@ describe('RSF field actions', () => {
         });
     });
 
-    it('should be able to set the errors to a non-boolean value', () => {
+    it('should be able to set the errors to an object', () => {
       const reducer = createFormReducer('test');
 
       let errors = {
@@ -724,6 +724,65 @@ describe('RSF field actions', () => {
             baz: 'baz is also required'
           }
         });
+    });
+
+    it('should be able to set the errors to a string', () => {
+      const reducer = createFormReducer('test');
+
+      let errors = 'This whole thing is invalid';
+      let fieldErrors = 'This field is invalid';
+
+      let actual = reducer(
+        undefined,
+        actions.setErrors('test', errors));
+
+      assert.containSubset(
+        actual,
+        {
+          errors: errors,
+          valid: false,
+          validity: false
+        });
+
+      actual = reducer(
+        actual,
+        actions.setErrors('test', false));
+
+      assert.containSubset(
+        actual,
+        {
+          errors: false,
+          valid: true,
+          validity: true
+        });
+
+      let actualField = reducer(
+        undefined,
+        actions.setErrors('test.foo', fieldErrors));
+
+      assert.containSubset(
+        actualField.fields.foo,
+        {
+          errors: fieldErrors,
+          valid: false,
+          validity: false
+        });
+
+      assert.isFalse(actualField.valid);
+
+      actualField = reducer(
+        actualField,
+        actions.setErrors('test.foo', false));
+
+      assert.containSubset(
+        actualField.fields.foo,
+        {
+          errors: false,
+          valid: true,
+          validity: true
+        });
+
+      assert.isTrue(actualField.valid);
     });
   });
 
