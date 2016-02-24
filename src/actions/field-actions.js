@@ -1,4 +1,4 @@
-import get from 'lodash/get';
+import _get from 'lodash/get';
 
 import * as actionTypes from '../action-types';
 
@@ -62,7 +62,7 @@ const setUntouched = (model) => ({
 
 const asyncSetValidity = (model, validator) => {
   return (dispatch, getState) => {
-    let value = get(getState(), model);
+    let value = _get(getState(), model);
 
     dispatch(setPending(model, true));
 

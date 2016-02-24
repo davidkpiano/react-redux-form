@@ -1,5 +1,5 @@
 import every from 'lodash/every';
-import get from 'lodash/get';
+import _get from 'lodash/get';
 import icepick from 'icepick';
 import isBoolean from 'lodash/isBoolean';
 import isEqual from 'lodash/isEqual';
@@ -47,7 +47,7 @@ function getField(state, path) {
     return state;
   }
 
-  return get(
+  return _get(
     state,
     ['fields', localPath.join('.')],
     initialFieldState);

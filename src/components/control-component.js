@@ -1,10 +1,10 @@
-import React from 'react';
+import { Component, cloneElement } from 'react';
 
-class Control extends React.Component {
+class Control extends Component {
   render() {
     let { control } = this.props;
 
-    return React.cloneElement(
+    return cloneElement(
       control,
       {
         ...this.props,

@@ -1,4 +1,4 @@
-import get from 'lodash/get';
+import _get from 'lodash/get';
 import icepick from 'icepick';
 import isEqual from 'lodash/isEqual';
 import toPath from 'lodash/toPath';
@@ -9,7 +9,7 @@ function icepickSet(state, path, value) {
   return icepick.setIn(state, path, value);
 }
 
-function createModeler(getter = get, setter = icepickSet, initialModelState = {}) {
+function createModeler(getter = _get, setter = icepickSet, initialModelState = {}) {
   return function createModelReducer(model, initialState = initialModelState) {
     const modelPath = toPath(model);
 

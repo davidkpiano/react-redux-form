@@ -1,6 +1,5 @@
 import { createModeler } from '../reducers/model-reducer';
 import { createModelReducerEnhancer } from '../enhancers/modeled-enhancer';
-import toPath from 'lodash/toPath';
 
 function immutableGet(state, path, defaultValue) {
   try {

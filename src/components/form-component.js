@@ -1,14 +1,14 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import connect from 'react-redux/lib/components/connect';
 import mapValues from 'lodash/mapValues';
-import get from 'lodash/get';
+import _get from 'lodash/get';
 
 import * as fieldActions from '../actions/field-actions';
 
 class Form extends React.Component {
   setValidity(validators, model) {
     let { dispatch } = this.props;
-    let value = get(this.props, model);
+    let value = _get(this.props, model);
     let validity = mapValues(validators, (validator) => validator(value));
 
     dispatch(fieldActions.setValidity(model, validity));

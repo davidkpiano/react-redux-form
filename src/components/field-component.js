@@ -1,16 +1,13 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { Component, PropTypes } from 'react';
+import connect from 'react-redux/lib/components/connect';
 
-import get from 'lodash/get';
-import { compose } from 'redux';
+import _get from 'lodash/get';
+import compose from 'redux/lib/compose';
 import capitalize from 'lodash/capitalize';
 import identity from 'lodash/identity';
 import mapValues from 'lodash/mapValues';
 import isEqual from 'lodash/isEqual';
 import partial from 'lodash/partial';
-import isString from 'lodash/isString';
-import findKey from 'lodash/findKey';
 
 import {
   change,
@@ -23,7 +20,6 @@ import {
   blur,
   setValidity,
   asyncSetValidity,
-  setViewValue
 } from '../actions/field-actions';
 
 import Control from './control-component';
@@ -36,7 +32,7 @@ import {
 function selector(state, { model }) {
   return {
     model,
-    modelValue: get(state, model)
+    modelValue: _get(state, model)
   };
 }
 
@@ -250,23 +246,23 @@ export function createFieldClass(
     }
   };
 
-  class Field extends React.Component {
+  class Field extends Component {
     static propTypes = {
-      model: React.PropTypes.string.isRequired,
-      updateOn: React.PropTypes.oneOfType([
-        React.PropTypes.func,
-        React.PropTypes.oneOf([
+      model: PropTypes.string.isRequired,
+      updateOn: PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.oneOf([
           'change',
           'blur',
           'focus'
         ])
       ]),
-      validators: React.PropTypes.object,
-      asyncValidators: React.PropTypes.object,
-      parser: React.PropTypes.func,
-      component: React.PropTypes.oneOfType([
-        React.PropTypes.func,
-        React.PropTypes.string
+      validators: PropTypes.object,
+      asyncValidators: PropTypes.object,
+      parser: PropTypes.func,
+      component: PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.string
       ])
     };
 
