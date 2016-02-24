@@ -46,8 +46,11 @@
     "immutable": "^3.7.6",
     "jsdom": "^8.0.4",
     "mocha": "^2.3.4",
+    "react": "^0.14.7",
     "react-addons-test-utils": "^0.14.6",
     "react-dom": "^0.14.7",
+    "react-redux": "^4.4.0",
+    "redux": "^3.3.1",
     "redux-mock-store": "0.0.6",
     "redux-thunk": "^1.0.3",
     "should": "^8.0.2",
@@ -55,9 +58,11 @@
   },
   "dependencies": {
     "icepick": "^1.1.0",
-    "lodash": "^4.0.0",
-    "react": "^0.14.6",
+    "lodash": "^4.0.0"
+  },
+  "peerDependencies": {
+    "react": "^0.14.0",
     "react-redux": "^4.0.0",
-    "redux": "^3.0.4"
+    "redux": "^3.0.0"
   }
 }
