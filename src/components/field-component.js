@@ -247,25 +247,6 @@ export function createFieldClass(
   };
 
   class Field extends Component {
-    static propTypes = {
-      model: PropTypes.string.isRequired,
-      updateOn: PropTypes.oneOfType([
-        PropTypes.func,
-        PropTypes.oneOf([
-          'change',
-          'blur',
-          'focus'
-        ])
-      ]),
-      validators: PropTypes.object,
-      asyncValidators: PropTypes.object,
-      parser: PropTypes.func,
-      component: PropTypes.oneOfType([
-        PropTypes.func,
-        PropTypes.string
-      ])
-    };
-
     render() {
       const { props } = this;
       let component = getFieldWrapper(props);
@@ -283,6 +264,25 @@ export function createFieldClass(
       return createFieldControlComponent(React.Children.only(props.children), props, options);
     }
   }
+
+  Field.propTypes = {
+    model: PropTypes.string.isRequired,
+    updateOn: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.oneOf([
+        'change',
+        'blur',
+        'focus'
+      ])
+    ]),
+    validators: PropTypes.object,
+    asyncValidators: PropTypes.object,
+    parser: PropTypes.func,
+    component: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.string
+    ])
+  };
 
   return connect(selector)(Field);
 }
