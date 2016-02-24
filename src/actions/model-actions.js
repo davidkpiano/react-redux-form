@@ -1,11 +1,7 @@
 import endsWith from 'lodash/endsWith';
 import get from 'lodash/get';
-import cloneDeep from 'lodash/cloneDeep';
-import _filter from 'lodash/filter';
-import _map from 'lodash/map';
-import _pullAt from 'lodash/pullAt';
 import isEqual from 'lodash/isEqual';
-import _merge from 'lodash/merge';
+import icepick from 'icepick';
 
 import * as actionTypes from '../action-types';
 
@@ -33,7 +29,7 @@ const change = (model, value) => ({
 const xor = (model, item) => (dispatch, getState) => {
   let state = get(getState(), model, []);
 
-  let stateWithoutItem = _filter(state, (stateItem) => !isEqual(stateItem, item));
+  let stateWithoutItem = state.filter((stateItem) => !isEqual(stateItem, item));
 
   let value = state.length === stateWithoutItem.length
     ? [...state, item]
@@ -84,8 +80,8 @@ const reset = (model) => ({
 });
 
 const map = (model, iteratee = (a) => a) => (dispatch, getState) => {
-  let collection = get(getState(), model);
-  let value = _map(collection, iteratee);
+  let collection = get(getState(), model, []);
+  let value = collection.map(iteratee);
 
   dispatch({  
     type: actionTypes.CHANGE,
@@ -95,26 +91,22 @@ const map = (model, iteratee = (a) => a) => (dispatch, getState) => {
 };
 
 const remove = (model, index) => (dispatch, getState) => {
-  let collection = cloneDeep(get(getState(), model));
-  
-  let value = (_pullAt(collection, index), collection);
+  let collection = get(getState(), model, []);
 
   dispatch({  
     type: actionTypes.CHANGE,
     model,
-    value
+    value: icepick.splice(collection, index, 1)
   });
 };
 
 const merge = (model, values) => (dispatch, getState) => {
   let value = get(getState(), model, {});
 
-  _merge(value, values);
-
   dispatch({
     type: actionTypes.CHANGE,
     model,
-    value
+    value: icepick.merge(value, values)
   });
 };
 
