@@ -1,73 +1,57 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { Component, PropTypes } from 'react';
+import connect from 'react-redux/lib/components/connect';
 
-import get from 'lodash/get';
-import { compose } from 'redux';
+import _get from 'lodash/get';
 import capitalize from 'lodash/capitalize';
+import compose from 'redux/lib/compose';
 import identity from 'lodash/identity';
-import mapValues from 'lodash/mapValues';
 import isEqual from 'lodash/isEqual';
+import mapValues from 'lodash/mapValues';
 import partial from 'lodash/partial';
-import isString from 'lodash/isString';
-import findKey from 'lodash/findKey';
 
-import {
-  change,
-  toggle,
-  xor
-} from '../actions/model-actions';
-
-import {
-  focus,
-  blur,
-  setValidity,
-  asyncSetValidity,
-  setViewValue
-} from '../actions/field-actions';
-
+import actions from '../actions';
 import Control from './control-component';
+import { isMulti, getValue } from '../utils';
 
-import {
-  isMulti,
-  getValue
-} from '../utils';
+const { asyncSetValidity, blur, change, focus, setValidity, toggle, xor } = actions;
 
 function selector(state, { model }) {
   return {
     model,
-    modelValue: get(state, model)
+    modelValue: _get(state, model),
   };
 }
 
-export const controlPropsMap = {
-  'text': (props) => ({
+const controlPropsMap = {
+  default: props => controlPropsMap.text(props),
+  checkbox: props => ({
     name: props.model,
-    defaultValue: props.modelValue,
-    ...props
+    checked: (() => {
+      if (isMulti(props.model)) {
+        return (props.modelValue || []).filter(item => isEqual(item, props.value)).length;
+      }
+
+      return !!props.modelValue;
+    })(),
+    ...props,
   }),
-  'textarea': (props) => controlPropsMap.text(props),
-  'checkbox': (props) => ({
-    name: props.model,
-    checked: isMulti(props.model)
-      ? (props.modelValue || [])
-        .filter((item, eventProps) => isEqual(item, props.value))
-        .length
-      : !!props.modelValue,
-    ...props
-  }),
-  'radio': (props) => ({
+  radio: props => ({
     name: props.model,
     checked: isEqual(props.modelValue, props.value),
     value: props.value,
-    ...props
+    ...props,
   }),
-  'select': (props) => ({
+  select: props => ({
     name: props.model,
     value: props.modelValue,
-    ...props
+    ...props,
   }),
-  'default': (props) => controlPropsMap.text(props)
+  text: props => ({
+    defaultValue: props.modelValue,
+    name: props.model,
+    ...props,
+  }),
+  textarea: props => controlPropsMap.text(props),
 };
 
 function changeMethod(model, value, action = change, parser = identity) {
@@ -75,204 +59,183 @@ function changeMethod(model, value, action = change, parser = identity) {
 }
 
 function isReadOnlyValue(control) {
-  return control.type == 'input'
+  return control.type === 'input' // verify === is okay
     && ~['radio', 'checkbox'].indexOf(control.props.type);
 }
 
 const controlActionMap = {
-  'checkbox': (props) => isMulti(props.model)
-    ? xor
-    : toggle,
-  'default': () => change
+  checkbox: props => isMulti(props.model) ? xor : toggle,
+  default: () => change,
 };
 
 function getControlType(control, options) {
-  const { controlPropsMap } = options;
+  const { controlPropsMap: _controlPropsMap } = options;
 
   try {
     let controlDisplayName = control.constructor.displayName
       || control.type.displayName
       || control.type.name
-      || control.type + '';
+      || control.type; // what was the + '' for? tests pass without it
 
     if (controlDisplayName === 'input') {
-      controlDisplayName = controlPropsMap[control.props.type]
-        ? control.props.type
-        : 'text';
+      controlDisplayName = _controlPropsMap[control.props.type] ? control.props.type : 'text';
     }
 
-    return controlPropsMap[controlDisplayName]
-      ? controlDisplayName
-      : null;
-  } catch (e) {
+    return _controlPropsMap[controlDisplayName] ? controlDisplayName : null;
+  } catch (error) {
     return undefined;
   }
 }
 
-function createFieldProps(control, props, options) {
-  let {
+function sequenceEventActions(control, props) {
+  const { dispatch, model } = props;
+
+  const updateOn = (typeof props.updateOn === 'function')
+    ? 'onChange'
+    : `on${capitalize(props.updateOn || 'change')}`;
+  const validateOn = `on${capitalize(props.validateOn || 'change')}`;
+  const asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
+
+  /**
+   * updater does not exist. temporarily hard set to identity. possible bug
+   */
+  // const updaterFn = (typeof updater === 'function')
+  //   ? updater
+  //   : identity;
+  const updaterFn = identity;
+
+  const eventActions = {
+    onFocus: [() => dispatch(focus(model))],
+    onBlur: [() => dispatch(blur(model))],
+    onChange: [],
+  };
+
+  const controlAction = (controlActionMap[control.props.type] || controlActionMap.default)(props);
+
+  const controlChangeMethod = changeMethod(
     model,
-    modelValue
-  } = props;
-  let value = control.props.value;
+    props.value,
+    controlAction,
+    props.parser
+  );
 
-  let controlType = getControlType(control, options);
+  let dispatchChange;
+  if (control.props.hasOwnProperty('value') && isReadOnlyValue(control)) {
+    dispatchChange = () => dispatch(controlChangeMethod(control.props.value));
+  } else {
+    dispatchChange = error => dispatch(controlChangeMethod(error));
+  }
 
-  let { controlPropsMap } = options;
+  eventActions[updateOn].push(updaterFn(dispatchChange));
+
+  if (props.validators) {
+    const dispatchValidate = value => {
+      const validity = mapValues(
+        props.validators,
+        validator => validator(getValue(value))
+      );
+
+      dispatch(setValidity(model, validity));
+
+      return value;
+    };
+
+    eventActions[validateOn].push(dispatchValidate);
+  }
+
+  if (props.asyncValidators) {
+    const dispatchAsyncValidate = value => {
+      mapValues(props.asyncValidators,
+        (validator, key) => dispatch(asyncSetValidity(model,
+          (_, done) => {
+            const outerDone = valid => done({ [key]: valid });
+
+            validator(getValue(value), outerDone);
+          })
+        )
+      );
+
+      return value;
+    };
+
+    eventActions[asyncValidateOn].push(dispatchAsyncValidate);
+  }
+
+  return mapValues(eventActions, _actions => compose(..._actions));
+}
+
+function createFieldProps(control, props, options) {
+  const { model, modelValue } = props;
+  const controlType = getControlType(control, options);
+
+  const { controlPropsMap: _controlPropsMap } = options;
 
   if (!controlType) {
     return false;
   }
 
   return {
-    ...controlPropsMap[controlType]({
+    ..._controlPropsMap[controlType]({
       model,
       modelValue,
       ...control.props,
-      ...sequenceEventActions(control, props, options)
-    })
+      ...sequenceEventActions(control, props, options),
+    }),
   };
-}
-
-function sequenceEventActions(control, props, options) {
-  let {
-    dispatch,
-    model
-  } = props;
-  let controlType = props.type || getControlType(control, options);
-  let value = control.props.value;
-
-  let updateOn = (typeof props.updateOn === 'function')
-    ? 'onChange'
-    : `on${capitalize(props.updateOn || 'change')}`;
-  let validateOn = `on${capitalize(props.validateOn || 'change')}`;
-  let asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
-
-  let updaterFn = (typeof updater === 'function')
-    ? updater
-    : identity;
-
-  let eventActions = {
-    onFocus: [() => dispatch(focus(model))],
-    onBlur: [() => dispatch(blur(model))],
-    onChange: []
-  };
-
-  let controlAction = (controlActionMap[control.props.type] || controlActionMap.default)(props);
-
-  let controlChangeMethod = changeMethod(
-    model,
-    props.value, controlAction, props.parser);
-
-  let dispatchChange = control.props.hasOwnProperty('value')
-    && isReadOnlyValue(control)
-    ? () => dispatch(controlChangeMethod(value))
-    : (e) => dispatch(controlChangeMethod(e));
-
-  eventActions[updateOn].push(updaterFn(dispatchChange));
-
-  if (props.validators) {
-    let dispatchValidate = (value) => {
-      let validity = mapValues(props.validators,
-        (validator) => validator(getValue(value)));
-
-      dispatch(setValidity(model, validity));
-
-      return value;
-    }
-
-    eventActions[validateOn].push(dispatchValidate);
-  }
-
-  if (props.asyncValidators) {
-    let dispatchAsyncValidate = (value) => {
-      mapValues(props.asyncValidators,
-        (validator, key) => dispatch(asyncSetValidity(model, (_, done) => {
-          const outerDone = (valid) => done({ [key]: valid });
-
-          validator(getValue(value), outerDone);
-        })));
-
-      return value;
-    }
-
-    eventActions[asyncValidateOn].push(dispatchAsyncValidate);
-  }
-
-  return mapValues(eventActions, (actions) => compose(...actions));
 }
 
 function createFieldControlComponent(control, props, options) {
-  if (!control
-    || !control.props
-    || Object.hasOwnProperty(control.props, 'modelValue')
-  ) return control;
+  if (!control || !control.props || Object.hasOwnProperty(control.props, 'modelValue')) {
+    return control;
+  }
 
   const controlProps = createFieldProps(control, props, options);
 
-  return !controlProps
-    ? React.cloneElement(
-        control,
-        {
-          children: React.Children.map(
-            control.props.children,
-            (child) => createFieldControlComponent(
-              child,
-              { ...props, ...child.props },
-              options)
+  if (!controlProps) {
+    return React.cloneElement(
+      control, {
+        children: React.Children.map(
+          control.props.children,
+          child => createFieldControlComponent(
+            child,
+            { ...props, ...child.props },
+            options
           )
-        })
-    : <Control
-        {...controlProps}
-        modelValue={props.modelValue}
-        control={control} />;
+        ),
+      }
+    );
+  }
+
+  /* eslint-disable react/prop-types */
+  // TODO: Track down where to set correct propType for modelValue
+  return <Control {...controlProps} modelValue={props.modelValue} control={control} />;
+  /* eslint-enable react/prop-types */
 }
 
 function getFieldWrapper(props) {
-  if (!props.component) {
-    if (props.className || props.children.length > 1) {
-      return 'div';
-    }
-
-    return null;
+  if (props.component) {
+    return props.component;
   }
 
-  return props.component;
+  if (props.className || props.children.length > 1) {
+    return 'div';
+  }
+
+  return null;
 }
 
-export function createFieldClass(
-  customControlPropsMap = {}
-) {
+function createFieldClass(customControlPropsMap = {}) {
   const options = {
     controlPropsMap: {
       ...controlPropsMap,
-      ...customControlPropsMap
-    }
+      ...customControlPropsMap,
+    },
   };
 
-  class Field extends React.Component {
-    static propTypes = {
-      model: React.PropTypes.string.isRequired,
-      updateOn: React.PropTypes.oneOfType([
-        React.PropTypes.func,
-        React.PropTypes.oneOf([
-          'change',
-          'blur',
-          'focus'
-        ])
-      ]),
-      validators: React.PropTypes.object,
-      asyncValidators: React.PropTypes.object,
-      parser: React.PropTypes.func,
-      component: React.PropTypes.oneOfType([
-        React.PropTypes.func,
-        React.PropTypes.string
-      ])
-    };
-
+  class Field extends Component {
     render() {
       const { props } = this;
-      let component = getFieldWrapper(props);
+      const component = getFieldWrapper(props);
 
       if (component) {
         return React.createElement(
@@ -280,7 +243,7 @@ export function createFieldClass(
           props,
           React.Children.map(
             props.children,
-            (child) => createFieldControlComponent(child, props, options))
+            child => createFieldControlComponent(child, props, options))
         );
       }
 
@@ -288,7 +251,30 @@ export function createFieldClass(
     }
   }
 
+  Field.propTypes = {
+    asyncValidators: PropTypes.object,
+    component: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.string,
+    ]),
+    model: PropTypes.string.isRequired,
+    parser: PropTypes.func,
+    updateOn: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.oneOf([
+        'change',
+        'blur',
+        'focus',
+      ]),
+    ]),
+    validators: PropTypes.object,
+  };
+
   return connect(selector)(Field);
 }
 
+export {
+  controlPropsMap,
+  createFieldClass,
+};
 export default createFieldClass(controlPropsMap);

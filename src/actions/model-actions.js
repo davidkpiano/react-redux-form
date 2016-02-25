@@ -1,18 +1,16 @@
+import _get from 'lodash/get';
 import endsWith from 'lodash/endsWith';
-import get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
 import icepick from 'icepick';
+import isEqual from 'lodash/isEqual';
 
-import * as actionTypes from '../action-types';
+import actionTypes from '../action-types';
 
 function isEvent(event) {
   return !!(event && event.stopPropagation && event.preventDefault);
 }
 
 function getValue(event) {
-  return isEvent(event)
-    ? event.target.value
-    : event;
+  return isEvent(event) ? event.target.value : event;
 }
 
 function isMulti(model) {
@@ -22,103 +20,98 @@ function isMulti(model) {
 const change = (model, value) => ({
   type: actionTypes.CHANGE,
   model,
+  multi: isMulti(model),
   value: getValue(value),
-  multi: isMulti(model)
 });
 
 const xor = (model, item) => (dispatch, getState) => {
-  let state = get(getState(), model, []);
-
-  let stateWithoutItem = state.filter((stateItem) => !isEqual(stateItem, item));
-
-  let value = state.length === stateWithoutItem.length
-    ? [...state, item]
-    : stateWithoutItem;
+  const state = _get(getState(), model, []);
+  const stateWithoutItem = state.filter(stateItem => !isEqual(stateItem, item));
+  const value = (state.length === stateWithoutItem.length) ? [...state, item] : stateWithoutItem;
 
   dispatch({
     type: actionTypes.CHANGE,
     model,
-    value
-  });
-}
-
-const push = (model, item = null) => (dispatch, getState) => {
-  let collection = get(getState(), model);
-  let value = [...(collection || []), item];
-
-  dispatch({
-    type: actionTypes.CHANGE,
-    model,
-    value
-  });
-}
-
-const toggle = (model) => (dispatch, getState) => {
-  let value = !get(getState(), model);
-
-  dispatch({
-    type: actionTypes.CHANGE,
-    model,
-    value
-  });
-}
-
-const filter = (model, iteratee = (a) => a) => (dispatch, getState) => {
-  let collection = get(getState(), model);
-  let value = collection.filter(iteratee);
-
-  dispatch({  
-    type: actionTypes.CHANGE,
-    model,
-    value
+    value,
   });
 };
 
-const reset = (model) => ({
-  type: actionTypes.RESET,
-  model
-});
+const push = (model, item = null) => (dispatch, getState) => {
+  const collection = _get(getState(), model);
+  const value = [...(collection || []), item];
 
-const map = (model, iteratee = (a) => a) => (dispatch, getState) => {
-  let collection = get(getState(), model, []);
-  let value = collection.map(iteratee);
-
-  dispatch({  
+  dispatch({
     type: actionTypes.CHANGE,
     model,
-    value
+    value,
+  });
+};
+
+const toggle = model => (dispatch, getState) => {
+  const value = !_get(getState(), model);
+
+  dispatch({
+    type: actionTypes.CHANGE,
+    model,
+    value,
+  });
+};
+
+const filter = (model, iterate = a => a) => (dispatch, getState) => {
+  const collection = _get(getState(), model);
+  const value = collection.filter(iterate);
+
+  dispatch({
+    type: actionTypes.CHANGE,
+    model,
+    value,
+  });
+};
+
+const reset = model => ({
+  type: actionTypes.RESET,
+  model,
+});
+
+const map = (model, iterate = a => a) => (dispatch, getState) => {
+  const collection = _get(getState(), model, []);
+  const value = collection.map(iterate);
+
+  dispatch({
+    type: actionTypes.CHANGE,
+    model,
+    value,
   });
 };
 
 const remove = (model, index) => (dispatch, getState) => {
-  let collection = get(getState(), model, []);
-
-  dispatch({  
-    type: actionTypes.CHANGE,
-    model,
-    value: icepick.splice(collection, index, 1)
-  });
-};
-
-const merge = (model, values) => (dispatch, getState) => {
-  let value = get(getState(), model, {});
+  const collection = _get(getState(), model, []);
 
   dispatch({
     type: actionTypes.CHANGE,
     model,
-    value: icepick.merge(value, values)
+    value: icepick.splice(collection, index, 1),
   });
 };
 
-export {
+const merge = (model, values) => (dispatch, getState) => {
+  const value = _get(getState(), model, {});
+
+  dispatch({
+    type: actionTypes.CHANGE,
+    model,
+    value: icepick.merge(value, values),
+  });
+};
+
+export default {
   change,
-  reset,
-  xor,
-  toggle,
   filter,
-  reset,
   map,
+  merge,
   push,
   remove,
-  merge
-}
+  reset,
+  toggle,
+  xor,
+};
