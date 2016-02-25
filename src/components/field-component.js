@@ -87,9 +87,8 @@ function getControlType(control, options) {
   }
 }
 
-function sequenceEventActions(control, props, options) {
+function sequenceEventActions(control, props) {
   const { dispatch, model } = props;
-  const controlType = props.type || getControlType(control, options);
 
   const updateOn = (typeof props.updateOn === 'function')
     ? 'onChange'
@@ -111,7 +110,7 @@ function sequenceEventActions(control, props, options) {
     onChange: [],
   };
 
-  const controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
+  const controlAction = (controlActionMap[control.props.type] || controlActionMap.default)(props);
 
   const controlChangeMethod = changeMethod(
     model,
