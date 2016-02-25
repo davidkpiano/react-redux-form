@@ -1,5 +1,5 @@
 import endsWith from 'lodash/endsWith';
-import get from 'lodash/get';
+import _get from 'lodash/get';
 import isEqual from 'lodash/isEqual';
 import icepick from 'icepick';
 
@@ -27,7 +27,7 @@ const change = (model, value) => ({
 });
 
 const xor = (model, item) => (dispatch, getState) => {
-  let state = get(getState(), model, []);
+  let state = _get(getState(), model, []);
 
   let stateWithoutItem = state.filter((stateItem) => !isEqual(stateItem, item));
 
@@ -43,7 +43,7 @@ const xor = (model, item) => (dispatch, getState) => {
 }
 
 const push = (model, item = null) => (dispatch, getState) => {
-  let collection = get(getState(), model);
+  let collection = _get(getState(), model);
   let value = [...(collection || []), item];
 
   dispatch({
@@ -54,7 +54,7 @@ const push = (model, item = null) => (dispatch, getState) => {
 }
 
 const toggle = (model) => (dispatch, getState) => {
-  let value = !get(getState(), model);
+  let value = !_get(getState(), model);
 
   dispatch({
     type: actionTypes.CHANGE,
@@ -64,7 +64,7 @@ const toggle = (model) => (dispatch, getState) => {
 }
 
 const filter = (model, iteratee = (a) => a) => (dispatch, getState) => {
-  let collection = get(getState(), model);
+  let collection = _get(getState(), model);
   let value = collection.filter(iteratee);
 
   dispatch({  
@@ -80,7 +80,7 @@ const reset = (model) => ({
 });
 
 const map = (model, iteratee = (a) => a) => (dispatch, getState) => {
-  let collection = get(getState(), model, []);
+  let collection = _get(getState(), model, []);
   let value = collection.map(iteratee);
 
   dispatch({  
@@ -91,7 +91,7 @@ const map = (model, iteratee = (a) => a) => (dispatch, getState) => {
 };
 
 const remove = (model, index) => (dispatch, getState) => {
-  let collection = get(getState(), model, []);
+  let collection = _get(getState(), model, []);
 
   dispatch({  
     type: actionTypes.CHANGE,
@@ -101,7 +101,7 @@ const remove = (model, index) => (dispatch, getState) => {
 };
 
 const merge = (model, values) => (dispatch, getState) => {
-  let value = get(getState(), model, {});
+  let value = _get(getState(), model, {});
 
   dispatch({
     type: actionTypes.CHANGE,
