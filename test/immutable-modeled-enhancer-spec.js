@@ -3,8 +3,8 @@ import Immutable from 'immutable';
 
 const { assert } = chai;
 
-import { actions, actionTypes } from '../lib';
-import { modeled } from '../lib/immutable';
+import { actions, actionTypes } from '../src';
+import { modeled } from '../src/immutable';
 
 describe('immutable modeled() reducer enhancer', () => {
   const initialState = Immutable.fromJS({

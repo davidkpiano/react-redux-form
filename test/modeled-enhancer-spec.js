@@ -19,14 +19,14 @@ describe('modeled() reducer enhancer', () => {
       return {
         ...state,
         full: state.foo + state.bar
-      }
+      };
     }
 
     if (action.type === actionTypes.RESET) {
       return {
         ...state,
         reset: true
-      }
+      };
     }
 
     return state;
@@ -77,7 +77,7 @@ describe('modeled() reducer enhancer', () => {
     const changedState = {
       foo: 'changed',
       bar: 'changed'
-    }
+    };
 
     assert.deepEqual(
       modeledReducer(changedState, actions.reset('test.foo')),

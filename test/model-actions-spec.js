@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 
-import { actions, createModelReducer } from '../lib';
+import { actions, createModelReducer } from '../src';
 
 describe('RSF model actions', () => {
   describe('change()', () => {
@@ -90,8 +90,8 @@ describe('RSF model actions', () => {
           expected: { foo: [123] }
         },
         {
-          init: { foo: ['primitive', {'a': 'b'}] },
-          params: ['test.foo', {'a': 'b'}],
+          init: { foo: ['primitive', { 'a': 'b' }] },
+          params: ['test.foo', { 'a': 'b' }],
           expected: { foo: ['primitive'] }
         }
       ],
@@ -127,14 +127,14 @@ describe('RSF model actions', () => {
         {
           init: { foo: { bar: 'baz', untouched: 'intact' } },
           params: ['test.foo', { 'bar': 'new', 'one': 'two' }],
-          expected: { foo: { bar: 'new', 'one': 'two', 'untouched': 'intact' }}
+          expected: { foo: { bar: 'new', 'one': 'two', 'untouched': 'intact' } }
         }
       ]
-    }
+    };
 
     Object.keys(actionTests).map((action) => {
       describe(`${action}()`, () => {
-        actionTests[action].map((test) => {        
+        actionTests[action].map((test) => {
           let { init, params, expected } = test;
           it('should modify the model to the expected result', (done) => {
             const reducer = createModelReducer('test');
@@ -142,12 +142,12 @@ describe('RSF model actions', () => {
               done(assert.deepEqual(
                 reducer(init, action),
                 expected));
-            }
+            };
             const getState = () => ({ test: init });
 
             actions[action](...params)(dispatch, getState);
           });
-        })
+        });
       });
     });
   });

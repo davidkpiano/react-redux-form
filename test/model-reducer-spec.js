@@ -1,11 +1,11 @@
 import { assert } from 'chai';
 import { compose } from 'redux';
 
-import { actions, createModelReducer } from '../lib';
+import { actions, createModelReducer } from '../src';
 
 import {
   createModelReducer as immutableCreateModelReducer
-} from '../lib/immutable';
+} from '../src/immutable';
 import Immutable from 'immutable';
 
 describe('createModelReducer()', () => {
@@ -65,7 +65,7 @@ describe('createModelReducer()', () => {
         ...state,
         foo: deepReducer(state.foo, action)
       };
-    }
+    };
 
     assert.deepEqual(
       shallowReducer(undefined, {}),
@@ -83,7 +83,7 @@ describe('createModelReducer()', () => {
       shallowReducer(undefined, actions.change('test.foo.bar[1]', 'two')),
       { original: 'untouched', foo: { bar: [1, 'two', 3] } });
   });
-  
+
   it('should handle model at deep state path', () => {
     const reducer = createModelReducer('forms.test');
 

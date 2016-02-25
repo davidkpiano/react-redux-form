@@ -6,7 +6,7 @@ import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
-import { Field as NativeField } from '../lib/native';
+import { Field as NativeField } from '../src/native';
 
 chai.use(chaiSubset);
 
@@ -18,8 +18,8 @@ import {
   actions,
   createFormReducer,
   createModelReducer,
-  controls
-} from '../lib';
+  controls,
+} from '../src';
 
 describe('controls props mapping', () => {
   it('should exist', () => {
@@ -31,7 +31,7 @@ describe('createFieldClass()', () => {
   it('should exist as a function', () => {
     assert.isFunction(createFieldClass);
   });
-})
+});
 
 describe('custom <Field /> components with createFieldClass()', () => {
   const CustomField = createFieldClass({
@@ -67,7 +67,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
         <div>
           <input onChange={(e) => onChange(e)} />
         </div>
-      )
+      );
     }
   }
 
@@ -160,10 +160,10 @@ describe('React Native <Field /> components', () => {
     // Placeholder div, for now
     class TextField extends React.Component {
       render() {
-        return <div />
+        return <div />;
       }
     }
 
-    assert.ok(<NativeField model="foo.bar"><TextField/></NativeField>);
+    assert.ok(<NativeField model="foo.bar"><TextField /></NativeField>);
   });
 });

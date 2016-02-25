@@ -10,7 +10,7 @@ chai.use(chaiSubset);
 
 const { assert } = chai;
 
-import { Field, actions, createFormReducer, createModelReducer, initialFieldState } from '../lib';
+import { Field, actions, createFormReducer, createModelReducer, initialFieldState } from '../src';
 
 describe('<Field /> component', () => {
   const textFieldElements = [
@@ -23,9 +23,9 @@ describe('<Field /> component', () => {
 
   it('should wrap child components in a <div> if more than one', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        testForm: createFormReducer('test'),
-        test: createModelReducer('test', { foo: 'bar' })
-      }));
+      testForm: createFormReducer('test'),
+      test: createModelReducer('test', { foo: 'bar' })
+    }));
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Field model="test.foo">
@@ -46,8 +46,8 @@ describe('<Field /> component', () => {
 
   it('should not wrap child components in a <div> if only one', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        test: createModelReducer('test', { foo: 'bar' })
-      }));
+      test: createModelReducer('test', { foo: 'bar' })
+    }));
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Field model="test.foo">
@@ -119,7 +119,7 @@ describe('<Field /> component', () => {
           'bar');
       });
 
-      it('should dispatch a focus event when focused', () => {    
+      it('should dispatch a focus event when focused', () => {
         TestUtils.Simulate.focus(node);
 
         assert.containSubset(
@@ -127,7 +127,7 @@ describe('<Field /> component', () => {
           { focus: true, blur: false });
       });
 
-      it('should dispatch a blur event when blurred', () => {    
+      it('should dispatch a blur event when blurred', () => {
         TestUtils.Simulate.blur(node);
 
         assert.containSubset(
@@ -214,7 +214,7 @@ describe('<Field /> component', () => {
       </Provider>
     );
 
-    const [ radioOne, radioTwo ] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+    const [radioOne, radioTwo] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
 
     it('should initially set the radio button matching the initial state to checked', () => {
       assert.equal(radioTwo.checked, true);
@@ -346,7 +346,7 @@ describe('<Field /> component', () => {
     it('should give each checkbox a name attribute of the model', () => {
       checkboxes.forEach((checkbox) => {
         assert.equal(checkbox.name, 'test.foo[]');
-      })
+      });
     });
 
     it('should dispatch a change event when changed', () => {
@@ -394,7 +394,7 @@ describe('<Field /> component', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
       test: createModelReducer('test', {
-        foo: "one"
+        foo: 'one'
       })
     }));
 
@@ -465,7 +465,7 @@ describe('<Field /> component', () => {
               bad: () => false,
               custom: (val) => val !== 'invalid'
             }}>
-            <input type="text"/>
+            <input type="text" />
           </Field>
         </Provider>
       );
@@ -507,7 +507,7 @@ describe('<Field /> component', () => {
               custom: (val) => val !== 'invalid'
             }}
             validateOn="blur">
-            <input type="text"/>
+            <input type="text" />
           </Field>
         </Provider>
       );
@@ -549,7 +549,7 @@ describe('<Field /> component', () => {
               testValid: (val, done) => setTimeout(() => done(true), 10)
             }}
             asyncValidateOn="blur">
-            <input type="text"/>
+            <input type="text" />
           </Field>
         </Provider>
       );
@@ -589,7 +589,7 @@ describe('<Field /> component', () => {
               testValid: (val, done) => setTimeout(() => done(false), 10)
             }}
             asyncValidateOn="blur">
-            <input type="text"/>
+            <input type="text" />
           </Field>
         </Provider>
       );
@@ -641,13 +641,13 @@ describe('<Field /> component', () => {
             <button onClick={() => this.setState({ options: [1, 2, 3] })} />
             <Field model="test.foo">
               <select>
-              { this.state.options.map((option, i) => 
+              { this.state.options.map((option, i) =>
                 <option key={i} value={ option } />
               )}
               </select>
             </Field>
           </div>
-        )
+        );
       }
     }
 
@@ -693,7 +693,7 @@ describe('<Field /> component', () => {
     it('should wrap children with specified component (class)', () => {
       class Wrapper extends React.Component {
         render() {
-          return <main className="wrapper">{ this.props.children }</main>
+          return <main className="wrapper">{ this.props.children }</main>;
         }
       }
 
@@ -712,7 +712,7 @@ describe('<Field /> component', () => {
 
     it('should wrap children with specified component (function)', () => {
       function Wrapper(props) {
-        return <section className="wrapper">{props.children}</section>
+        return <section className="wrapper">{props.children}</section>;
       }
 
       const field = TestUtils.renderIntoDocument(

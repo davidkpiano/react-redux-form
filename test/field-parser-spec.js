@@ -13,7 +13,7 @@ const { assert } = chai;
 import {
   Field,
   createModelReducer
-} from '../lib';
+} from '../src';
 
 describe('<Field parser={...} />', () => {
   it('should parse the changed values given a parser function', () => {

@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import { actions, createFormReducer, initialFieldState, getField } from '../lib';
+import { actions, createFormReducer, initialFieldState, getField } from '../src';
 
 describe('createFormReducer()', () => {
   it('should create a reducer given a model', () => {

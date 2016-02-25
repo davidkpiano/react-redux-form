@@ -14,9 +14,9 @@ import {
   createFormReducer,
   initialFieldState,
   actionTypes
-} from '../lib';
+} from '../src';
 
-import { initialFormState } from '../lib/reducers/form-reducer';
+import { initialFormState } from '../src/reducers/form-reducer';
 
 describe('RSF field actions', () => {
   describe('setViewValue()', () => {
@@ -88,7 +88,7 @@ describe('RSF field actions', () => {
   });
 
   describe('focus()', () => {
-    it('should set the focus state of the field to true and the blur state to false', () => {    
+    it('should set the focus state of the field to true and the blur state to false', () => {
       const reducer = createFormReducer('test');
 
       assert.containSubset(
@@ -205,7 +205,7 @@ describe('RSF field actions', () => {
           dirty: true,
           pristine: false
         });
-    })
+    });
   });
 
   describe('setPending()', () => {
@@ -381,7 +381,7 @@ describe('RSF field actions', () => {
       let validity = {
         good: true,
         bad: false
-      }
+      };
 
       assert.containSubset(
         reducer(undefined, actions.setValidity('test.foo', validity))
@@ -558,7 +558,7 @@ describe('RSF field actions', () => {
       let errors = {
         good: true,
         bad: false
-      }
+      };
 
       assert.containSubset(
         reducer(undefined, actions.setErrors('test.foo', errors))
@@ -790,11 +790,11 @@ describe('RSF field actions', () => {
     it('should asynchronously call setValidity() action', (testDone) => {
       const reducer = createFormReducer('test');
       const dispatch = (action) => {
-        if (action.type === 'rsf/setValidity') {        
+        if (action.type === 'rsf/setValidity') {
           testDone(assert.containSubset(
             reducer(undefined, action)
               .fields['foo'],
-              {
+            {
               valid: false,
               errors: {
                 good: false,
@@ -819,10 +819,10 @@ describe('RSF field actions', () => {
     it('should work with forms to asynchronously call setValidity() action', (testDone) => {
       const reducer = createFormReducer('test');
       const dispatch = (action) => {
-        if (action.type === 'rsf/setValidity') {        
+        if (action.type === 'rsf/setValidity') {
           testDone(assert.containSubset(
             reducer(undefined, action),
-              {
+            {
               valid: false,
               errors: {
                 good: false,
@@ -857,8 +857,8 @@ describe('RSF field actions', () => {
           pendingStates.push(action.pending);
 
           assert.equal(state.fields['foo'].pending, action.pending);
-          
-          if (action.pending === false) { 
+
+          if (action.pending === false) {
             testDone(assert.deepEqual(
               pendingStates,
               [true, false]));
@@ -886,8 +886,8 @@ describe('RSF field actions', () => {
           pendingStates.push(action.pending);
 
           assert.equal(state.pending, action.pending);
-          
-          if (action.pending === false) { 
+
+          if (action.pending === false) {
             testDone(assert.deepEqual(
               pendingStates,
               [true, false]));
@@ -914,7 +914,7 @@ describe('RSF field actions', () => {
       }
     });
 
-    const mockStore = configureMockStore([ thunk ]);
+    const mockStore = configureMockStore([thunk]);
 
     it('should exist', () => {
       assert.isFunction(actions.submit);

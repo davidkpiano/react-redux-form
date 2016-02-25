@@ -1,10 +1,10 @@
 import { assert } from 'chai';
 
-import { actions } from '../lib';
+import { actions } from '../src';
 
 import {
   createModelReducer as immutableCreateModelReducer
-} from '../lib/immutable';
+} from '../src/immutable';
 import Immutable from 'immutable';
 
 describe('immutable createModelReducer()', () => {
@@ -63,7 +63,7 @@ describe('immutable createModelReducer()', () => {
     const deepReducer = immutableCreateModelReducer('test.foo');
     const shallowReducer = (state = Immutable.fromJS({ original: 'untouched', foo: model }), action) => {
       return state.set('foo', deepReducer(state.get('foo'), action));
-    }
+    };
 
     assert.ok(
       shallowReducer(undefined, {})
@@ -85,7 +85,7 @@ describe('immutable createModelReducer()', () => {
         .equals(Immutable.fromJS({ original: 'untouched', foo: { bar: [1, 'two', 3] } }))
     );
   });
-  
+
   it('should handle model at deep state path', () => {
     const reducer = immutableCreateModelReducer('forms.test', Immutable.Map());
 

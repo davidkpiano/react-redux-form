@@ -1,9 +1,9 @@
 import { assert } from 'chai';
 
-import actions from '../lib/actions';
+import actions from '../src/actions';
 
 describe('RSF model action creators', () => {
-  describe('actions.change()', () => {  
+  describe('actions.change()', () => {
     it('should return an action', () => {
       assert.deepEqual(
         actions.change('foo.bar', 'baz'),
@@ -42,7 +42,7 @@ describe('RSF model action creators', () => {
       };
       let getState = () => ({
         foo: {
-          bar: [ 1, 2, 3 ]
+          bar: [1, 2, 3]
         }
       });
 
@@ -56,11 +56,11 @@ describe('RSF model action creators', () => {
       let dispatch = (action) => {
         done(assert.deepEqual(
           action.value,
-          [ 1, 3 ]));
+          [1, 3]));
       };
       let getState = () => ({
         foo: {
-          bar: [ 1, 2, 3 ]
+          bar: [1, 2, 3]
         }
       });
 
@@ -78,7 +78,7 @@ describe('RSF model action creators', () => {
       };
       let getState = () => ({
         foo: {
-          bar: [ 1, 2, 3 ]
+          bar: [1, 2, 3]
         }
       });
 
@@ -92,11 +92,11 @@ describe('RSF model action creators', () => {
       let dispatch = (action) => {
         done(assert.deepEqual(
           action.value,
-          [ 1, 2, 3, 4 ]));
+          [1, 2, 3, 4]));
       };
       let getState = () => ({
         foo: {
-          bar: [ 1, 2, 3 ]
+          bar: [1, 2, 3]
         }
       });
 
@@ -149,7 +149,7 @@ describe('RSF model action creators', () => {
       };
       let getState = () => ({
         foo: {
-          bar: [ 1, 2, 3, 4 ]
+          bar: [1, 2, 3, 4]
         }
       });
 
@@ -163,11 +163,11 @@ describe('RSF model action creators', () => {
       let dispatch = (action) => {
         done(assert.deepEqual(
           action.value,
-          [ 2, 4 ]));
+          [2, 4]));
       };
       let getState = () => ({
         foo: {
-          bar: [ 1, 2, 3, 4 ]
+          bar: [1, 2, 3, 4]
         }
       });
 
@@ -185,7 +185,7 @@ describe('RSF model action creators', () => {
       };
       let getState = () => ({
         foo: {
-          bar: [ 1, 2, 3 ]
+          bar: [1, 2, 3]
         }
       });
 
@@ -199,11 +199,11 @@ describe('RSF model action creators', () => {
       let dispatch = (action) => {
         done(assert.deepEqual(
           action.value,
-          [ 2, 4, 6 ]));
+          [2, 4, 6]));
       };
       let getState = () => ({
         foo: {
-          bar: [ 1, 2, 3 ]
+          bar: [1, 2, 3]
         }
       });
 
@@ -221,7 +221,7 @@ describe('RSF model action creators', () => {
       };
       let getState = () => ({
         foo: {
-          bar: [ 1, 2, 3, 4 ]
+          bar: [1, 2, 3, 4]
         }
       });
 
@@ -235,11 +235,11 @@ describe('RSF model action creators', () => {
       let dispatch = (action) => {
         done(assert.deepEqual(
           action.value,
-          [ 1, 2, 4 ]));
+          [1, 2, 4]));
       };
       let getState = () => ({
         foo: {
-          bar: [ 1, 2, 3, 4 ]
+          bar: [1, 2, 3, 4]
         }
       });
 
@@ -315,4 +315,4 @@ describe('RSF field action creators', () => {
         });
     });
   });
-})
+});
