@@ -1,0 +1,16 @@
+{
+  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "new-cap": [
+      2, {
+        "capIsNewExceptions": ["List", "Map"]
+      }
+    ],
+    "arrow-parens": [2, "as-needed"]
+  }
+}

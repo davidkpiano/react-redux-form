@@ -1,12 +1,5 @@
 import { assert } from 'chai';
-import { compose } from 'redux';
-
-import { actions, createModelReducer } from '../lib';
-
-import {
-  createModelReducer as immutableCreateModelReducer
-} from '../lib/immutable';
-import Immutable from 'immutable';
+import { actions, createModelReducer } from '../src';
 
 describe('createModelReducer()', () => {
   it('should create a reducer given a model', () => {
@@ -27,7 +20,7 @@ describe('createModelReducer()', () => {
     const model = { foo: 'bar' };
     const reducer = createModelReducer('test', model);
     const externalAction = {
-      type: 'EXTERNAL_ACTION'
+      type: 'EXTERNAL_ACTION',
     };
 
     assert.deepEqual(
@@ -58,14 +51,12 @@ describe('createModelReducer()', () => {
   });
 
   it('should be able to handle models with depth > 1', () => {
-    const model = { 'bar' : [1, 2, 3] };
+    const model = { bar: [1, 2, 3] };
     const deepReducer = createModelReducer('test.foo');
-    const shallowReducer = (state = { original: 'untouched', foo: model }, action) => {
-      return {
-        ...state,
-        foo: deepReducer(state.foo, action)
-      };
-    }
+    const shallowReducer = (state = { original: 'untouched', foo: model }, action) => ({
+      ...state,
+      foo: deepReducer(state.foo, action),
+    });
 
     assert.deepEqual(
       shallowReducer(undefined, {}),
@@ -83,7 +74,7 @@ describe('createModelReducer()', () => {
       shallowReducer(undefined, actions.change('test.foo.bar[1]', 'two')),
       { original: 'untouched', foo: { bar: [1, 'two', 3] } });
   });
-  
+
   it('should handle model at deep state path', () => {
     const reducer = createModelReducer('forms.test');
 

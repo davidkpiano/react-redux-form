@@ -1,9 +1,9 @@
-import * as fieldActions from './field-actions';
-import * as modelActions from './model-actions';
+import fieldActions from './field-actions';
+import modelActions from './model-actions';
 
 const actions = {
   ...fieldActions,
-  ...modelActions
+  ...modelActions,
 };
 
 export default actions;

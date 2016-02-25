@@ -1,127 +1,119 @@
 import _get from 'lodash/get';
+import actionTypes from '../action-types';
 
-import * as actionTypes from '../action-types';
-
-const focus = (model) => ({
+const focus = model => ({
   type: actionTypes.FOCUS,
-  model
+  model,
 });
 
-const blur = (model) => ({
+const blur = model => ({
   type: actionTypes.BLUR,
-  model
+  model,
 });
 
-const validate = (model) => ({
+const validate = model => ({
   type: actionTypes.VALIDATE,
-  model
+  model,
 });
 
-const setPristine = (model) => ({
+const setPristine = model => ({
   type: actionTypes.SET_PRISTINE,
-  model
+  model,
 });
 
-const setDirty = (model) => ({
+const setDirty = model => ({
   type: actionTypes.SET_DIRTY,
-  model
+  model,
 });
 
-const setInitial = (model) => ({
+const setInitial = model => ({
   type: actionTypes.SET_INITIAL,
-  model
+  model,
 });
 
 const setPending = (model, pending = true) => ({
   type: actionTypes.SET_PENDING,
   model,
-  pending
+  pending,
 });
 
 const setValidity = (model, validity) => ({
   type: actionTypes.SET_VALIDITY,
   model,
-  validity
+  validity,
 });
 
 const setErrors = (model, errors) => ({
   type: actionTypes.SET_ERRORS,
   model,
-  errors
+  errors,
 });
 
-const setTouched = (model) => ({
+const setTouched = model => ({
   type: actionTypes.SET_TOUCHED,
-  model
+  model,
 });
 
-const setUntouched = (model) => ({
+const setUntouched = model => ({
   type: actionTypes.SET_UNTOUCHED,
-  model
+  model,
 });
 
-const asyncSetValidity = (model, validator) => {
-  return (dispatch, getState) => {
-    let value = _get(getState(), model);
+const asyncSetValidity = (model, validator) => (dispatch, getState) => {
+  const value = _get(getState(), model);
 
-    dispatch(setPending(model, true));
+  dispatch(setPending(model, true));
 
-    const done = (validity) => {
-      dispatch(setValidity(model, validity));
-      dispatch(setPending(model, false));
-    }; 
+  const done = validity => {
+    dispatch(setValidity(model, validity));
+    dispatch(setPending(model, false));
+  };
 
-    let immediateResult = validator(value, done);
+  const immediateResult = validator(value, done);
 
-    if (typeof immediateResult !== 'undefined') {
-      done(immediateResult);
-    }
+  if (typeof immediateResult !== 'undefined') {
+    done(immediateResult);
   }
-}
+};
 
 const setSubmitted = (model, submitted = true) => ({
   type: actionTypes.SET_SUBMITTED,
   model,
-  submitted
+  submitted,
 });
 
 const setViewValue = (model, value) => ({
   type: actionTypes.SET_VIEW_VALUE,
   model,
-  value
+  value,
 });
 
-const submit = (model, promise) => {
-  return (dispatch) => {
-    dispatch(setPending(model, true));
+const submit = (model, promise) => dispatch => {
+  dispatch(setPending(model, true));
 
-    promise.then(
-      (response) => {
-        dispatch(setSubmitted(model, true));
-        dispatch(setValidity(model, response));
-      },
-      (errors) => {
-        dispatch(setPending(model, false));
-        dispatch(setErrors(model, errors));
-      }
-    );
-  }
-}
+  promise.then(response => {
+    dispatch(setSubmitted(model, true));
+    dispatch(setValidity(model, response));
+  }).catch(error => {
+    dispatch(setPending(model, false));
+    dispatch(setErrors(model, error));
+  });
+};
 
-export {
-  focus,
-  blur,
-  validate,
-  setPristine,
-  setDirty,
-  setInitial,
-  setValidity,
-  setErrors,
+export default {
   asyncSetValidity,
+  blur,
+  focus,
+  submit,
+  setDirty,
+  setErrors,
+  setInitial,
   setPending,
+  setPristine,
   setSubmitted,
   setTouched,
   setUntouched,
+  setValidity,
   setViewValue,
-  submit
-}
+  validate,
+};

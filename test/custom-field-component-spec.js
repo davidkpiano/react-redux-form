@@ -1,25 +1,13 @@
-import React from 'react';
-import chai from 'chai';
-import chaiSubset from 'chai-subset';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
-import { Provider, connect } from 'react-redux';
-import thunk from 'redux-thunk';
+/* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
+import { assert } from 'chai';
+import React, { Component, PropTypes } from 'react';
 import TestUtils from 'react-addons-test-utils';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 
-import { Field as NativeField } from '../lib/native';
-
-chai.use(chaiSubset);
-
-const { assert } = chai;
-
-import {
-  Field,
-  createFieldClass,
-  actions,
-  createFormReducer,
-  createModelReducer,
-  controls
-} from '../lib';
+import { Field as NativeField } from '../src/native';
+import { controls, createFieldClass, createFormReducer, createModelReducer, Field } from '../src';
 
 describe('controls props mapping', () => {
   it('should exist', () => {
@@ -31,45 +19,49 @@ describe('createFieldClass()', () => {
   it('should exist as a function', () => {
     assert.isFunction(createFieldClass);
   });
-})
+});
 
 describe('custom <Field /> components with createFieldClass()', () => {
   const CustomField = createFieldClass({
-    'CustomText': (props) => ({
-      customOnChange: props.onChange
+    CustomText: props => ({
+      customOnChange: props.onChange,
     }),
-    'FamiliarText': controls.text
+    FamiliarText: controls.text,
   });
 
-  class CustomText extends React.Component {
+  class CustomText extends Component {
     handleChange(e) {
-      let { customOnChange } = this.props;
-      let value = e.target.value.toUpperCase();
+      const { customOnChange } = this.props;
+      const value = e.target.value.toUpperCase();
 
       customOnChange(value);
     }
-    render() {
-      let { customOnChange } = this.props;
 
+    render() {
       return (
         <div>
-          <input onChange={(e) => this.handleChange(e)} />
+          <input onChange={e => this.handleChange(e)} />
         </div>
       );
     }
   }
 
-  class FamiliarText extends React.Component {
+  CustomText.propTypes = { customOnChange: PropTypes.function };
+
+
+  class FamiliarText extends Component {
     render() {
-      let { onChange } = this.props;
+      const { onChange } = this.props;
 
       return (
         <div>
-          <input onChange={(e) => onChange(e)} />
+          <input onChange={e => onChange(e)} />
         </div>
-      )
+      );
     }
   }
+
+  FamiliarText.propTypes = { onChange: PropTypes.function };
 
   it('should return a Field component class', () => {
     assert.equal(CustomField.constructor, Field.constructor);
@@ -78,7 +70,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
   it('should handle custom prop mappings', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'bar' })
+      test: createModelReducer('test', { foo: 'bar' }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -103,7 +95,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
   it('should handle string prop mappings', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'bar' })
+      test: createModelReducer('test', { foo: 'bar' }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -128,7 +120,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
   it('should continue to recognize native controls', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'bar' })
+      test: createModelReducer('test', { foo: 'bar' }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -158,12 +150,12 @@ describe('React Native <Field /> components', () => {
 
   it('should map native components', () => {
     // Placeholder div, for now
-    class TextField extends React.Component {
+    class TextField extends Component {
       render() {
-        return <div />
+        return <div />;
       }
     }
 
-    assert.ok(<NativeField model="foo.bar"><TextField/></NativeField>);
+    assert.ok(<NativeField model="foo.bar"><TextField /></NativeField>);
   });
 });
