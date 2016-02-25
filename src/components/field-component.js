@@ -158,7 +158,7 @@ function sequenceEventActions(control, props, options) {
     onChange: []
   };
 
-  let controlAction = (controlActionMap[controlType] || controlActionMap.default)(props);
+  let controlAction = (controlActionMap[control.props.type] || controlActionMap.default)(props);
 
   let controlChangeMethod = changeMethod(
     model,

@@ -38,7 +38,8 @@ describe('custom <Field /> components with createFieldClass()', () => {
     'CustomText': (props) => ({
       customOnChange: props.onChange
     }),
-    'FamiliarText': controls.text
+    'FamiliarText': controls.text,
+    'InputFoo': controls.checkbox
   });
 
   class CustomText extends React.Component {
@@ -148,6 +149,47 @@ describe('custom <Field /> components with createFieldClass()', () => {
     assert.equal(
       store.getState().test.foo,
       'testing');
+  });
+
+  it('should work with mapping appropriate change actions with type="..."', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: createFormReducer('test'),
+      test: createModelReducer('test', { foo: 'bar' })
+    }));
+
+    class InputFoo extends React.Component {
+      render() {
+        return <div><input {...this.props} /></div>
+      }
+    }
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <CustomField model="test.foo">
+          <InputFoo type="checkbox" />
+        </CustomField>
+      </Provider>
+    );
+
+    const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    assert.equal(control.checked, true);
+
+    TestUtils.Simulate.change(control);
+
+    assert.equal(control.checked, false);
+
+    assert.equal(
+      store.getState().test.foo,
+      false);
+
+    TestUtils.Simulate.change(control);
+
+    assert.equal(control.checked, true);
+
+    assert.equal(
+      store.getState().test.foo,
+      true);
   });
 });
 
