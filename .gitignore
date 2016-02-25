@@ -31,3 +31,8 @@ docs/
 
 # Distributed files
 dist/
+
+# Build files
+es6/
+lib/
+umd/
