@@ -3,7 +3,7 @@ import icepick from 'icepick';
 import isEqual from 'lodash/isEqual';
 import toPath from 'lodash/toPath';
 
-import * as actionTypes from '../action-types';
+import actionTypes from '../action-types';
 
 function icepickSet(state, path, value) {
   return icepick.setIn(state, path, value);
@@ -14,7 +14,9 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
     const modelPath = toPath(model);
 
     return (state = initialState, action) => {
-      if (!action.model) return state;
+      if (!action.model) {
+        return state;
+      }
 
       const path = toPath(action.model);
 
@@ -48,18 +50,19 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
           return setter(
             state,
             localPath,
-            getter(initialState, localPath));
+            getter(initialState, localPath)
+          );
 
         default:
           return state;
       }
-    }
-  }
+    };
+  };
 }
 
 const createModelReducer = createModeler();
 
 export {
   createModeler,
-  createModelReducer
+  createModelReducer,
 };

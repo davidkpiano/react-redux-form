@@ -1,17 +1,19 @@
-import React from 'react';
+/* eslint-disable */
+// TODO: Fix all eslint issues
+import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
 
-import * as fieldActions from '../actions/field-actions';
+import actions from '../actions';
 
-class Form extends React.Component {
+class Form extends Component {
   setValidity(validators, model) {
-    let { dispatch } = this.props;
-    let value = _get(this.props, model);
-    let validity = mapValues(validators, (validator) => validator(value));
+    const { dispatch } = this.props;
+    const value = _get(this.props, model);
+    const validity = mapValues(validators, validator => validator(value));
 
-    dispatch(fieldActions.setValidity(model, validity));
+    dispatch(actions.setValidity(model, validity));
 
     return validity;
   }
@@ -19,20 +21,26 @@ class Form extends React.Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    let { validators } = this.props;
+    const { validators } = this.props;
 
-    let validity = mapValues(validators, this.setValidity, this);
+    const validity = mapValues(validators, this.setValidity, this);
   }
 
   render() {
-    let { validators, children } = this.props;
+    const { children } = this.props;
 
     return (
-      <form onSubmit={(e) => this.handleSubmit(e)}>
+      // https://github.com/airbnb/javascript/issues/659
+      <form onSubmit={e => this.handleSubmit(e)}>
         { children }
       </form>
     );
   }
 }
+
+// Form.PropTypes = {
+//   dispatch: PropTypes,
+//   children: PropTypes,
+// };
 
 export default connect(s => s)(Form);

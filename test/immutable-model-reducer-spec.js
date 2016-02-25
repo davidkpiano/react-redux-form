@@ -1,11 +1,8 @@
 import { assert } from 'chai';
+import Immutable from 'immutable';
 
 import { actions } from '../src';
-
-import {
-  createModelReducer as immutableCreateModelReducer
-} from '../src/immutable';
-import Immutable from 'immutable';
+import { createModelReducer as immutableCreateModelReducer } from '../src/immutable';
 
 describe('immutable createModelReducer()', () => {
   it('should create a reducer given a model', () => {
@@ -27,7 +24,7 @@ describe('immutable createModelReducer()', () => {
     const model = Immutable.fromJS({ foo: 'bar' });
     const reducer = immutableCreateModelReducer('test', model);
     const externalAction = {
-      type: 'EXTERNAL_ACTION'
+      type: 'EXTERNAL_ACTION',
     };
 
     assert.equal(
@@ -59,11 +56,12 @@ describe('immutable createModelReducer()', () => {
   });
 
   it('should be able to handle models with depth > 1', () => {
-    const model = Immutable.fromJS({ 'bar' : [1, 2, 3] });
+    const model = Immutable.fromJS({ bar: [1, 2, 3] });
     const deepReducer = immutableCreateModelReducer('test.foo');
-    const shallowReducer = (state = Immutable.fromJS({ original: 'untouched', foo: model }), action) => {
-      return state.set('foo', deepReducer(state.get('foo'), action));
-    };
+    const shallowReducer = (state = Immutable.fromJS({
+      original: 'untouched',
+      foo: model,
+    }), action) => state.set('foo', deepReducer(state.get('foo'), action));
 
     assert.ok(
       shallowReducer(undefined, {})

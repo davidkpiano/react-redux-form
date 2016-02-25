@@ -1,16 +1,12 @@
-import React from 'react';
-import chai from 'chai';
-import chaiSubset from 'chai-subset';
+/* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
+import React, { PropTypes } from 'react';
+import { assert } from 'chai';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
-chai.use(chaiSubset);
-
-const { assert } = chai;
-
-import { Field, actions, createFormReducer, createModelReducer, initialFieldState } from '../src';
+import { Field, actions, createFormReducer, createModelReducer } from '../src';
 
 describe('<Field /> component', () => {
   const textFieldElements = [
@@ -18,13 +14,13 @@ describe('<Field /> component', () => {
     ['input', 'password'],
     ['input', 'number'],
     ['input', 'color'],
-    ['textarea']
+    ['textarea'],
   ];
 
   it('should wrap child components in a <div> if more than one', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'bar' })
+      test: createModelReducer('test', { foo: 'bar' }),
     }));
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -46,7 +42,7 @@ describe('<Field /> component', () => {
 
   it('should not wrap child components in a <div> if only one', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      test: createModelReducer('test', { foo: 'bar' })
+      test: createModelReducer('test', { foo: 'bar' }),
     }));
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -65,7 +61,7 @@ describe('<Field /> component', () => {
 
   it('should recursively handle nested control components', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      test: createModelReducer('test', { foo: 'bar' })
+      test: createModelReducer('test', { foo: 'bar' }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -96,11 +92,11 @@ describe('<Field /> component', () => {
       'should update state when control is changed');
   });
 
-  textFieldElements.map(([element, type]) => {
-    describe(`with <${element} ${type ? 'type="' + type + '"' : ''}/>`, () => {
+  textFieldElements.map(([element, type]) => { // eslint-disable-line array-callback-return
+    describe(`with <${element} ${type ? `type="${type}"` : ''}/>`, () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         testForm: createFormReducer('test'),
-        test: createModelReducer('test', { foo: 'bar' })
+        test: createModelReducer('test', { foo: 'bar' }),
       }));
 
       const field = TestUtils.renderIntoDocument(
@@ -123,7 +119,7 @@ describe('<Field /> component', () => {
         TestUtils.Simulate.focus(node);
 
         assert.containSubset(
-          store.getState().testForm.fields['foo'],
+          store.getState().testForm.fields.foo,
           { focus: true, blur: false });
       });
 
@@ -131,7 +127,7 @@ describe('<Field /> component', () => {
         TestUtils.Simulate.blur(node);
 
         assert.containSubset(
-          store.getState().testForm.fields['foo'],
+          store.getState().testForm.fields.foo,
           { focus: false, blur: true });
       });
 
@@ -154,20 +150,20 @@ describe('<Field /> component', () => {
       });
     });
 
-    describe(`with a controlled <${element} ${type ? 'type="' + type + '"' : ''} /> component`, () => {
+    describe(`with a controlled <${element} ${type ? `type="${type}"` : ''} /> component`, () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         testForm: createFormReducer('test'),
-        test: createModelReducer('test', { foo: 'bar' })
+        test: createModelReducer('test', { foo: 'bar' }),
       }));
 
-      const TestField = connect(s => s)((props) => {
-        let { test } = props;
+      const TestField = connect(s => s)(props => {
+        const { test } = props;
 
         return (
           <Field model="test.foo">
             { React.createElement(element, {
-              type: type,
-              value: test.foo
+              type,
+              value: test.foo,
             }) }
           </Field>
         );
@@ -189,7 +185,7 @@ describe('<Field /> component', () => {
 
       it('should update the value when the controlled input is changed', () => {
         TestUtils.Simulate.change(node, {
-          target: { value: 'testing' }
+          target: { value: 'testing' },
         });
 
         assert.equal(
@@ -202,7 +198,7 @@ describe('<Field /> component', () => {
   describe('with <input type="radio" />', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'two' })
+      test: createModelReducer('test', { foo: 'two' }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -265,8 +261,8 @@ describe('<Field /> component', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
       test: createModelReducer('test', {
-        foo: true
-      })
+        foo: true,
+      }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -323,8 +319,8 @@ describe('<Field /> component', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
       test: createModelReducer('test', {
-        foo: [1]
-      })
+        foo: [1],
+      }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -344,7 +340,7 @@ describe('<Field /> component', () => {
     });
 
     it('should give each checkbox a name attribute of the model', () => {
-      checkboxes.forEach((checkbox) => {
+      checkboxes.forEach(checkbox => {
         assert.equal(checkbox.name, 'test.foo[]');
       });
     });
@@ -394,8 +390,8 @@ describe('<Field /> component', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
       test: createModelReducer('test', {
-        foo: 'one'
-      })
+        foo: 'one',
+      }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -453,18 +449,20 @@ describe('<Field /> component', () => {
     const formReducer = createFormReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer,
-      test: createModelReducer('test', {})
+      test: createModelReducer('test', {}),
     }));
 
     it('should set the proper field state for validation', () => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Field model="test.foo"
+          <Field
+            model="test.foo"
             validators={{
               good: () => true,
               bad: () => false,
-              custom: (val) => val !== 'invalid'
-            }}>
+              custom: val => val !== 'invalid',
+            }}
+          >
             <input type="text" />
           </Field>
         </Provider>
@@ -477,11 +475,11 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields['foo'].errors,
+        store.getState().testForm.fields.foo.errors,
         {
           good: false,
           bad: true,
-          custom: false
+          custom: false,
         });
 
       control.value = 'invalid';
@@ -489,24 +487,26 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields['foo'].errors,
+        store.getState().testForm.fields.foo.errors,
         {
           good: false,
           bad: true,
-          custom: true
+          custom: true,
         });
     });
 
     it('should validate on blur when validateOn prop is "blur"', () => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Field model="test.blur"
+          <Field
+            model="test.blur"
             validators={{
               good: () => true,
               bad: () => false,
-              custom: (val) => val !== 'invalid'
+              custom: val => val !== 'invalid',
             }}
-            validateOn="blur">
+            validateOn="blur"
+          >
             <input type="text" />
           </Field>
         </Provider>
@@ -519,17 +519,17 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields['blur'].errors,
+        store.getState().testForm.fields.blur.errors,
         {}, 'should not validate upon change');
 
       TestUtils.Simulate.blur(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields['blur'].errors,
+        store.getState().testForm.fields.blur.errors,
         {
           good: false,
           bad: true,
-          custom: false
+          custom: false,
         }, 'should only validate upon blur');
     });
   });
@@ -538,41 +538,43 @@ describe('<Field /> component', () => {
     const formReducer = createFormReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer,
-      test: createModelReducer('test', {})
+      test: createModelReducer('test', {}),
     }));
 
-    it('should set the proper field state for a valid async validation', (done) => {
+    it('should set the proper field state for a valid async validation', done => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Field model="test.foo"
+          <Field
+            model="test.foo"
             asyncValidators={{
-              testValid: (val, done) => setTimeout(() => done(true), 10)
+              testValid: (val, _done) => setTimeout(() => _done(true), 10),
             }}
-            asyncValidateOn="blur">
+            asyncValidateOn="blur"
+          >
             <input type="text" />
           </Field>
         </Provider>
       );
 
       const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
-      let expectedStates = [
+      const expectedStates = [
         { blur: true },
         { pending: true, valid: true }, // initially valid
         { pending: true, valid: true }, // true after validating
-        { pending: false, valid: true }
+        { pending: false, valid: true },
       ];
 
-      let actualStates = [];
+      const actualStates = [];
 
       store.subscribe(() => {
-        let state = store.getState();
+        const state = store.getState();
 
-        actualStates.push(state.testForm.fields['foo']);
+        actualStates.push(state.testForm.fields.foo);
 
-        if (actualStates.length == expectedStates.length) {
-          expectedStates.map((expected, i) => {
-            assert.containSubset(actualStates[i], expected, `${i}`);
-          });
+        if (actualStates.length === expectedStates.length) {
+          expectedStates.map((expected, i) =>
+            assert.containSubset(actualStates[i], expected, `${i}`)
+          );
 
           done();
         }
@@ -581,38 +583,40 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.blur(control);
     });
 
-    it('should set the proper field state for an invalid async validation', (done) => {
+    it('should set the proper field state for an invalid async validation', done => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Field model="test.foo"
+          <Field
+            model="test.foo"
             asyncValidators={{
-              testValid: (val, done) => setTimeout(() => done(false), 10)
+              testValid: (val, _done) => setTimeout(() => _done(false), 10),
             }}
-            asyncValidateOn="blur">
+            asyncValidateOn="blur"
+          >
             <input type="text" />
           </Field>
         </Provider>
       );
 
       const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
-      let expectedStates = [
+      const expectedStates = [
         { blur: true },
         { pending: true, valid: true }, // initially valid
         { pending: true, valid: false }, // false after validating
-        { pending: false, valid: false }
+        { pending: false, valid: false },
       ];
 
-      let actualStates = [];
+      const actualStates = [];
 
       store.subscribe(() => {
-        let state = store.getState();
+        const state = store.getState();
 
-        actualStates.push(state.testForm.fields['foo']);
+        actualStates.push(state.testForm.fields.foo);
 
-        if (actualStates.length == expectedStates.length) {
-          expectedStates.map((expected, i) => {
-            assert.containSubset(actualStates[i], expected, `${i}`);
-          });
+        if (actualStates.length === expectedStates.length) {
+          expectedStates.map((expected, i) =>
+            assert.containSubset(actualStates[i], expected, `${i}`)
+          );
 
           done();
         }
@@ -626,7 +630,7 @@ describe('<Field /> component', () => {
     const formReducer = createFormReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer,
-      test: createModelReducer('test', {})
+      test: createModelReducer('test', {}),
     }));
 
     class DynamicSelectForm extends React.Component {
@@ -635,15 +639,16 @@ describe('<Field /> component', () => {
 
         this.state = { options: [1, 2] };
       }
+
       render() {
         return (
           <div>
             <button onClick={() => this.setState({ options: [1, 2, 3] })} />
             <Field model="test.foo">
               <select>
-              { this.state.options.map((option, i) =>
-                <option key={i} value={ option } />
-              )}
+                { this.state.options.map((option, i) =>
+                  <option key={i} value={ option } />
+                )}
               </select>
             </Field>
           </div>
@@ -673,7 +678,7 @@ describe('<Field /> component', () => {
 
   describe('wrapper components with component property', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      test: createModelReducer('test', {})
+      test: createModelReducer('test', {}),
     }));
 
     it('should wrap children with specified component (string)', () => {
@@ -697,6 +702,8 @@ describe('<Field /> component', () => {
         }
       }
 
+      Wrapper.propTypes = { children: PropTypes.object };
+
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Field component={Wrapper}>
@@ -711,9 +718,11 @@ describe('<Field /> component', () => {
     });
 
     it('should wrap children with specified component (function)', () => {
+      /* eslint-disable react/prop-types */
       function Wrapper(props) {
         return <section className="wrapper">{props.children}</section>;
       }
+      /* eslint-enable react/prop-types */
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>

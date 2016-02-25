@@ -1,7 +1,5 @@
-import chai from 'chai';
+import { assert } from 'chai';
 import Immutable from 'immutable';
-
-const { assert } = chai;
 
 import { actions, actionTypes } from '../src';
 import { modeled } from '../src/immutable';
@@ -9,16 +7,16 @@ import { modeled } from '../src/immutable';
 describe('immutable modeled() reducer enhancer', () => {
   const initialState = Immutable.fromJS({
     foo: 'one',
-    bar: 'two'
+    bar: 'two',
   });
 
   const fullAction = {
-    type: 'FULL'
+    type: 'FULL',
   };
 
   const existingReducer = (state = initialState, action) => {
     if (action.type === fullAction.type) {
-      return state.set('full', state.get('foo') + state.get('bar'));
+      return state.set('full', (state.get('foo') + state.get('bar')));
     }
 
     if (action.type === actionTypes.RESET) {
@@ -52,7 +50,7 @@ describe('immutable modeled() reducer enhancer', () => {
         .equals(Immutable.fromJS({
           foo: 'one',
           bar: 'two',
-          full: 'onetwo'
+          full: 'onetwo',
         }))
     );
   });
@@ -64,7 +62,7 @@ describe('immutable modeled() reducer enhancer', () => {
       modeledReducer(undefined, actions.change('test.foo', 'test'))
         .equals(Immutable.fromJS({
           foo: 'test',
-          bar: 'two'
+          bar: 'two',
         }))
     );
   });
@@ -74,7 +72,7 @@ describe('immutable modeled() reducer enhancer', () => {
 
     const changedState = Immutable.fromJS({
       foo: 'changed',
-      bar: 'changed'
+      bar: 'changed',
     });
 
     assert.ok(
@@ -82,7 +80,7 @@ describe('immutable modeled() reducer enhancer', () => {
         .equals(Immutable.fromJS({
           foo: 'one',
           bar: 'changed',
-          reset: true
+          reset: true,
         }))
     );
   });

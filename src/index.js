@@ -1,31 +1,24 @@
-import { createModelReducer } from './reducers/model-reducer';
-import { createFormReducer, getField, initialFieldState } from './reducers/form-reducer';
+import actions from './actions';
+import actionTypes from './action-types';
 
-import * as modelActions from './actions/model-actions';
-import * as fieldActions from './actions/field-actions';
-
-import Field, { createFieldClass, controlPropsMap } from './components/field-component';
+import Field, { controlPropsMap, createFieldClass } from './components/field-component';
 import Form from './components/form-component';
-
-import * as actionTypes from './action-types';
 
 import modeled from './enhancers/modeled-enhancer';
 
-const actions = {
-  ...modelActions,
-  ...fieldActions
-}
+import { createFormReducer, initialFieldState, getField } from './reducers/form-reducer';
+import { createModelReducer } from './reducers/model-reducer';
 
 export {
-  createModelReducer,
-  createFormReducer,
-  createFieldClass,
-  controlPropsMap as controls,
   actions,
+  actionTypes,
+  controlPropsMap as controls,
+  createFieldClass,
+  createFormReducer,
+  createModelReducer,
   Field,
   Form,
   getField,
-  actionTypes,
   initialFieldState,
-  modeled
-}
+  modeled,
+};

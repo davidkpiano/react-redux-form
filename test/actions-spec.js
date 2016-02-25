@@ -1,6 +1,5 @@
 import { assert } from 'chai';
-
-import actions from '../src/actions';
+import { actions } from '../src';
 
 describe('RSF model action creators', () => {
   describe('actions.change()', () => {
@@ -11,11 +10,11 @@ describe('RSF model action creators', () => {
           model: 'foo.bar',
           multi: false,
           type: 'rsf/change',
-          value: 'baz'
+          value: 'baz',
         });
     });
 
-    it('should detect when a model is multivalue', () => {
+    it('should detect when a model is multi-value', () => {
       assert.isTrue(
         actions.change('multi.value[]', 'baz').multi);
     });
@@ -33,17 +32,17 @@ describe('RSF model action creators', () => {
   });
 
   describe('actions.xor() thunk', () => {
-    it('should return a function that dispatches a change event', (done) => {
-      let fn = actions.xor('foo.bar', 2);
-      let dispatch = (action) => {
+    it('should return a function that dispatches a change event', done => {
+      const fn = actions.xor('foo.bar', 2);
+      const dispatch = action => {
         done(assert.equal(
           action.type,
           'rsf/change'));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: [1, 2, 3]
-        }
+          bar: [1, 2, 3],
+        },
       });
 
       assert.isFunction(fn);
@@ -51,17 +50,17 @@ describe('RSF model action creators', () => {
       fn(dispatch, getState);
     });
 
-    it('should change a collection via symmetric difference', (done) => {
-      let fn = actions.xor('foo.bar', 2);
-      let dispatch = (action) => {
+    it('should change a collection via symmetric difference', done => {
+      const fn = actions.xor('foo.bar', 2);
+      const dispatch = action => {
         done(assert.deepEqual(
           action.value,
           [1, 3]));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: [1, 2, 3]
-        }
+          bar: [1, 2, 3],
+        },
       });
 
       fn(dispatch, getState);
@@ -69,17 +68,17 @@ describe('RSF model action creators', () => {
   });
 
   describe('actions.push() thunk', () => {
-    it('should return a function that dispatches a change event', (done) => {
-      let fn = actions.push('foo.bar', 4);
-      let dispatch = (action) => {
+    it('should return a function that dispatches a change event', done => {
+      const fn = actions.push('foo.bar', 4);
+      const dispatch = action => {
         done(assert.equal(
           action.type,
           'rsf/change'));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: [1, 2, 3]
-        }
+          bar: [1, 2, 3],
+        },
       });
 
       assert.isFunction(fn);
@@ -87,17 +86,17 @@ describe('RSF model action creators', () => {
       fn(dispatch, getState);
     });
 
-    it('should change a collection by pushing an item to it', (done) => {
-      let fn = actions.push('foo.bar', 4);
-      let dispatch = (action) => {
+    it('should change a collection by pushing an item to it', done => {
+      const fn = actions.push('foo.bar', 4);
+      const dispatch = action => {
         done(assert.deepEqual(
           action.value,
           [1, 2, 3, 4]));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: [1, 2, 3]
-        }
+          bar: [1, 2, 3],
+        },
       });
 
       fn(dispatch, getState);
@@ -105,17 +104,17 @@ describe('RSF model action creators', () => {
   });
 
   describe('actions.toggle() thunk', () => {
-    it('should return a function that dispatches a change event', (done) => {
-      let fn = actions.push('foo.bar');
-      let dispatch = (action) => {
+    it('should return a function that dispatches a change event', done => {
+      const fn = actions.push('foo.bar');
+      const dispatch = action => {
         done(assert.equal(
           action.type,
           'rsf/change'));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: false
-        }
+          bar: false,
+        },
       });
 
       assert.isFunction(fn);
@@ -123,16 +122,16 @@ describe('RSF model action creators', () => {
       fn(dispatch, getState);
     });
 
-    it('should toggle the model value', (done) => {
-      let fn = actions.toggle('foo.bar');
-      let dispatch = (action) => {
+    it('should toggle the model value', done => {
+      const fn = actions.toggle('foo.bar');
+      const dispatch = action => {
         done(assert.isTrue(
           action.value));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: false
-        }
+          bar: false,
+        },
       });
 
       fn(dispatch, getState);
@@ -140,17 +139,17 @@ describe('RSF model action creators', () => {
   });
 
   describe('actions.filter() thunk', () => {
-    it('should return a function that dispatches a change event', (done) => {
-      let fn = actions.filter('foo.bar', (i) => i % 2 == 0);
-      let dispatch = (action) => {
+    it('should return a function that dispatches a change event', done => {
+      const fn = actions.filter('foo.bar', i => i % 2 === 0);
+      const dispatch = action => {
         done(assert.equal(
           action.type,
           'rsf/change'));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: [1, 2, 3, 4]
-        }
+          bar: [1, 2, 3, 4],
+        },
       });
 
       assert.isFunction(fn);
@@ -158,17 +157,17 @@ describe('RSF model action creators', () => {
       fn(dispatch, getState);
     });
 
-    it('should change a collection by returning filtered items', (done) => {
-      let fn = actions.filter('foo.bar', (i) => i % 2 == 0);
-      let dispatch = (action) => {
+    it('should change a collection by returning filtered items', done => {
+      const fn = actions.filter('foo.bar', i => i % 2 === 0);
+      const dispatch = action => {
         done(assert.deepEqual(
           action.value,
           [2, 4]));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: [1, 2, 3, 4]
-        }
+          bar: [1, 2, 3, 4],
+        },
       });
 
       fn(dispatch, getState);
@@ -176,17 +175,17 @@ describe('RSF model action creators', () => {
   });
 
   describe('actions.map() thunk', () => {
-    it('should return a function that dispatches a change event', (done) => {
-      let fn = actions.map('foo.bar', (i) => i * 2);
-      let dispatch = (action) => {
+    it('should return a function that dispatches a change event', done => {
+      const fn = actions.map('foo.bar', i => i * 2);
+      const dispatch = action => {
         done(assert.equal(
           action.type,
           'rsf/change'));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: [1, 2, 3]
-        }
+          bar: [1, 2, 3],
+        },
       });
 
       assert.isFunction(fn);
@@ -194,17 +193,17 @@ describe('RSF model action creators', () => {
       fn(dispatch, getState);
     });
 
-    it('should change a collection by returning mapped items', (done) => {
-      let fn = actions.map('foo.bar', (i) => i * 2);
-      let dispatch = (action) => {
+    it('should change a collection by returning mapped items', done => {
+      const fn = actions.map('foo.bar', i => i * 2);
+      const dispatch = action => {
         done(assert.deepEqual(
           action.value,
           [2, 4, 6]));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: [1, 2, 3]
-        }
+          bar: [1, 2, 3],
+        },
       });
 
       fn(dispatch, getState);
@@ -212,17 +211,17 @@ describe('RSF model action creators', () => {
   });
 
   describe('actions.remove() thunk', () => {
-    it('should return a function that dispatches a change event', (done) => {
-      let fn = actions.remove('foo.bar', 2);
-      let dispatch = (action) => {
+    it('should return a function that dispatches a change event', done => {
+      const fn = actions.remove('foo.bar', 2);
+      const dispatch = action => {
         done(assert.equal(
           action.type,
           'rsf/change'));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: [1, 2, 3, 4]
-        }
+          bar: [1, 2, 3, 4],
+        },
       });
 
       assert.isFunction(fn);
@@ -230,17 +229,17 @@ describe('RSF model action creators', () => {
       fn(dispatch, getState);
     });
 
-    it('should change a collection by removing the item at the specified index', (done) => {
-      let fn = actions.remove('foo.bar', 2);
-      let dispatch = (action) => {
+    it('should change a collection by removing the item at the specified index', done => {
+      const fn = actions.remove('foo.bar', 2);
+      const dispatch = action => {
         done(assert.deepEqual(
           action.value,
           [1, 2, 4]));
       };
-      let getState = () => ({
+      const getState = () => ({
         foo: {
-          bar: [1, 2, 3, 4]
-        }
+          bar: [1, 2, 3, 4],
+        },
       });
 
       fn(dispatch, getState);
@@ -255,7 +254,7 @@ describe('RSF field action creators', () => {
         actions.focus('foo.bar'),
         {
           type: 'rsf/focus',
-          model: 'foo.bar'
+          model: 'foo.bar',
         });
     });
   });
@@ -266,7 +265,7 @@ describe('RSF field action creators', () => {
         actions.blur('foo.bar'),
         {
           type: 'rsf/blur',
-          model: 'foo.bar'
+          model: 'foo.bar',
         });
     });
   });
@@ -277,7 +276,7 @@ describe('RSF field action creators', () => {
         actions.setPristine('foo.bar'),
         {
           type: 'rsf/setPristine',
-          model: 'foo.bar'
+          model: 'foo.bar',
         });
     });
   });
@@ -288,7 +287,7 @@ describe('RSF field action creators', () => {
         actions.setDirty('foo.bar'),
         {
           type: 'rsf/setDirty',
-          model: 'foo.bar'
+          model: 'foo.bar',
         });
     });
   });
@@ -299,7 +298,7 @@ describe('RSF field action creators', () => {
         actions.setInitial('foo.bar'),
         {
           type: 'rsf/setInitial',
-          model: 'foo.bar'
+          model: 'foo.bar',
         });
     });
   });
@@ -311,7 +310,7 @@ describe('RSF field action creators', () => {
         {
           type: 'rsf/setValidity',
           model: 'foo.bar',
-          validity: true
+          validity: true,
         });
     });
   });
