@@ -33,6 +33,5 @@ docs/
 dist/
 
 # Build files
-es6/
 lib/
 umd/

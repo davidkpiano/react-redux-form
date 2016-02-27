@@ -248,12 +248,11 @@ function createFieldClass(customControlPropsMap = {}) {
   }
 
   Field.propTypes = {
-    asyncValidators: PropTypes.object,
+    model: PropTypes.string.isRequired,
     component: PropTypes.oneOfType([
       PropTypes.func,
       PropTypes.string,
     ]),
-    model: PropTypes.string.isRequired,
     parser: PropTypes.func,
     updateOn: PropTypes.oneOfType([
       PropTypes.func,
@@ -264,6 +263,9 @@ function createFieldClass(customControlPropsMap = {}) {
       ]),
     ]),
     validators: PropTypes.object,
+    asyncValidators: PropTypes.object,
+    validateOn: PropTypes.string,
+    asyncValidateOn: PropTypes.string
   };
 
   return connect(selector)(Field);
