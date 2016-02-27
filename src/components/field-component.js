@@ -265,7 +265,7 @@ function createFieldClass(customControlPropsMap = {}) {
     validators: PropTypes.object,
     asyncValidators: PropTypes.object,
     validateOn: PropTypes.string,
-    asyncValidateOn: PropTypes.string
+    asyncValidateOn: PropTypes.string,
   };
 
   return connect(selector)(Field);

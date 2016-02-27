@@ -10,7 +10,6 @@
       2, {
         "capIsNewExceptions": ["List", "Map"]
       }
-    ],
-    "arrow-parens": [2, "as-needed"]
+    ]
   }
 }

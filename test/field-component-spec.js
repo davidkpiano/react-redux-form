@@ -753,33 +753,33 @@ describe('<Field /> component', () => {
   });
 
   describe('updateOn prop', () => {
-
     const onEvents = [
       'change',
       'focus',
-      'blur'
+      'blur',
     ];
 
-    onEvents.map((onEvent) => {
+    onEvents.forEach((onEvent) => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         test: createModelReducer('test', { foo: 'initial' }),
       }));
 
-      it(`should update the store when updateOn="${onEvent}"`, () => {      
-        let field = TestUtils.renderIntoDocument(
+      it(`should update the store when updateOn="${onEvent}"`, () => {
+        const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
             <Field model="test.foo"
-              updateOn={ onEvent }>
+              updateOn={ onEvent }
+            >
               <input type="text" />
             </Field>
           </Provider>
         );
 
-        let control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
         assert.equal(store.getState().test.foo, 'initial');
 
-        let testValue = `${onEvent} test`;
+        const testValue = `${onEvent} test`;
 
         control.value = testValue;
 
@@ -803,18 +803,19 @@ describe('<Field /> component', () => {
         decoratorCalled = true;
 
         return change(val);
-      }
+      };
 
-      let field = TestUtils.renderIntoDocument(
+      const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Field model="test.foo"
-            updateOn={ changeDecorator }>
+            updateOn={ changeDecorator }
+          >
             <input type="text" />
           </Field>
         </Provider>
       );
 
-      let control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
       assert.equal(store.getState().test.foo, 'initial');
 
