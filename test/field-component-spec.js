@@ -789,7 +789,45 @@ describe('<Field /> component', () => {
         TestUtils.Simulate[onEvent](control);
 
         assert.equal(store.getState().test.foo, testValue);
-      })
-    })
-  })
+      });
+    });
+
+    it('should decorate the "change" action with a provided decorator', () => {
+      let decoratorCalled = false;
+
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: createModelReducer('test', { foo: 'initial' }),
+      }));
+
+      const changeDecorator = (change) => (val) => {
+        decoratorCalled = true;
+
+        return change(val);
+      }
+
+      let field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field model="test.foo"
+            updateOn={ changeDecorator }>
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      let control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      assert.equal(store.getState().test.foo, 'initial');
+
+      control.value = 'decorator test';
+
+      assert.equal(store.getState().test.foo, 'initial',
+        'Model value should not change yet');
+
+      TestUtils.Simulate.change(control);
+
+      assert.equal(store.getState().test.foo, 'decorator test');
+
+      assert.isTrue(decoratorCalled);
+    });
+  });
 });

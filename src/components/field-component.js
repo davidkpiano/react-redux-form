@@ -88,21 +88,17 @@ function getControlType(control, options) {
 }
 
 function sequenceEventActions(control, props) {
-  const { dispatch, model } = props;
+  const { dispatch, model, updateOn } = props;
 
-  const updateOn = (typeof props.updateOn === 'function')
+  const updateOnEventHandler = (typeof updateOn === 'function')
     ? 'onChange'
     : `on${capitalize(props.updateOn || 'change')}`;
   const validateOn = `on${capitalize(props.validateOn || 'change')}`;
   const asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
 
-  /**
-   * updater does not exist. temporarily hard set to identity. possible bug
-   */
-  // const updaterFn = (typeof updater === 'function')
-  //   ? updater
-  //   : identity;
-  const updaterFn = identity;
+  const updaterFn = (typeof updateOn === 'function')
+    ? updateOn
+    : identity;
 
   const eventActions = {
     onFocus: [() => dispatch(focus(model))],
@@ -123,10 +119,10 @@ function sequenceEventActions(control, props) {
   if (control.props.hasOwnProperty('value') && isReadOnlyValue(control)) {
     dispatchChange = () => dispatch(controlChangeMethod(control.props.value));
   } else {
-    dispatchChange = error => dispatch(controlChangeMethod(error));
+    dispatchChange = event => dispatch(controlChangeMethod(event));
   }
 
-  eventActions[updateOn].push(updaterFn(dispatchChange));
+  eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
 
   if (props.validators) {
     const dispatchValidate = value => {
