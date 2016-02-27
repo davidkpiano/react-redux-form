@@ -751,4 +751,45 @@ describe('<Field /> component', () => {
       assert.ok(wrapper);
     });
   });
+
+  describe('updateOn prop', () => {
+
+    const onEvents = [
+      'change',
+      'focus',
+      'blur'
+    ];
+
+    onEvents.map((onEvent) => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: createModelReducer('test', { foo: 'initial' }),
+      }));
+
+      it(`should update the store when updateOn="${onEvent}"`, () => {      
+        let field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Field model="test.foo"
+              updateOn={ onEvent }>
+              <input type="text" />
+            </Field>
+          </Provider>
+        );
+
+        let control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        assert.equal(store.getState().test.foo, 'initial');
+
+        let testValue = `${onEvent} test`;
+
+        control.value = testValue;
+
+        assert.equal(store.getState().test.foo, 'initial',
+          'Model value should not change yet');
+
+        TestUtils.Simulate[onEvent](control);
+
+        assert.equal(store.getState().test.foo, testValue);
+      })
+    })
+  })
 });
