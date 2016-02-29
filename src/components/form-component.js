@@ -14,7 +14,7 @@ class Form extends Component {
     const {
       model,
       validators,
-      onSubmit = identity,
+      onSubmit,
       dispatch
     } = this.props;
     const modelValue = _get(this.props, model);
@@ -23,8 +23,7 @@ class Form extends Component {
 
     let valid = true;
 
-    Object.keys(validators).forEach((field) => {
-      const validator = validators[field];
+    mapValues(validators, (validator, field) => {
       const fieldModel = [model, field].join('.');
       const value = _get(this.props, fieldModel);
       const validity = validate(validator, value);
@@ -34,9 +33,24 @@ class Form extends Component {
       dispatch(actions.setValidity(fieldModel, validate(validator, value)));
     });
 
-    if (!valid) {
+    if (onSubmit && !!valid) {
       onSubmit(modelValue);
     }
+  }
+
+  componentDidUpdate(prevProps) {
+    const { validators, model, dispatch } = this.props;
+
+    mapValues(validators, (validator, field) => {
+      const fieldModel = [model, field].join('.');
+      const value = _get(this.props, fieldModel);
+
+      if (value === _get(prevProps, fieldModel)) return;
+
+      const validity = validate(validator, value);
+
+      dispatch(actions.setValidity(fieldModel, validate(validator, value)));
+    });
   }
 
   render() {
