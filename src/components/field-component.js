@@ -11,7 +11,7 @@ import partial from 'lodash/partial';
 
 import actions from '../actions';
 import Control from './control-component';
-import { isMulti, getValue } from '../utils';
+import { isMulti, getValue, validate } from '../utils';
 
 const { asyncSetValidity, blur, change, focus, setValidity, toggle, xor } = actions;
 
@@ -126,10 +126,7 @@ function sequenceEventActions(control, props) {
 
   if (props.validators) {
     const dispatchValidate = value => {
-      const validity = mapValues(
-        props.validators,
-        validator => validator(getValue(value))
-      );
+      const validity = validate(props.validators, value);
 
       dispatch(setValidity(model, validity));
 

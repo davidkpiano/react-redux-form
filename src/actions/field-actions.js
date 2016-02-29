@@ -1,5 +1,8 @@
 import _get from 'lodash/get';
+import mapValues from 'lodash/mapValues';
 import actionTypes from '../action-types';
+import actions from '../actions';
+import { getValue } from '../utils';
 
 const focus = model => ({
   type: actionTypes.FOCUS,
@@ -8,11 +11,6 @@ const focus = model => ({
 
 const blur = model => ({
   type: actionTypes.BLUR,
-  model,
-});
-
-const validate = model => ({
-  type: actionTypes.VALIDATE,
   model,
 });
 
@@ -115,5 +113,4 @@ export default {
   setUntouched,
   setValidity,
   setViewValue,
-  validate,
 };

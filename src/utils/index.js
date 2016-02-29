@@ -1,4 +1,7 @@
 import endsWith from 'lodash/endsWith';
+import mapValues from 'lodash/mapValues';
+import isPlainObject from 'lodash/isPlainObject';
+import every from 'lodash/every';
 import { initialFieldState } from '../reducers/form-reducer';
 
 function isMulti(model) {
@@ -41,6 +44,24 @@ function getValue(value) {
   return isEvent(value) ? getEventValue(value) : value;
 }
 
+function validate(validators, value) {
+  const modelValue = getValue(value);
+
+  if (typeof validators === 'function') {
+    return validators(modelValue);
+  }
+
+  return mapValues(validators, (validator) => validator(modelValue));
+}
+
+function isValid(validity) {
+  if (isPlainObject(validity)) {
+    return every(validity);
+  }
+
+  return !!validity;
+}
+
 export {
   isFocused,
   isMulti,
@@ -48,4 +69,6 @@ export {
   isTouched,
   getEventValue,
   getValue,
+  validate,
+  isValid,
 };
