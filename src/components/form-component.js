@@ -2,45 +2,52 @@
 // TODO: Fix all eslint issues
 import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
-import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
+import identity from 'lodash/identity';
 
 import actions from '../actions';
 
 class Form extends Component {
-  setValidity(validators, model) {
-    const { dispatch } = this.props;
-    const value = _get(this.props, model);
-    const validity = mapValues(validators, validator => validator(value));
-
-    dispatch(actions.setValidity(model, validity));
-
-    return validity;
-  }
-
   handleSubmit(e) {
+    const {
+      model,
+      validators,
+      onSubmit = identity,
+      dispatch
+    } = this.props;
+    const modelValue = _get(this.props, model);
+
     e.preventDefault();
 
-    const { validators } = this.props;
+    let valid = true;
 
-    const validity = mapValues(validators, this.setValidity, this);
+    Object.keys(validators).forEach((field) => {
+      const validator = validators[field];
+      const fieldModel = [model, field].join('.');
+      const value = _get(this.props, fieldModel);
+
+      valid = valid && validator(value);
+
+      dispatch(actions.setValidity(fieldModel, validator(value)));
+    });
+
+    if (!valid) {
+      onSubmit(modelValue);
+    }
   }
 
   render() {
-    const { children } = this.props;
-
     return (
-      // https://github.com/airbnb/javascript/issues/659
-      <form onSubmit={e => this.handleSubmit(e)}>
-        { children }
+      <form {...this.props} onSubmit={(e) => this.handleSubmit(e)}>
+        { this.props.children }
       </form>
     );
   }
 }
 
-// Form.PropTypes = {
-//   dispatch: PropTypes,
-//   children: PropTypes,
-// };
+Form.PropTypes = {
+  validators: PropTypes.object,
+  model: PropTypes.string.isRequired
+};
 
 export default connect(s => s)(Form);
