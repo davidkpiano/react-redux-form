@@ -54,7 +54,7 @@ const controlPropsMap = {
   textarea: props => controlPropsMap.text(props),
 };
 
-function changeMethod(model, value, action = change, parser = identity) {
+function changeMethod(model, value, action = change, parser) {
   return compose(partial(action, model), parser, getValue);
 }
 
@@ -92,9 +92,9 @@ function sequenceEventActions(control, props) {
 
   const updateOnEventHandler = (typeof updateOn === 'function')
     ? 'onChange'
-    : `on${capitalize(props.updateOn || 'change')}`;
-  const validateOn = `on${capitalize(props.validateOn || 'change')}`;
-  const asyncValidateOn = `on${capitalize(props.asyncValidateOn || 'blur')}`;
+    : `on${capitalize(props.updateOn)}`;
+  const validateOn = `on${capitalize(props.validateOn)}`;
+  const asyncValidateOn = `on${capitalize(props.asyncValidateOn)}`;
 
   const updaterFn = (typeof updateOn === 'function')
     ? updateOn
@@ -263,6 +263,13 @@ function createFieldClass(customControlPropsMap = {}) {
     asyncValidators: PropTypes.object,
     validateOn: PropTypes.string,
     asyncValidateOn: PropTypes.string,
+  };
+
+  Field.defaultProps = {
+    updateOn: 'change',
+    validateOn: 'change',
+    asyncValidateOn: 'blur',
+    parser: identity,
   };
 
   return connect(selector)(Field);
