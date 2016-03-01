@@ -1,46 +1,94 @@
-/* eslint-disable */
+
 // TODO: Fix all eslint issues
 import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
-import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
+import identity from 'lodash/identity';
+import mapValues from 'lodash/mapValues';
 
 import actions from '../actions';
+import { validate, isValid } from '../utils';
 
 class Form extends Component {
-  setValidity(validators, model) {
-    const { dispatch } = this.props;
-    const value = _get(this.props, model);
-    const validity = mapValues(validators, validator => validator(value));
+  constructor(props) {
+    super(props);
 
-    dispatch(actions.setValidity(model, validity));
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  componentDidUpdate(prevProps) {
+    /* eslint-disable react/prop-types */
+    const {
+      validators,
+      model,
+      dispatch,
+      validateOn,
+    } = this.props;
+    /* eslint-enable react/prop-types */
 
-    return validity;
+    if (validateOn !== 'change') return;
+
+    mapValues(validators, (validator, field) => {
+      const fieldModel = [model, field].join('.');
+      const value = _get(this.props, fieldModel);
+
+      if (value === _get(prevProps, fieldModel)) return;
+
+      const validity = validate(validator, value);
+
+      dispatch(actions.setValidity(fieldModel, validity));
+    });
   }
 
   handleSubmit(e) {
     e.preventDefault();
 
-    const { validators } = this.props;
+    /* eslint-disable react/prop-types */
+    const {
+      model,
+      validators,
+      onSubmit,
+      dispatch,
+    } = this.props;
+    /* eslint-enable react/prop-types */
 
-    const validity = mapValues(validators, this.setValidity, this);
+    const modelValue = _get(this.props, model);
+
+    const valid = isValid(mapValues(validators, (validator, field) => {
+      const fieldModel = [model, field].join('.');
+      const value = _get(this.props, fieldModel);
+      const validity = validate(validator, value);
+
+      dispatch(actions.setValidity(fieldModel, validate(validator, value)));
+
+      return isValid(validity);
+    }));
+
+    if (onSubmit && !!valid) {
+      onSubmit(modelValue);
+    }
   }
 
   render() {
-    const { children } = this.props;
-
+    /* eslint-disable react/prop-types */
     return (
-      // https://github.com/airbnb/javascript/issues/659
-      <form onSubmit={e => this.handleSubmit(e)}>
-        { children }
+      <form
+        {...this.props}
+        onSubmit={this.handleSubmit}
+      >
+        { this.props.children }
       </form>
     );
+    /* eslint-enable react/prop-types */
   }
 }
 
-// Form.PropTypes = {
-//   dispatch: PropTypes,
-//   children: PropTypes,
-// };
+Form.propTypes = {
+  validators: PropTypes.object,
+  validateOn: PropTypes.oneOf([
+    'change',
+  ]),
+  model: PropTypes.string.isRequired,
+  onSubmit: PropTypes.func,
+};
 
-export default connect(s => s)(Form);
+export default connect(identity)(Form);

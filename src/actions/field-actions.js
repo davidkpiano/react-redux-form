@@ -11,11 +11,6 @@ const blur = model => ({
   model,
 });
 
-const validate = model => ({
-  type: actionTypes.VALIDATE,
-  model,
-});
-
 const setPristine = model => ({
   type: actionTypes.SET_PRISTINE,
   model,
@@ -115,5 +110,4 @@ export default {
   setUntouched,
   setValidity,
   setViewValue,
-  validate,
 };

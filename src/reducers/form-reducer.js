@@ -8,6 +8,7 @@ import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
 
 import actionTypes from '../action-types';
+import { isValid } from '../utils';
 
 const initialFieldState = {
   blur: true,
@@ -188,7 +189,7 @@ function createFormReducer(model) {
         const setErrorsState = setField(state, localPath, {
           errors,
           validity,
-          valid: isBoolean(errors) ? !errors : every(errors, error => !error),
+          valid: isValid(validity),
         });
 
         return icepick.merge(setErrorsState, {
