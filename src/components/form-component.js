@@ -11,6 +11,8 @@ import { validate, isValid } from '../utils';
 
 class Form extends Component {
   handleSubmit(e) {
+    e.preventDefault();
+
     const {
       model,
       validators,
@@ -19,19 +21,15 @@ class Form extends Component {
     } = this.props;
     const modelValue = _get(this.props, model);
 
-    e.preventDefault();
-
-    let valid = true;
-
-    mapValues(validators, (validator, field) => {
+    const valid = isValid(mapValues(validators, (validator, field) => {
       const fieldModel = [model, field].join('.');
       const value = _get(this.props, fieldModel);
       const validity = validate(validator, value);
 
-      valid = valid && isValid(validity);
-
       dispatch(actions.setValidity(fieldModel, validate(validator, value)));
-    });
+
+      return isValid(validity);
+    }));
 
     if (onSubmit && !!valid) {
       onSubmit(modelValue);
@@ -39,7 +37,14 @@ class Form extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { validators, model, dispatch } = this.props;
+    const {
+      validators,
+      model,
+      dispatch,
+      validateOn
+    } = this.props;
+
+    if (validateOn !== 'change') return;
 
     mapValues(validators, (validator, field) => {
       const fieldModel = [model, field].join('.');
@@ -55,7 +60,10 @@ class Form extends Component {
 
   render() {
     return (
-      <form {...this.props} onSubmit={(e) => this.handleSubmit(e)}>
+      <form
+        {...this.props}
+        onSubmit={(e) => this.handleSubmit(e)}
+      >
         { this.props.children }
       </form>
     );
@@ -64,6 +72,9 @@ class Form extends Component {
 
 Form.PropTypes = {
   validators: PropTypes.object,
+  validateOn: PropTypes.oneOf([
+    'change',
+  ]),
   model: PropTypes.string.isRequired
 };
 
