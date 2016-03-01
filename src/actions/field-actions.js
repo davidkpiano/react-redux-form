@@ -1,5 +1,6 @@
 import _get from 'lodash/get';
 import actionTypes from '../action-types';
+import { getValidity } from '../utils';
 
 const focus = model => ({
   type: actionTypes.FOCUS,
@@ -95,6 +96,13 @@ const submit = (model, promise) => dispatch => {
   });
 };
 
+const validate = (model, validators) => (dispatch, getState) => {
+  const value = _get(getState(), model);
+  const validity = getValidity(validators, value);
+
+  dispatch(setValidity(model, validity));
+};
+
 export default {
   asyncSetValidity,
   blur,
@@ -110,4 +118,5 @@ export default {
   setUntouched,
   setValidity,
   setViewValue,
+  validate,
 };

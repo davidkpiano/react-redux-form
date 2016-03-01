@@ -7,7 +7,7 @@ import identity from 'lodash/identity';
 import mapValues from 'lodash/mapValues';
 
 import actions from '../actions';
-import { validate, isValid } from '../utils';
+import { getValidity, isValid } from '../utils';
 
 class Form extends Component {
   constructor(props) {
@@ -33,7 +33,7 @@ class Form extends Component {
 
       if (value === _get(prevProps, fieldModel)) return;
 
-      const validity = validate(validator, value);
+      const validity = getValidity(validator, value);
 
       dispatch(actions.setValidity(fieldModel, validity));
     });
@@ -56,9 +56,9 @@ class Form extends Component {
     const valid = isValid(mapValues(validators, (validator, field) => {
       const fieldModel = [model, field].join('.');
       const value = _get(this.props, fieldModel);
-      const validity = validate(validator, value);
+      const validity = getValidity(validator, value);
 
-      dispatch(actions.setValidity(fieldModel, validate(validator, value)));
+      dispatch(actions.setValidity(fieldModel, getValidity(validator, value)));
 
       return isValid(validity);
     }));

@@ -44,7 +44,7 @@ function getValue(value) {
   return isEvent(value) ? getEventValue(value) : value;
 }
 
-function validate(validators, value) {
+function getValidity(validators, value) {
   const modelValue = getValue(value);
 
   if (typeof validators === 'function') {
@@ -69,6 +69,6 @@ export {
   isTouched,
   getEventValue,
   getValue,
-  validate,
+  getValidity,
   isValid,
 };

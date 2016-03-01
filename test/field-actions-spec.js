@@ -942,4 +942,44 @@ describe('RSF field actions', () => {
       })));
     });
   });
+
+  describe('validate() (thunk)', () => {
+    const mockStore = configureMockStore([thunk]);
+
+    it('should set the validity of a model with a validator function', (done) => {
+      const store = mockStore(
+        () => ({ test: { foo: 'bar' } }),
+        [
+          { model: 'test.foo', type: actionTypes.SET_VALIDITY, validity: false },
+          { model: 'test.foo', type: actionTypes.SET_VALIDITY, validity: true },
+        ],
+        done);
+
+      store.dispatch(actions.validate('test.foo', (val) => val === 'invalid'));
+      store.dispatch(actions.validate('test.foo', (val) => val === 'bar'));
+    });
+
+    it('should set the validity of a model with a validation object', (done) => {
+      const store = mockStore(
+        () => ({ test: { foo: 'bar' } }),
+        [
+          {
+            model: 'test.foo',
+            type: actionTypes.SET_VALIDITY,
+            validity: {
+              good: true,
+              bad: false,
+            },
+          },
+        ],
+        done);
+
+      const validators = {
+        good: (val) => val === 'bar',
+        bad: (val) => val === 'invalid',
+      };
+
+      store.dispatch(actions.validate('test.foo', validators));
+    });
+  });
 });
