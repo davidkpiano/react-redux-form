@@ -212,7 +212,10 @@ describe('<Form> component', () => {
   describe('validation of form itself', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: createFormReducer('test'),
-      test: createModelReducer('test'),
+      test: createModelReducer('test', {
+        foo: '',
+        bar: '',
+      }),
     }));
 
     const form = TestUtils.renderIntoDocument(

@@ -40,6 +40,7 @@ class Form extends Component {
     const {
       validators,
       model,
+      modelValue,
       dispatch,
       validateOn
     } = this.props;
@@ -78,4 +79,4 @@ Form.PropTypes = {
   model: PropTypes.string.isRequired
 };
 
-export default connect(s => s)(Form);
+export default connect(identity)(Form);
