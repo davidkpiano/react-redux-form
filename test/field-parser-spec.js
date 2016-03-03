@@ -1,35 +1,27 @@
+import { assert } from 'chai';
 import React from 'react';
-import chai from 'chai';
-import chaiSubset from 'chai-subset';
-import { createStore, combineReducers } from 'redux';
-import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
+import { combineReducers, createStore } from 'redux';
+import { Provider } from 'react-redux';
 
-chai.use(chaiSubset);
-
-const { assert } = chai;
-
-import {
-  Field,
-  createModelReducer
-} from '../lib';
+import { createModelReducer, Field } from '../src';
 
 describe('<Field parser={...} />', () => {
   it('should parse the changed values given a parser function', () => {
     const store = createStore(combineReducers({
-      test: createModelReducer('test')
+      test: createModelReducer('test'),
     }));
 
-    const parseValue = (val) => ({
-      data: val
+    const parseValue = val => ({
+      data: val,
     });
 
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Field
           model="test.foo"
-          parser={parseValue}>
+          parser={parseValue}
+        >
           <input type="text" />
         </Field>
       </Provider>
@@ -37,7 +29,7 @@ describe('<Field parser={...} />', () => {
 
     const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
-    let expected = { data: 'foo' };
+    const expected = { data: 'foo' };
 
     input.value = 'foo';
 

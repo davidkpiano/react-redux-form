@@ -1,8 +1,8 @@
-import { actionTypes } from '../lib/index';
 import { assert } from 'chai';
+import { actionTypes } from '../src';
 
 describe('action types', () => {
-  let _actionTypes = Object.keys(actionTypes).map((key) => actionTypes[key]);
+  const _actionTypes = Object.keys(actionTypes).map(key => actionTypes[key]);
 
   it('should be present and importable from the index file', () => {
     assert.ok(_actionTypes.length > 0,

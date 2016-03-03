@@ -1,32 +1,29 @@
-import chai from 'chai';
-
-const { assert } = chai;
-
-import { modeled, actions, actionTypes } from '../src';
+import { assert } from 'chai';
+import { actions, actionTypes, modeled } from '../src';
 
 describe('modeled() reducer enhancer', () => {
   const initialState = {
     foo: 'one',
-    bar: 'two'
+    bar: 'two',
   };
 
   const fullAction = {
-    type: 'FULL'
+    type: 'FULL',
   };
 
   const existingReducer = (state = initialState, action) => {
     if (action.type === fullAction.type) {
       return {
         ...state,
-        full: state.foo + state.bar
-      }
+        full: state.foo + state.bar,
+      };
     }
 
     if (action.type === actionTypes.RESET) {
       return {
         ...state,
-        reset: true
-      }
+        reset: true,
+      };
     }
 
     return state;
@@ -56,7 +53,7 @@ describe('modeled() reducer enhancer', () => {
       {
         foo: 'one',
         bar: 'two',
-        full: 'onetwo'
+        full: 'onetwo',
       });
   });
 
@@ -67,7 +64,7 @@ describe('modeled() reducer enhancer', () => {
       modeledReducer(undefined, actions.change('test.foo', 'test')),
       {
         foo: 'test',
-        bar: 'two'
+        bar: 'two',
       });
   });
 
@@ -76,15 +73,15 @@ describe('modeled() reducer enhancer', () => {
 
     const changedState = {
       foo: 'changed',
-      bar: 'changed'
-    }
+      bar: 'changed',
+    };
 
     assert.deepEqual(
       modeledReducer(changedState, actions.reset('test.foo')),
       {
         foo: 'one',
         bar: 'changed',
-        reset: true
+        reset: true,
       });
   });
 });

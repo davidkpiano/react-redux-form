@@ -1,5 +1,5 @@
+import _get from 'lodash/get';
 import every from 'lodash/every';
-import get from 'lodash/get';
 import icepick from 'icepick';
 import isBoolean from 'lodash/isBoolean';
 import isEqual from 'lodash/isEqual';
@@ -7,7 +7,47 @@ import isPlainObject from 'lodash/isPlainObject';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
 
-import * as actionTypes from '../action-types';
+import actionTypes from '../action-types';
+import { isValid } from '../utils';
+
+const initialFieldState = {
+  blur: true,
+  dirty: false,
+  focus: false,
+  pending: false,
+  pristine: true,
+  submitted: false,
+  touched: false,
+  untouched: true,
+  valid: true,
+  validating: false,
+  viewValue: null,
+  validity: {},
+  errors: {},
+};
+
+const initialFormState = {
+  ...initialFieldState,
+  fields: {},
+};
+
+function getField(state, path) {
+  if (!isPlainObject(state) || !state.fields) {
+    throw new Error(`Error when trying to retrieve field '${path}` +
+      ' from an invalid/empty form state. Must pass in a valid form state as the first argument.');
+  }
+
+  const localPath = toPath(path);
+
+  if (!localPath.length) {
+    return state;
+  }
+
+  return _get(
+    state,
+    ['fields', localPath.join('.')],
+    initialFieldState);
+}
 
 function setField(state, localPath, props) {
   if (!localPath.length) {
@@ -18,9 +58,9 @@ function setField(state, localPath, props) {
     fields: {
       [localPath.join('.')]: {
         ...getField(state, localPath),
-        ...props
-      }
-    }
+        ...props,
+      },
+    },
   });
 }
 
@@ -29,54 +69,24 @@ function resetField(state, localPath) {
     return initialFormState;
   }
 
-  return icepick.setIn(state, [
-    'fields',
-    localPath.join('.')],
+  return icepick.setIn(
+    state,
+    ['fields', localPath.join('.')],
     initialFieldState
   );
 }
 
-function getField(state, path) {
-  if (!isPlainObject(state) || !state.fields) {
-    throw new Error(`Error when trying to retrieve field '${path}' from an invalid/empty form state. Must pass in a valid form state as the first argument.`);
-  }
 
-  const localPath = toPath(path);
-
-  if (!localPath.length) {
-    return state;
-  }
-
-  return get(
-    state,
-    ['fields', localPath.join('.')],
-    initialFieldState);
+function formIsValid(formState) {
+  return every(mapValues(formState.fields, field => field.valid))
+    && every(formState.errors, error => !error);
 }
 
-const initialFieldState = {
-  viewValue: null,
-  focus: false,
-  blur: true,
-  pristine: true,
-  dirty: false,
-  touched: false,
-  untouched: true,
-  valid: true,
-  validating: false,
-  pending: false,
-  submitted: false,
-  errors: {}
-};
-
-const initialFormState = {
-  ...initialFieldState,
-  fields: {}
-};
 
 function createInitialFormState(model) {
   return {
     ...initialFormState,
-    model
+    model,
   };
 }
 
@@ -84,7 +94,9 @@ function createFormReducer(model) {
   const modelPath = toPath(model);
 
   return (state = createInitialFormState(model), action) => {
-    if (!action.model) return state;
+    if (!action.model) {
+      return state;
+    }
 
     const path = toPath(action.model);
 
@@ -93,98 +105,137 @@ function createFormReducer(model) {
     }
 
     const localPath = path.slice(modelPath.length);
+    let errors;
+    let validity;
 
     switch (action.type) {
       case actionTypes.FOCUS:
         return setField(state, localPath, {
+          blur: false,
           focus: true,
-          blur: false
         });
 
       case actionTypes.CHANGE:
-      case actionTypes.SET_DIRTY:
-        state = icepick.merge(state, {
+      case actionTypes.SET_DIRTY: {
+        const setDirtyState = icepick.merge(state, {
           dirty: true,
           pristine: false,
         });
 
-        return setField(state, localPath, {
+        return setField(setDirtyState, localPath, {
           dirty: true,
-          pristine: false
+          pristine: false,
         });
+      }
 
       case actionTypes.BLUR:
       case actionTypes.SET_TOUCHED:
         return setField(state, localPath, {
+          blur: true,
+          focus: false,
           touched: true,
           untouched: false,
-          focus: false,
-          blur: true
         });
 
       case actionTypes.SET_PENDING:
         return setField(state, localPath, {
           pending: action.pending,
-          submitted: false
+          submitted: false,
         });
 
-      case actionTypes.SET_VALIDITY:
-        const errors = isPlainObject(action.validity)
-          ? {
-              ...getField(state, localPath).errors,
-              ...mapValues(action.validity, (valid) => !valid)
-            }
-          : !action.validity;
+      case actionTypes.SET_VALIDITY: {
+        if (isPlainObject(action.validity)) {
+          validity = icepick.merge(
+            getField(state, localPath).validity,
+            action.validity
+          );
 
-        state = setField(state, localPath, {
+          errors = {
+            ...getField(state, localPath).errors,
+            ...mapValues(action.validity, valid => !valid),
+          };
+        } else {
+          validity = action.validity;
+          errors = !action.validity;
+        }
+
+        const formIsValidState = setField(state, localPath, {
           errors,
-          valid: isBoolean(errors)
-            ? errors
-            : every(errors, (error) => !error)
+          validity,
+          valid: isBoolean(errors) ? !errors : every(errors, error => !error),
         });
 
-        return icepick.merge(state, {
-          valid: every(mapValues(state.fields, (field) => field.valid))
-            && every(state.errors, (error) => !error)
+        return icepick.merge(formIsValidState, {
+          valid: formIsValid(formIsValidState),
+        });
+      }
+
+      case actionTypes.SET_ERRORS: {
+        if (isPlainObject(action.errors)) {
+          validity = {
+            ...getField(state, localPath).validity,
+            ...mapValues(action.errors, error => !error),
+          };
+
+          errors = icepick.merge(
+            getField(state, localPath).errors,
+            action.errors
+          );
+        } else {
+          validity = !action.errors;
+          errors = action.errors;
+        }
+
+        const setErrorsState = setField(state, localPath, {
+          errors,
+          validity,
+          valid: isValid(validity),
         });
 
-      case actionTypes.SET_PRISTINE:
+        return icepick.merge(setErrorsState, {
+          valid: formIsValid(setErrorsState),
+        });
+      }
+
+      case actionTypes.SET_PRISTINE: {
         let formIsPristine;
+        let setPristineState;
 
         if (!localPath.length) {
           formIsPristine = true;
 
-          state = icepick.merge(state, {
-            fields: mapValues(state.fields, (field) => ({
+          setPristineState = icepick.merge(state, {
+            fields: mapValues(state.fields, field => ({
               ...field,
+              dirty: false,
               pristine: true,
-              dirty: false
-            }))
+            })),
           });
-        } else {        
-          state = setField(state, localPath, {
+        } else {
+          setPristineState = setField(state, localPath, {
             dirty: false,
-            pristine: true
+            pristine: true,
           });
 
-          formIsPristine = every(mapValues(state.fields, (field) => field.pristine));
+          formIsPristine = every(mapValues(setPristineState.fields, field => field.pristine));
         }
 
-        return icepick.merge(state, {
+        return icepick.merge(setPristineState, {
+          dirty: !formIsPristine,
           pristine: formIsPristine,
-          dirty: !formIsPristine
         });
+      }
 
       case actionTypes.SET_UNTOUCHED:
         return setField(state, localPath, {
           touched: false,
-          untouched: true
+          untouched: true,
         });
 
       case actionTypes.SET_SUBMITTED:
         return setField(state, localPath, {
           pending: false,
-          submitted: !!action.submitted
+          submitted: !!action.submitted,
         });
 
       case actionTypes.SET_INITIAL:
@@ -193,7 +244,7 @@ function createFormReducer(model) {
 
       case actionTypes.SET_VIEW_VALUE:
         return setField(state, localPath, {
-          viewValue: action.value
+          viewValue: action.value,
         });
 
       default:
@@ -206,5 +257,5 @@ export {
   createFormReducer,
   initialFieldState,
   initialFormState,
-  getField
+  getField,
 };

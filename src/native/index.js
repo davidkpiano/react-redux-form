@@ -1,43 +1,41 @@
-import { createFieldClass, controls } from '../components/field-component';
+import { createFieldClass } from '../components/field-component';
 
 const NativeField = createFieldClass({
-  'TextInput': (props) => ({
-    onChangeText: props.onChange,
-    onFocus: props.onFocus,
-    onBlur: props.onBlur,
-    defaultValue: props.modelValue
-  }),
-  'Switch': (props) => ({
-    onValueChange: props.onChange
-  }),
-  'Picker': (props) => ({
-    selectedValue: props.modelValue,
-    onValueChange: props.onChange
-  }),
-  'PickerIOS': (props) => ({
-    selectedValue: props.modelValue,
-    onValueChange: props.onChange
-  }),
-  'SegmentedControlIOS': (props) => ({
-    onValueChange: props.onChange,
-    selectedIndex: props.values.indexOf(props.modelValue)
-  }),
-  'DatePickerIOS': (props) => ({
-    onDateChange: props.onChange,
-    date: props.modelValue
-  }),
-  'MapView': (props) => ({
+  MapView: props => ({
     onRegionChange: props.onChange,
     onRegionChangeComplete: props.onBlur,
-    region: props.modelValue
+    region: props.modelValue,
   }),
-  'SliderIOS': (props) => ({
+  Picker: props => ({
     onValueChange: props.onChange,
+    selectedValue: props.modelValue,
+  }),
+  Switch: props => ({
+    onValueChange: props.onChange,
+  }),
+  TextInput: props => ({
+    defaultValue: props.modelValue,
+    onChangeText: props.onChange,
+    onBlur: props.onBlur,
+    onFocus: props.onFocus,
+  }),
+  DatePickerIOS: props => ({
+    date: props.modelValue,
+    onDateChange: props.onChange,
+  }),
+  PickerIOS: props => ({
+    onValueChange: props.onChange,
+    selectedValue: props.modelValue,
+  }),
+  SegmentedControlIOS: props => ({
+    onValueChange: props.onChange,
+    selectedIndex: props.values.indexOf(props.modelValue),
+  }),
+  SliderIOS: props => ({
     onSlidingComplete: props.onBlur,
-    value: props.modelValue
-  })
+    onValueChange: props.onChange,
+    value: props.modelValue,
+  }),
 });
 
-export {
-  NativeField as Field
-}
+export { NativeField as Field };

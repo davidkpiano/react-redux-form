@@ -1,5 +1,5 @@
 # Docs
 docs/
 
-# Test suite
-test/
+# Misc
+node_modules/
