@@ -110,6 +110,13 @@ const validate = (model, validators) => (dispatch, getState) => {
   dispatch(setValidity(model, validity));
 };
 
+const validateErrors = (model, errorValidators) => (dispatch, getState) => {
+  const value = _get(getState(), model);
+  const errors = getValidity(errorValidators, value);
+
+  dispatch(setErrors(model, errors));
+};
+
 export default {
   asyncSetValidity,
   blur,
@@ -128,4 +135,5 @@ export default {
   resetErrors,
   setViewValue,
   validate,
+  validateErrors,
 };
