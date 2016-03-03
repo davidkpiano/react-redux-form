@@ -776,6 +776,54 @@ describe('RSF field actions', () => {
     });
   });
 
+  describe('resetValidity() and resetErrors()', () => {
+    const reducer = createFormReducer('test');
+
+    it('should reset the validity and errors of a field state', () => {
+      const stateWithErrors = reducer(
+        undefined,
+        actions.setErrors('test.foo', { bar: true, baz: true }));
+
+      assert.containSubset(
+        stateWithErrors.fields.foo,
+        {
+          valid: false,
+          validity: { bar: false, baz: false },
+          errors: { bar: true, baz: true },
+        });
+
+      const actualState = reducer(
+        stateWithErrors,
+        actions.resetValidity('test.foo'));
+
+      assert.containSubset(
+        actualState.fields.foo,
+        {
+          valid: true,
+          validity: {},
+          errors: {},
+        });
+    });
+
+    it('should be aliased to resetErrors()', () => {
+      const stateWithErrors = reducer(
+        undefined,
+        actions.setErrors('test.foo', { bar: true, baz: true }));
+
+      const actualState = reducer(
+        stateWithErrors,
+        actions.resetErrors('test.foo'));
+
+      assert.containSubset(
+        actualState.fields.foo,
+        {
+          valid: true,
+          validity: {},
+          errors: {},
+        });
+    });
+  });
+
   describe('asyncSetValidity() (thunk)', () => {
     it('should asynchronously call setValidity() action', testDone => {
       const reducer = createFormReducer('test');

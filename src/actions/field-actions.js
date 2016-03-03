@@ -45,6 +45,13 @@ const setErrors = (model, errors) => ({
   errors,
 });
 
+const resetValidity = (model) => ({
+  type: actionTypes.RESET_VALIDITY,
+  model,
+});
+
+const resetErrors = resetValidity;
+
 const setTouched = model => ({
   type: actionTypes.SET_TOUCHED,
   model,
@@ -117,6 +124,8 @@ export default {
   setTouched,
   setUntouched,
   setValidity,
+  resetValidity,
+  resetErrors,
   setViewValue,
   validate,
 };

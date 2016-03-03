@@ -197,6 +197,28 @@ function createFormReducer(model) {
         });
       }
 
+      case actionTypes.RESET_VALIDITY: {
+        let resetValidityState = icepick.setIn(
+          state,
+          ['fields', localPath.join('.'), 'valid'],
+          true
+        );
+
+        resetValidityState = icepick.setIn(
+          resetValidityState,
+          ['fields', localPath.join('.'), 'validity'],
+          initialFieldState.validity
+        );
+
+        resetValidityState = icepick.setIn(
+          resetValidityState,
+          ['fields', localPath.join('.'), 'errors'],
+          initialFieldState.errors
+        );
+
+        return resetValidityState;
+      }
+
       case actionTypes.SET_PRISTINE: {
         let formIsPristine;
         let setPristineState;

@@ -14,6 +14,7 @@ const actionTypes = {
   SET_UNTOUCHED: 'rsf/setUntouched',
   SET_VALIDITY: 'rsf/setValidity',
   SET_VIEW_VALUE: 'rsf/setViewValue',
+  RESET_VALIDITY: 'rsf/resetValidity',
 };
 
 export default actionTypes;
