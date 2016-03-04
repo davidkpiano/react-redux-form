@@ -2,6 +2,7 @@ import endsWith from 'lodash/endsWith';
 import mapValues from 'lodash/mapValues';
 import isPlainObject from 'lodash/isPlainObject';
 import every from 'lodash/every';
+import some from 'lodash/some';
 import { initialFieldState } from '../reducers/form-reducer';
 
 function isMulti(model) {
@@ -62,6 +63,14 @@ function isValid(validity) {
   return !!validity;
 }
 
+function isInvalid(errors) {
+  if (isPlainObject(errors)) {
+    return some(errors);
+  }
+
+  return !errors;
+}
+
 export {
   isFocused,
   isMulti,
@@ -71,4 +80,5 @@ export {
   getValue,
   getValidity,
   isValid,
+  isInvalid,
 };

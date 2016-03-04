@@ -11,7 +11,7 @@ import { Form, createModelReducer, createFormReducer, Field } from '../src';
 describe('<Form> component', () => {
   describe('validation on submit', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
+      testForm: createFormReducer('test', {}),
       test: createModelReducer('test'),
     }));
 
@@ -89,6 +89,121 @@ describe('<Form> component', () => {
         {
           errors: { one: false, two: false },
           valid: true,
+        });
+    });
+  });
+
+  describe('error validation on submit', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: createFormReducer('test'),
+      test: createModelReducer('test', {
+        bar: ''
+      }),
+    }));
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test"
+          errors={{
+            foo: (val) => val !== 'valid foo' && 'invalid foo',
+            bar: {
+              one: (val) => val.length < 1 && 'bar too short',
+              two: (val) => val.length > 2 && 'bar too long',
+            },
+          }}
+        >
+          <Field model="test.foo">
+            <input type="text" />
+          </Field>
+
+          <Field model="test.bar">
+            <input type="text" />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+    const [fooControl, barControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+
+    it('should validate all validators on submit', () => {
+      TestUtils.Simulate.submit(formElement);
+
+      assert.containSubset(
+        store.getState().testForm.fields.foo,
+        {
+          valid: false,
+          errors: 'invalid foo',
+        });
+
+      fooControl.value = 'valid foo';
+
+      TestUtils.Simulate.change(fooControl);
+
+      TestUtils.Simulate.submit(formElement);
+
+      assert.containSubset(
+        store.getState().testForm.fields.foo,
+        {
+          valid: true,
+          errors: false,
+        });
+    });
+
+    it('should allow for keywise validation', () => {
+      TestUtils.Simulate.submit(formElement);
+
+      assert.containSubset(
+        store.getState().testForm.fields.bar,
+        {
+          errors: {
+            one: 'bar too short',
+            two: false
+          },
+          valid: false,
+        });
+
+      barControl.value = '1';
+      TestUtils.Simulate.change(barControl);
+      TestUtils.Simulate.submit(formElement);
+
+      assert.containSubset(
+        store.getState().testForm.fields.bar,
+        {
+          errors: {
+            one: false,
+            two: false
+          },
+          valid: true,
+        });
+
+      barControl.value = '12';
+      TestUtils.Simulate.change(barControl);
+      TestUtils.Simulate.submit(formElement);
+
+      assert.containSubset(
+        store.getState().testForm.fields.bar,
+        {
+          errors: {
+            one: false,
+            two: false
+          },
+          valid: true,
+        });
+
+      barControl.value = '123';
+      TestUtils.Simulate.change(barControl);
+      TestUtils.Simulate.submit(formElement);
+
+      assert.containSubset(
+        store.getState().testForm.fields.bar,
+        {
+          errors: {
+            one: false,
+            two: 'bar too long'
+          },
+          valid: false,
         });
     });
   });
