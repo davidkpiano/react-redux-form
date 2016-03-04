@@ -13,7 +13,16 @@ import actions from '../actions';
 import Control from './control-component';
 import { isMulti, getValue, getValidity } from '../utils';
 
-const { asyncSetValidity, blur, change, focus, setValidity, toggle, xor } = actions;
+const {
+  asyncSetValidity,
+  blur,
+  change,
+  focus,
+  setValidity,
+  setErrors,
+  toggle,
+  xor,
+} = actions;
 
 function selector(state, { model }) {
   return {
@@ -154,6 +163,18 @@ function sequenceEventActions(control, props) {
     eventActions[asyncValidateOn].push(dispatchAsyncValidate);
   }
 
+  if (props.errors) {
+    const dispatchValidateErrors = (value) => {
+      const errors = getValidity(props.errors, value);
+
+      dispatch(setErrors(model, errors));
+
+      return value;
+    };
+
+    eventActions[validateOn].push(dispatchValidateErrors);
+  }
+
   return mapValues(eventActions, _actions => compose(..._actions));
 }
 
@@ -263,6 +284,10 @@ function createFieldClass(customControlPropsMap = {}) {
     asyncValidators: PropTypes.object,
     validateOn: PropTypes.string,
     asyncValidateOn: PropTypes.string,
+    errors: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.object,
+    ]),
   };
 
   Field.defaultProps = {

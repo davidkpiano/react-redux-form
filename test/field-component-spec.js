@@ -626,6 +626,117 @@ describe('<Field /> component', () => {
     });
   });
 
+  describe('errors property', () => {
+    const formReducer = createFormReducer('test');
+
+
+    it('should set the proper field state for errors', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: formReducer,
+        test: createModelReducer('test', {}),
+      }));
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+            errors={{
+              length: (val) => val.length > 8 && 'too long',
+              valid: (val) => val !== 'valid' && 'not valid',
+            }}
+          >
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'valid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields.foo.errors,
+        {
+          length: false,
+          valid: false,
+        });
+
+      control.value = 'invalid string';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields.foo.errors,
+        {
+          length: 'too long',
+          valid: 'not valid',
+        });
+    });
+
+    it('should only validate errors on blur if validateOn="blur"', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: formReducer,
+        test: createModelReducer('test', {}),
+      }));
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+            errors={{
+              length: (val) => val.length > 8 && 'too long',
+              valid: (val) => val !== 'valid' && 'not valid',
+            }}
+            validateOn="blur"
+          >
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'valid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields.foo.errors,
+        {});
+
+      TestUtils.Simulate.blur(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields.foo.errors,
+        {
+          length: false,
+          valid: false,
+        });
+
+      control.value = 'invalid string';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields.foo.errors,
+        {
+          length: false,
+          valid: false,
+        });
+
+      TestUtils.Simulate.blur(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields.foo.errors,
+        {
+          length: 'too long',
+          valid: 'not valid',
+        });
+    });
+  });
+
   describe('dynamic components', () => {
     const formReducer = createFormReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
