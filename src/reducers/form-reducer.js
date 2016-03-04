@@ -107,7 +107,6 @@ function createFormReducer(model) {
     const localPath = path.slice(modelPath.length);
     let errors;
     let validity;
-    let fieldState;
 
     switch (action.type) {
       case actionTypes.FOCUS:
@@ -130,9 +129,8 @@ function createFormReducer(model) {
       }
 
       case actionTypes.BLUR:
-      case actionTypes.SET_TOUCHED:
-
-        fieldState = setField(state, localPath, {
+      case actionTypes.SET_TOUCHED: {
+        const fieldState = setField(state, localPath, {
           blur: true,
           focus: false,
           touched: true,
@@ -143,6 +141,7 @@ function createFormReducer(model) {
           touched: true,
           untouched: false,
         });
+      }
 
       case actionTypes.SET_PENDING:
         return setField(state, localPath, {
