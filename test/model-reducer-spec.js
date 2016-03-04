@@ -16,6 +16,15 @@ describe('createModelReducer()', () => {
       { foo: 'bar' });
   });
 
+  it('should create a reducer with initial state given a model and initial state as an array',
+    () => {
+      const reducer = createModelReducer('test', ['foo', 'bar']);
+
+      assert.deepEqual(
+        reducer(undefined, {}),
+        { foo: '', bar: '' });
+    });
+
   it('should ignore external actions', () => {
     const model = { foo: 'bar' };
     const reducer = createModelReducer('test', model);
