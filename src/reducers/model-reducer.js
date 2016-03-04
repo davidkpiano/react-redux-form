@@ -13,7 +13,15 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
   return function createModelReducer(model, initialState = initialModelState) {
     const modelPath = toPath(model);
 
-    return (state = initialState, action) => {
+    let initialNormalizedState = initialState;
+    if (Array.isArray(initialState)) {
+      initialNormalizedState = {};
+      initialState.forEach(value => {
+        initialNormalizedState[value] = '';
+      });
+    }
+
+    return (state = initialNormalizedState, action) => {
       if (!action.model) {
         return state;
       }
@@ -40,17 +48,17 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
 
         case actionTypes.RESET:
           if (!localPath.length) {
-            return initialState;
+            return initialNormalizedState;
           }
 
-          if (isEqual(getter(state, localPath), getter(initialState, localPath))) {
+          if (isEqual(getter(state, localPath), getter(initialNormalizedState, localPath))) {
             return state;
           }
 
           return setter(
             state,
             localPath,
-            getter(initialState, localPath)
+            getter(initialNormalizedState, localPath)
           );
 
         default:
