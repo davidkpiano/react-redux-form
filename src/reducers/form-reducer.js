@@ -129,13 +129,19 @@ function createFormReducer(model) {
       }
 
       case actionTypes.BLUR:
-      case actionTypes.SET_TOUCHED:
-        return setField(state, localPath, {
+      case actionTypes.SET_TOUCHED: {
+        const fieldState = setField(state, localPath, {
           blur: true,
           focus: false,
           touched: true,
           untouched: false,
         });
+
+        return icepick.merge(fieldState, {
+          touched: true,
+          untouched: false,
+        });
+      }
 
       case actionTypes.SET_PENDING:
         return setField(state, localPath, {
