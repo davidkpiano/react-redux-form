@@ -45,9 +45,9 @@ class Form extends Component {
 
       if (value === _get(prevProps, fieldModel)) return;
 
-      const errors = getValidity(errorValidator, value);
+      const fieldErrors = getValidity(errorValidator, value);
 
-      dispatch(actions.setErrors(fieldModel, errors));
+      dispatch(actions.setErrors(fieldModel, fieldErrors));
     });
   }
 
@@ -73,17 +73,17 @@ class Form extends Component {
 
       dispatch(actions.setValidity(fieldModel, validity));
 
-      return isValid(validity);
+      return validity;
     }));
 
     const invalid = isInvalid(mapValues(errors, (errorValidators, field) => {
       const fieldModel = [model, field].join('.');
       const value = _get(this.props, fieldModel);
-      const _errors = getValidity(errorValidators, value);
+      const fieldErrors = getValidity(errorValidators, value);
 
-      dispatch(actions.setErrors(fieldModel, _errors));
+      dispatch(actions.setErrors(fieldModel, fieldErrors));
 
-      return isInvalid(errors);
+      return fieldErrors;
     }));
 
     if (onSubmit && valid && !invalid) {
