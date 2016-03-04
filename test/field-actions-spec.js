@@ -1030,4 +1030,64 @@ describe('RSF field actions', () => {
       store.dispatch(actions.validate('test.foo', validators));
     });
   });
+
+  describe('validateErrors() (thunk)', () => {
+    const mockStore = configureMockStore([thunk]);
+
+    it('should set the errors of a model with an error validator function', (done) => {
+      const store = mockStore(
+        () => ({ test: { foo: 'bar' } }),
+        [
+          { model: 'test.foo', type: actionTypes.SET_ERRORS, errors: 'Value is invalid' },
+          { model: 'test.foo', type: actionTypes.SET_ERRORS, errors: 'Value is invalid again' },
+          { model: 'test.foo', type: actionTypes.SET_ERRORS, errors: false },
+        ],
+        done);
+
+      store.dispatch(actions.validateErrors('test.foo',
+        (val) => val !== 'valid' && 'Value is invalid'));
+      store.dispatch(actions.validateErrors('test.foo',
+        (val) => val !== 'valid' && 'Value is invalid again'));
+      store.dispatch(actions.validateErrors('test.foo',
+        (val) => val !== 'bar' && 'This should return false'));
+    });
+
+    it('should allow any type of value as the error value', (done) => {
+      const store = mockStore(
+        () => ({ test: { foo: 'bar' } }),
+        [
+          { model: 'test.foo', type: actionTypes.SET_ERRORS, errors: [
+            'length',
+            'required',
+          ] },
+        ],
+        done);
+
+      store.dispatch(actions.validateErrors('test.foo',
+        (val) => val !== 'valid' && ['length', 'required']));
+    });
+
+    it('should set the errors of a model with an error object', (done) => {
+      const store = mockStore(
+        () => ({ test: { foo: 'bar' } }),
+        [
+          {
+            model: 'test.foo',
+            type: actionTypes.SET_ERRORS,
+            errors: {
+              good: false,
+              bad: 'Value is not valid',
+            },
+          },
+        ],
+        done);
+
+      const errorValidators = {
+        good: (val) => val !== 'bar' && 'This should not show',
+        bad: (val) => val !== 'valid' && 'Value is not valid',
+      };
+
+      store.dispatch(actions.validateErrors('test.foo', errorValidators));
+    });
+  });
 });

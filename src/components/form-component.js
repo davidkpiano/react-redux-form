@@ -7,7 +7,7 @@ import identity from 'lodash/identity';
 import mapValues from 'lodash/mapValues';
 
 import actions from '../actions';
-import { getValidity, isValid } from '../utils';
+import { getValidity, isValid, isInvalid } from '../utils';
 
 class Form extends Component {
   constructor(props) {
@@ -19,6 +19,7 @@ class Form extends Component {
     /* eslint-disable react/prop-types */
     const {
       validators,
+      errors,
       model,
       dispatch,
       validateOn,
@@ -37,6 +38,17 @@ class Form extends Component {
 
       dispatch(actions.setValidity(fieldModel, validity));
     });
+
+    mapValues(errors, (errorValidator, field) => {
+      const fieldModel = [model, field].join('.');
+      const value = _get(this.props, fieldModel);
+
+      if (value === _get(prevProps, fieldModel)) return;
+
+      const fieldErrors = getValidity(errorValidator, value);
+
+      dispatch(actions.setErrors(fieldModel, fieldErrors));
+    });
   }
 
   handleSubmit(e) {
@@ -46,6 +58,7 @@ class Form extends Component {
     const {
       model,
       validators,
+      errors,
       onSubmit,
       dispatch,
     } = this.props;
@@ -58,12 +71,22 @@ class Form extends Component {
       const value = _get(this.props, fieldModel);
       const validity = getValidity(validator, value);
 
-      dispatch(actions.setValidity(fieldModel, getValidity(validator, value)));
+      dispatch(actions.setValidity(fieldModel, validity));
 
-      return isValid(validity);
+      return validity;
     }));
 
-    if (onSubmit && !!valid) {
+    const invalid = isInvalid(mapValues(errors, (errorValidators, field) => {
+      const fieldModel = [model, field].join('.');
+      const value = _get(this.props, fieldModel);
+      const fieldErrors = getValidity(errorValidators, value);
+
+      dispatch(actions.setErrors(fieldModel, fieldErrors));
+
+      return fieldErrors;
+    }));
+
+    if (onSubmit && valid && !invalid) {
       onSubmit(modelValue);
     }
   }
