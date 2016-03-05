@@ -496,6 +496,8 @@ describe('<Field /> component', () => {
     });
 
     it('should validate on blur when validateOn prop is "blur"', () => {
+      let timesValidationCalled = 0;
+
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Field
@@ -503,7 +505,10 @@ describe('<Field /> component', () => {
             validators={{
               good: () => true,
               bad: () => false,
-              custom: val => val !== 'invalid',
+              custom: (val) => {
+                timesValidationCalled += 1;
+                return val !== 'invalid';
+              },
             }}
             validateOn="blur"
           >
@@ -516,13 +521,18 @@ describe('<Field /> component', () => {
 
       control.value = 'valid';
 
+      assert.equal(timesValidationCalled, 1,
+        'validation should only be called once upon load');
+
       TestUtils.Simulate.change(control);
 
-      assert.deepEqual(
-        store.getState().testForm.fields.blur.errors,
-        {}, 'should not validate upon change');
+      assert.equal(timesValidationCalled, 1,
+        'validation should not be called upon change');
 
       TestUtils.Simulate.blur(control);
+
+      assert.equal(timesValidationCalled, 2,
+        'validation should be called upon blur');
 
       assert.deepEqual(
         store.getState().testForm.fields.blur.errors,
@@ -633,7 +643,9 @@ describe('<Field /> component', () => {
     it('should set the proper field state for errors', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         testForm: formReducer,
-        test: createModelReducer('test', {}),
+        test: createModelReducer('test', {
+          foo: '',
+        }),
       }));
 
       const field = TestUtils.renderIntoDocument(
@@ -678,8 +690,12 @@ describe('<Field /> component', () => {
     it('should only validate errors on blur if validateOn="blur"', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         testForm: formReducer,
-        test: createModelReducer('test', {}),
+        test: createModelReducer('test', {
+          foo: '',
+        }),
       }));
+
+      let timesValidationCalled = 0;
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -687,7 +703,10 @@ describe('<Field /> component', () => {
             model="test.foo"
             errors={{
               length: (val) => val.length > 8 && 'too long',
-              valid: (val) => val !== 'valid' && 'not valid',
+              valid: (val) => {
+                timesValidationCalled += 1;
+                return val !== 'valid' && 'not valid';
+              },
             }}
             validateOn="blur"
           >
@@ -698,15 +717,20 @@ describe('<Field /> component', () => {
 
       const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
+      assert.equal(timesValidationCalled, 1,
+        'validation should be called on load');
+
       control.value = 'valid';
 
       TestUtils.Simulate.change(control);
 
-      assert.deepEqual(
-        store.getState().testForm.fields.foo.errors,
-        {});
+      assert.equal(timesValidationCalled, 1,
+        'validation should not be called again on change');
 
       TestUtils.Simulate.blur(control);
+
+      assert.equal(timesValidationCalled, 2,
+        'validation should be called again on blur');
 
       assert.deepEqual(
         store.getState().testForm.fields.foo.errors,
@@ -940,6 +964,43 @@ describe('<Field /> component', () => {
       assert.equal(store.getState().test.foo, 'decorator test');
 
       assert.isTrue(decoratorCalled);
+    });
+  });
+
+  describe('validation on load', () => {
+    const formReducer = createFormReducer('test');
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer,
+      test: createModelReducer('test', {
+        foo: 'invalid',
+      }),
+    }));
+
+    it('should always validate the model initially', () => {
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+            validators={{
+              initial: (val) => val !== 'invalid',
+            }}
+          >
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      assert.containSubset(
+        store.getState().testForm.fields.foo,
+        {
+          valid: false,
+          validity: {
+            initial: false,
+          },
+          errors: {
+            initial: true,
+          },
+        });
     });
   });
 });

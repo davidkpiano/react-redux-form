@@ -113,6 +113,7 @@ function sequenceEventActions(control, props) {
     onFocus: [() => dispatch(focus(model))],
     onBlur: [() => dispatch(blur(model))],
     onChange: [],
+    _onLoad: [], // pseudo-event
   };
 
   const controlAction = (controlActionMap[control.props.type] || controlActionMap.default)(props);
@@ -133,16 +134,19 @@ function sequenceEventActions(control, props) {
 
   eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
 
-  if (props.validators) {
+  if (props.validators || props.errors) {
     const dispatchValidate = value => {
       const validity = getValidity(props.validators, value);
+      const errors = getValidity(props.errors, value);
 
       dispatch(setValidity(model, validity));
+      dispatch(setErrors(model, errors));
 
       return value;
     };
 
     eventActions[validateOn].push(dispatchValidate);
+    eventActions._onLoad.push(dispatchValidate);
   }
 
   if (props.asyncValidators) {
@@ -161,18 +165,6 @@ function sequenceEventActions(control, props) {
     };
 
     eventActions[asyncValidateOn].push(dispatchAsyncValidate);
-  }
-
-  if (props.errors) {
-    const dispatchValidateErrors = (value) => {
-      const errors = getValidity(props.errors, value);
-
-      dispatch(setErrors(model, errors));
-
-      return value;
-    };
-
-    eventActions[validateOn].push(dispatchValidateErrors);
   }
 
   return mapValues(eventActions, _actions => compose(..._actions));
@@ -222,7 +214,13 @@ function createFieldControlComponent(control, props, options) {
 
   /* eslint-disable react/prop-types */
   // TODO: Track down where to set correct propType for modelValue
-  return <Control {...controlProps} modelValue={props.modelValue} control={control} />;
+  return (
+    <Control
+      {...controlProps}
+      modelValue={props.modelValue}
+      control={control}
+    />
+  );
   /* eslint-enable react/prop-types */
 }
 
