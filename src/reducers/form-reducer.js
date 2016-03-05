@@ -6,6 +6,7 @@ import isEqual from 'lodash/isEqual';
 import isPlainObject from 'lodash/isPlainObject';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
+import flatten from 'flat';
 
 import actionTypes from '../action-types';
 import { isValid } from '../utils';
@@ -83,17 +84,26 @@ function formIsValid(formState) {
 }
 
 
-function createInitialFormState(model) {
-  return {
-    ...initialFormState,
-    model,
-  };
+function createInitialFormState(model, initialState) {
+  const formState = icepick.set(initialFormState,
+    'model', model);
+
+  if (initialState) {
+    return icepick.set(formState,
+      'fields',
+      mapValues(flatten(initialState), (initialValue) =>
+        icepick.set(initialFieldState,
+          'initialValue', initialValue))
+    );
+  }
+
+  return formState;
 }
 
-function createFormReducer(model) {
+function createFormReducer(model, initialState) {
   const modelPath = toPath(model);
 
-  return (state = createInitialFormState(model), action) => {
+  return (state = createInitialFormState(model, initialState), action) => {
     if (!action.model) {
       return state;
     }

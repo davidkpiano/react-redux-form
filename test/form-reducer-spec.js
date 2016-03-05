@@ -60,4 +60,30 @@ describe('createFormReducer()', () => {
       blur: false,
     });
   });
+
+  it('should initialize fields given an initial state', () => {
+    const reducer = createFormReducer('test', {
+      foo: 'bar',
+      deep: {
+        one: 'one',
+        two: {
+          three: 'four',
+        },
+      },
+    });
+
+    const actual = reducer(undefined, {});
+
+    assert.containSubset(actual.fields, {
+      foo: {
+        initialValue: 'bar',
+      },
+      'deep.one': {
+        initialValue: 'one',
+      },
+      'deep.two.three': {
+        initialValue: 'four',
+      },
+    });
+  });
 });

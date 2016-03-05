@@ -50,6 +50,7 @@
     "eslint": "^2.2.0",
     "eslint-config-airbnb": "^6.0.2",
     "eslint-plugin-react": "^4.1.0",
+    "estraverse-fb": "^1.3.1",
     "immutable": "^3.7.6",
     "jsdom": "^8.0.4",
     "mocha": "^2.4.5",
@@ -64,6 +65,7 @@
     "webpack": "^1.12.14"
   },
   "dependencies": {
+    "flat": "^2.0.0",
     "icepick": "^1.1.0",
     "lodash": "^4.5.1"
   },
