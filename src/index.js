@@ -6,15 +6,26 @@ import Form from './components/form-component';
 
 import modeled from './enhancers/modeled-enhancer';
 
-import { createFormReducer, initialFieldState, getField } from './reducers/form-reducer';
-import { createModelReducer } from './reducers/model-reducer';
+import {
+  createFormReducer,
+  formReducer,
+  initialFieldState,
+  getField,
+} from './reducers/form-reducer';
+
+import {
+  createModelReducer,
+  modelReducer,
+} from './reducers/model-reducer';
 
 export {
   actions,
   actionTypes,
   controlPropsMap as controls,
   createFieldClass,
+  formReducer,
   createFormReducer,
+  modelReducer,
   createModelReducer,
   Field,
   Form,

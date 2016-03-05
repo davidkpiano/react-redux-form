@@ -100,7 +100,7 @@ function createInitialFormState(model, initialState) {
   return formState;
 }
 
-function createFormReducer(model, initialState) {
+function formReducer(model, initialState) {
   const modelPath = toPath(model);
 
   return (state = createInitialFormState(model, initialState), action) => {
@@ -291,8 +291,16 @@ function createFormReducer(model, initialState) {
   };
 }
 
+function createFormReducer(...args) {
+  console.warn('The createFormReducer() function is deprecated (renamed). '
+    + 'Please use formReducer().');
+
+  return formReducer(...args);
+}
+
 export {
   createFormReducer,
+  formReducer,
   initialFieldState,
   initialFormState,
   getField,

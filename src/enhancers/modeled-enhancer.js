@@ -1,8 +1,8 @@
-import { createModelReducer } from '../reducers/model-reducer';
+import { modelReducer } from '../reducers/model-reducer';
 
 const NULL_ACTION = { type: null };
 
-function createModelReducerEnhancer(modelReducerCreator = createModelReducer) {
+function createModelReducerEnhancer(modelReducerCreator = modelReducer) {
   return function modelReducerEnhancer(reducer, model) {
     let initialState;
     try {
@@ -11,17 +11,17 @@ function createModelReducerEnhancer(modelReducerCreator = createModelReducer) {
       initialState = null;
     }
 
-    const modelReducer = modelReducerCreator(model, initialState);
+    const _modelReducer = modelReducerCreator(model, initialState);
 
     return (state = initialState, action) => {
-      const updatedState = modelReducer(state, action);
+      const updatedState = _modelReducer(state, action);
 
       return reducer(updatedState, action);
     };
   };
 }
 
-const modelReducerEnhancer = createModelReducerEnhancer(createModelReducer);
+const modelReducerEnhancer = createModelReducerEnhancer(modelReducer);
 
 export { createModelReducerEnhancer };
 export default modelReducerEnhancer;

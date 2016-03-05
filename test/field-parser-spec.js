@@ -4,12 +4,12 @@ import TestUtils from 'react-addons-test-utils';
 import { combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-import { createModelReducer, Field } from '../src';
+import { modelReducer, Field } from '../src';
 
 describe('<Field parser={...} />', () => {
   it('should parse the changed values given a parser function', () => {
     const store = createStore(combineReducers({
-      test: createModelReducer('test'),
+      test: modelReducer('test'),
     }));
 
     const parseValue = val => ({

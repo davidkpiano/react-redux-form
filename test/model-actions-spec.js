@@ -1,17 +1,17 @@
 import { assert } from 'chai';
-import { actions, createModelReducer } from '../src';
+import { actions, modelReducer } from '../src';
 
 describe('RSF model actions', () => {
   describe('change()', () => {
     it('should modify the model given a shallow path', () => {
-      const reducer = createModelReducer('foo');
+      const reducer = modelReducer('foo');
 
       const actual = reducer({}, actions.change('foo.bar', 'string'));
       assert.deepEqual(actual, { bar: 'string' });
     });
 
     it('should modify the model given a deep path', () => {
-      const reducer = createModelReducer('foo');
+      const reducer = modelReducer('foo');
 
       const actual = reducer({}, actions.change('foo.bar.baz', 'string'));
       assert.deepEqual(actual, { bar: { baz: 'string' } });
@@ -20,7 +20,7 @@ describe('RSF model actions', () => {
 
   describe('reset()', () => {
     it('should reset the model to the initial state provided in the reducer', () => {
-      const reducer = createModelReducer('test', {
+      const reducer = modelReducer('test', {
         foo: 'initial',
       });
 
@@ -31,7 +31,7 @@ describe('RSF model actions', () => {
 
     it('should set the model to undefined if an initial state was not provided from a deep model',
       () => {
-        const reducer = createModelReducer('test', {
+        const reducer = modelReducer('test', {
           foo: 'initial',
         });
 
@@ -43,7 +43,7 @@ describe('RSF model actions', () => {
       });
 
     it('should set the model to undefined if an initial state was not provided', () => {
-      const reducer = createModelReducer('test', {
+      const reducer = modelReducer('test', {
         foo: 'initial',
       });
 
@@ -59,7 +59,7 @@ describe('RSF model actions', () => {
         baz: { one: 'two' },
       };
 
-      const reducer = createModelReducer('test', initialState);
+      const reducer = modelReducer('test', initialState);
 
       const actual = reducer({}, actions.reset('test'));
 
@@ -136,7 +136,7 @@ describe('RSF model actions', () => {
         actionTests[action].map(test => {
           const { init, params, expected } = test;
           it('should modify the model to the expected result', done => {
-            const reducer = createModelReducer('test');
+            const reducer = modelReducer('test');
             const dispatch = _action => {
               done(assert.deepEqual(
                 reducer(init, _action),

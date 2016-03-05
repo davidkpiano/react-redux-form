@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
 import { Field as NativeField } from '../src/native';
-import { controls, createFieldClass, createFormReducer, createModelReducer, Field } from '../src';
+import { controls, createFieldClass, formReducer, modelReducer, Field } from '../src';
 
 describe('controls props mapping', () => {
   it('should exist', () => {
@@ -70,8 +70,8 @@ describe('custom <Field /> components with createFieldClass()', () => {
 
   it('should handle custom prop mappings', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: 'bar' }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -95,8 +95,8 @@ describe('custom <Field /> components with createFieldClass()', () => {
 
   it('should handle string prop mappings', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: 'bar' }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -120,8 +120,8 @@ describe('custom <Field /> components with createFieldClass()', () => {
 
   it('should continue to recognize native controls', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: 'bar' }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -145,8 +145,8 @@ describe('custom <Field /> components with createFieldClass()', () => {
 
   it('should work with mapping appropriate change actions with type="..."', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: 'bar' }),
     }));
 
     class InputFoo extends React.Component {

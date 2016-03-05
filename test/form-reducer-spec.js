@@ -1,22 +1,22 @@
 import { assert } from 'chai';
-import { actions, createFormReducer, initialFieldState, getField } from '../src';
+import { actions, formReducer, initialFieldState, getField } from '../src';
 
-describe('createFormReducer()', () => {
+describe('formReducer()', () => {
   it('should create a reducer given a model', () => {
-    const reducer = createFormReducer('test');
+    const reducer = formReducer('test');
 
     assert.isFunction(reducer);
   });
 
   it('should work with non-form actions', () => {
-    const reducer = createFormReducer('test');
+    const reducer = formReducer('test');
 
     assert.doesNotThrow(() => reducer(undefined, { type: 'ANY' }));
   });
 
   describe('getField() function', () => {
     it('should return an initialFieldState given an uninitialized model', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const actual = reducer(undefined, { type: 'ANY' });
 
@@ -28,7 +28,7 @@ describe('createFormReducer()', () => {
     });
 
     it('should maintain the full fieldState of an updated model', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const actual = reducer(undefined, actions.focus('test.foo'));
 
@@ -52,7 +52,7 @@ describe('createFormReducer()', () => {
   });
 
   it('should be able to handle model at deep state path', () => {
-    const reducer = createFormReducer('forms.test');
+    const reducer = formReducer('forms.test');
     const actual = reducer(undefined, actions.focus('forms.test.foo'));
     assert.deepEqual(actual.fields.foo, {
       ...initialFieldState,
@@ -62,7 +62,7 @@ describe('createFormReducer()', () => {
   });
 
   it('should initialize fields given an initial state', () => {
-    const reducer = createFormReducer('test', {
+    const reducer = formReducer('test', {
       foo: 'bar',
       deep: {
         one: 'one',

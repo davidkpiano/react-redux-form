@@ -2,17 +2,17 @@ import { assert } from 'chai';
 import Immutable from 'immutable';
 
 import { actions } from '../src';
-import { createModelReducer as immutableCreateModelReducer } from '../src/immutable';
+import { modelReducer as immutableModelReducer } from '../src/immutable';
 
-describe('immutable createModelReducer()', () => {
+describe('immutable modelReducer()', () => {
   it('should create a reducer given a model', () => {
-    const reducer = immutableCreateModelReducer('test');
+    const reducer = immutableModelReducer('test');
 
     assert.isFunction(reducer);
   });
 
   it('should create a reducer with initial state given a model and initial state', () => {
-    const reducer = immutableCreateModelReducer('test',
+    const reducer = immutableModelReducer('test',
       Immutable.fromJS({ foo: 'bar' }));
 
     assert.deepEqual(
@@ -22,7 +22,7 @@ describe('immutable createModelReducer()', () => {
 
   it('should ignore external actions', () => {
     const model = Immutable.fromJS({ foo: 'bar' });
-    const reducer = immutableCreateModelReducer('test', model);
+    const reducer = immutableModelReducer('test', model);
     const externalAction = {
       type: 'EXTERNAL_ACTION',
     };
@@ -34,7 +34,7 @@ describe('immutable createModelReducer()', () => {
 
   it('should ignore actions that are outside of the model', () => {
     const model = Immutable.fromJS({ foo: 'bar' });
-    const reducer = immutableCreateModelReducer('test', model);
+    const reducer = immutableModelReducer('test', model);
 
     assert.equal(
       reducer(undefined, actions.change('outside', 'value')),
@@ -47,7 +47,7 @@ describe('immutable createModelReducer()', () => {
 
   it('should update the state given a change action', () => {
     const model = Immutable.fromJS({ foo: 'bar', one: 'two' });
-    const reducer = immutableCreateModelReducer('test', model);
+    const reducer = immutableModelReducer('test', model);
 
     assert.ok(
       reducer(undefined, actions.change('test.foo', 'new'))
@@ -57,7 +57,7 @@ describe('immutable createModelReducer()', () => {
 
   it('should be able to handle models with depth > 1', () => {
     const model = Immutable.fromJS({ bar: [1, 2, 3] });
-    const deepReducer = immutableCreateModelReducer('test.foo');
+    const deepReducer = immutableModelReducer('test.foo');
     const shallowReducer = (state = Immutable.fromJS({
       original: 'untouched',
       foo: model,
@@ -85,7 +85,7 @@ describe('immutable createModelReducer()', () => {
   });
 
   it('should handle model at deep state path', () => {
-    const reducer = immutableCreateModelReducer('forms.test', Immutable.Map());
+    const reducer = immutableModelReducer('forms.test', Immutable.Map());
 
     assert.ok(
       reducer(undefined, actions.change('forms.test.foo', 'new'))

@@ -2,13 +2,13 @@ import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import { actions, actionTypes, createFormReducer, initialFieldState } from '../src';
+import { actions, actionTypes, formReducer, initialFieldState } from '../src';
 import { initialFormState } from '../src/reducers/form-reducer';
 
 describe('RSF field actions', () => {
   describe('setViewValue()', () => {
     it('should set the view value of the field', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setViewValue('test.foo', 'bar'))
@@ -21,7 +21,7 @@ describe('RSF field actions', () => {
 
   describe('reset()', () => {
     it('should set the field to the initial field state', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.reset('test.foo'))
@@ -30,7 +30,7 @@ describe('RSF field actions', () => {
     });
 
     it('should be able to set the entire form to the initial state', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.reset('test')),
@@ -38,7 +38,7 @@ describe('RSF field actions', () => {
     });
 
     it('should reset all errors on the field', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const stateWithErrors = reducer(undefined, actions.setValidity('test.foo', {
         valid: false,
@@ -56,7 +56,7 @@ describe('RSF field actions', () => {
     });
 
     it('should reset all errors on the form', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const stateWithErrors = reducer(undefined, actions.setValidity('test', {
         valid: false,
@@ -76,7 +76,7 @@ describe('RSF field actions', () => {
 
   describe('focus()', () => {
     it('should set the focus state of the field to true and the blur state to false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.focus('test.foo'))
@@ -90,7 +90,7 @@ describe('RSF field actions', () => {
 
   describe('blur()', () => {
     it('should set the blur state of the field to true and the focus state to false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.blur('test.foo'))
@@ -106,7 +106,7 @@ describe('RSF field actions', () => {
 
   describe('setPristine()', () => {
     it('should set the pristine state of the field to true and the dirty state to false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setPristine('test.foo'))
@@ -119,7 +119,7 @@ describe('RSF field actions', () => {
 
     it('should set the pristine state of the form to true and the dirty state to false if every ' +
       'field is pristine', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const actualPristine = reducer(undefined, actions.setPristine('test.foo'));
 
@@ -150,7 +150,7 @@ describe('RSF field actions', () => {
     });
 
     it('should be able to set the pristine state of the form and each field to true', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const dirtyFormAndField = reducer(undefined, actions.setDirty('test.foo'));
 
@@ -173,7 +173,7 @@ describe('RSF field actions', () => {
 
   describe('setDirty()', () => {
     it('should set the dirty state of the field to true and the pristine state to false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setDirty('test.foo'))
@@ -185,7 +185,7 @@ describe('RSF field actions', () => {
     });
 
     it('should set the dirty state of the form to true and the pristine state to false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setDirty('test.foo')),
@@ -198,7 +198,7 @@ describe('RSF field actions', () => {
 
   describe('setPending()', () => {
     it('should set the pending state of the field to true and the submitted state to false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setPending('test.foo'))
@@ -210,7 +210,7 @@ describe('RSF field actions', () => {
     });
 
     it('should set the pending state of the field to the specified state', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const actualPending = reducer(undefined, actions.setPending('test.foo', true));
 
@@ -234,7 +234,7 @@ describe('RSF field actions', () => {
     });
 
     it('should work with forms', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const actualPending = reducer(undefined, actions.setPending('test'));
 
@@ -256,7 +256,7 @@ describe('RSF field actions', () => {
 
   describe('setSubmitted()', () => {
     it('should set the submitted state of the field to true and the pending state to false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setSubmitted('test.foo'))
@@ -268,7 +268,7 @@ describe('RSF field actions', () => {
     });
 
     it('should set the submitted state of the field to the specified state', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const actualSubmitted = reducer(undefined, actions.setSubmitted('test.foo', true));
 
@@ -292,7 +292,7 @@ describe('RSF field actions', () => {
     });
 
     it('should work with forms', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const actualSubmitted = reducer(undefined, actions.setSubmitted('test', true));
 
@@ -317,7 +317,7 @@ describe('RSF field actions', () => {
   describe('setTouched()', () => {
     it('should set the touched and blurred state of the field to true ' +
       'and the untouched and focused state to false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setTouched('test.foo'))
@@ -333,7 +333,7 @@ describe('RSF field actions', () => {
 
   describe('setUntouched()', () => {
     it('should set the untouched state of the field to true and the touched state to false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setUntouched('test.foo'))
@@ -347,7 +347,7 @@ describe('RSF field actions', () => {
 
   describe('setValidity()', () => {
     it('should set the errors state of the field the inverse of a boolean validity', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setValidity('test.foo', true))
@@ -366,7 +366,7 @@ describe('RSF field actions', () => {
 
     it('should set the errors state of the field the inverse of each value of a validity object',
       () => {
-        const reducer = createFormReducer('test');
+        const reducer = formReducer('test');
 
         const validity = {
           good: true,
@@ -385,7 +385,7 @@ describe('RSF field actions', () => {
       });
 
     it('should set the valid state to true if all values in validity object are true', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const validity = {
         one: true,
@@ -408,7 +408,7 @@ describe('RSF field actions', () => {
     });
 
     it('should set the valid state to false if any value in validity object are false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const validity = {
         one: true,
@@ -432,7 +432,7 @@ describe('RSF field actions', () => {
     });
 
     it('should be able to set the validity of a form', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const validity = {
         foo: true,
@@ -455,7 +455,7 @@ describe('RSF field actions', () => {
     });
 
     it('should be able to set the validity to a non-boolean value', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const validity = {
         foo: 'truthy string',
@@ -521,7 +521,7 @@ describe('RSF field actions', () => {
 
   describe('setErrors()', () => {
     it('should set the errors state of the field', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setErrors('test.foo', true))
@@ -543,7 +543,7 @@ describe('RSF field actions', () => {
     });
 
     it('should set the errors state of the field', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const errors = {
         good: true,
@@ -567,7 +567,7 @@ describe('RSF field actions', () => {
     });
 
     it('should set the valid state to true if all values in error object are false', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const errors = {
         one: false,
@@ -596,7 +596,7 @@ describe('RSF field actions', () => {
     });
 
     it('should set the valid state to false if any value in error object is true', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const errors = {
         one: true,
@@ -630,7 +630,7 @@ describe('RSF field actions', () => {
     });
 
     it('should be able to set the errors of a form', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const errors = {
         foo: true,
@@ -653,7 +653,7 @@ describe('RSF field actions', () => {
     });
 
     it('should be able to set the errors to an object', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const errors = {
         foo: 'foo is required',
@@ -717,7 +717,7 @@ describe('RSF field actions', () => {
     });
 
     it('should be able to set the errors to a string', () => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
 
       const errors = 'This whole thing is invalid';
       const fieldErrors = 'This field is invalid';
@@ -777,7 +777,7 @@ describe('RSF field actions', () => {
   });
 
   describe('resetValidity() and resetErrors()', () => {
-    const reducer = createFormReducer('test');
+    const reducer = formReducer('test');
 
     it('should reset the validity and errors of a field state', () => {
       const stateWithErrors = reducer(
@@ -826,7 +826,7 @@ describe('RSF field actions', () => {
 
   describe('asyncSetValidity() (thunk)', () => {
     it('should asynchronously call setValidity() action', testDone => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
       const dispatch = action => {
         if (action.type === 'rsf/setValidity') {
           testDone(assert.containSubset(
@@ -855,7 +855,7 @@ describe('RSF field actions', () => {
     });
 
     it('should work with forms to asynchronously call setValidity() action', testDone => {
-      const reducer = createFormReducer('test');
+      const reducer = formReducer('test');
       const dispatch = action => {
         if (action.type === 'rsf/setValidity') {
           testDone(assert.containSubset(
@@ -887,7 +887,7 @@ describe('RSF field actions', () => {
         const pendingStates = [];
         const executedActions = [];
 
-        const reducer = createFormReducer('test');
+        const reducer = formReducer('test');
         const dispatch = action => {
           executedActions.push(action);
           const state = reducer(undefined, action);
@@ -917,7 +917,7 @@ describe('RSF field actions', () => {
         const pendingStates = [];
         const executedActions = [];
 
-        const reducer = createFormReducer('test');
+        const reducer = formReducer('test');
         const dispatch = action => {
           executedActions.push(action);
           const state = reducer(undefined, action);

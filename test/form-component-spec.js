@@ -6,13 +6,13 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
-import { Form, createModelReducer, createFormReducer, Field } from '../src';
+import { Form, modelReducer, formReducer, Field } from '../src';
 
 describe('<Form> component', () => {
   describe('validation on submit', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test', {}),
-      test: createModelReducer('test'),
+      testForm: formReducer('test', {}),
+      test: modelReducer('test'),
     }));
 
     const form = TestUtils.renderIntoDocument(
@@ -95,8 +95,8 @@ describe('<Form> component', () => {
 
   describe('error validation on submit', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', {
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
         bar: '',
       }),
     }));
@@ -210,8 +210,8 @@ describe('<Form> component', () => {
 
   describe('validation on change', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', { bar: '' }),
+      testForm: formReducer('test'),
+      test: modelReducer('test', { bar: '' }),
     }));
 
     let fooValidationCalled = false;
@@ -280,8 +280,8 @@ describe('<Form> component', () => {
 
   describe('error validation on change', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', { bar: '' }),
+      testForm: formReducer('test'),
+      test: modelReducer('test', { bar: '' }),
     }));
 
     let barValidationCalled = false;
@@ -346,8 +346,8 @@ describe('<Form> component', () => {
 
   describe('onSubmit() prop', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test'),
+      testForm: formReducer('test'),
+      test: modelReducer('test'),
     }));
 
     let submitValue = null;
@@ -408,8 +408,8 @@ describe('<Form> component', () => {
 
   describe('validation of form itself', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', {
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
         foo: '',
         bar: '',
       }),

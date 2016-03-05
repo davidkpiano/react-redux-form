@@ -1,15 +1,15 @@
 import { assert } from 'chai';
-import { actions, createModelReducer } from '../src';
+import { actions, modelReducer } from '../src';
 
-describe('createModelReducer()', () => {
+describe('modelReducer()', () => {
   it('should create a reducer given a model', () => {
-    const reducer = createModelReducer('test');
+    const reducer = modelReducer('test');
 
     assert.isFunction(reducer);
   });
 
   it('should create a reducer with initial state given a model and initial state', () => {
-    const reducer = createModelReducer('test', { foo: 'bar' });
+    const reducer = modelReducer('test', { foo: 'bar' });
 
     assert.deepEqual(
       reducer(undefined, {}),
@@ -18,7 +18,7 @@ describe('createModelReducer()', () => {
 
   it('should ignore external actions', () => {
     const model = { foo: 'bar' };
-    const reducer = createModelReducer('test', model);
+    const reducer = modelReducer('test', model);
     const externalAction = {
       type: 'EXTERNAL_ACTION',
     };
@@ -30,7 +30,7 @@ describe('createModelReducer()', () => {
 
   it('should ignore actions that are outside of the model', () => {
     const model = { foo: 'bar' };
-    const reducer = createModelReducer('test', model);
+    const reducer = modelReducer('test', model);
 
     assert.deepEqual(
       reducer(undefined, actions.change('outside', 'value')),
@@ -43,7 +43,7 @@ describe('createModelReducer()', () => {
 
   it('should update the state given a change action', () => {
     const model = { foo: 'bar', one: 'two' };
-    const reducer = createModelReducer('test', model);
+    const reducer = modelReducer('test', model);
 
     assert.deepEqual(
       reducer(undefined, actions.change('test.foo', 'new')),
@@ -52,7 +52,7 @@ describe('createModelReducer()', () => {
 
   it('should be able to handle models with depth > 1', () => {
     const model = { bar: [1, 2, 3] };
-    const deepReducer = createModelReducer('test.foo');
+    const deepReducer = modelReducer('test.foo');
     const shallowReducer = (state = { original: 'untouched', foo: model }, action) => ({
       ...state,
       foo: deepReducer(state.foo, action),
@@ -76,7 +76,7 @@ describe('createModelReducer()', () => {
   });
 
   it('should handle model at deep state path', () => {
-    const reducer = createModelReducer('forms.test');
+    const reducer = modelReducer('forms.test');
 
     assert.deepEqual(
       reducer(undefined, actions.change('forms.test.foo', 'new')),

@@ -6,7 +6,7 @@ import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
-import { Field, actions, createFormReducer, createModelReducer } from '../src';
+import { Field, actions, formReducer, modelReducer } from '../src';
 
 describe('<Field /> component', () => {
   const textFieldElements = [
@@ -19,8 +19,8 @@ describe('<Field /> component', () => {
 
   it('should wrap child components in a <div> if more than one', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: 'bar' }),
     }));
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -42,7 +42,7 @@ describe('<Field /> component', () => {
 
   it('should not wrap child components in a <div> if only one', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      test: createModelReducer('test', { foo: 'bar' }),
+      test: modelReducer('test', { foo: 'bar' }),
     }));
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -61,7 +61,7 @@ describe('<Field /> component', () => {
 
   it('should recursively handle nested control components', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      test: createModelReducer('test', { foo: 'bar' }),
+      test: modelReducer('test', { foo: 'bar' }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -95,8 +95,8 @@ describe('<Field /> component', () => {
   textFieldElements.map(([element, type]) => { // eslint-disable-line array-callback-return
     describe(`with <${element} ${type ? `type="${type}"` : ''}/>`, () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        testForm: createFormReducer('test'),
-        test: createModelReducer('test', { foo: 'bar' }),
+        testForm: formReducer('test'),
+        test: modelReducer('test', { foo: 'bar' }),
       }));
 
       const field = TestUtils.renderIntoDocument(
@@ -152,8 +152,8 @@ describe('<Field /> component', () => {
 
     describe(`with a controlled <${element} ${type ? `type="${type}"` : ''} /> component`, () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        testForm: createFormReducer('test'),
-        test: createModelReducer('test', { foo: 'bar' }),
+        testForm: formReducer('test'),
+        test: modelReducer('test', { foo: 'bar' }),
       }));
 
       const TestField = connect(s => s)(props => {
@@ -197,8 +197,8 @@ describe('<Field /> component', () => {
 
   describe('with <input type="radio" />', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', { foo: 'two' }),
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: 'two' }),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -259,8 +259,8 @@ describe('<Field /> component', () => {
 
   describe('with <input type="checkbox" /> (single toggle)', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', {
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
         foo: true,
       }),
     }));
@@ -317,8 +317,8 @@ describe('<Field /> component', () => {
 
   describe('with <input type="checkbox" /> (multi toggle)', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', {
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
         foo: [1],
       }),
     }));
@@ -388,8 +388,8 @@ describe('<Field /> component', () => {
 
   describe('with <select>', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: createFormReducer('test'),
-      test: createModelReducer('test', {
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
         foo: 'one',
       }),
     }));
@@ -446,10 +446,10 @@ describe('<Field /> component', () => {
   });
 
   describe('validators and validateOn property', () => {
-    const formReducer = createFormReducer('test');
+    const reducer = formReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer,
-      test: createModelReducer('test', {}),
+      testForm: reducer,
+      test: modelReducer('test', {}),
     }));
 
     it('should set the proper field state for validation', () => {
@@ -545,10 +545,10 @@ describe('<Field /> component', () => {
   });
 
   describe('asyncValidators and asyncValidateOn property', () => {
-    const formReducer = createFormReducer('test');
+    const reducer = formReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer,
-      test: createModelReducer('test', {}),
+      testForm: reducer,
+      test: modelReducer('test', {}),
     }));
 
     it('should set the proper field state for a valid async validation', done => {
@@ -637,13 +637,13 @@ describe('<Field /> component', () => {
   });
 
   describe('errors property', () => {
-    const formReducer = createFormReducer('test');
+    const reducer = formReducer('test');
 
 
     it('should set the proper field state for errors', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        testForm: formReducer,
-        test: createModelReducer('test', {
+        testForm: reducer,
+        test: modelReducer('test', {
           foo: '',
         }),
       }));
@@ -689,8 +689,8 @@ describe('<Field /> component', () => {
 
     it('should only validate errors on blur if validateOn="blur"', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        testForm: formReducer,
-        test: createModelReducer('test', {
+        testForm: reducer,
+        test: modelReducer('test', {
           foo: '',
         }),
       }));
@@ -762,10 +762,10 @@ describe('<Field /> component', () => {
   });
 
   describe('dynamic components', () => {
-    const formReducer = createFormReducer('test');
+    const reducer = formReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer,
-      test: createModelReducer('test', {}),
+      testForm: reducer,
+      test: modelReducer('test', {}),
     }));
 
     class DynamicSelectForm extends React.Component {
@@ -813,7 +813,7 @@ describe('<Field /> component', () => {
 
   describe('wrapper components with component property', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      test: createModelReducer('test', {}),
+      test: modelReducer('test', {}),
     }));
 
     it('should wrap children with specified component (string)', () => {
@@ -896,7 +896,7 @@ describe('<Field /> component', () => {
 
     onEvents.forEach((onEvent) => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        test: createModelReducer('test', { foo: 'initial' }),
+        test: modelReducer('test', { foo: 'initial' }),
       }));
 
       it(`should update the store when updateOn="${onEvent}"`, () => {
@@ -931,7 +931,7 @@ describe('<Field /> component', () => {
       let decoratorCalled = false;
 
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        test: createModelReducer('test', { foo: 'initial' }),
+        test: modelReducer('test', { foo: 'initial' }),
       }));
 
       const changeDecorator = (change) => (val) => {
@@ -968,10 +968,10 @@ describe('<Field /> component', () => {
   });
 
   describe('validation on load', () => {
-    const formReducer = createFormReducer('test');
+    const reducer = formReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer,
-      test: createModelReducer('test', {
+      testForm: reducer,
+      test: modelReducer('test', {
         foo: 'invalid',
       }),
     }));

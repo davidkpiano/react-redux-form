@@ -10,7 +10,7 @@ function icepickSet(state, path, value) {
 }
 
 function createModeler(getter = _get, setter = icepickSet, initialModelState = {}) {
-  return function createModelReducer(model, initialState = initialModelState) {
+  return function _createModelReducer(model, initialState = initialModelState) {
     const modelPath = toPath(model);
 
     return (state = initialState, action) => {
@@ -60,9 +60,17 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
   };
 }
 
-const createModelReducer = createModeler();
+const modelReducer = createModeler();
+
+function createModelReducer(...args) {
+  console.warn('The createModelReducer() function is deprecated (renamed). '
+    + 'Please use modelReducer().');
+
+  return modelReducer(...args);
+}
 
 export {
   createModeler,
+  modelReducer,
   createModelReducer,
 };
