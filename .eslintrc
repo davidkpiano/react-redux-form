@@ -10,6 +10,7 @@
       2, {
         "capIsNewExceptions": ["List", "Map"]
       }
-    ]
+    ],
+    "react/prefer-stateless-function": 0
   }
 }
