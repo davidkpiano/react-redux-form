@@ -1,7 +1,7 @@
 import { assert } from 'chai';
-import { actions } from '../src';
+import { actions, actionTypes } from '../src';
 
-describe('RSF model action creators', () => {
+describe('model action creators', () => {
   describe('actions.change()', () => {
     it('should return an action', () => {
       assert.deepEqual(
@@ -9,7 +9,7 @@ describe('RSF model action creators', () => {
         {
           model: 'foo.bar',
           multi: false,
-          type: 'rsf/change',
+          type: actionTypes.CHANGE,
           value: 'baz',
         });
     });
@@ -25,7 +25,7 @@ describe('RSF model action creators', () => {
       assert.deepEqual(
         actions.reset('foo.bar'),
         {
-          type: 'rsf/reset',
+          type: actionTypes.RESET,
           model: 'foo.bar',
         });
     });
@@ -37,7 +37,7 @@ describe('RSF model action creators', () => {
       const dispatch = action => {
         done(assert.equal(
           action.type,
-          'rsf/change'));
+          actionTypes.CHANGE));
       };
       const getState = () => ({
         foo: {
@@ -73,7 +73,7 @@ describe('RSF model action creators', () => {
       const dispatch = action => {
         done(assert.equal(
           action.type,
-          'rsf/change'));
+          actionTypes.CHANGE));
       };
       const getState = () => ({
         foo: {
@@ -109,7 +109,7 @@ describe('RSF model action creators', () => {
       const dispatch = action => {
         done(assert.equal(
           action.type,
-          'rsf/change'));
+          actionTypes.CHANGE));
       };
       const getState = () => ({
         foo: {
@@ -144,7 +144,7 @@ describe('RSF model action creators', () => {
       const dispatch = action => {
         done(assert.equal(
           action.type,
-          'rsf/change'));
+          actionTypes.CHANGE));
       };
       const getState = () => ({
         foo: {
@@ -180,7 +180,7 @@ describe('RSF model action creators', () => {
       const dispatch = action => {
         done(assert.equal(
           action.type,
-          'rsf/change'));
+          actionTypes.CHANGE));
       };
       const getState = () => ({
         foo: {
@@ -216,7 +216,7 @@ describe('RSF model action creators', () => {
       const dispatch = action => {
         done(assert.equal(
           action.type,
-          'rsf/change'));
+          actionTypes.CHANGE));
       };
       const getState = () => ({
         foo: {
@@ -253,7 +253,7 @@ describe('RSF field action creators', () => {
       assert.deepEqual(
         actions.focus('foo.bar'),
         {
-          type: 'rsf/focus',
+          type: actionTypes.FOCUS,
           model: 'foo.bar',
         });
     });
@@ -264,7 +264,7 @@ describe('RSF field action creators', () => {
       assert.deepEqual(
         actions.blur('foo.bar'),
         {
-          type: 'rsf/blur',
+          type: actionTypes.BLUR,
           model: 'foo.bar',
         });
     });
@@ -275,7 +275,7 @@ describe('RSF field action creators', () => {
       assert.deepEqual(
         actions.setPristine('foo.bar'),
         {
-          type: 'rsf/setPristine',
+          type: actionTypes.SET_PRISTINE,
           model: 'foo.bar',
         });
     });
@@ -286,7 +286,7 @@ describe('RSF field action creators', () => {
       assert.deepEqual(
         actions.setDirty('foo.bar'),
         {
-          type: 'rsf/setDirty',
+          type: actionTypes.SET_DIRTY,
           model: 'foo.bar',
         });
     });
@@ -297,7 +297,7 @@ describe('RSF field action creators', () => {
       assert.deepEqual(
         actions.setInitial('foo.bar'),
         {
-          type: 'rsf/setInitial',
+          type: actionTypes.SET_INITIAL,
           model: 'foo.bar',
         });
     });
@@ -308,7 +308,7 @@ describe('RSF field action creators', () => {
       assert.deepEqual(
         actions.setValidity('foo.bar', true),
         {
-          type: 'rsf/setValidity',
+          type: actionTypes.SET_VALIDITY,
           model: 'foo.bar',
           validity: true,
         });

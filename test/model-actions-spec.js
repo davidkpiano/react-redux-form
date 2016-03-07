@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import { actions, modelReducer } from '../src';
 
-describe('RSF model actions', () => {
+describe('model actions', () => {
   describe('change()', () => {
     it('should modify the model given a shallow path', () => {
       const reducer = modelReducer('foo');

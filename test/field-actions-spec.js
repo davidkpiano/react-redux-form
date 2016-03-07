@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 import { actions, actionTypes, formReducer, initialFieldState } from '../src';
 import { initialFormState } from '../src/reducers/form-reducer';
 
-describe('RSF field actions', () => {
+describe('field actions', () => {
   describe('setViewValue()', () => {
     it('should set the view value of the field', () => {
       const reducer = formReducer('test');
@@ -828,7 +828,7 @@ describe('RSF field actions', () => {
     it('should asynchronously call setValidity() action', testDone => {
       const reducer = formReducer('test');
       const dispatch = action => {
-        if (action.type === 'rsf/setValidity') {
+        if (action.type === actionTypes.SET_VALIDITY) {
           testDone(assert.containSubset(
             reducer(undefined, action)
               .fields.foo,
@@ -857,7 +857,7 @@ describe('RSF field actions', () => {
     it('should work with forms to asynchronously call setValidity() action', testDone => {
       const reducer = formReducer('test');
       const dispatch = action => {
-        if (action.type === 'rsf/setValidity') {
+        if (action.type === actionTypes.SET_VALIDITY) {
           testDone(assert.containSubset(
             reducer(undefined, action),
             {
@@ -892,7 +892,7 @@ describe('RSF field actions', () => {
           executedActions.push(action);
           const state = reducer(undefined, action);
 
-          if (action.type === 'rsf/setPending') {
+          if (action.type === actionTypes.SET_PENDING) {
             pendingStates.push(action.pending);
 
             assert.equal(state.fields.foo.pending, action.pending);
@@ -922,7 +922,7 @@ describe('RSF field actions', () => {
           executedActions.push(action);
           const state = reducer(undefined, action);
 
-          if (action.type === 'rsf/setPending') {
+          if (action.type === actionTypes.SET_PENDING) {
             pendingStates.push(action.pending);
 
             assert.equal(state.pending, action.pending);
