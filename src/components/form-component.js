@@ -109,9 +109,14 @@ Form.propTypes = {
   validators: PropTypes.object,
   validateOn: PropTypes.oneOf([
     'change',
+    'submit',
   ]),
   model: PropTypes.string.isRequired,
   onSubmit: PropTypes.func,
+};
+
+Form.defaultProps = {
+  validateOn: 'change',
 };
 
 export default connect(identity)(Form);

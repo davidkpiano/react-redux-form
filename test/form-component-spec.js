@@ -15,16 +15,22 @@ describe('<Form> component', () => {
       test: modelReducer('test'),
     }));
 
+    let timesValidated = 0;
+
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Form model="test"
           validators={{
-            foo: (val) => val === 'testing foo',
+            foo: (val) => {
+              timesValidated += 1;
+              return val === 'testing foo';
+            },
             bar: {
               one: (val) => val && val.length >= 1,
               two: (val) => val && val.length >= 2,
             },
           }}
+          validateOn="submit"
         >
           <Field model="test.foo">
             <input type="text" />
@@ -41,8 +47,20 @@ describe('<Form> component', () => {
 
     const [fooControl, barControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
 
+    it('should not validate before submit', () => {
+      assert.equal(timesValidated, 0);
+    });
+
+    it('should not validate on change', () => {
+      TestUtils.Simulate.change(fooControl);
+
+      assert.equal(timesValidated, 0);
+    });
+
     it('should validate all validators on submit', () => {
       TestUtils.Simulate.submit(formElement);
+
+      assert.equal(timesValidated, 1);
 
       assert.containSubset(
         store.getState().testForm.fields.foo,
@@ -52,7 +70,11 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.change(fooControl);
 
+      assert.equal(timesValidated, 1);
+
       TestUtils.Simulate.submit(formElement);
+
+      assert.equal(timesValidated, 2);
 
       assert.containSubset(
         store.getState().testForm.fields.foo,
@@ -208,7 +230,7 @@ describe('<Form> component', () => {
     });
   });
 
-  describe('validation on change', () => {
+  describe('validation on change (default)', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test'),
       test: modelReducer('test', { bar: '' }),
@@ -230,7 +252,6 @@ describe('<Form> component', () => {
               },
             },
           }}
-          validateOn="change"
         >
           <Field model="test.foo">
             <input type="text" />
