@@ -236,7 +236,7 @@ describe('<Form> component', () => {
       test: modelReducer('test', { bar: '' }),
     }));
 
-    let fooValidationCalled = false;
+    let timesBarValidationCalled = 0;
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -247,7 +247,7 @@ describe('<Form> component', () => {
               one: (val) => val && val.length >= 1,
               two: (val) => val && val.length >= 2,
               called: () => {
-                fooValidationCalled = true;
+                timesBarValidationCalled += 1;
                 return true;
               },
             },
@@ -265,6 +265,10 @@ describe('<Form> component', () => {
     );
 
     const [fooControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+
+    it('should validate form validators initially on load', () => {
+      assert.equal(timesBarValidationCalled, 1);
+    });
 
     it('should validate form validators on field change', () => {
       fooControl.value = 'invalid';
@@ -295,7 +299,7 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.change(fooControl);
 
-      assert.isFalse(fooValidationCalled);
+      assert.equal(timesBarValidationCalled, 1);
     });
   });
 
@@ -305,7 +309,7 @@ describe('<Form> component', () => {
       test: modelReducer('test', { bar: '' }),
     }));
 
-    let barValidationCalled = false;
+    let timesBarValidationCalled = 0;
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -313,7 +317,7 @@ describe('<Form> component', () => {
           errors={{
             foo: (val) => val !== 'valid foo' && 'invalid foo',
             bar: () => {
-              barValidationCalled = true;
+              timesBarValidationCalled += 1;
               return 'bar validated';
             },
           }}
@@ -331,6 +335,10 @@ describe('<Form> component', () => {
     );
 
     const [fooControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+
+    it('should validate form validators initially on load', () => {
+      assert.equal(timesBarValidationCalled, 1);
+    });
 
     it('should validate form error validators on field change', () => {
       fooControl.value = 'invalid';
@@ -361,7 +369,7 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.change(fooControl);
 
-      assert.isFalse(barValidationCalled);
+      assert.equal(timesBarValidationCalled, 1);
     });
   });
 

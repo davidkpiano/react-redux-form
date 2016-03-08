@@ -15,6 +15,11 @@ class Form extends Component {
 
     this.handleSubmit = this.handleSubmit.bind(this);
   }
+
+  componentDidMount() {
+    this.componentDidUpdate();
+  }
+
   componentDidUpdate(prevProps) {
     /* eslint-disable react/prop-types */
     const {
