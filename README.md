@@ -1,11 +1,9 @@
 # React Redux Form
 [![Build Status](https://travis-ci.org/davidkpiano/react-redux-form.svg?branch=master)](https://travis-ci.org/davidkpiano/react-redux-form) [![npm version](https://badge.fury.io/js/react-redux-form.svg)](https://badge.fury.io/js/react-redux-form)
 
-**Latest Version: `0.8.0`** Read the [release docs!](https://github.com/davidkpiano/react-redux-form/releases/tag/v0.8.0)
+**Latest Version: `0.8.2`** Read the [release docs!](https://github.com/davidkpiano/react-redux-form/releases/tag/v0.8.0)
 
 ## [Read the Full Documentation](http://davidkpiano.github.io/react-redux-form)
-
-
 
 Or [read the gitbook (most up-to-date)!](https://davidkpiano.gitbooks.io/react-redux-form/content/)
 
@@ -31,13 +29,13 @@ Be sure to read the [step-by-step](http://davidkpiano.github.io/react-redux-form
 import React from 'react';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-import { createModelReducer, createFormReducer } from 'react-redux-form';
+import { modelReducer, formReducer } from 'react-redux-form';
 
 import MyForm from './components/my-form-component';
 
 const store = createStore(combineReducers({
-  user: createModelReducer('user', { name: '' }),
-  userForm: createFormReducer('user')
+  user: modelReducer('user', { name: '' }),
+  userForm: formReducer('user')
 };
 
 class App extends React.Component {
