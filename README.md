@@ -5,7 +5,9 @@
 
 ## [Read the Full Documentation](http://davidkpiano.github.io/react-redux-form)
 
-Or [check out the wiki (available in the docs)!](https://github.com/davidkpiano/react-redux-form/wiki)
+
+
+Or [read the gitbook (most up-to-date)!](https://davidkpiano.gitbooks.io/react-redux-form/content/)
 
 React Redux Form is a collection of reducer creators and action creators that make implementing even the most complex and custom forms with React and Redux simple and performant.
 
