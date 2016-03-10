@@ -130,11 +130,13 @@ function formReducer(model, initialState) {
         const setDirtyState = icepick.merge(state, {
           dirty: true,
           pristine: false,
+          touched: true,
         });
 
         return setField(setDirtyState, localPath, {
           dirty: true,
           pristine: false,
+          touched: true,
         });
       }
 
