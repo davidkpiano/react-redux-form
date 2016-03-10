@@ -264,6 +264,7 @@ describe('field actions', () => {
         {
           submitted: true,
           pending: false,
+          touched: true,
         });
     });
 
@@ -278,6 +279,7 @@ describe('field actions', () => {
         {
           submitted: true,
           pending: false,
+          touched: true,
         });
 
       const actualNotSubmitted = reducer(actualSubmitted, actions.setSubmitted('test.foo', false));
@@ -288,6 +290,7 @@ describe('field actions', () => {
         {
           submitted: false,
           pending: false,
+          touched: true,
         });
     });
 

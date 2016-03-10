@@ -274,6 +274,7 @@ function formReducer(model, initialState) {
         return setField(state, localPath, {
           pending: false,
           submitted: !!action.submitted,
+          touched: true,
         });
 
       case actionTypes.SET_INITIAL:
