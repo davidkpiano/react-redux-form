@@ -23,7 +23,7 @@ class Control extends Component {
 Control.propTypes = {
   control: PropTypes.object,
   _onLoad: PropTypes.func,
-  modelValue: PropTypes.string,
+  modelValue: PropTypes.any,
 };
 
 export default Control;
