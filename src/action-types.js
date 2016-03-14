@@ -15,6 +15,7 @@ const actionTypes = {
   SET_VALIDITY: 'rrf/setValidity',
   SET_VIEW_VALUE: 'rrf/setViewValue',
   RESET_VALIDITY: 'rrf/resetValidity',
+  BATCH: 'rrf/batch',
 };
 
 export default actionTypes;
