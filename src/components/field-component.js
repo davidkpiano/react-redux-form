@@ -136,11 +136,8 @@ function sequenceEventActions(control, props) {
 
   if (props.validators || props.errors) {
     const dispatchValidate = value => {
-      const validity = getValidity(props.validators, value);
-      const errors = getValidity(props.errors, value);
-
-      dispatch(setValidity(model, validity));
-      dispatch(setErrors(model, errors));
+      props.validators && dispatch(setValidity(model, getValidity(props.validators, value)));
+      props.errors && dispatch(setErrors(model, getValidity(props.errors, value)));
 
       return value;
     };
