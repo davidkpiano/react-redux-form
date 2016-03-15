@@ -13,7 +13,7 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
   return function _createModelReducer(model, initialState = initialModelState) {
     const modelPath = toPath(model);
 
-    return (state = initialState, action) => {
+    const modelReducer = (state = initialState, action) => {
       if (!action.model) {
         return state;
       }
@@ -27,6 +27,9 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
       const localPath = path.slice(modelPath.length);
 
       switch (action.type) {
+        case actionTypes.BATCH:
+          return action.actions.reduce(modelReducer, state);
+
         case actionTypes.CHANGE:
           if (!localPath.length) {
             return action.value;
@@ -57,6 +60,8 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
           return state;
       }
     };
+
+    return modelReducer;
   };
 }
 

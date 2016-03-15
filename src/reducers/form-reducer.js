@@ -100,10 +100,10 @@ function createInitialFormState(model, initialState) {
   return formState;
 }
 
-function formReducer(model, initialState) {
+function _createFormReducer(model, initialState) {
   const modelPath = toPath(model);
 
-  const _formReducer = (state = createInitialFormState(model, initialState), action) => {
+  const formReducer = (state = createInitialFormState(model, initialState), action) => {
     if (!action.model) {
       return state;
     }
@@ -120,7 +120,7 @@ function formReducer(model, initialState) {
 
     switch (action.type) {
       case actionTypes.BATCH:
-        return action.actions.reduce(_formReducer, state);
+        return action.actions.reduce(formReducer, state);
 
       case actionTypes.FOCUS:
         return setField(state, localPath, {
@@ -294,19 +294,20 @@ function formReducer(model, initialState) {
     }
   };
 
-  return _formReducer;
+  return formReducer;
 }
 
 function createFormReducer(...args) {
   console.warn('The createFormReducer() function is deprecated (renamed). '
     + 'Please use formReducer().');
-
-  return formReducer(...args);
+  /* eslint-disable */
+  return _createformReducer(...args);
+  /* eslint-enable */
 }
 
 export {
   createFormReducer,
-  formReducer,
+  _createFormReducer as formReducer,
   initialFieldState,
   initialFormState,
   getField,
