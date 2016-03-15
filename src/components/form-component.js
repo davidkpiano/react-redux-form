@@ -17,10 +17,14 @@ class Form extends Component {
   }
 
   componentDidMount() {
-    this.componentDidUpdate();
+    this.validate(this.props, true);
   }
 
-  componentDidUpdate(prevProps) {
+  componentWillReceiveProps(nextProps) {
+    this.validate(nextProps);
+  }
+
+  validate(nextProps, initial = false) {
     /* eslint-disable react/prop-types */
     const {
       validators,
@@ -35,9 +39,9 @@ class Form extends Component {
 
     mapValues(validators, (validator, field) => {
       const fieldModel = [model, field].join('.');
-      const value = _get(this.props, fieldModel);
+      const value = _get(nextProps, fieldModel);
 
-      if (value === _get(prevProps, fieldModel)) return;
+      if (!initial && (value === _get(this.props, fieldModel))) return;
 
       const validity = getValidity(validator, value);
 
@@ -46,9 +50,9 @@ class Form extends Component {
 
     mapValues(errors, (errorValidator, field) => {
       const fieldModel = [model, field].join('.');
-      const value = _get(this.props, fieldModel);
+      const value = _get(nextProps, fieldModel);
 
-      if (value === _get(prevProps, fieldModel)) return;
+      if (!initial && (value === _get(this.props, fieldModel))) return;
 
       const fieldErrors = getValidity(errorValidator, value);
 
