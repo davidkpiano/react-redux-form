@@ -103,22 +103,16 @@ const submit = (model, promise) => dispatch => {
   });
 };
 
-const validate = (model, validators, value) => (dispatch, getState) => {
-  const modelValue = typeof value === 'undefined'
-    ? _get(getState(), model)
-    : value;
-
-  const validity = getValidity(validators, modelValue);
+const validate = (model, validators) => (dispatch, getState) => {
+  const value = _get(getState(), model);
+  const validity = getValidity(validators, value);
 
   dispatch(setValidity(model, validity));
 };
 
-const validateErrors = (model, errorValidators, value) => (dispatch, getState) => {
-  const modelValue = typeof value === 'undefined'
-    ? _get(getState(), model)
-    : value;
-
-  const errors = getValidity(errorValidators, modelValue);
+const validateErrors = (model, errorValidators) => (dispatch, getState) => {
+  const value = _get(getState(), model);
+  const errors = getValidity(errorValidators, value);
 
   dispatch(setErrors(model, errors));
 };
