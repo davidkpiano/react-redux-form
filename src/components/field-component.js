@@ -11,15 +11,13 @@ import partial from 'lodash/partial';
 
 import actions from '../actions';
 import Control from './control-component';
-import { isMulti, getValue, getValidity } from '../utils';
+import { isMulti, getValue } from '../utils';
 
 const {
   asyncSetValidity,
   blur,
   change,
   focus,
-  setValidity,
-  setErrors,
   toggle,
   xor,
 } = actions;

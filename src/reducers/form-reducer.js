@@ -103,7 +103,7 @@ function createInitialFormState(model, initialState) {
 function formReducer(model, initialState) {
   const modelPath = toPath(model);
 
-  return (state = createInitialFormState(model, initialState), action) => {
+  const _formReducer = (state = createInitialFormState(model, initialState), action) => {
     if (!action.model) {
       return state;
     }
@@ -119,6 +119,9 @@ function formReducer(model, initialState) {
     let validity;
 
     switch (action.type) {
+      case actionTypes.BATCH:
+        return action.actions.reduce(_formReducer, state);
+
       case actionTypes.FOCUS:
         return setField(state, localPath, {
           blur: false,
@@ -292,6 +295,8 @@ function formReducer(model, initialState) {
         return state;
     }
   };
+
+  return _formReducer;
 }
 
 function createFormReducer(...args) {
