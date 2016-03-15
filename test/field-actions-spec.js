@@ -172,7 +172,7 @@ describe('field actions', () => {
   });
 
   describe('setDirty()', () => {
-    it('should set dirty & touched state of field to true & pristine state to false', () => {
+    it('should set dirty state of field to true & pristine state to false', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
@@ -181,11 +181,10 @@ describe('field actions', () => {
         {
           dirty: true,
           pristine: false,
-          touched: true,
         });
     });
 
-    it('should set dirty & touched state of form to true & pristine state to false', () => {
+    it('should set dirty state of form to true & pristine state to false', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
@@ -193,7 +192,6 @@ describe('field actions', () => {
         {
           dirty: true,
           pristine: false,
-          touched: true,
         });
     });
   });

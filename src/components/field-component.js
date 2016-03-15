@@ -11,13 +11,15 @@ import partial from 'lodash/partial';
 
 import actions from '../actions';
 import Control from './control-component';
-import { isMulti, getValue } from '../utils';
+import { isMulti, getValue, getValidity } from '../utils';
 
 const {
   asyncSetValidity,
   blur,
   change,
   focus,
+  setValidity,
+  setErrors,
   toggle,
   xor,
 } = actions;
@@ -135,11 +137,11 @@ function sequenceEventActions(control, props) {
   if (props.validators || props.errors) {
     const dispatchValidate = value => {
       if (props.validators) {
-        dispatch(actions.validate(model, props.validators, value));
+        dispatch(setValidity(model, getValidity(props.validators, value)));
       }
 
       if (props.errors) {
-        dispatch(actions.validateErrors(model, props.errors, value));
+        dispatch(setErrors(model, getValidity(props.errors, value)));
       }
 
       return value;
