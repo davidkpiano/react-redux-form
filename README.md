@@ -36,7 +36,7 @@ import MyForm from './components/my-form-component';
 const store = createStore(combineReducers({
   user: modelReducer('user', { name: '' }),
   userForm: formReducer('user')
-};
+}));
 
 class App extends React.Component {
   render() {
