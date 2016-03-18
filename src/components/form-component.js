@@ -98,6 +98,8 @@ class Form extends Component {
     if (onSubmit && valid && !invalid) {
       return onSubmit(modelValue);
     }
+
+    return modelValue;
   }
 
   render() {

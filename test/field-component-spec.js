@@ -1003,4 +1003,27 @@ describe('<Field /> component', () => {
         });
     });
   });
+
+  describe('syncing control defaultValue on load', () => {
+    const reducer = modelReducer('test');
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: reducer,
+    }));
+
+    it('should change the model to the defaultValue on load', () => {
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+          >
+            <input type="text" defaultValue="testing" />
+          </Field>
+        </Provider>
+      );
+
+      assert.equal(
+        store.getState().test.foo,
+        'testing');
+    });
+  });
 });

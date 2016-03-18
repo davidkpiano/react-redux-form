@@ -1,7 +1,7 @@
 import { Component, cloneElement, PropTypes } from 'react';
 
 class Control extends Component {
-  componentDidMount() {
+  componentWillMount() {
     const { _onLoad, modelValue } = this.props;
 
     if (_onLoad) {

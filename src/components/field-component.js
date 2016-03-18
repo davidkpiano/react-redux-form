@@ -134,6 +134,11 @@ function sequenceEventActions(control, props) {
 
   eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
 
+  if (control.props.defaultValue) {
+    eventActions._onLoad.push(() => dispatch(
+      actions.change(model, control.props.defaultValue)));
+  }
+
   if (props.validators || props.errors) {
     const dispatchValidate = value => {
       const validity = getValidity(props.validators, value);
