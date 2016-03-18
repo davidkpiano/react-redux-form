@@ -96,7 +96,7 @@ class Form extends Component {
     }));
 
     if (onSubmit && valid && !invalid) {
-      onSubmit(modelValue);
+      return onSubmit(modelValue);
     }
   }
 
