@@ -31,36 +31,41 @@ function selector(state, { model }) {
   };
 }
 
-const controlPropsMap = {
-  default: props => controlPropsMap.text(props),
-  checkbox: props => ({
-    name: props.model,
-    checked: (() => {
-      if (isMulti(props.model)) {
-        return (props.modelValue || []).filter(item => isEqual(item, props.value)).length;
-      }
+function isChecked(props) {
+  if (isMulti(props.model)) {
+    return (props.modelValue || [])
+      .filter((item) =>
+        isEqual(item, props.value))
+      .length;
+  }
 
-      return !!props.modelValue;
-    })(),
+  return !!props.modelValue;
+}
+
+const controlPropsMap = {
+  default: (props) => controlPropsMap.text(props),
+  checkbox: (props) => ({
     ...props,
+    name: props.model,
+    checked: isChecked(props),
   }),
-  radio: props => ({
+  radio: (props) => ({
+    ...props,
     name: props.model,
     checked: isEqual(props.modelValue, props.value),
     value: props.value,
-    ...props,
   }),
-  select: props => ({
+  select: (props) => ({
+    ...props,
     name: props.model,
     value: props.modelValue,
-    ...props,
   }),
-  text: props => ({
+  text: (props) => ({
+    ...props,
     defaultValue: props.modelValue,
     name: props.model,
-    ...props,
   }),
-  textarea: props => controlPropsMap.text(props),
+  textarea: (props) => controlPropsMap.text(props),
 };
 
 function changeMethod(model, value, action = change, parser) {
@@ -73,7 +78,7 @@ function isReadOnlyValue(control) {
 }
 
 const controlActionMap = {
-  checkbox: props => isMulti(props.model) ? xor : toggle,
+  checkbox: (props) => isMulti(props.model) ? xor : toggle,
   default: () => change,
 };
 
