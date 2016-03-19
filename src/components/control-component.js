@@ -14,8 +14,8 @@ class Control extends Component {
 
     return cloneElement(
       control, {
-        ...this.props,
         ...control.props,
+        ...this.props,
       });
   }
 }
