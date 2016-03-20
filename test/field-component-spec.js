@@ -710,7 +710,7 @@ describe('<Field /> component', () => {
             }}
             validateOn="blur"
           >
-            <input type="text" />
+            <input type="text" required />
           </Field>
         </Provider>
       );
@@ -1020,6 +1020,39 @@ describe('<Field /> component', () => {
           </Field>
         </Provider>
       );
+
+      assert.equal(
+        store.getState().test.foo,
+        'testing');
+    });
+  });
+
+  describe('change on enter', () => {
+    const reducer = modelReducer('test');
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: reducer,
+    }));
+
+    it('should change the model upon pressing Enter', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+          >
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'testing';
+
+      TestUtils.Simulate.keyPress(control, {
+        key: 'Enter',
+        keyCode: 13,
+        which: 13,
+      });
 
       assert.equal(
         store.getState().test.foo,

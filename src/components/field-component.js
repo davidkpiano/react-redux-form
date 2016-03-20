@@ -64,6 +64,11 @@ const controlPropsMap = {
     ...props,
     defaultValue: props.modelValue,
     name: props.model,
+    onKeyPress: (e) => {
+      if (e.key === 'Enter') {
+        props.onChange(e);
+      }
+    },
   }),
   textarea: (props) => controlPropsMap.text(props),
 };
