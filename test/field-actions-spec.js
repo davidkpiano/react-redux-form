@@ -808,6 +808,60 @@ describe('field actions', () => {
         });
     });
 
+    it('should reset the validity and errors of a form', () => {
+      const stateWithErrors = reducer(
+        undefined,
+        actions.setErrors('test.foo', { bar: true, baz: true }));
+
+      const stateWithMoreErrors = reducer(
+        stateWithErrors,
+        actions.setErrors('test.bar', { foo: true, baz: true }));
+
+      assert.containSubset(
+        stateWithMoreErrors.fields.foo,
+        {
+          valid: false,
+          validity: { bar: false, baz: false },
+          errors: { bar: true, baz: true },
+        });
+
+      assert.containSubset(
+        stateWithMoreErrors.fields.bar,
+        {
+          valid: false,
+          validity: { foo: false, baz: false },
+          errors: { foo: true, baz: true },
+        });
+
+      const actualState = reducer(
+        stateWithMoreErrors,
+        actions.resetValidity('test'));
+
+      assert.containSubset(
+        actualState,
+        {
+          valid: true,
+          validity: {},
+          errors: {},
+        });
+
+      assert.containSubset(
+        actualState.fields.foo,
+        {
+          valid: true,
+          validity: {},
+          errors: {},
+        });
+
+      assert.containSubset(
+        actualState.fields.bar,
+        {
+          valid: true,
+          validity: {},
+          errors: {},
+        });
+    });
+
     it('should be aliased to resetErrors()', () => {
       const stateWithErrors = reducer(
         undefined,

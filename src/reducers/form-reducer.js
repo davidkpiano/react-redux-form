@@ -102,8 +102,9 @@ function createInitialFormState(model, initialState) {
 
 function _createFormReducer(model, initialState) {
   const modelPath = toPath(model);
+  const localInitialFormState = createInitialFormState(model, initialState);
 
-  const formReducer = (state = createInitialFormState(model, initialState), action) => {
+  const formReducer = (state = localInitialFormState, action) => {
     if (!action.model) {
       return state;
     }
@@ -217,23 +218,58 @@ function _createFormReducer(model, initialState) {
       }
 
       case actionTypes.RESET_VALIDITY: {
-        let resetValidityState = icepick.setIn(
-          state,
-          ['fields', localPath.join('.'), 'valid'],
-          true
-        );
+        let resetValidityState;
+        if (!localPath.length) {
+          resetValidityState = icepick.setIn(
+            state,
+            ['valid'],
+            true);
 
-        resetValidityState = icepick.setIn(
-          resetValidityState,
-          ['fields', localPath.join('.'), 'validity'],
-          initialFieldState.validity
-        );
+          resetValidityState = icepick.setIn(
+            resetValidityState,
+            ['validity'],
+            initialFieldState.validity);
 
-        resetValidityState = icepick.setIn(
-          resetValidityState,
-          ['fields', localPath.join('.'), 'errors'],
-          initialFieldState.errors
-        );
+          resetValidityState = icepick.setIn(
+            resetValidityState,
+            ['errors'],
+            initialFieldState.errors);
+
+          Object.keys(resetValidityState.fields).forEach((field) => {
+            resetValidityState = icepick.setIn(
+              resetValidityState,
+              ['fields', field, 'valid'],
+              true);
+
+            resetValidityState = icepick.setIn(
+              resetValidityState,
+              ['fields', field, 'validity'],
+              initialFieldState.validity);
+
+            resetValidityState = icepick.setIn(
+              resetValidityState,
+              ['fields', field, 'errors'],
+              initialFieldState.errors);
+          });
+        } else {
+          resetValidityState = icepick.setIn(
+            state,
+            ['fields', localPath.join('.'), 'valid'],
+            true
+          );
+
+          resetValidityState = icepick.setIn(
+            resetValidityState,
+            ['fields', localPath.join('.'), 'validity'],
+            initialFieldState.validity
+          );
+
+          resetValidityState = icepick.setIn(
+            resetValidityState,
+            ['fields', localPath.join('.'), 'errors'],
+            initialFieldState.errors
+          );
+        }
 
         return resetValidityState;
       }
