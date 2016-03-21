@@ -82,7 +82,7 @@ function isReadOnlyValue(control) {
     && ~['radio', 'checkbox'].indexOf(control.props.type);
 }
 
-const controlActionMap = {
+const changeActionMap = {
   checkbox: (props) => isMulti(props.model) ? xor : toggle,
   default: () => change,
 };
@@ -94,7 +94,7 @@ function getControlType(control, options) {
     let controlDisplayName = control.constructor.displayName
       || control.type.displayName
       || control.type.name
-      || control.type; // what was the + '' for? tests pass without it
+      || control.type;
 
     if (controlDisplayName === 'input') {
       controlDisplayName = _controlPropsMap[control.props.type] ? control.props.type : 'text';
@@ -107,7 +107,12 @@ function getControlType(control, options) {
 }
 
 function sequenceEventActions(control, props) {
-  const { dispatch, model, updateOn } = props;
+  const {
+    dispatch,
+    model,
+    updateOn,
+    changeAction = (changeActionMap[control.props.type] || changeActionMap.default)(props),
+  } = props;
 
   const updateOnEventHandler = (typeof updateOn === 'function')
     ? 'onChange'
@@ -126,12 +131,10 @@ function sequenceEventActions(control, props) {
     _onLoad: [], // pseudo-event
   };
 
-  const controlAction = (controlActionMap[control.props.type] || controlActionMap.default)(props);
-
   const controlChangeMethod = changeMethod(
     model,
     props.value,
-    controlAction,
+    changeAction,
     props.parser
   );
 
@@ -295,6 +298,7 @@ function createFieldClass(customControlPropsMap = {}) {
         'focus',
       ]),
     ]),
+    changeAction: PropTypes.func,
     validators: PropTypes.object,
     asyncValidators: PropTypes.object,
     validateOn: PropTypes.string,

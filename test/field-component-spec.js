@@ -1059,4 +1059,41 @@ describe('<Field /> component', () => {
         'testing');
     });
   });
+
+  describe('changeAction prop', () => {
+    const reducer = modelReducer('test');
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: reducer,
+    }));
+
+    it('should execute the custom change action', () => {
+      let customChanged = false;
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+            changeAction={(model, value) => {
+              customChanged = true;
+              return actions.change(model, value);
+            }}
+          >
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'testing';
+
+      TestUtils.Simulate.change(control);
+
+      assert.isTrue(customChanged);
+
+      assert.equal(
+        store.getState().test.foo,
+        'testing');
+    });
+  });
 });
