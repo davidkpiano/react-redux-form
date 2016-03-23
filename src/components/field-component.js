@@ -3,7 +3,7 @@ import connect from 'react-redux/lib/components/connect';
 
 import _get from 'lodash/get';
 import capitalize from 'lodash/capitalize';
-import compose from 'redux/lib/compose';
+import compose from 'lodash/fp/compose';
 import identity from 'lodash/identity';
 import isEqual from 'lodash/isEqual';
 import mapValues from 'lodash/mapValues';
