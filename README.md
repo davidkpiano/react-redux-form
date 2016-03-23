@@ -1,8 +1,6 @@
 # React Redux Form
 [![Build Status](https://travis-ci.org/davidkpiano/react-redux-form.svg?branch=master)](https://travis-ci.org/davidkpiano/react-redux-form) [![npm version](https://badge.fury.io/js/react-redux-form.svg)](https://badge.fury.io/js/react-redux-form)
 
-**Latest Version: `0.8.2`** Read the [release docs!](https://github.com/davidkpiano/react-redux-form/releases/tag/v0.8.0)
-
 ## [Read the Full Documentation](http://davidkpiano.github.io/react-redux-form)
 
 Or [read the gitbook (most up-to-date)!](https://davidkpiano.gitbooks.io/react-redux-form/content/)
