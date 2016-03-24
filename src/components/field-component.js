@@ -82,8 +82,12 @@ function isReadOnlyValue(control) {
     && ~['radio', 'checkbox'].indexOf(control.props.type);
 }
 
+function checkboxChangeAction(props) {
+  return isMulti(props.model) ? xor : toggle;
+}
+
 const changeActionMap = {
-  checkbox: (props) => isMulti(props.model) ? xor : toggle,
+  checkbox: checkboxChangeAction,
   default: () => change,
 };
 
