@@ -73,8 +73,8 @@ const controlPropsMap = {
   textarea: (props) => controlPropsMap.text(props),
 };
 
-function changeMethod(model, value, action = change, parser) {
-  return compose(partial(action, model), parser, getValue);
+function changeMethod(model, action = change) {
+  return partial(action, model);
 }
 
 function isReadOnlyValue(control) {
@@ -111,6 +111,7 @@ function sequenceEventActions(control, props) {
     dispatch,
     model,
     updateOn,
+    parser,
     changeAction = (changeActionMap[control.props.type] || changeActionMap.default)(props),
   } = props;
 
@@ -131,12 +132,7 @@ function sequenceEventActions(control, props) {
     _onLoad: [], // pseudo-event
   };
 
-  const controlChangeMethod = changeMethod(
-    model,
-    props.value,
-    changeAction,
-    props.parser
-  );
+  const controlChangeMethod = changeMethod(model, changeAction);
 
   let dispatchChange;
   if (control.props.hasOwnProperty('value') && isReadOnlyValue(control)) {
@@ -186,6 +182,9 @@ function sequenceEventActions(control, props) {
 
     eventActions[asyncValidateOn].push(dispatchAsyncValidate);
   }
+
+  eventActions[updateOnEventHandler].push(parser);
+  eventActions[updateOnEventHandler].push(getValue);
 
   return mapValues(eventActions, _actions => compose(..._actions));
 }
