@@ -280,6 +280,34 @@ describe('model action creators', () => {
 
       fn(dispatch, getState);
     });
+
+    it('should ignore invalid from index', () => {
+      const fn = actions.move('foo.bar', 4, 0);
+      const dispatch = () => {
+        assert.fail('Should not dispatch action');
+      };
+      const getState = () => ({
+        foo: {
+          bar: [1, 2, 3, 4],
+        },
+      });
+
+      fn(dispatch, getState);
+    });
+
+    it('should ignore invalid to index', () => {
+      const fn = actions.move('foo.bar', 3, 4);
+      const dispatch = () => {
+        assert.fail('Should not dispatch action');
+      };
+      const getState = () => ({
+        foo: {
+          bar: [1, 2, 3, 4],
+        },
+      });
+
+      fn(dispatch, getState);
+    });
   });
 });
 

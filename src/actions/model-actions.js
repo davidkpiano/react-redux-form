@@ -96,6 +96,11 @@ const remove = (model, index) => (dispatch, getState) => {
 
 const move = (model, indexFrom, indexTo) => (dispatch, getState) => {
   const collection = _get(getState(), model, []);
+
+  if (indexFrom >= collection.length || indexTo >= collection.length) {
+    return;
+  }
+
   const item = collection[indexFrom];
   const removed = icepick.splice(collection, indexFrom, 1);
   const inserted = icepick.splice(removed, indexTo, 0, item);

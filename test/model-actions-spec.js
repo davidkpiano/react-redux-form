@@ -132,6 +132,11 @@ describe('model actions', () => {
           params: ['test.foo', 0, 2],
           expected: { foo: ['second', 'third', 'first'] },
         },
+        {
+          init: { foo: [] },
+          params: ['test.foo', 0, 2],
+          expected: { foo: [] },
+        },
       ],
       merge: [
         {
@@ -147,16 +152,17 @@ describe('model actions', () => {
       describe(`${action}()`, () => {
         actionTests[action].map(test => {
           const { init, params, expected } = test;
-          it('should modify the model to the expected result', done => {
+          it('should modify the model to the expected result', () => {
             const reducer = modelReducer('test');
+            let actual = init;
             const dispatch = _action => {
-              done(assert.deepEqual(
-                reducer(init, _action),
-                expected));
+              actual = reducer(init, _action);
             };
             const getState = () => ({ test: init });
 
             actions[action](...params)(dispatch, getState);
+
+            assert.deepEqual(actual, expected);
           });
         });
       });
