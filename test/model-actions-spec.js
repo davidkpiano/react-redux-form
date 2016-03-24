@@ -121,6 +121,13 @@ describe('model actions', () => {
           expected: { foo: ['first', 'third'] },
         },
       ],
+      move: [
+        {
+          init: { foo: ['first', 'second', 'third'] },
+          params: ['test.foo', 2, 1],
+          expected: { foo: ['first', 'third', 'second'] },
+        },
+      ],
       merge: [
         {
           init: { foo: { bar: 'baz', untouched: 'intact' } },

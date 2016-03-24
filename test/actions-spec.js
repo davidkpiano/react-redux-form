@@ -245,6 +245,42 @@ describe('model action creators', () => {
       fn(dispatch, getState);
     });
   });
+
+  describe('actions.move() thunk', () => {
+    it('should return a function that dispatches a change event', done => {
+      const fn = actions.move('foo.bar', 2, 0);
+      const dispatch = action => {
+        done(assert.equal(
+          action.type,
+          actionTypes.CHANGE));
+      };
+      const getState = () => ({
+        foo: {
+          bar: [1, 2, 3, 4],
+        },
+      });
+
+      assert.isFunction(fn);
+
+      fn(dispatch, getState);
+    });
+
+    it('should change a collection by moving the item to the specified index', done => {
+      const fn = actions.move('foo.bar', 2, 0);
+      const dispatch = action => {
+        done(assert.deepEqual(
+          action.value,
+          [3, 1, 2, 4]));
+      };
+      const getState = () => ({
+        foo: {
+          bar: [1, 2, 3, 4],
+        },
+      });
+
+      fn(dispatch, getState);
+    });
+  });
 });
 
 describe('RSF field action creators', () => {
