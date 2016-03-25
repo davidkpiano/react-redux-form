@@ -77,12 +77,10 @@ function resetField(state, localPath) {
   );
 }
 
-
 function formIsValid(formState) {
   return every(mapValues(formState.fields, field => field.valid))
     && every(formState.errors, error => !error);
 }
-
 
 function createInitialFormState(model, initialState) {
   const formState = icepick.set(initialFormState,
