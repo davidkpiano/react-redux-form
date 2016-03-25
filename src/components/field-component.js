@@ -83,7 +83,7 @@ function isReadOnlyValue(control) {
 }
 
 const changeActionMap = {
-  checkbox: (props) => isMulti(props.model) ? xor : toggle,
+  checkbox: (props) => (isMulti(props.model) ? xor : toggle),
   default: () => change,
 };
 
@@ -298,7 +298,10 @@ function createFieldClass(customControlPropsMap = {}) {
       ]),
     ]),
     changeAction: PropTypes.func,
-    validators: PropTypes.object,
+    validators: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.object,
+    ]),
     asyncValidators: PropTypes.object,
     validateOn: PropTypes.string,
     asyncValidateOn: PropTypes.string,
