@@ -104,6 +104,12 @@ const merge = (model, values) => (dispatch, getState) => {
   });
 };
 
+const load = (model, values) => ({
+  type: actionTypes.LOAD,
+  model,
+  value: values,
+});
+
 export default {
   change,
   filter,
@@ -114,4 +120,5 @@ export default {
   reset,
   toggle,
   xor,
+  load,
 };
