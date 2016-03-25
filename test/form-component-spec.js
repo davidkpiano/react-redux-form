@@ -1,5 +1,6 @@
 /* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
 import { assert } from 'chai';
+import sinon from 'sinon';
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 import { applyMiddleware, combineReducers, createStore } from 'redux';
@@ -432,6 +433,42 @@ describe('<Form> component', () => {
           bar: 'bar',
           foo: 'valid',
         });
+    });
+  });
+
+  describe('onSubmit() prop with complex validators', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
+        bar: '',
+      }),
+    }));
+
+    const handleSubmit = sinon.spy();
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test"
+          validators={{
+            bar: {
+              one: (val) => val.length < 1,
+              two: (val) => val.length > 2,
+            },
+          }}
+          onSubmit={handleSubmit}
+        >
+          <Field model="test.bar">
+            <input type="text" />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+    it('should not call onSubmit handler', () => {
+      TestUtils.Simulate.submit(formElement);
+
+      assert.equal(handleSubmit.callCount, 0);
     });
   });
 

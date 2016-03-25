@@ -82,7 +82,7 @@ class Form extends Component {
 
       dispatch(actions.setValidity(fieldModel, validity));
 
-      return validity;
+      return isValid(validity);
     }));
 
     const invalid = isInvalid(mapValues(errors, (errorValidators, field) => {
