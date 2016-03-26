@@ -292,7 +292,7 @@ describe('model action creators', () => {
         },
       });
 
-      fn(dispatch, getState);
+      assert.throws(() => fn(dispatch, getState), 'Error moving array item: invalid bounds 4, 0');
     });
 
     it('should ignore invalid to index', () => {
@@ -306,7 +306,7 @@ describe('model action creators', () => {
         },
       });
 
-      fn(dispatch, getState);
+      assert.throws(() => fn(dispatch, getState), 'Error moving array item: invalid bounds 3, 4');
     });
   });
 });

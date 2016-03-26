@@ -47,20 +47,20 @@ describe('<Form> component', () => {
 
     const [fooControl, barControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
 
-    it('should not validate before submit', () => {
-      assert.equal(timesValidated, 0);
+    it('should only have validated once (on load) before submit', () => {
+      assert.equal(timesValidated, 1);
     });
 
     it('should not validate on change', () => {
       TestUtils.Simulate.change(fooControl);
 
-      assert.equal(timesValidated, 0);
+      assert.equal(timesValidated, 1);
     });
 
     it('should validate all validators on submit', () => {
       TestUtils.Simulate.submit(formElement);
 
-      assert.equal(timesValidated, 1);
+      assert.equal(timesValidated, 2);
 
       assert.containSubset(
         store.getState().testForm.fields.foo,
@@ -70,11 +70,11 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.change(fooControl);
 
-      assert.equal(timesValidated, 1);
+      assert.equal(timesValidated, 2);
 
       TestUtils.Simulate.submit(formElement);
 
-      assert.equal(timesValidated, 2);
+      assert.equal(timesValidated, 3);
 
       assert.containSubset(
         store.getState().testForm.fields.foo,
@@ -386,6 +386,9 @@ describe('<Form> component', () => {
         <Form model="test"
           validators={{
             foo: (val) => val && val === 'valid',
+            baz: {
+              validationKey: (val) => val && val === 'valid',
+            },
           }}
           errors={{
             bar: (val) => val !== 'bar' && 'bar invalid',
@@ -399,13 +402,18 @@ describe('<Form> component', () => {
           <Field model="test.bar">
             <input type="text" />
           </Field>
+
+          <Field model="test.baz">
+            <input type="text" />
+          </Field>
         </Form>
       </Provider>
     );
 
     const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
 
-    const [fooControl, barControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+    const [fooControl, barControl, bazControl] = TestUtils
+      .scryRenderedDOMComponentsWithTag(form, 'input');
 
     it('should NOT call onSubmit if form is invalid', () => {
       TestUtils.Simulate.submit(formElement);
@@ -426,10 +434,20 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.submit(formElement);
 
+      assert.isNull(submitValue,
+        'should not be valid yet because baz is still invalid');
+
+      bazControl.value = 'valid';
+
+      TestUtils.Simulate.change(bazControl);
+
+      TestUtils.Simulate.submit(formElement);
+
       assert.deepEqual(
         submitValue,
         {
           bar: 'bar',
+          baz: 'valid',
           foo: 'valid',
         });
     });

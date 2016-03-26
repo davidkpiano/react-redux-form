@@ -1,7 +1,29 @@
 import { assert } from 'chai';
-import { actions, modelReducer } from '../src';
+import { combineReducers } from 'redux';
+import { actions, modelReducer, formReducer } from '../src';
 
 describe('model actions', () => {
+  describe('load()', () => {
+    it('should load model values', () => {
+      const reducer = modelReducer('foo');
+
+      const actual = reducer({}, actions.load('foo', { bar: 'string' }));
+      assert.deepEqual(actual, { bar: 'string' });
+    });
+
+    it('should load model and form stay untouched', () => {
+      const reducer = combineReducers({
+        foo: modelReducer('foo'),
+        fooForm: formReducer('foo'),
+      });
+
+      const actual = reducer({}, actions.load('foo', { bar: 'string' }));
+      assert.deepEqual(actual.foo, { bar: 'string' });
+      assert.equal(actual.fooForm.dirty, false);
+      assert.equal(actual.fooForm.untouched, true);
+    });
+  });
+
   describe('change()', () => {
     it('should modify the model given a shallow path', () => {
       const reducer = modelReducer('foo');
@@ -135,7 +157,7 @@ describe('model actions', () => {
         {
           init: { foo: [] },
           params: ['test.foo', 0, 2],
-          expected: { foo: [] },
+          expected: Error('Error moving array item: invalid bounds 0, 2'),
         },
       ],
       merge: [
@@ -154,15 +176,18 @@ describe('model actions', () => {
           const { init, params, expected } = test;
           it('should modify the model to the expected result', () => {
             const reducer = modelReducer('test');
-            let actual = init;
             const dispatch = _action => {
-              actual = reducer(init, _action);
+              assert.deepEqual(
+                reducer(init, _action),
+                expected);
             };
             const getState = () => ({ test: init });
 
-            actions[action](...params)(dispatch, getState);
-
-            assert.deepEqual(actual, expected);
+            if (expected instanceof Error) {
+              assert.throws(() => actions[action](...params)(dispatch, getState), expected.message);
+            } else {
+              actions[action](...params)(dispatch, getState);
+            }
           });
         });
       });

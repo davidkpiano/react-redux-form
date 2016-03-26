@@ -21,6 +21,10 @@ class Form extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const { validateOn } = this.props;
+
+    if (validateOn !== 'change') return;
+
     this.validate(nextProps);
   }
 
@@ -31,24 +35,24 @@ class Form extends Component {
       errors,
       model,
       dispatch,
-      validateOn,
     } = this.props;
     /* eslint-enable react/prop-types */
 
-    if (validateOn !== 'change') return;
-
-    mapValues(validators, (validator, field) => {
+    /* eslint-disable consistent-return */
+    const validity = mapValues(validators, (validator, field) => {
       const fieldModel = [model, field].join('.');
       const value = _get(nextProps, fieldModel);
 
       if (!initial && (value === _get(this.props, fieldModel))) return;
 
-      const validity = getValidity(validator, value);
+      const fieldValidity = getValidity(validator, value);
 
-      dispatch(actions.setValidity(fieldModel, validity));
+      dispatch(actions.setValidity(fieldModel, fieldValidity));
+
+      return fieldValidity;
     });
 
-    mapValues(errors, (errorValidator, field) => {
+    const errorsValidity = mapValues(errors, (errorValidator, field) => {
       const fieldModel = [model, field].join('.');
       const value = _get(nextProps, fieldModel);
 
@@ -57,7 +61,12 @@ class Form extends Component {
       const fieldErrors = getValidity(errorValidator, value);
 
       dispatch(actions.setErrors(fieldModel, fieldErrors));
+
+      return fieldErrors;
     });
+    /* eslint-enable consistent-return */
+
+    return isValid(validity) && !isInvalid(errorsValidity);
   }
 
   handleSubmit(e) {
@@ -66,36 +75,15 @@ class Form extends Component {
     /* eslint-disable react/prop-types */
     const {
       model,
-      validators,
-      errors,
       onSubmit,
-      dispatch,
     } = this.props;
     /* eslint-enable react/prop-types */
 
     const modelValue = _get(this.props, model);
 
-    const valid = isValid(mapValues(validators, (validator, field) => {
-      const fieldModel = [model, field].join('.');
-      const value = _get(this.props, fieldModel);
-      const validity = getValidity(validator, value);
+    const isFormValid = this.validate(this.props, true);
 
-      dispatch(actions.setValidity(fieldModel, validity));
-
-      return validity;
-    }));
-
-    const invalid = isInvalid(mapValues(errors, (errorValidators, field) => {
-      const fieldModel = [model, field].join('.');
-      const value = _get(this.props, fieldModel);
-      const fieldErrors = getValidity(errorValidators, value);
-
-      dispatch(actions.setErrors(fieldModel, fieldErrors));
-
-      return fieldErrors;
-    }));
-
-    if (onSubmit && valid && !invalid) {
+    if (onSubmit && isFormValid) {
       return onSubmit(modelValue);
     }
 

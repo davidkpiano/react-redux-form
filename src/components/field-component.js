@@ -82,12 +82,8 @@ function isReadOnlyValue(control) {
     && ~['radio', 'checkbox'].indexOf(control.props.type);
 }
 
-function checkboxChangeAction(props) {
-  return isMulti(props.model) ? xor : toggle;
-}
-
 const changeActionMap = {
-  checkbox: checkboxChangeAction,
+  checkbox: (props) => (isMulti(props.model) ? xor : toggle),
   default: () => change,
 };
 
@@ -302,7 +298,10 @@ function createFieldClass(customControlPropsMap = {}) {
       ]),
     ]),
     changeAction: PropTypes.func,
-    validators: PropTypes.object,
+    validators: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.object,
+    ]),
     asyncValidators: PropTypes.object,
     validateOn: PropTypes.string,
     asyncValidateOn: PropTypes.string,

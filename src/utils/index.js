@@ -3,6 +3,8 @@ import mapValues from 'lodash/mapValues';
 import isPlainObject from 'lodash/isPlainObject';
 import every from 'lodash/every';
 import some from 'lodash/some';
+import findKey from 'lodash/findKey';
+
 import { initialFieldState } from '../reducers/form-reducer';
 
 function isMulti(model) {
@@ -45,6 +47,12 @@ function getValue(value) {
   return isEvent(value) ? getEventValue(value) : value;
 }
 
+function getForm(state, model) {
+  const formStateKey = findKey(state, { model });
+
+  return state[formStateKey];
+}
+
 function getValidity(validators, value) {
   const modelValue = getValue(value);
 
@@ -57,7 +65,7 @@ function getValidity(validators, value) {
 
 function isValid(validity) {
   if (isPlainObject(validity)) {
-    return every(validity);
+    return every(validity, isValid);
   }
 
   return !!validity;
@@ -81,4 +89,5 @@ export {
   getValidity,
   isValid,
   isInvalid,
+  getForm,
 };

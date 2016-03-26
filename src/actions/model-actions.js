@@ -98,7 +98,7 @@ const move = (model, indexFrom, indexTo) => (dispatch, getState) => {
   const collection = _get(getState(), model, []);
 
   if (indexFrom >= collection.length || indexTo >= collection.length) {
-    return;
+    throw new Error(`Error moving array item: invalid bounds ${indexFrom}, ${indexTo}`);
   }
 
   const item = collection[indexFrom];
@@ -122,6 +122,12 @@ const merge = (model, values) => (dispatch, getState) => {
   });
 };
 
+const load = (model, values) => ({
+  type: actionTypes.LOAD,
+  model,
+  value: values,
+});
+
 export default {
   change,
   filter,
@@ -133,4 +139,5 @@ export default {
   reset,
   toggle,
   xor,
+  load,
 };
