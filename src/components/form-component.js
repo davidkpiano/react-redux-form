@@ -7,7 +7,7 @@ import identity from 'lodash/identity';
 import mapValues from 'lodash/mapValues';
 
 import actions from '../actions';
-import { getValidity, isValid, isInvalid } from '../utils';
+import { getValidity } from '../utils';
 
 class Form extends Component {
   constructor(props) {
@@ -39,7 +39,7 @@ class Form extends Component {
     /* eslint-enable react/prop-types */
 
     /* eslint-disable consistent-return */
-    const validity = mapValues(validators, (validator, field) => {
+    mapValues(validators, (validator, field) => {
       const fieldModel = [model, field].join('.');
       const value = _get(nextProps, fieldModel);
 
@@ -52,7 +52,7 @@ class Form extends Component {
       return fieldValidity;
     });
 
-    const errorsValidity = mapValues(errors, (errorValidator, field) => {
+    mapValues(errors, (errorValidator, field) => {
       const fieldModel = [model, field].join('.');
       const value = _get(nextProps, fieldModel);
 
@@ -65,8 +65,6 @@ class Form extends Component {
       return fieldErrors;
     });
     /* eslint-enable consistent-return */
-
-    return isValid(validity) && !isInvalid(errorsValidity);
   }
 
   handleSubmit(e) {
@@ -76,16 +74,27 @@ class Form extends Component {
     const {
       model,
       onSubmit,
+      dispatch,
+      validators,
     } = this.props;
     /* eslint-enable react/prop-types */
 
     const modelValue = _get(this.props, model);
 
-    const isFormValid = this.validate(this.props, true);
+    if (!validators && onSubmit) {
+      onSubmit(modelValue);
 
-    if (onSubmit && isFormValid) {
-      return onSubmit(modelValue);
+      return modelValue;
     }
+
+    const validationCallback = onSubmit
+      ? () => onSubmit(modelValue)
+      : undefined;
+
+    dispatch(actions.validateFields(
+      model,
+      validators,
+      validationCallback));
 
     return modelValue;
   }

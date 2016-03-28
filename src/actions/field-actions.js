@@ -3,7 +3,7 @@ import map from 'lodash/map';
 
 import batchActions from './batch-actions';
 import actionTypes from '../action-types';
-import { getValidity } from '../utils';
+import { getValidity, getForm } from '../utils';
 
 const focus = model => ({
   type: actionTypes.FOCUS,
@@ -120,7 +120,7 @@ const validateErrors = (model, errorValidators) => (dispatch, getState) => {
   dispatch(setErrors(model, errors));
 };
 
-const validateFields = (model, fieldValidators) => (dispatch, getState) => {
+const validateFields = (model, fieldValidators, callback) => (dispatch, getState) => {
   const value = _get(getState(), model);
 
   const validationActions = map(fieldValidators, (validator, field) => {
@@ -135,6 +135,16 @@ const validateFields = (model, fieldValidators) => (dispatch, getState) => {
 
     return setValidity(fieldModel, fieldValidity);
   });
+
+  if (callback) {
+    validationActions.push((_, _getState) => {
+      const form = getForm(_getState(), model);
+
+      if (form && form.valid) {
+        callback();
+      }
+    });
+  }
 
   dispatch(batchActions.batch(model, validationActions));
 };

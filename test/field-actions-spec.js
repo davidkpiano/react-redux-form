@@ -1151,7 +1151,7 @@ describe('field actions', () => {
   describe('validateFields() (thunk)', () => {
     const mockStore = configureMockStore([thunk]);
 
-    it('should set the validity of multiple fields', (done) => {
+    it('should set the validity of multiple fields in the same form', (done) => {
       const store = mockStore(
         () => ({ test: { foo: 'bar' } }),
         [{
