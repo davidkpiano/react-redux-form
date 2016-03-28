@@ -1147,4 +1147,61 @@ describe('field actions', () => {
       store.dispatch(actions.validateErrors('test.foo', errorValidators));
     });
   });
+
+  describe('validateFields() (thunk)', () => {
+    const mockStore = configureMockStore([thunk]);
+
+    it('should set the validity of multiple fields', (done) => {
+      const store = mockStore(
+        () => ({ test: { foo: 'bar' } }),
+        [{
+          actions: [
+            {
+              model: 'test',
+              type: 'rrf/setValidity',
+              validity: true,
+            },
+            {
+              model: 'test.foo',
+              type: 'rrf/setValidity',
+              validity: true,
+            },
+            {
+              model: 'test.foo_valid',
+              type: 'rrf/setValidity',
+              validity: true,
+            },
+            {
+              model: 'test.foo_invalid',
+              type: 'rrf/setValidity',
+              validity: false,
+            },
+            {
+              model: 'test.with_keys',
+              type: 'rrf/setValidity',
+              validity: {
+                key_invalid: false,
+                key_valid: true,
+              },
+            },
+          ],
+          model: 'test',
+          type: 'rrf/batch',
+        }],
+        done);
+
+      const action = actions.validateFields('test', {
+        '': (val) => val.foo === 'bar',
+        foo: (val) => val === 'bar',
+        foo_valid: () => true,
+        foo_invalid: () => false,
+        with_keys: {
+          key_valid: () => true,
+          key_invalid: () => false,
+        },
+      });
+
+      store.dispatch(action);
+    });
+  });
 });

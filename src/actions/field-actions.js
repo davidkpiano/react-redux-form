@@ -1,4 +1,7 @@
 import _get from 'lodash/get';
+import map from 'lodash/map';
+
+import batchActions from './batch-actions';
 import actionTypes from '../action-types';
 import { getValidity } from '../utils';
 
@@ -117,6 +120,25 @@ const validateErrors = (model, errorValidators) => (dispatch, getState) => {
   dispatch(setErrors(model, errors));
 };
 
+const validateFields = (model, fieldValidators) => (dispatch, getState) => {
+  const value = _get(getState(), model);
+
+  const validationActions = map(fieldValidators, (validator, field) => {
+    const fieldModel = field
+      ? [model, field].join('.')
+      : model;
+    const fieldValue = field
+      ? _get(value, field)
+      : value;
+
+    const fieldValidity = getValidity(validator, fieldValue);
+
+    return setValidity(fieldModel, fieldValidity);
+  });
+
+  dispatch(batchActions.batch(model, validationActions));
+};
+
 export default {
   asyncSetValidity,
   blur,
@@ -136,4 +158,5 @@ export default {
   setViewValue,
   validate,
   validateErrors,
+  validateFields,
 };
