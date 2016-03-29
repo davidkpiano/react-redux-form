@@ -94,6 +94,24 @@ const remove = (model, index) => (dispatch, getState) => {
   });
 };
 
+const move = (model, indexFrom, indexTo) => (dispatch, getState) => {
+  const collection = _get(getState(), model, []);
+
+  if (indexFrom >= collection.length || indexTo >= collection.length) {
+    throw new Error(`Error moving array item: invalid bounds ${indexFrom}, ${indexTo}`);
+  }
+
+  const item = collection[indexFrom];
+  const removed = icepick.splice(collection, indexFrom, 1);
+  const inserted = icepick.splice(removed, indexTo, 0, item);
+
+  dispatch({
+    type: actionTypes.CHANGE,
+    model,
+    value: inserted,
+  });
+};
+
 const merge = (model, values) => (dispatch, getState) => {
   const value = _get(getState(), model, {});
 
@@ -117,6 +135,7 @@ export default {
   merge,
   push,
   remove,
+  move,
   reset,
   toggle,
   xor,

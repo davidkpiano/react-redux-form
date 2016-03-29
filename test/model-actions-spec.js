@@ -143,6 +143,23 @@ describe('model actions', () => {
           expected: { foo: ['first', 'third'] },
         },
       ],
+      move: [
+        {
+          init: { foo: ['first', 'second', 'third'] },
+          params: ['test.foo', 2, 1],
+          expected: { foo: ['first', 'third', 'second'] },
+        },
+        {
+          init: { foo: ['first', 'second', 'third'] },
+          params: ['test.foo', 0, 2],
+          expected: { foo: ['second', 'third', 'first'] },
+        },
+        {
+          init: { foo: [] },
+          params: ['test.foo', 0, 2],
+          expected: Error('Error moving array item: invalid bounds 0, 2'),
+        },
+      ],
       merge: [
         {
           init: { foo: { bar: 'baz', untouched: 'intact' } },
@@ -157,16 +174,20 @@ describe('model actions', () => {
       describe(`${action}()`, () => {
         actionTests[action].map(test => {
           const { init, params, expected } = test;
-          it('should modify the model to the expected result', done => {
+          it('should modify the model to the expected result', () => {
             const reducer = modelReducer('test');
             const dispatch = _action => {
-              done(assert.deepEqual(
+              assert.deepEqual(
                 reducer(init, _action),
-                expected));
+                expected);
             };
             const getState = () => ({ test: init });
 
-            actions[action](...params)(dispatch, getState);
+            if (expected instanceof Error) {
+              assert.throws(() => actions[action](...params)(dispatch, getState), expected.message);
+            } else {
+              actions[action](...params)(dispatch, getState);
+            }
           });
         });
       });
