@@ -8,6 +8,7 @@ import identity from 'lodash/identity';
 import isEqual from 'lodash/isEqual';
 import mapValues from 'lodash/mapValues';
 import partial from 'lodash/partial';
+import icepick from 'icepick';
 
 import actions from '../actions';
 import Control from './control-component';
@@ -20,8 +21,6 @@ const {
   focus,
   setValidity,
   setErrors,
-  toggle,
-  xor,
 } = actions;
 
 function selector(state, { model }) {
@@ -82,9 +81,23 @@ function isReadOnlyValue(control) {
     && ~['radio', 'checkbox'].indexOf(control.props.type);
 }
 
-const changeActionMap = {
-  checkbox: (props) => (isMulti(props.model) ? xor : toggle),
-  default: () => change,
+const modelValueUpdaterMap = {
+  checkbox: (props, eventValue) => {
+    const { model, modelValue } = props;
+
+    if (isMulti(model)) {
+      const valueWithItem = modelValue || [];
+      const valueWithoutItem = (valueWithItem || []).filter(item => !isEqual(item, eventValue));
+      const value = (valueWithoutItem.length === valueWithItem.length)
+        ? icepick.push(valueWithItem, eventValue)
+        : valueWithoutItem;
+
+      return value;
+    }
+
+    return !modelValue;
+  },
+  default: (props, eventValue) => eventValue,
 };
 
 function getControlType(control, options) {
@@ -112,7 +125,7 @@ function sequenceEventActions(control, props) {
     model,
     updateOn,
     parser,
-    changeAction = (changeActionMap[control.props.type] || changeActionMap.default)(props),
+    changeAction,
   } = props;
 
   const updateOnEventHandler = (typeof updateOn === 'function')
@@ -133,10 +146,14 @@ function sequenceEventActions(control, props) {
   };
 
   const controlChangeMethod = changeMethod(model, changeAction);
+  const modelValueUpdater = modelValueUpdaterMap[control.props.type]
+    || modelValueUpdaterMap.default;
 
   let dispatchChange;
-  if (control.props.hasOwnProperty('value') && isReadOnlyValue(control)) {
-    dispatchChange = () => dispatch(controlChangeMethod(control.props.value));
+  if (isReadOnlyValue(control)) {
+    dispatchChange = () => {
+      dispatch(controlChangeMethod(modelValueUpdater(props, control.props.value)));
+    };
   } else {
     dispatchChange = event => dispatch(controlChangeMethod(event));
   }
@@ -183,6 +200,7 @@ function sequenceEventActions(control, props) {
     eventActions[asyncValidateOn].push(dispatchAsyncValidate);
   }
 
+  eventActions[updateOnEventHandler].push((value) => modelValueUpdater(props, value));
   eventActions[updateOnEventHandler].push(parser);
   eventActions[updateOnEventHandler].push(getValue);
 
@@ -316,6 +334,7 @@ function createFieldClass(customControlPropsMap = {}) {
     validateOn: 'change',
     asyncValidateOn: 'blur',
     parser: identity,
+    changeAction: change,
   };
 
   return connect(selector)(Field);

@@ -261,13 +261,13 @@ describe('<Field /> component', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test'),
       test: modelReducer('test', {
-        foo: true,
+        single: true,
       }),
     }));
 
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Field model="test.foo">
+        <Field model="test.single">
           <input type="checkbox" />
         </Field>
       </Provider>
@@ -280,7 +280,7 @@ describe('<Field /> component', () => {
     });
 
     it('should give each radio input a name attribute of the model', () => {
-      assert.equal(checkbox.name, 'test.foo');
+      assert.equal(checkbox.name, 'test.single');
     });
 
 
@@ -288,28 +288,28 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(checkbox);
 
       assert.equal(
-        store.getState().test.foo,
-        false);
+        store.getState().test.single,
+        false, 'false');
 
       TestUtils.Simulate.change(checkbox);
 
       assert.equal(
-        store.getState().test.foo,
-        true);
+        store.getState().test.single,
+        true, 'true');
     });
 
     it('should check/uncheck the checkbox when model is externally changed', () => {
-      store.dispatch(actions.change('test.foo', true));
+      store.dispatch(actions.change('test.single', true));
 
       assert.equal(checkbox.checked, true);
 
-      store.dispatch(actions.change('test.foo', false));
+      store.dispatch(actions.change('test.single', false));
 
       assert.equal(checkbox.checked, false);
     });
 
     it('should uncheck the checkbox for any falsey value', () => {
-      store.dispatch(actions.change('test.foo', ''));
+      store.dispatch(actions.change('test.single', ''));
 
       assert.equal(checkbox.checked, false);
     });
@@ -541,6 +541,56 @@ describe('<Field /> component', () => {
           bad: true,
           custom: false,
         }, 'should only validate upon blur');
+    });
+
+    it('should send the proper model value to the validators', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.items[]"
+            validators={{
+              required: (val) => val && val.length,
+              values: (val) => val,
+            }}
+          >
+            <input type="checkbox" value="first" />
+            <input type="checkbox" value="second" />
+          </Field>
+        </Provider>
+      );
+
+      const checkboxes = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+      assert.isFalse(store.getState().testForm.fields.items.valid);
+
+      TestUtils.Simulate.change(checkboxes[0]);
+
+      assert.isTrue(store.getState().testForm.fields.items.valid);
+      assert.equal(
+        store.getState().testForm.fields.items.validity.required,
+        1);
+
+      TestUtils.Simulate.change(checkboxes[1]);
+      assert.equal(
+        store.getState().testForm.fields.items.validity.required,
+        2);
+      assert.deepEqual(
+        store.getState().testForm.fields.items.validity.values,
+        ['first', 'second']);
+
+      TestUtils.Simulate.change(checkboxes[0]);
+      assert.equal(
+        store.getState().testForm.fields.items.validity.required,
+        1);
+      assert.deepEqual(
+        store.getState().testForm.fields.items.validity.values,
+        ['second']);
+
+      TestUtils.Simulate.change(checkboxes[1]);
+      assert.equal(
+        store.getState().testForm.fields.items.validity.required,
+        0);
+      assert.isFalse(store.getState().testForm.fields.items.valid);
     });
   });
 

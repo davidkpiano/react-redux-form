@@ -1,7 +1,7 @@
 import _get from 'lodash/get';
 import endsWith from 'lodash/endsWith';
-import icepick from 'icepick';
 import isEqual from 'lodash/isEqual';
+import icepick from 'icepick';
 
 import actionTypes from '../action-types';
 
