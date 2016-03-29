@@ -3,11 +3,10 @@
 import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 import _get from 'lodash/get';
-import identity from 'lodash/identity';
 import mapValues from 'lodash/mapValues';
 
 import actions from '../actions';
-import { getValidity } from '../utils';
+import { getValidity, getForm } from '../utils';
 
 class Form extends Component {
   constructor(props) {
@@ -73,15 +72,15 @@ class Form extends Component {
     /* eslint-disable react/prop-types */
     const {
       model,
+      modelValue,
+      formValue,
       onSubmit,
       dispatch,
       validators,
     } = this.props;
     /* eslint-enable react/prop-types */
 
-    const modelValue = _get(this.props, model);
-
-    if (!validators && onSubmit) {
+    if (!validators && onSubmit && formValue.valid) {
       onSubmit(modelValue);
 
       return modelValue;
@@ -127,4 +126,12 @@ Form.defaultProps = {
   validateOn: 'change',
 };
 
-export default connect(identity)(Form);
+function selector(state, { model }) {
+  return {
+    ...state,
+    modelValue: _get(state, model),
+    formValue: getForm(state, model),
+  };
+}
+
+export default connect(selector)(Form);
