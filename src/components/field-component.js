@@ -63,11 +63,6 @@ const controlPropsMap = {
     ...props,
     defaultValue: props.modelValue,
     name: props.model,
-    onKeyPress: (e) => {
-      if (e.key === 'Enter') {
-        props.onChange(e);
-      }
-    },
   }),
   textarea: (props) => controlPropsMap.text(props),
 };
@@ -143,6 +138,7 @@ function sequenceEventActions(control, props) {
     onBlur: [() => dispatch(blur(model))],
     onChange: [],
     _onLoad: [], // pseudo-event
+    _onSubmit: [], // pseudo-event
   };
 
   const controlChangeMethod = changeMethod(model, changeAction);
@@ -159,6 +155,7 @@ function sequenceEventActions(control, props) {
   }
 
   eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
+  eventActions._onSubmit.push(updaterFn(dispatchChange));
 
   if (control.props.defaultValue) {
     eventActions._onLoad.push(() => dispatch(

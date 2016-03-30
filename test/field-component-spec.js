@@ -1088,6 +1088,7 @@ describe('<Field /> component', () => {
         <Provider store={store}>
           <Field
             model="test.foo"
+            updateOn="blur"
           >
             <input type="text" />
           </Field>
