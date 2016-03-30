@@ -194,4 +194,42 @@ describe('model actions', () => {
     });
     /* eslint-enable */
   });
+
+  describe('remove()', () => {
+    it('should dissociate removed fields from the form state', (done) => {
+      const initialState = { items: [1, 2, 3] };
+      const reducer = formReducer('test', initialState);
+
+      assert.property(reducer(undefined, { type: '' }).fields, 'items.2');
+
+      const dispatch = action => {
+        assert.notProperty(reducer(undefined, action).fields, 'items.2');
+        done();
+      };
+
+      const getState = () => ({ test: initialState });
+
+      actions.remove('test.items', 2)(dispatch, getState);
+    });
+  });
+
+  describe('filter()', () => {
+    it('should dissociate filtered fields from the form state', (done) => {
+      const initialState = { items: [1, 2, 3, 4, 5] };
+      const reducer = formReducer('test', initialState);
+
+      assert.property(reducer(undefined, { type: '' }).fields, 'items.3');
+      assert.property(reducer(undefined, { type: '' }).fields, 'items.4');
+
+      const dispatch = action => {
+        assert.notProperty(reducer(undefined, action).fields, 'items.3');
+        assert.notProperty(reducer(undefined, action).fields, 'items.4');
+        done();
+      };
+
+      const getState = () => ({ test: initialState });
+
+      actions.filter('test.items', (n) => n % 2)(dispatch, getState);
+    });
+  });
 });

@@ -6,6 +6,7 @@ import isEqual from 'lodash/isEqual';
 import isPlainObject from 'lodash/isPlainObject';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
+import startsWith from 'lodash/startsWith';
 import flatten from 'flat';
 
 import actionTypes from '../action-types';
@@ -82,6 +83,24 @@ function formIsValid(formState) {
     && every(formState.errors, error => !error);
 }
 
+function removeDiff(state, newValue, localPath) {
+  const localKeys = Object.keys(state.fields)
+    .filter((fieldKey) => startsWith(fieldKey, localPath));
+
+  let finalState = state;
+
+  localKeys.forEach((localKey) => {
+    if (!_get({ [localPath]: newValue }, localKey, false)) {
+      finalState = icepick.updateIn(
+        finalState,
+        ['fields'],
+        (obj) => icepick.dissoc(obj, localKey));
+    }
+  });
+
+  return finalState;
+}
+
 function createInitialFormState(model, initialState) {
   const formState = icepick.set(initialFormState,
     'model', model);
@@ -127,7 +146,18 @@ function _createFormReducer(model, initialState) {
           focus: true,
         });
 
-      case actionTypes.CHANGE:
+      case actionTypes.CHANGE: {
+        const setDirtyState = icepick.merge(state, {
+          dirty: true,
+          pristine: false,
+        });
+
+        return removeDiff(setField(setDirtyState, localPath, {
+          dirty: true,
+          pristine: false,
+        }), action.value, localPath);
+      }
+
       case actionTypes.SET_DIRTY: {
         const setDirtyState = icepick.merge(state, {
           dirty: true,
