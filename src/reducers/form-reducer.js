@@ -90,7 +90,7 @@ function removeDiff(state, newValue, localPath) {
   let finalState = state;
 
   localKeys.forEach((localKey) => {
-    if (!_get({ [localPath]: newValue }, localKey, false)) {
+    if (typeof _get({ [localPath]: newValue }, localKey, undefined) === 'undefined') {
       finalState = icepick.updateIn(
         finalState,
         ['fields'],

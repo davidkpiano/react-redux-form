@@ -211,6 +211,16 @@ describe('model actions', () => {
 
       actions.remove('test.items', 2)(dispatch, getState);
     });
+
+    it('should allow falsey values and maintain form state', () => {
+      const reducer = formReducer('test', {
+        foo: true,
+      });
+
+      const actual = reducer(undefined, actions.change('test.foo', false));
+
+      assert.isDefined(actual.fields.foo);
+    });
   });
 
   describe('filter()', () => {
