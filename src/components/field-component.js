@@ -123,6 +123,19 @@ function sequenceEventActions(control, props) {
     changeAction,
   } = props;
 
+  const {
+    onChange = identity,
+  } = control.props;
+
+  const controlOnChange = (event) => {
+    if (event && event.persist) {
+      event.persist();
+    }
+
+    onChange(event);
+    return event;
+  };
+
   const updateOnEventHandler = (typeof updateOn === 'function')
     ? 'onChange'
     : `on${capitalize(props.updateOn)}`;
@@ -200,6 +213,7 @@ function sequenceEventActions(control, props) {
   eventActions[updateOnEventHandler].push((value) => modelValueUpdater(props, value));
   eventActions[updateOnEventHandler].push(parser);
   eventActions[updateOnEventHandler].push(getValue);
+  eventActions[updateOnEventHandler].push(controlOnChange);
 
   return mapValues(eventActions, _actions => compose(..._actions));
 }

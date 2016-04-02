@@ -5,6 +5,7 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
+import sinon from 'sinon';
 
 import { Field, actions, formReducer, modelReducer } from '../src';
 
@@ -1145,6 +1146,70 @@ describe('<Field /> component', () => {
       assert.equal(
         store.getState().test.foo,
         'testing');
+    });
+  });
+
+  describe('event handlers on control', () => {
+    const reducer = modelReducer('test');
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: reducer,
+    }));
+
+    it('should execute the custom change action', () => {
+      const onChangeFn = (val) => val;
+      const onChangeFnSpy = sinon.spy(onChangeFn);
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+          >
+            <input type="text" onChange={onChangeFnSpy} />
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'testing';
+
+      TestUtils.Simulate.change(control);
+
+      assert.isTrue(onChangeFnSpy.calledOnce);
+      assert.isObject(onChangeFnSpy.returnValues[0]);
+      assert.equal(
+        onChangeFnSpy.returnValues[0].constructor.name,
+        'SyntheticEvent');
+      assert.equal(
+        onChangeFnSpy.returnValues[0].target.value,
+        'testing');
+    });
+
+    it('should persist and return the event even when not returned', () => {
+      const onChangeFn = () => {};
+      const onChangeFnSpy = sinon.spy(onChangeFn);
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+          >
+            <input type="text" onChange={onChangeFnSpy} />
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'testing 2';
+
+      TestUtils.Simulate.change(control);
+
+      assert.isTrue(onChangeFnSpy.calledOnce);
+      assert.isUndefined(onChangeFnSpy.returnValues[0]);
+      assert.equal(
+        store.getState().test.foo,
+        'testing 2');
     });
   });
 });
