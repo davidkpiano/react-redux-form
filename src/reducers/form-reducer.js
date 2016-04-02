@@ -387,6 +387,7 @@ function _createFormReducer(model, initialState) {
         return setField(state, localPath, {
           pending: false,
           submitted: !!action.submitted,
+          submitFailed: false,
           touched: true,
           get untouched() {
             return deprecateProp('untouched', false);

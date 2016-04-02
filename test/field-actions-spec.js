@@ -330,6 +330,32 @@ describe('field actions', () => {
         });
     });
 
+    it('should set the submitFailed property to false after successful submit', () => {
+      const reducer = formReducer('test');
+      const state = reducer(undefined, actions.setSubmitFailed('test'));
+
+      assert.containSubset(
+        reducer(state, actions.setSubmitted('test')),
+        {
+          submitFailed: false,
+          submitted: true,
+          pending: false,
+        });
+    });
+
+    it('should set the submitFailed property to false while pending', () => {
+      const reducer = formReducer('test');
+      const state = reducer(undefined, actions.setSubmitFailed('test'));
+
+      assert.containSubset(
+        reducer(state, actions.setPending('test')),
+        {
+          submitFailed: false,
+          submitted: false,
+          pending: true,
+        });
+    });
+
     it('should set pending and submitted to false', () => {
       const reducer = formReducer('test');
       let state = reducer(undefined, actions.setPending('test'));
