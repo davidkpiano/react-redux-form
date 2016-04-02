@@ -261,7 +261,12 @@ function createFieldControlComponent(control, props, options) {
           control.props.children,
           child => createFieldControlComponent(
             child,
-            { ...props, ...child.props },
+            {
+              ...props,
+              ...(child && child.props
+                ? child.props
+                : {}),
+            },
             options
           )
         ),

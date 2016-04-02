@@ -94,6 +94,23 @@ describe('<Field /> component', () => {
       'should update state when control is changed');
   });
 
+  it('should bypass null/falsey children', () => {
+    assert.doesNotThrow(() => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: 'bar' }),
+      }));
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field model="test.foo">
+            <input />
+            <div>{ false }</div>
+          </Field>
+        </Provider>
+      );
+    });
+  });
+
   textFieldElements.map(([element, type]) => { // eslint-disable-line array-callback-return
     describe(`with <${element} ${type ? `type="${type}"` : ''}/>`, () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
@@ -1196,6 +1213,7 @@ describe('<Field /> component', () => {
             model="test.foo"
           >
             <input type="text" onChange={onChangeFnSpy} />
+            <div>{ false }</div>
           </Field>
         </Provider>
       );
