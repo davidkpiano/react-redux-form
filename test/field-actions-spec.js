@@ -317,6 +317,43 @@ describe('field actions', () => {
     });
   });
 
+  describe('setSubmitFailed()', () => {
+    it('should set the submitFailed property to true', () => {
+      const reducer = formReducer('test');
+
+      assert.containSubset(
+        reducer(undefined, actions.setSubmitFailed('test')),
+        {
+          submitFailed: true,
+          submitted: false,
+          pending: false,
+        });
+    });
+
+    it('should set pending and submitted to false', () => {
+      const reducer = formReducer('test');
+      let state = reducer(undefined, actions.setPending('test'));
+
+      assert.containSubset(
+        reducer(state, actions.setSubmitFailed('test')),
+        {
+          submitFailed: true,
+          submitted: false,
+          pending: false,
+        }, 'should set pending to false');
+
+      state = reducer(state, actions.setSubmitted('test'));
+
+      assert.containSubset(
+        reducer(state, actions.setSubmitFailed('test')),
+        {
+          submitFailed: true,
+          submitted: false,
+          pending: false,
+        }, 'should set submitted to false');
+    });
+  });
+
   describe('setTouched()', () => {
     it('should set the touched and blurred state of the field to true ' +
       'and the untouched and focused state to false', () => {
@@ -1035,7 +1072,7 @@ describe('field actions', () => {
 
       const expectedActions = [
         { type: actionTypes.SET_PENDING, pending: true, model: 'test' },
-        { type: actionTypes.SET_PENDING, pending: false, model: 'test' },
+        { type: actionTypes.SET_SUBMIT_FAILED, model: 'test' },
         { type: actionTypes.SET_ERRORS, errors, model: 'test' },
       ];
 

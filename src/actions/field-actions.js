@@ -88,6 +88,12 @@ const setSubmitted = (model, submitted = true) => ({
   submitted,
 });
 
+const setSubmitFailed = (model) => ({
+  type: actionTypes.SET_SUBMIT_FAILED,
+  model,
+});
+
+
 const setViewValue = (model, value) => ({
   type: actionTypes.SET_VIEW_VALUE,
   model,
@@ -101,7 +107,7 @@ const submit = (model, promise) => dispatch => {
     dispatch(setSubmitted(model, true));
     dispatch(setValidity(model, response));
   }).catch(error => {
-    dispatch(setPending(model, false));
+    dispatch(setSubmitFailed(model));
     dispatch(setErrors(model, error));
   });
 };
@@ -160,6 +166,7 @@ export default {
   setPending,
   setPristine,
   setSubmitted,
+  setSubmitFailed,
   setTouched,
   setUntouched,
   setValidity,

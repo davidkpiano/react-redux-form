@@ -50,6 +50,8 @@ const initialFieldState = {
 const initialFormState = {
   ...initialFieldState,
   fields: {},
+  submitFailed: false,
+  retouched: false,
 };
 
 function getField(state, path) {
@@ -224,6 +226,7 @@ function _createFormReducer(model, initialState) {
         return setField(state, localPath, {
           pending: action.pending,
           submitted: false,
+          submitFailed: false,
         });
 
       case actionTypes.SET_VALIDITY: {
@@ -384,6 +387,17 @@ function _createFormReducer(model, initialState) {
         return setField(state, localPath, {
           pending: false,
           submitted: !!action.submitted,
+          touched: true,
+          get untouched() {
+            return deprecateProp('untouched', false);
+          },
+        });
+
+      case actionTypes.SET_SUBMIT_FAILED:
+        return setField(state, localPath, {
+          pending: false,
+          submitted: false,
+          submitFailed: true,
           touched: true,
           get untouched() {
             return deprecateProp('untouched', false);

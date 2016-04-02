@@ -11,6 +11,7 @@ const actionTypes = {
   SET_PENDING: 'rrf/setPending',
   SET_PRISTINE: 'rrf/setPristine',
   SET_SUBMITTED: 'rrf/setSubmitted',
+  SET_SUBMIT_FAILED: 'rrf/setSubmitFailed',
   SET_TOUCHED: 'rrf/setTouched',
   SET_UNTOUCHED: 'rrf/setUntouched',
   SET_VALIDITY: 'rrf/setValidity',
