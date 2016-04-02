@@ -114,6 +114,17 @@ function getControlType(control, options) {
   }
 }
 
+function persistEventWithCallback(callback) {
+  return (event) => {
+    if (event && event.persist) {
+      event.persist();
+    }
+
+    callback(event);
+    return event;
+  };
+}
+
 function sequenceEventActions(control, props) {
   const {
     dispatch,
@@ -125,16 +136,13 @@ function sequenceEventActions(control, props) {
 
   const {
     onChange = identity,
+    onBlur = identity,
+    onFocus = identity,
   } = control.props;
 
-  const controlOnChange = (event) => {
-    if (event && event.persist) {
-      event.persist();
-    }
-
-    onChange(event);
-    return event;
-  };
+  const controlOnChange = persistEventWithCallback(onChange);
+  const controlOnBlur = persistEventWithCallback(onBlur);
+  const controlOnFocus = persistEventWithCallback(onFocus);
 
   const updateOnEventHandler = (typeof updateOn === 'function')
     ? 'onChange'
@@ -213,7 +221,10 @@ function sequenceEventActions(control, props) {
   eventActions[updateOnEventHandler].push((value) => modelValueUpdater(props, value));
   eventActions[updateOnEventHandler].push(parser);
   eventActions[updateOnEventHandler].push(getValue);
+
   eventActions[updateOnEventHandler].push(controlOnChange);
+  eventActions.onBlur.push(controlOnBlur);
+  eventActions.onFocus.push(controlOnFocus);
 
   return mapValues(eventActions, _actions => compose(..._actions));
 }
@@ -228,14 +239,12 @@ function createFieldProps(control, props, options) {
     return false;
   }
 
-  return {
-    ..._controlPropsMap[controlType]({
-      model,
-      modelValue,
-      ...control.props,
-      ...sequenceEventActions(control, props, options),
-    }),
-  };
+  return _controlPropsMap[controlType]({
+    model,
+    modelValue,
+    ...control.props,
+    ...sequenceEventActions(control, props, options),
+  });
 }
 
 function createFieldControlComponent(control, props, options) {

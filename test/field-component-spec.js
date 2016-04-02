@@ -5,6 +5,7 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
+import capitalize from 'lodash/capitalize';
 import sinon from 'sinon';
 
 import { Field, actions, formReducer, modelReducer } from '../src';
@@ -1210,6 +1211,42 @@ describe('<Field /> component', () => {
       assert.equal(
         store.getState().test.foo,
         'testing 2');
+    });
+
+    ['focus', 'blur'].forEach((event) => {
+      const eventHandler = `on${capitalize(event)}`;
+
+      it(`should execute the custom ${event} action`, () => {
+        const onEvent = (val) => val;
+        const onEventSpy = sinon.spy(onEvent);
+
+        const prop = { [eventHandler]: onEventSpy };
+
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Field
+              model="test.foo"
+            >
+              <input type="text" {...prop} />
+            </Field>
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        control.value = `testing ${event}`;
+
+        TestUtils.Simulate[event](control);
+
+        assert.isTrue(onEventSpy.calledOnce);
+        assert.isObject(onEventSpy.returnValues[0]);
+        assert.equal(
+          onEventSpy.returnValues[0].constructor.name,
+          'SyntheticEvent');
+        assert.equal(
+          onEventSpy.returnValues[0].target.value,
+          `testing ${event}`);
+      });
     });
   });
 });
