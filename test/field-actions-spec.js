@@ -391,9 +391,74 @@ describe('field actions', () => {
         {
           touched: true,
           untouched: false,
+          retouched: false,
           focus: false,
           blur: true,
         });
+    });
+
+    it('should set the retouched property to true upon touch after submit', () => {
+      const reducer = formReducer('test');
+      const state = reducer(undefined, actions.setSubmitted('test'));
+
+      assert.containSubset(
+        state,
+        {
+          submitted: true,
+          retouched: false,
+        }, 'not retouched yet');
+
+      assert.containSubset(
+        reducer(state, actions.setTouched('test')),
+        {
+          submitted: true,
+          retouched: true,
+        }, 'retouched after submit');
+    });
+
+    it('should set the retouched property to true upon touch after submit failed', () => {
+      const reducer = formReducer('test');
+      const state = reducer(undefined, actions.setSubmitFailed('test'));
+
+      assert.containSubset(
+        state,
+        {
+          submitted: false,
+          submitFailed: true,
+          retouched: false,
+        }, 'not retouched yet');
+
+      assert.containSubset(
+        reducer(state, actions.setTouched('test')),
+        {
+          submitted: false,
+          submitFailed: true,
+          retouched: true,
+        }, 'retouched after submit failed');
+    });
+
+    it('should set the retouched property to false when pending', () => {
+      const reducer = formReducer('test');
+      let state = reducer(undefined, actions.setSubmitted('test'));
+
+      state = reducer(state, actions.setTouched('test'));
+
+      assert.containSubset(
+        state,
+        {
+          submitted: true,
+          retouched: true,
+        }, 'retouched after submit and before pending');
+
+      state = reducer(state, actions.setPending('test'));
+
+      assert.containSubset(
+        state,
+        {
+          pending: true,
+          submitted: false,
+          retouched: false,
+        }, 'not retouched while pending');
     });
   });
 

@@ -204,11 +204,12 @@ function _createFormReducer(model, initialState) {
       case actionTypes.BLUR:
       case actionTypes.SET_TOUCHED: {
         const fieldState = setField(state, localPath, {
+          focus: false,
+          touched: true,
+          retouched: state.submitted || state.submitFailed,
           get blur() {
             return deprecateProp('blur', true);
           },
-          focus: false,
-          touched: true,
           get untouched() {
             return deprecateProp('untouched', false);
           },
@@ -227,6 +228,7 @@ function _createFormReducer(model, initialState) {
           pending: action.pending,
           submitted: false,
           submitFailed: false,
+          retouched: false,
         });
 
       case actionTypes.SET_VALIDITY: {
