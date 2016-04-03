@@ -15,6 +15,7 @@ const actionTypes = {
   SET_TOUCHED: 'rrf/setTouched',
   SET_UNTOUCHED: 'rrf/setUntouched',
   SET_VALIDITY: 'rrf/setValidity',
+  SET_FIELDS_VALIDITY: 'rrf/setFieldsValidity',
   SET_VIEW_VALUE: 'rrf/setViewValue',
   RESET_VALIDITY: 'rrf/resetValidity',
   BATCH: 'rrf/batch',

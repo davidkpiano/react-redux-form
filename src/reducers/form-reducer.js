@@ -4,6 +4,7 @@ import icepick from 'icepick';
 import isBoolean from 'lodash/isBoolean';
 import isEqual from 'lodash/isEqual';
 import isPlainObject from 'lodash/isPlainObject';
+import map from 'lodash/map';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
 import startsWith from 'lodash/startsWith';
@@ -257,6 +258,13 @@ function _createFormReducer(model, initialState) {
           valid: formIsValid(formIsValidState),
         });
       }
+
+      case actionTypes.SET_FIELDS_VALIDITY:
+        return map(action.fieldsValidity, (fieldValidity, field) => ({
+          type: actionTypes.SET_VALIDITY,
+          model: `${model}.${field}`,
+          validity: fieldValidity,
+        })).reduce(formReducer, state);
 
       case actionTypes.SET_ERRORS: {
         if (isPlainObject(action.errors)) {

@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import sinon from 'sinon';
 
 import { actions, actionTypes, formReducer, initialFieldState } from '../src';
 import { initialFormState } from '../src/reducers/form-reducer';
@@ -1282,40 +1283,22 @@ describe('field actions', () => {
     it('should set the validity of multiple fields in the same form', (done) => {
       const store = mockStore(
         () => ({ test: { foo: 'bar' } }),
-        [{
-          actions: [
-            {
-              model: 'test',
-              type: 'rrf/setValidity',
-              validity: true,
-            },
-            {
-              model: 'test.foo',
-              type: 'rrf/setValidity',
-              validity: true,
-            },
-            {
-              model: 'test.foo_valid',
-              type: 'rrf/setValidity',
-              validity: true,
-            },
-            {
-              model: 'test.foo_invalid',
-              type: 'rrf/setValidity',
-              validity: false,
-            },
-            {
-              model: 'test.with_keys',
-              type: 'rrf/setValidity',
-              validity: {
+        [
+          {
+            fieldsValidity: {
+              '': true,
+              foo: true,
+              foo_invalid: false,
+              foo_valid: true,
+              with_keys: {
                 key_invalid: false,
                 key_valid: true,
               },
             },
-          ],
-          model: 'test',
-          type: 'rrf/batch',
-        }],
+            model: 'test',
+            type: actionTypes.SET_FIELDS_VALIDITY,
+          },
+        ],
         done);
 
       const action = actions.validateFields('test', {
@@ -1328,6 +1311,54 @@ describe('field actions', () => {
           key_invalid: () => false,
         },
       });
+
+      store.dispatch(action);
+    });
+
+    it('should call a callback if validation passes', (done) => {
+      const callback = sinon.spy((val) => console.log('hey', val));
+
+      const store = mockStore(
+        () => ({ test: { foo: 'bar' } }),
+        [{
+          model: 'test',
+          type: actionTypes.SET_FIELDS_VALIDITY,
+          fieldsValidity: {
+            foo: true,
+          },
+        }],
+        () => {
+          assert.isTrue(callback.calledOnce);
+          done();
+        });
+
+      const action = actions.validateFields('test', {
+        foo: (val) => val === 'bar',
+      }, callback);
+
+      store.dispatch(action);
+    });
+
+    it('should NOT call a callback if validation fails', (done) => {
+      const callback = sinon.spy((val) => console.log('hey', val));
+
+      const store = mockStore(
+        () => ({ test: { foo: 'bar' } }),
+        [{
+          model: 'test',
+          type: actionTypes.SET_FIELDS_VALIDITY,
+          fieldsValidity: {
+            foo: false,
+          },
+        }],
+        () => {
+          assert.isTrue(callback.notCalled);
+          done();
+        });
+
+      const action = actions.validateFields('test', {
+        foo: (val) => val === 'invalid',
+      }, callback);
 
       store.dispatch(action);
     });

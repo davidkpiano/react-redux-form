@@ -1,9 +1,8 @@
 import _get from 'lodash/get';
-import map from 'lodash/map';
+import mapValues from 'lodash/mapValues';
 
-import batchActions from './batch-actions';
 import actionTypes from '../action-types';
-import { getValidity, getForm } from '../utils';
+import { getValidity, getForm, isValid } from '../utils';
 
 const focus = model => ({
   type: actionTypes.FOCUS,
@@ -40,6 +39,12 @@ const setValidity = (model, validity) => ({
   type: actionTypes.SET_VALIDITY,
   model,
   validity,
+});
+
+const setFieldsValidity = (model, fieldsValidity) => ({
+  type: actionTypes.SET_FIELDS_VALIDITY,
+  model,
+  fieldsValidity,
 });
 
 const setErrors = (model, errors) => ({
@@ -129,30 +134,26 @@ const validateErrors = (model, errorValidators) => (dispatch, getState) => {
 const validateFields = (model, fieldValidators, callback) => (dispatch, getState) => {
   const value = _get(getState(), model);
 
-  const validationActions = map(fieldValidators, (validator, field) => {
-    const fieldModel = field
-      ? [model, field].join('.')
-      : model;
+  const fieldsValidity = mapValues(fieldValidators, (validator, field) => {
     const fieldValue = field
       ? _get(value, field)
       : value;
 
     const fieldValidity = getValidity(validator, fieldValue);
 
-    return setValidity(fieldModel, fieldValidity);
+    return fieldValidity;
   });
 
   if (callback) {
-    validationActions.push((_, _getState) => {
-      const form = getForm(_getState(), model);
+    const form = getForm(getState(), model);
+    const formValid = form ? form.valid : true;
 
-      if (form && form.valid) {
-        callback();
-      }
-    });
+    if (formValid && isValid(fieldsValidity)) {
+      callback();
+    }
   }
 
-  dispatch(batchActions.batch(model, validationActions));
+  dispatch(setFieldsValidity(model, fieldsValidity));
 };
 
 export default {
