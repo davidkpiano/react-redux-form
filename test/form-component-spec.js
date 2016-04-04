@@ -592,4 +592,34 @@ describe('<Form> component', () => {
       assert.equal(timesSubmitCalled, 1);
     });
   });
+
+  describe('deep state path', () => {
+    const fromsReducer = combineReducers({
+      testForm: formReducer('forms.test'),
+      test: modelReducer('forms.test', {
+        foo: '',
+        bar: '',
+      }),
+    });
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      forms: fromsReducer,
+    }));
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="forms.test" onSubmit={() => {}} />
+      </Provider>
+    );
+
+    const component = TestUtils.findRenderedComponentWithType(form, Form);
+    const props = component.renderedElement.props;
+
+    it('should resolve the model value', () => {
+      assert.containSubset(props.modelValue, { foo: '', bar: '' });
+    });
+
+    it('should resolve the form value', () => {
+      assert.containSubset(props.formValue, { valid: true, model: 'forms.test' });
+    });
+  });
 });

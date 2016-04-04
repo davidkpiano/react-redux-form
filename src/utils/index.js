@@ -4,6 +4,7 @@ import isPlainObject from 'lodash/isPlainObject';
 import every from 'lodash/every';
 import some from 'lodash/some';
 import findKey from 'lodash/findKey';
+import get from 'lodash/get';
 
 import { initialFieldState } from '../reducers/form-reducer';
 
@@ -48,9 +49,10 @@ function getValue(value) {
 }
 
 function getForm(state, model) {
-  const formStateKey = findKey(state, { model });
-
-  return state[formStateKey];
+  const path = model.split('.');
+  const modelRoot = path.length === 1 ? state : get(state, path.slice(0, path.length - 1));
+  const formStateKey = findKey(modelRoot, { model });
+  return modelRoot && modelRoot[formStateKey];
 }
 
 function getValidity(validators, value) {
