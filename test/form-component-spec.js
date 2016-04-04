@@ -427,6 +427,12 @@ describe('<Form> component', () => {
       assert.isNull(submitValue);
     });
 
+    it('should set submitFailed to true if form is invalid and submitted', () => {
+      TestUtils.Simulate.submit(formElement);
+
+      assert.isTrue(store.getState().testForm.submitFailed);
+    });
+
     it('should call onSubmit with model value if form is valid', () => {
       barControl.value = 'bar';
 

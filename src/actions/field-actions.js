@@ -131,7 +131,7 @@ const validateErrors = (model, errorValidators) => (dispatch, getState) => {
   dispatch(setErrors(model, errors));
 };
 
-const validateFields = (model, fieldValidators, callback) => (dispatch, getState) => {
+const validateFields = (model, fieldValidators, validCB, invalidCB) => (dispatch, getState) => {
   const value = _get(getState(), model);
 
   const fieldsValidity = mapValues(fieldValidators, (validator, field) => {
@@ -144,12 +144,14 @@ const validateFields = (model, fieldValidators, callback) => (dispatch, getState
     return fieldValidity;
   });
 
-  if (callback) {
+  if (validCB || invalidCB) {
     const form = getForm(getState(), model);
     const formValid = form ? form.valid : true;
 
-    if (formValid && isValid(fieldsValidity)) {
-      callback();
+    if (validCB && formValid && isValid(fieldsValidity)) {
+      validCB();
+    } else if (invalidCB) {
+      invalidCB();
     }
   }
 

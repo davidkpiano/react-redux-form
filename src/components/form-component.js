@@ -8,6 +8,16 @@ import mapValues from 'lodash/mapValues';
 import actions from '../actions';
 import { getValidity, getForm } from '../utils';
 
+function dispatchValidCallback(modelValue, callback) {
+  return callback
+    ? () => callback(modelValue)
+    : undefined;
+}
+
+function dispatchInvalidCallback(model, dispatch) {
+  return () => dispatch(actions.setSubmitFailed(model));
+}
+
 class Form extends Component {
   constructor(props) {
     super(props);
@@ -86,14 +96,14 @@ class Form extends Component {
       return modelValue;
     }
 
-    const validationCallback = onSubmit
-      ? () => onSubmit(modelValue)
-      : undefined;
+    const validCallback = dispatchValidCallback(modelValue, onSubmit);
+    const invalidCallback = dispatchInvalidCallback(model, dispatch);
 
     dispatch(actions.validateFields(
       model,
       validators,
-      validationCallback));
+      validCallback,
+      invalidCallback));
 
     return modelValue;
   }
