@@ -13,34 +13,15 @@ import flatten from 'flat';
 import actionTypes from '../action-types';
 import { isValid } from '../utils';
 
-const propInverses = {
-  blur: 'focus',
-  dirty: 'pristine',
-  untouched: 'touched',
-};
-
-function deprecateProp(prop, result) {
-  console.warn(`The .${prop} prop will be deprecated as of v1.0.`
-    + `Please use the the inverse of .${propInverses[prop]} instead.`);
-
-  return result;
-}
-
 const initialFieldState = {
-  get blur() {
-    return deprecateProp('blur', true);
-  },
-  get dirty() {
-    return deprecateProp('dirty', false);
-  },
+  blur: true, // will be deprecated
+  dirty: false, // will be deprecated
   focus: false,
   pending: false,
   pristine: true,
   submitted: false,
   touched: false,
-  get untouched() {
-    return deprecateProp('untouched', true);
-  },
+  untouched: true, // will be deprecated
   valid: true,
   validating: false,
   viewValue: null,
@@ -164,40 +145,30 @@ function _createFormReducer(model, initialState) {
 
       case actionTypes.FOCUS:
         return setField(state, localPath, {
-          get blur() {
-            return deprecateProp('blur', false);
-          },
+          blur: false, // will be deprecated
           focus: true,
         });
 
       case actionTypes.CHANGE: {
         const setDirtyState = icepick.merge(state, {
-          get dirty() {
-            return deprecateProp('dirty', true);
-          },
+          dirty: true, // will be deprecated
           pristine: false,
         });
 
         return removeDiff(setField(setDirtyState, localPath, {
-          get dirty() {
-            return deprecateProp('dirty', true);
-          },
+          dirty: true, // will be deprecated
           pristine: false,
         }), action.value, localPath);
       }
 
       case actionTypes.SET_DIRTY: {
         const setDirtyState = icepick.merge(state, {
-          get dirty() {
-            return deprecateProp('dirty', true);
-          },
+          dirty: true, // will be deprecated
           pristine: false,
         });
 
         return setField(setDirtyState, localPath, {
-          get dirty() {
-            return deprecateProp('dirty', true);
-          },
+          dirty: true, // will be deprecated
           pristine: false,
         });
       }
@@ -208,19 +179,13 @@ function _createFormReducer(model, initialState) {
           focus: false,
           touched: true,
           retouched: state.submitted || state.submitFailed,
-          get blur() {
-            return deprecateProp('blur', true);
-          },
-          get untouched() {
-            return deprecateProp('untouched', false);
-          },
+          blur: true, // will be deprecated
+          untouched: false, // will be deprecated
         });
 
         return icepick.merge(fieldState, {
           touched: true,
-          get untouched() {
-            return deprecateProp('untouched', false);
-          },
+          untouched: false, // will be deprecated
         });
       }
 
@@ -360,17 +325,13 @@ function _createFormReducer(model, initialState) {
           setPristineState = icepick.merge(state, {
             fields: mapValues(state.fields, field => ({
               ...field,
-              get dirty() {
-                return deprecateProp('dirty', false);
-              },
+              dirty: false, // will be deprecated
               pristine: true,
             })),
           });
         } else {
           setPristineState = setField(state, localPath, {
-            get dirty() {
-              return deprecateProp('dirty', false);
-            },
+            dirty: false, // will be deprecated
             pristine: true,
           });
 
@@ -378,9 +339,7 @@ function _createFormReducer(model, initialState) {
         }
 
         return icepick.merge(setPristineState, {
-          get dirty() {
-            return deprecateProp('dirty', !formIsPristine);
-          },
+          dirty: !formIsPristine, // will be deprecated
           pristine: formIsPristine,
         });
       }
@@ -388,9 +347,7 @@ function _createFormReducer(model, initialState) {
       case actionTypes.SET_UNTOUCHED:
         return setField(state, localPath, {
           touched: false,
-          get untouched() {
-            return deprecateProp('untouched', true);
-          },
+          untouched: true, // will be deprecated
         });
 
       case actionTypes.SET_SUBMITTED:
@@ -399,9 +356,7 @@ function _createFormReducer(model, initialState) {
           submitted: !!action.submitted,
           submitFailed: false,
           touched: true,
-          get untouched() {
-            return deprecateProp('untouched', false);
-          },
+          untouched: false, // will be deprecated
         });
 
       case actionTypes.SET_SUBMIT_FAILED:
@@ -410,9 +365,7 @@ function _createFormReducer(model, initialState) {
           submitted: false,
           submitFailed: true,
           touched: true,
-          get untouched() {
-            return deprecateProp('untouched', false);
-          },
+          untouched: false, // will be deprecated
         });
 
       case actionTypes.SET_INITIAL:
