@@ -1,6 +1,5 @@
 /* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
 import React, { PropTypes } from 'react';
-import ReactDOM from 'react-dom';
 import { assert } from 'chai';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';

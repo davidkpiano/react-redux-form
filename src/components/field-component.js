@@ -302,7 +302,7 @@ function getFieldWrapper(props) {
   return null;
 }
 
-function createFieldClass(customControlPropsMap = {}) {
+function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
   const options = {
     controlPropsMap: {
       ...controlPropsMap,
@@ -364,6 +364,7 @@ function createFieldClass(customControlPropsMap = {}) {
     asyncValidateOn: 'blur',
     parser: identity,
     changeAction: change,
+    ...defaultProps,
   };
 
   return connect(selector)(Field);

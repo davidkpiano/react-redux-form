@@ -1,5 +1,9 @@
 import { createFieldClass } from '../components/field-component';
 
+const View = process.env.NODE_ENV === 'test'
+  ? require('react-native').View
+  : 'div';
+
 const NativeField = createFieldClass({
   MapView: props => ({
     onRegionChange: props.onChange,
@@ -36,6 +40,8 @@ const NativeField = createFieldClass({
     onValueChange: props.onChange,
     value: props.modelValue,
   }),
+}, {
+  component: View,
 });
 
 export { NativeField as Field };
