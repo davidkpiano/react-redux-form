@@ -24,9 +24,13 @@ const {
 } = actions;
 
 function selector(state, { model }) {
+  const stringModel = typeof model === 'function'
+    ? model(state)
+    : model;
+
   return {
-    model,
-    modelValue: _get(state, model),
+    model: stringModel,
+    modelValue: _get(state, stringModel),
   };
 }
 

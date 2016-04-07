@@ -18,6 +18,10 @@ import {
   modelReducer,
 } from './reducers/model-reducer';
 
+import {
+  track,
+} from './utils/track';
+
 export {
   actions,
   actionTypes,
@@ -32,4 +36,5 @@ export {
   getField,
   initialFieldState,
   modeled,
+  track,
 };
