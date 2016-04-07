@@ -1,6 +1,6 @@
 import { createFieldClass } from '../components/field-component';
 
-const View = process.env.NODE_ENV === 'test'
+const View = process.env.NODE_ENV !== 'test'
   ? require('react-native').View
   : 'div';
 
