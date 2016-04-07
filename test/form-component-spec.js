@@ -593,6 +593,63 @@ describe('<Form> component', () => {
     });
   });
 
+  describe('internal validators without form reducers', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', {
+        foo: '',
+        bar: '',
+      }),
+    }));
+
+    let timesSubmitCalled = 0;
+
+    function handleSubmit() {
+      timesSubmitCalled++;
+    }
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test"
+          validators={{
+            foo: (val) => val && val.length > 5,
+          }}
+          onSubmit={handleSubmit}
+        >
+          <Field model="test.foo">
+            <input type="text" />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+    const inputElement = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+    it('should initially be invalid if the form state is invalid', () => {
+      TestUtils.Simulate.submit(formElement);
+
+      assert.equal(timesSubmitCalled, 0);
+    });
+
+    it('should prevent onSubmit if the form state is invalid after change', () => {
+      inputElement.value = 'short';
+
+      TestUtils.Simulate.change(inputElement);
+      TestUtils.Simulate.submit(formElement);
+
+      assert.equal(timesSubmitCalled, 0);
+    });
+
+    it('should submit once the form state is valid after change', () => {
+      inputElement.value = 'longer';
+
+      TestUtils.Simulate.change(inputElement);
+      TestUtils.Simulate.submit(formElement);
+
+      assert.equal(timesSubmitCalled, 1);
+    });
+  });
+
   describe('deep state path', () => {
     const fromsReducer = combineReducers({
       testForm: formReducer('forms.test'),
