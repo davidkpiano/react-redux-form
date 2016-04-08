@@ -38,3 +38,8 @@ export {
   modeled,
   track,
 };
+
+window.React = require('react');
+window.ReactDOM = require('react-dom');
+window.redux = require('redux');
+window.reactRedux = require('react-redux');
