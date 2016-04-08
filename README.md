@@ -68,3 +68,6 @@ class MyForm extends React.Component {
 
 export default connect(state => ({ user: state.user }))(MyForm);
 ```
+
+## Posting Issues
+When posting an issue, please include a detailed description along with a relevant code sample. Attaching a failing test case with your issue will go a long way and is much appreciated.
