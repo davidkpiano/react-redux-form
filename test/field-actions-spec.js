@@ -1316,7 +1316,7 @@ describe('field actions', () => {
     });
 
     it('should call a callback if validation passes', (done) => {
-      const callback = sinon.spy((val) => console.log('hey', val));
+      const callback = sinon.spy((val) => val);
 
       const store = mockStore(
         () => ({ test: { foo: 'bar' } }),
@@ -1340,7 +1340,7 @@ describe('field actions', () => {
     });
 
     it('should NOT call a callback if validation fails', (done) => {
-      const callback = sinon.spy((val) => console.log('hey', val));
+      const callback = sinon.spy((val) => val);
 
       const store = mockStore(
         () => ({ test: { foo: 'bar' } }),
