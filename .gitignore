@@ -30,7 +30,7 @@ node_modules
 docs/
 
 # Distributed files
-dist/
+dist/index.js
 
 # Build files
 lib/
