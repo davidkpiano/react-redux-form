@@ -17,12 +17,21 @@ function isMulti(model) {
   return endsWith(model, '[]');
 }
 
-const change = (model, value) => ({
-  type: actionTypes.CHANGE,
-  model,
-  multi: isMulti(model),
-  value: getValue(value),
-});
+const change = (model, value, options = {}) => {
+  // option defaults
+  const changeOptions = {
+    silent: false,
+    multi: isMulti(model),
+    ...options,
+  };
+
+  return {
+    type: actionTypes.CHANGE,
+    model,
+    value: getValue(value),
+    ...changeOptions,
+  };
+};
 
 const xor = (model, item) => (dispatch, getState) => {
   const state = _get(getState(), model, []);

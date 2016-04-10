@@ -23,6 +23,7 @@ describe('batched actions', (done) => {
           {
             model: 'test.foo',
             multi: false,
+            silent: false,
             type: 'rrf/change',
             value: 'testing',
           },

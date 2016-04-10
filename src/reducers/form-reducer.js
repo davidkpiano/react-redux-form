@@ -42,7 +42,9 @@ function getField(state, path) {
       ' from an invalid/empty form state. Must pass in a valid form state as the first argument.');
   }
 
-  const localPath = toPath(path);
+  const localPath = typeof path === 'function'
+    ? path(state)
+    : toPath(path);
 
   if (!localPath.length) {
     return state;
