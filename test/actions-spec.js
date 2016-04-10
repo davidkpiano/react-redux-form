@@ -4,7 +4,7 @@ import { actions, actionTypes } from '../src';
 describe('model action creators', () => {
   describe('actions.change()', () => {
     it('should return an action', () => {
-      assert.deepEqual(
+      assert.containSubset(
         actions.change('foo.bar', 'baz'),
         {
           model: 'foo.bar',
