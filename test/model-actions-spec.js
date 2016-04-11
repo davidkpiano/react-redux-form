@@ -167,6 +167,18 @@ describe('model actions', () => {
           expected: { foo: { bar: 'new', one: 'two', untouched: 'intact' } },
         },
       ],
+      omit: [
+        {
+          init: { one: 1, two: 2, three: 3 },
+          params: ['test', 'two'],
+          expected: { one: 1, three: 3 },
+        },
+        {
+          init: { one: 1, two: 2, three: 3 },
+          params: ['test', ['one', 'three']],
+          expected: { two: 2 },
+        },
+      ],
     };
 
     /* eslint-disable array-callback-return */
@@ -240,6 +252,27 @@ describe('model actions', () => {
       const getState = () => ({ test: initialState });
 
       actions.filter('test.items', (n) => n % 2)(dispatch, getState);
+    });
+  });
+
+  describe('omit()', () => {
+    it('should dissociate props from the form state', (done) => {
+      const initialState = { one: 1, two: 2, three: 3 };
+      const reducer = formReducer('test', initialState);
+
+      assert.property(reducer(undefined, { type: '' }).fields, 'one');
+      assert.property(reducer(undefined, { type: '' }).fields, 'two');
+      assert.property(reducer(undefined, { type: '' }).fields, 'three');
+
+      const dispatch = action => {
+        assert.notProperty(reducer(undefined, action).fields, 'one');
+        assert.notProperty(reducer(undefined, action).fields, 'three');
+        done();
+      };
+
+      const getState = () => ({ test: initialState });
+
+      actions.omit('test', ['one', 'three'])(dispatch, getState);
     });
   });
 });
