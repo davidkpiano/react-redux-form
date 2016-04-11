@@ -131,10 +131,8 @@ const merge = (model, values) => (dispatch, getState) => {
   });
 };
 
-const load = (model, values) => ({
-  type: actionTypes.LOAD,
-  model,
-  value: values,
+const load = (model, values) => change(model, values, {
+  silent: true,
 });
 
 export default {

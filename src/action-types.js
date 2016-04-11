@@ -3,7 +3,6 @@ const actionTypes = {
   CHANGE: 'rrf/change',
   FOCUS: 'rrf/focus',
   RESET: 'rrf/reset',
-  LOAD: 'rrf/load',
   VALIDATE: 'rrf/validate',
   SET_DIRTY: 'rrf/setDirty',
   SET_ERRORS: 'rrf/setErrors',

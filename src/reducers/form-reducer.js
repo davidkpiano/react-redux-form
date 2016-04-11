@@ -152,6 +152,8 @@ function _createFormReducer(model, initialState) {
         });
 
       case actionTypes.CHANGE: {
+        if (action.silent) return state;
+
         const setDirtyState = icepick.merge(state, {
           dirty: true, // will be deprecated
           pristine: false,
