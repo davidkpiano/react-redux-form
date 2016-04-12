@@ -38,6 +38,15 @@ describe('field actions', () => {
         initialFormState);
     });
 
+    it('should set the model when reseting entire form ', () => {
+      const reducer = formReducer('test');
+
+      assert.propertyVal(
+        reducer(undefined, actions.reset('test')),
+        'model', 
+        'test');
+    });
+
     it('should reset all errors on the field', () => {
       const reducer = formReducer('test');
 

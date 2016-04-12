@@ -72,10 +72,6 @@ function setField(state, localPath, props) {
 }
 
 function resetField(state, localPath) {
-  if (!localPath.length) {
-    return initialFormState;
-  }
-
   return icepick.setIn(
     state,
     ['fields', localPath.join('.')],
@@ -374,6 +370,10 @@ function _createFormReducer(model, initialState) {
 
       case actionTypes.SET_INITIAL:
       case actionTypes.RESET:
+        if (!localPath.length) {
+          return localInitialFormState;
+        }
+
         return resetField(state, localPath);
 
       case actionTypes.SET_VIEW_VALUE:
