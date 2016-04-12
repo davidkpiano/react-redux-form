@@ -53,7 +53,7 @@ function isReadOnlyValue(control) {
     && ~['radio', 'checkbox'].indexOf(control.props.type);
 }
 
-export function sequenceEventActions(control, props) {
+function sequenceEventActions(control, props) {
   const {
     dispatch,
     model,
@@ -94,17 +94,7 @@ export function sequenceEventActions(control, props) {
   const modelValueUpdater = modelValueUpdaterMap[control.props.type]
     || modelValueUpdaterMap.default;
 
-  let dispatchChange;
-  if (isReadOnlyValue(control)) {
-    dispatchChange = () => {
-      dispatch(controlChangeMethod(modelValueUpdater(props, control.props.value)));
-    };
-  } else {
-    dispatchChange = event => dispatch(controlChangeMethod(event));
-  }
 
-  eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
-  eventActions.onSubmit.push(updaterFn(dispatchChange));
 
   if (control.props.defaultValue) {
     eventActions.onLoad.push(() => dispatch(
@@ -146,13 +136,35 @@ export function sequenceEventActions(control, props) {
     eventActions[asyncValidateOn].push(dispatchAsyncValidate);
   }
 
-  eventActions[updateOnEventHandler].push((value) => modelValueUpdater(props, value));
-  eventActions[updateOnEventHandler].push(parser);
-  eventActions[updateOnEventHandler].push(getValue);
+  const dispatchChange = (event) => {
+    const modelValue = isReadOnlyValue(control)
+      ? modelValueUpdater(props, control.props.value)
+      : event;
 
-  eventActions[updateOnEventHandler].push(controlOnChange);
+    dispatch(controlChangeMethod(modelValue));
+
+    return modelValue;
+  }
+
+  eventActions.onSubmit.push(updaterFn(dispatchChange));
+
+  if (!isReadOnlyValue(control)) {  
+    eventActions[updateOnEventHandler].push(
+      compose(
+        updaterFn(dispatchChange),
+        partial(modelValueUpdater, props),
+        parser,
+        getValue,
+        controlOnChange));
+  } else {
+    eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
+  }
   eventActions.onBlur.push(controlOnBlur);
   eventActions.onFocus.push(controlOnFocus);
 
   return mapValues(eventActions, _actions => compose(..._actions));
 }
+
+export {
+  sequenceEventActions,
+};
