@@ -4,7 +4,6 @@ import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
 import { actions, actionTypes, formReducer, initialFieldState } from '../src';
-import { initialFormState } from '../src/reducers/form-reducer';
 
 describe('field actions', () => {
   describe('setViewValue()', () => {
@@ -31,20 +30,13 @@ describe('field actions', () => {
     });
 
     it('should be able to set the entire form to the initial state', () => {
-      const reducer = formReducer('test');
+      const reducer = formReducer('test', { foo: 'bar' });
+
+      const localInitialFormState = reducer(undefined, 'BOGUS / INITIAL STATE');
 
       assert.containSubset(
-        reducer(undefined, actions.reset('test')),
-        initialFormState);
-    });
-
-    it('should set the model when reseting entire form ', () => {
-      const reducer = formReducer('test');
-
-      assert.propertyVal(
-        reducer(undefined, actions.reset('test')),
-        'model', 
-        'test');
+        reducer({ modified: 'form' }, actions.reset('test')),
+        localInitialFormState);
     });
 
     it('should reset all errors on the field', () => {
