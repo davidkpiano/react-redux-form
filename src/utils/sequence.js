@@ -94,8 +94,6 @@ function sequenceEventActions(control, props) {
   const modelValueUpdater = modelValueUpdaterMap[control.props.type]
     || modelValueUpdaterMap.default;
 
-
-
   if (control.props.defaultValue) {
     eventActions.onLoad.push(() => dispatch(
       actions.change(model, control.props.defaultValue)));
@@ -144,11 +142,11 @@ function sequenceEventActions(control, props) {
     dispatch(controlChangeMethod(modelValue));
 
     return modelValue;
-  }
+  };
 
   eventActions.onSubmit.push(updaterFn(dispatchChange));
 
-  if (!isReadOnlyValue(control)) {  
+  if (!isReadOnlyValue(control)) {
     eventActions[updateOnEventHandler].push(
       compose(
         updaterFn(dispatchChange),
