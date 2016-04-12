@@ -8,18 +8,18 @@ class Control extends Component {
   }
 
   componentWillMount() {
-    const { _onLoad, modelValue } = this.props;
+    const { onLoad, modelValue } = this.props;
 
-    if (_onLoad) {
-      _onLoad(modelValue);
+    if (onLoad) {
+      onLoad(modelValue);
     }
   }
 
   handleKeyPress(event) {
-    const { _onSubmit } = this.props;
+    const { onSubmit } = this.props;
 
-    if (_onSubmit && event.key === 'Enter') {
-      _onSubmit(event);
+    if (onSubmit && event.key === 'Enter') {
+      onSubmit(event);
     }
   }
 
@@ -38,8 +38,8 @@ class Control extends Component {
 
 Control.propTypes = {
   control: PropTypes.object,
-  _onLoad: PropTypes.func,
-  _onSubmit: PropTypes.func,
+  onLoad: PropTypes.func,
+  onSubmit: PropTypes.func,
   modelValue: PropTypes.any,
 };
 

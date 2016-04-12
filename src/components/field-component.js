@@ -162,8 +162,8 @@ function sequenceEventActions(control, props) {
     onFocus: [() => dispatch(focus(model))],
     onBlur: [() => dispatch(blur(model))],
     onChange: [],
-    _onLoad: [], // pseudo-event
-    _onSubmit: [], // pseudo-event
+    onLoad: [], // pseudo-event
+    onSubmit: [], // pseudo-event
   };
 
   const controlChangeMethod = changeMethod(model, changeAction);
@@ -180,10 +180,10 @@ function sequenceEventActions(control, props) {
   }
 
   eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
-  eventActions._onSubmit.push(updaterFn(dispatchChange));
+  eventActions.onSubmit.push(updaterFn(dispatchChange));
 
   if (control.props.defaultValue) {
-    eventActions._onLoad.push(() => dispatch(
+    eventActions.onLoad.push(() => dispatch(
       actions.change(model, control.props.defaultValue)));
   }
 
@@ -201,7 +201,7 @@ function sequenceEventActions(control, props) {
     };
 
     eventActions[validateOn].push(dispatchValidate);
-    eventActions._onLoad.push(dispatchValidate);
+    eventActions.onLoad.push(dispatchValidate);
   }
 
   if (props.asyncValidators) {
