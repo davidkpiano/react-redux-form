@@ -14,7 +14,6 @@ const {
   blur,
   focus,
   setValidity,
-  setErrors,
 } = actions;
 
 function persistEventWithCallback(callback) {
@@ -106,7 +105,9 @@ function sequenceEventActions(control, props) {
       }
 
       if (props.errors) {
-        dispatch(setErrors(model, getValidity(props.errors, value)));
+        dispatch(setValidity(model, getValidity(props.errors, value), {
+          errors: true,
+        }));
       }
 
       return value;

@@ -35,10 +35,12 @@ const setPending = (model, pending = true) => ({
   pending,
 });
 
-const setValidity = (model, validity) => ({
-  type: actionTypes.SET_VALIDITY,
+const setValidity = (model, validity, options = {}) => ({
+  type: options.errors
+    ? actionTypes.SET_ERRORS
+    : actionTypes.SET_VALIDITY,
   model,
-  validity,
+  [options.errors ? 'errors' : 'validity']: validity,
 });
 
 const setFieldsValidity = (model, fieldsValidity) => ({
@@ -47,10 +49,10 @@ const setFieldsValidity = (model, fieldsValidity) => ({
   fieldsValidity,
 });
 
-const setErrors = (model, errors) => ({
-  type: actionTypes.SET_ERRORS,
-  model,
-  errors,
+// will be deprecated
+const setErrors = (model, errors, options = {}) => setValidity(model, errors, {
+  errors: true,
+  ...options,
 });
 
 const resetValidity = (model) => ({
@@ -113,7 +115,7 @@ const submit = (model, promise) => dispatch => {
     dispatch(setValidity(model, response));
   }).catch(error => {
     dispatch(setSubmitFailed(model));
-    dispatch(setErrors(model, error));
+    dispatch(setValidity(model, error, { errors: true }));
   });
 };
 
@@ -128,7 +130,7 @@ const validateErrors = (model, errorValidators) => (dispatch, getState) => {
   const value = _get(getState(), model);
   const errors = getValidity(errorValidators, value);
 
-  dispatch(setErrors(model, errors));
+  dispatch(setValidity(model, errors, { errors: true }));
 };
 
 const validateFields = (model, fieldValidators, validCB, invalidCB) => (dispatch, getState) => {

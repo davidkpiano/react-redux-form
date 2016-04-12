@@ -69,7 +69,9 @@ class Form extends Component {
 
       const fieldErrors = getValidity(errorValidator, value);
 
-      dispatch(actions.setErrors(fieldModel, fieldErrors));
+      dispatch(actions.setValidity(fieldModel, fieldErrors, {
+        errors: true,
+      }));
 
       return fieldErrors;
     });
