@@ -2,25 +2,16 @@ import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 
 import _get from 'lodash/get';
-import capitalize from 'lodash/capitalize';
-import compose from 'lodash/fp/compose';
 import identity from 'lodash/identity';
 import isEqual from 'lodash/isEqual';
-import mapValues from 'lodash/mapValues';
-import partial from 'lodash/partial';
-import icepick from 'icepick';
 
 import actions from '../actions';
 import Control from './control-component';
-import { isMulti, getValue, getValidity } from '../utils';
+import { isMulti } from '../utils';
+import { sequenceEventActions } from '../utils/sequence';
 
 const {
-  asyncSetValidity,
-  blur,
   change,
-  focus,
-  setValidity,
-  setErrors,
 } = actions;
 
 function selector(state, { model }) {
@@ -71,34 +62,6 @@ const controlPropsMap = {
   textarea: (props) => controlPropsMap.text(props),
 };
 
-function changeMethod(model, action = change) {
-  return partial(action, model);
-}
-
-function isReadOnlyValue(control) {
-  return control.type === 'input' // verify === is okay
-    && ~['radio', 'checkbox'].indexOf(control.props.type);
-}
-
-const modelValueUpdaterMap = {
-  checkbox: (props, eventValue) => {
-    const { model, modelValue } = props;
-
-    if (isMulti(model)) {
-      const valueWithItem = modelValue || [];
-      const valueWithoutItem = (valueWithItem || []).filter(item => !isEqual(item, eventValue));
-      const value = (valueWithoutItem.length === valueWithItem.length)
-        ? icepick.push(valueWithItem, eventValue)
-        : valueWithoutItem;
-
-      return value;
-    }
-
-    return !modelValue;
-  },
-  default: (props, eventValue) => eventValue,
-};
-
 function getControlType(control, options) {
   const { controlPropsMap: _controlPropsMap } = options;
 
@@ -116,121 +79,6 @@ function getControlType(control, options) {
   } catch (error) {
     return undefined;
   }
-}
-
-function persistEventWithCallback(callback) {
-  return (event) => {
-    if (event && event.persist) {
-      event.persist();
-    }
-
-    callback(event);
-    return event;
-  };
-}
-
-function sequenceEventActions(control, props) {
-  const {
-    dispatch,
-    model,
-    updateOn,
-    parser,
-    changeAction,
-  } = props;
-
-  const {
-    onChange = identity,
-    onBlur = identity,
-    onFocus = identity,
-  } = control.props;
-
-  const controlOnChange = persistEventWithCallback(onChange);
-  const controlOnBlur = persistEventWithCallback(onBlur);
-  const controlOnFocus = persistEventWithCallback(onFocus);
-
-  const updateOnEventHandler = (typeof updateOn === 'function')
-    ? 'onChange'
-    : `on${capitalize(props.updateOn)}`;
-  const validateOn = `on${capitalize(props.validateOn)}`;
-  const asyncValidateOn = `on${capitalize(props.asyncValidateOn)}`;
-
-  const updaterFn = (typeof updateOn === 'function')
-    ? updateOn
-    : identity;
-
-  const eventActions = {
-    onFocus: [() => dispatch(focus(model))],
-    onBlur: [() => dispatch(blur(model))],
-    onChange: [],
-    onLoad: [], // pseudo-event
-    onSubmit: [], // pseudo-event
-  };
-
-  const controlChangeMethod = changeMethod(model, changeAction);
-  const modelValueUpdater = modelValueUpdaterMap[control.props.type]
-    || modelValueUpdaterMap.default;
-
-  let dispatchChange;
-  if (isReadOnlyValue(control)) {
-    dispatchChange = () => {
-      dispatch(controlChangeMethod(modelValueUpdater(props, control.props.value)));
-    };
-  } else {
-    dispatchChange = event => dispatch(controlChangeMethod(event));
-  }
-
-  eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
-  eventActions.onSubmit.push(updaterFn(dispatchChange));
-
-  if (control.props.defaultValue) {
-    eventActions.onLoad.push(() => dispatch(
-      actions.change(model, control.props.defaultValue)));
-  }
-
-  if (props.validators || props.errors) {
-    const dispatchValidate = value => {
-      if (props.validators) {
-        dispatch(setValidity(model, getValidity(props.validators, value)));
-      }
-
-      if (props.errors) {
-        dispatch(setErrors(model, getValidity(props.errors, value)));
-      }
-
-      return value;
-    };
-
-    eventActions[validateOn].push(dispatchValidate);
-    eventActions.onLoad.push(dispatchValidate);
-  }
-
-  if (props.asyncValidators) {
-    const dispatchAsyncValidate = value => {
-      mapValues(props.asyncValidators,
-        (validator, key) => dispatch(asyncSetValidity(model,
-          (_, done) => {
-            const outerDone = valid => done({ [key]: valid });
-
-            validator(getValue(value), outerDone);
-          })
-        )
-      );
-
-      return value;
-    };
-
-    eventActions[asyncValidateOn].push(dispatchAsyncValidate);
-  }
-
-  eventActions[updateOnEventHandler].push((value) => modelValueUpdater(props, value));
-  eventActions[updateOnEventHandler].push(parser);
-  eventActions[updateOnEventHandler].push(getValue);
-
-  eventActions[updateOnEventHandler].push(controlOnChange);
-  eventActions.onBlur.push(controlOnBlur);
-  eventActions.onFocus.push(controlOnFocus);
-
-  return mapValues(eventActions, _actions => compose(..._actions));
 }
 
 function createFieldProps(control, props, options) {
