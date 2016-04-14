@@ -14,8 +14,19 @@ function createErrorComponent(component, message, key) {
 }
 
 function mapErrorMessages(errors, messages, component) {
-  return compact(map(messages, (message, key) =>
-    errors[key] && createErrorComponent(component, message, key)));
+  return compact(map(errors, (error, key) => {
+    const message = messages[key];
+
+    if (error) {
+      if (message) {
+        return createErrorComponent(component, message, key);
+      } else if (typeof error === 'string') {
+        return createErrorComponent(component, error, key);
+      }
+    }
+
+    return false;
+  }))
 }
 
 class Errors extends Component {
