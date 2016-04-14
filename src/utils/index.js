@@ -5,8 +5,9 @@ import every from 'lodash/every';
 import some from 'lodash/some';
 import findKey from 'lodash/findKey';
 import get from 'lodash/get';
+import toPath from 'lodash/toPath';
 
-import { initialFieldState } from '../reducers/form-reducer';
+import { getField, initialFieldState } from '../reducers/form-reducer';
 
 function isMulti(model) {
   return endsWith(model, '[]');
@@ -55,6 +56,14 @@ function getForm(state, model) {
   return modelRoot && modelRoot[formStateKey];
 }
 
+function getFieldFromState(state, model) {
+  const form = getForm(state, toPath(model)[0]);
+
+  if (!form) return null;
+
+  return getField(form, toPath(model).slice(1));
+}
+
 function getValidity(validators, value) {
   const modelValue = getValue(value);
 
@@ -62,7 +71,7 @@ function getValidity(validators, value) {
     return validators(modelValue);
   }
 
-  return mapValues(validators, (validator) => validator(modelValue));
+  return mapValues(validators, (validator) => getValidity(validator, modelValue));
 }
 
 function isValid(validity) {
@@ -92,4 +101,5 @@ export {
   isValid,
   isInvalid,
   getForm,
+  getFieldFromState,
 };

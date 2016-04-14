@@ -70,6 +70,11 @@ describe('field actions', () => {
         required: false,
       });
 
+      assert.deepEqual(stateWithErrors.validity, {
+        valid: false,
+        required: true,
+      });
+
       const stateAfterReset = reducer(stateWithErrors, actions.reset('test'));
 
       assert.deepEqual(stateAfterReset.errors, {});
