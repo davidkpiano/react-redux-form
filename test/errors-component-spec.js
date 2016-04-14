@@ -118,4 +118,50 @@ describe('<Errors />', () => {
       assert.equal(errors[1].innerHTML, 'This field is invalid');
     });
   });
+
+  describe('the "show" prop', () => {
+    function renderErrorsWithShow(show) {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: formReducer('test', {}),
+        test: modelReducer('test'),
+      }));
+
+      return TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <form>
+            <Errors model="test.foo" 
+              messages={{
+                required: 'This field is required',
+              }}
+              show={ show }
+            />
+            <Field model="test.foo"
+              validators={{
+                required: (v) => v && v.length,
+              }}
+            >
+              <input type="text" />
+            </Field>
+          </form>
+        </Provider>
+      );
+    }
+
+    it('should support a function that shows based on field value', () => {
+      const showFn = (field) => field.focus;
+
+      const form = renderErrorsWithShow(showFn);
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0);
+
+      TestUtils.Simulate.focus(input);
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 1);
+
+      TestUtils.Simulate.blur(input);
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0);
+    });
+  });
 });

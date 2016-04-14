@@ -3,6 +3,8 @@ import connect from 'react-redux/lib/components/connect';
 import _get from 'lodash/get';
 import map from 'lodash/map';
 import compact from 'lodash/compact';
+import iteratee from 'lodash/iteratee';
+import isArray from 'lodash/isArray';
 
 import { getFieldFromState } from '../utils';
 
@@ -29,6 +31,20 @@ function mapErrorMessages(errors, messages, component) {
   }));
 }
 
+function showErrors(field, show = true) {
+  if (typeof show === 'function') {
+    return show(field);
+  }
+
+  if (!isArray(show)
+    || typeof show !== 'object'
+    || typeof show !== 'string') {
+    return !!show;
+  }
+
+  return iteratee(show)(field);
+}
+
 class Errors extends Component {
   shouldComponentUpdate({ fieldValue }) {
     return fieldValue !== this.props.fieldValue;
@@ -38,15 +54,20 @@ class Errors extends Component {
     const {
       // model,
       // modelValue,
+      fieldValue,
       fieldValue: {
         valid,
         errors,
       },
       messages,
-      // show,
+      show,
       wrapper,
       component,
     } = this.props;
+
+    if (!showErrors(fieldValue, show)) {
+      return null;
+    }
 
     const errorMessages = valid
       ? null
@@ -64,7 +85,7 @@ Errors.propTypes = {
   modelValue: PropTypes.any,
   fieldValue: PropTypes.object,
   messages: PropTypes.object,
-  show: PropTypes.array,
+  show: PropTypes.any,
   wrapper: PropTypes.string,
   component: PropTypes.string,
 };
@@ -73,6 +94,7 @@ Errors.defaultProps = {
   wrapper: 'div',
   component: 'span',
   messages: {},
+  show: true,
 };
 
 function selector(state, { model }) {
