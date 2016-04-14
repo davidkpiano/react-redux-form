@@ -26,7 +26,7 @@ function mapErrorMessages(errors, messages, component) {
     }
 
     return false;
-  }))
+  }));
 }
 
 class Errors extends Component {

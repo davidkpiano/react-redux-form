@@ -117,5 +117,5 @@ describe('<Errors />', () => {
       assert.equal(errors[0].innerHTML, 'This field is required');
       assert.equal(errors[1].innerHTML, 'This field is invalid');
     });
-  })
+  });
 });
