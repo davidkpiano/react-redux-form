@@ -52,6 +52,13 @@ function isReadOnlyValue(control) {
     && ~['radio', 'checkbox'].indexOf(control.props.type);
 }
 
+function deprecateUpdateOn(updateOn) {
+  console.warn('Using the updateOn prop as a function will be deprecated in v1.0. '
+    + 'Please use the changeAction prop instead.');
+
+  return updateOn;
+}
+
 function sequenceEventActions(control, props) {
   const {
     dispatch,
@@ -78,7 +85,7 @@ function sequenceEventActions(control, props) {
   const asyncValidateOn = `on${capitalize(props.asyncValidateOn)}`;
 
   const updaterFn = (typeof updateOn === 'function')
-    ? updateOn
+    ? deprecateUpdateOn(updateOn)
     : identity;
 
   const eventActions = {

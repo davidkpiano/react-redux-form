@@ -184,13 +184,10 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       PropTypes.string,
     ]),
     parser: PropTypes.func,
-    updateOn: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.oneOf([
-        'change',
-        'blur',
-        'focus',
-      ]),
+    updateOn: PropTypes.oneOf([
+      'change',
+      'blur',
+      'focus',
     ]),
     changeAction: PropTypes.func,
     validators: PropTypes.oneOfType([

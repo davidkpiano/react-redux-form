@@ -30,6 +30,10 @@ function mapErrorMessages(errors, messages, component) {
 }
 
 class Errors extends Component {
+  shouldComponentUpdate({ fieldValue }) {
+    return fieldValue !== this.props.fieldValue;
+  }
+
   render() {
     const {
       // model,
