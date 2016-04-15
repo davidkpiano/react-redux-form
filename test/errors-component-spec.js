@@ -105,15 +105,57 @@ describe('<Errors />', () => {
       </Provider>
     );
 
-    const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
-    const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
-
     it('should display all errors', () => {
-      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
       const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
       assert.lengthOf(errors, 2);
       assert.equal(errors[0].innerHTML, 'This field is required');
       assert.equal(errors[1].innerHTML, 'This field is invalid');
+    });
+  });
+
+  describe('displaying errors from form .errors', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test', {}),
+      test: modelReducer('test'),
+    }));
+
+    let formValid = false;
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test"
+          validators={{
+            '': { foo: ({ foo }) => foo && foo.length },
+          }}
+        >
+          <Errors model="test" 
+            messages={{
+              foo: 'This form is invalid',
+            }}
+          />
+          <Field model="test.foo">
+            <input type="text" />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
+    const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+    it('should display all form errors', () => {
+      const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
+      assert.lengthOf(errors, 1);
+      assert.equal(errors[0].innerHTML, 'This form is invalid');
+    });
+
+    it('should not display form errors if form is valid', () => {
+      input.value = 'testing';
+
+      TestUtils.Simulate.change(input);
+
+      const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
+      assert.lengthOf(errors, 0);
     });
   });
 
