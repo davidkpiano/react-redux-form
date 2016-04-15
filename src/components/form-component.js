@@ -86,7 +86,11 @@ class Form extends Component {
       validators,
     } = this.props;
 
-    if (!validators && onSubmit && formValue.valid) {
+    const formValid = formValue
+      ? formValue.valid
+      : true;
+
+    if (!validators && onSubmit && formValid) {
       onSubmit(modelValue);
 
       return modelValue;
