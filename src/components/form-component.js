@@ -140,10 +140,14 @@ Form.defaultProps = {
 };
 
 function selector(state, { model }) {
+  const modelString = typeof model === 'function'
+    ? model(state)
+    : model;
+
   return {
     ...state,
-    modelValue: _get(state, model),
-    formValue: getForm(state, model),
+    modelValue: _get(state, modelString),
+    formValue: getForm(state, modelString),
   };
 }
 

@@ -130,11 +130,16 @@ Errors.defaultProps = {
 };
 
 function selector(state, { model }) {
-  const fieldValue = getFieldFromState(state, model);
+  const modelString = typeof model === 'function'
+    ? model(state)
+    : model;
+
+  const fieldValue = getFieldFromState(state, modelString);
 
   return {
     ...state,
-    modelValue: _get(state, model),
+    model: modelString,
+    modelValue: _get(state, modelString),
     fieldValue,
   };
 }

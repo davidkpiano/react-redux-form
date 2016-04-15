@@ -6,7 +6,7 @@ function track(model, predicate) {
     const [
       parentModelPath,
       childModelPath = '',
-    ] = model.split('[]');
+    ] = model.split(/\[\]\.?/);
     const parentValue = get(state, parentModelPath);
 
     return [
