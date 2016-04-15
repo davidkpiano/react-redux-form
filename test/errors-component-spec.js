@@ -117,6 +117,46 @@ describe('<Errors />', () => {
     });
   });
 
+  describe('displaying custom messages', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test', {}),
+      test: modelReducer('test'),
+    }));
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <form>
+          <Errors model="test.foo" 
+            messages={{
+              length: (val) => `${val && val.length} chars is too short`,
+            }}
+          />
+          <Field model="test.foo"
+            validators={{
+              length: (v) => v && v.length && v.length > 5,
+            }}
+          >
+            <input type="text" />
+          </Field>
+        </form>
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+    it('should return messages from functions called with the model value', () => {    
+      input.value = 'four';
+
+      TestUtils.Simulate.change(input);
+
+      const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
+
+      assert.lengthOf(errors, 1);
+
+      assert.equal(errors[0].innerHTML, '4 chars is too short');
+    });
+  });
+
   describe('the "show" prop', () => {
     function renderErrorsWithShow(show) {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({

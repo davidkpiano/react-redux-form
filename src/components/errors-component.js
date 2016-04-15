@@ -8,24 +8,28 @@ import isArray from 'lodash/isArray';
 
 import { getFieldFromState } from '../utils';
 
-function createErrorComponent(component, message, key) {
+function createErrorComponent(component, message, modelValue, key) {
+  const messageString = typeof message === 'function'
+    ? message(modelValue)
+    : message;
+
   return React.createElement(
     component,
     { key },
-    message);
+    messageString);
 }
 
-function mapErrorMessages(errors, messages, component) {
+function mapErrorMessages(errors, messages, modelValue, component) {
   return compact(map(errors, (error, key) => {
     const message = messages[key];
 
     if (error) {
       if (message) {
-        return createErrorComponent(component, message, key);
+        return createErrorComponent(component, message, modelValue, key);
       } else if (typeof error === 'string') {
-        return createErrorComponent(component, error, key);
+        return createErrorComponent(component, error, modelValue, key);
       } else if (typeof error === 'object') {
-        return mapErrorMessages(error, messages, component);
+        return mapErrorMessages(error, messages, modelValue, component);
       }
     }
 
@@ -55,7 +59,7 @@ class Errors extends Component {
   render() {
     const {
       // model,
-      // modelValue,
+      modelValue,
       fieldValue,
       fieldValue: {
         valid,
@@ -73,7 +77,7 @@ class Errors extends Component {
 
     const errorMessages = valid
       ? null
-      : mapErrorMessages(errors, messages, component);
+      : mapErrorMessages(errors, messages, modelValue, component);
 
     return React.createElement(
       wrapper,
