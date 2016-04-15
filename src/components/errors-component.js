@@ -5,37 +5,9 @@ import map from 'lodash/map';
 import compact from 'lodash/compact';
 import iteratee from 'lodash/iteratee';
 import isArray from 'lodash/isArray';
+import isPlainObject from 'lodash/isPlainObject';
 
 import { getFieldFromState } from '../utils';
-
-function createErrorComponent(component, message, modelValue, key) {
-  const messageString = typeof message === 'function'
-    ? message(modelValue)
-    : message;
-
-  return React.createElement(
-    component,
-    { key },
-    messageString);
-}
-
-function mapErrorMessages(errors, messages, modelValue, component) {
-  return compact(map(errors, (error, key) => {
-    const message = messages[key];
-
-    if (error) {
-      if (message) {
-        return createErrorComponent(component, message, modelValue, key);
-      } else if (typeof error === 'string') {
-        return createErrorComponent(component, error, modelValue, key);
-      } else if (typeof error === 'object') {
-        return mapErrorMessages(error, messages, modelValue, component);
-      }
-    }
-
-    return false;
-  })).reduce((a, b) => a.concat(b), []);
-}
 
 function showErrors(field, show = true) {
   if (typeof show === 'function') {
@@ -56,19 +28,62 @@ class Errors extends Component {
     return fieldValue !== this.props.fieldValue;
   }
 
+  mapErrorMessages(errors) {
+    const { messages } = this.props;
+
+    return compact(map(errors, (error, key) => {
+      const message = messages[key];
+
+      if (error) {
+        if (message) {
+          return this.renderError(message, key);
+        } else if (typeof error === 'string') {
+          return this.renderError(error, key);
+        } else if (isPlainObject(error)) {
+          return this.mapErrorMessages(error);
+        }
+      }
+
+      return false;
+    })).reduce((a, b) => a.concat(b), []);
+  }
+
+  renderError(message, key) {
+    const {
+      component,
+      model,
+      modelValue,
+      fieldValue,
+    } = this.props;
+
+    const errorProps = {
+      key,
+      model,
+      modelValue,
+      fieldValue,
+    };
+
+    const messageString = typeof message === 'function'
+      ? message(modelValue)
+      : message;
+
+    if (!messageString) return null;
+
+    return React.createElement(
+      component,
+      errorProps,
+      messageString);
+  }
+
   render() {
     const {
-      // model,
-      modelValue,
       fieldValue,
       fieldValue: {
         valid,
         errors,
       },
-      messages,
       show,
       wrapper,
-      component,
     } = this.props;
 
     if (!showErrors(fieldValue, show)) {
@@ -77,7 +92,7 @@ class Errors extends Component {
 
     const errorMessages = valid
       ? null
-      : mapErrorMessages(errors, messages, modelValue, component);
+      : this.mapErrorMessages(errors);
 
     return React.createElement(
       wrapper,
@@ -87,13 +102,24 @@ class Errors extends Component {
 }
 
 Errors.propTypes = {
-  model: PropTypes.string.isRequired,
+  // Computed props
   modelValue: PropTypes.any,
   fieldValue: PropTypes.object,
-  messages: PropTypes.object,
+
+  // Provided props
+  model: PropTypes.string.isRequired,
+  messages: PropTypes.objectOf(PropTypes.oneOf([
+    PropTypes.string,
+    PropTypes.func,
+    PropTypes.bool,
+  ])),
   show: PropTypes.any,
   wrapper: PropTypes.string,
-  component: PropTypes.string,
+  component: PropTypes.oneOf([
+    PropTypes.string,
+    PropTypes.func,
+    PropTypes.element,
+  ]),
 };
 
 Errors.defaultProps = {
