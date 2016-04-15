@@ -131,10 +131,26 @@ const merge = (model, values) => (dispatch, getState) => {
   });
 };
 
-const load = (model, values) => ({
-  type: actionTypes.LOAD,
-  model,
-  value: values,
+const omit = (model, props = []) => (dispatch, getState) => {
+  const value = _get(getState(), model, {});
+
+  const propsArray = typeof props === 'string'
+    ? [props]
+    : props;
+
+  const newValue = propsArray.reduce(
+    (acc, prop) => icepick.dissoc(acc, prop),
+    value);
+
+  dispatch({
+    type: actionTypes.CHANGE,
+    model,
+    value: newValue,
+  });
+};
+
+const load = (model, values) => change(model, values, {
+  silent: true,
 });
 
 export default {
@@ -149,4 +165,5 @@ export default {
   toggle,
   xor,
   load,
+  omit,
 };

@@ -996,6 +996,7 @@ describe('<Field /> component', () => {
       });
     });
 
+    // TODO: deprecate
     it('should decorate the "change" action with a provided decorator', () => {
       let decoratorCalled = false;
 

@@ -7,7 +7,6 @@ import isPlainObject from 'lodash/isPlainObject';
 import map from 'lodash/map';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
-import startsWith from 'lodash/startsWith';
 import flatten from 'flat';
 
 import actionTypes from '../action-types';
@@ -42,7 +41,9 @@ function getField(state, path) {
       ' from an invalid/empty form state. Must pass in a valid form state as the first argument.');
   }
 
-  const localPath = toPath(path);
+  const localPath = typeof path === 'function'
+    ? path(state)
+    : toPath(path);
 
   if (!localPath.length) {
     return state;
@@ -70,10 +71,6 @@ function setField(state, localPath, props) {
 }
 
 function resetField(state, localPath) {
-  if (!localPath.length) {
-    return initialFormState;
-  }
-
   return icepick.setIn(
     state,
     ['fields', localPath.join('.')],
@@ -84,24 +81,6 @@ function resetField(state, localPath) {
 function formIsValid(formState) {
   return every(mapValues(formState.fields, field => field.valid))
     && every(formState.errors, error => !error);
-}
-
-function removeDiff(state, newValue, localPath) {
-  const localKeys = Object.keys(state.fields)
-    .filter((fieldKey) => startsWith(fieldKey, localPath));
-
-  let finalState = state;
-
-  localKeys.forEach((localKey) => {
-    if (typeof _get({ [localPath]: newValue }, localKey, undefined) === 'undefined') {
-      finalState = icepick.updateIn(
-        finalState,
-        ['fields'],
-        (obj) => icepick.dissoc(obj, localKey));
-    }
-  });
-
-  return finalState;
 }
 
 function createInitialFormState(model, initialState) {
@@ -150,15 +129,17 @@ function _createFormReducer(model, initialState) {
         });
 
       case actionTypes.CHANGE: {
+        if (action.silent) return state;
+
         const setDirtyState = icepick.merge(state, {
           dirty: true, // will be deprecated
           pristine: false,
         });
 
-        return removeDiff(setField(setDirtyState, localPath, {
+        return setField(setDirtyState, localPath, {
           dirty: true, // will be deprecated
           pristine: false,
-        }), action.value, localPath);
+        });
       }
 
       case actionTypes.SET_DIRTY: {
@@ -370,6 +351,10 @@ function _createFormReducer(model, initialState) {
 
       case actionTypes.SET_INITIAL:
       case actionTypes.RESET:
+        if (!localPath.length) {
+          return localInitialFormState;
+        }
+
         return resetField(state, localPath);
 
       case actionTypes.SET_VIEW_VALUE:

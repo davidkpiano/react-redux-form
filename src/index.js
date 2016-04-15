@@ -3,6 +3,7 @@ import actionTypes from './action-types';
 
 import Field, { controlPropsMap, createFieldClass } from './components/field-component';
 import Form from './components/form-component';
+import Errors from './components/errors-component';
 
 import modeled from './enhancers/modeled-enhancer';
 
@@ -33,6 +34,7 @@ export {
   createModelReducer,
   Field,
   Form,
+  Errors,
   getField,
   initialFieldState,
   modeled,

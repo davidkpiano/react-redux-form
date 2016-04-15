@@ -167,6 +167,18 @@ describe('model actions', () => {
           expected: { foo: { bar: 'new', one: 'two', untouched: 'intact' } },
         },
       ],
+      omit: [
+        {
+          init: { one: 1, two: 2, three: 3 },
+          params: ['test', 'two'],
+          expected: { one: 1, three: 3 },
+        },
+        {
+          init: { one: 1, two: 2, three: 3 },
+          params: ['test', ['one', 'three']],
+          expected: { two: 2 },
+        },
+      ],
     };
 
     /* eslint-disable array-callback-return */
@@ -193,53 +205,5 @@ describe('model actions', () => {
       });
     });
     /* eslint-enable */
-  });
-
-  describe('remove()', () => {
-    it('should dissociate removed fields from the form state', (done) => {
-      const initialState = { items: [1, 2, 3] };
-      const reducer = formReducer('test', initialState);
-
-      assert.property(reducer(undefined, { type: '' }).fields, 'items.2');
-
-      const dispatch = action => {
-        assert.notProperty(reducer(undefined, action).fields, 'items.2');
-        done();
-      };
-
-      const getState = () => ({ test: initialState });
-
-      actions.remove('test.items', 2)(dispatch, getState);
-    });
-
-    it('should allow falsey values and maintain form state', () => {
-      const reducer = formReducer('test', {
-        foo: true,
-      });
-
-      const actual = reducer(undefined, actions.change('test.foo', false));
-
-      assert.isDefined(actual.fields.foo);
-    });
-  });
-
-  describe('filter()', () => {
-    it('should dissociate filtered fields from the form state', (done) => {
-      const initialState = { items: [1, 2, 3, 4, 5] };
-      const reducer = formReducer('test', initialState);
-
-      assert.property(reducer(undefined, { type: '' }).fields, 'items.3');
-      assert.property(reducer(undefined, { type: '' }).fields, 'items.4');
-
-      const dispatch = action => {
-        assert.notProperty(reducer(undefined, action).fields, 'items.3');
-        assert.notProperty(reducer(undefined, action).fields, 'items.4');
-        done();
-      };
-
-      const getState = () => ({ test: initialState });
-
-      actions.filter('test.items', (n) => n % 2)(dispatch, getState);
-    });
   });
 });

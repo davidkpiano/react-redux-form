@@ -650,6 +650,43 @@ describe('<Form> component', () => {
     });
   });
 
+  describe('plain form without form reducers', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', {
+        foo: '',
+        bar: '',
+      }),
+    }));
+
+    let timesSubmitCalled = 0;
+
+    function handleSubmit() {
+      timesSubmitCalled++;
+    }
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test"
+          onSubmit={handleSubmit}
+        >
+          <Field model="test.foo">
+            <input type="text" />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+    it('should handle submit without any errors', () => {
+      assert.doesNotThrow(() => {
+        TestUtils.Simulate.submit(formElement);
+
+        assert.equal(timesSubmitCalled, 1);
+      });
+    });
+  });
+
   describe('deep state path', () => {
     const fromsReducer = combineReducers({
       testForm: formReducer('forms.test'),

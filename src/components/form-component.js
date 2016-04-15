@@ -1,5 +1,3 @@
-
-// TODO: Fix all eslint issues
 import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 import _get from 'lodash/get';
@@ -38,14 +36,12 @@ class Form extends Component {
   }
 
   validate(nextProps, initial = false) {
-    /* eslint-disable react/prop-types */
     const {
       validators,
       errors,
       model,
       dispatch,
     } = this.props;
-    /* eslint-enable react/prop-types */
 
     /* eslint-disable consistent-return */
     mapValues(validators, (validator, field) => {
@@ -69,7 +65,9 @@ class Form extends Component {
 
       const fieldErrors = getValidity(errorValidator, value);
 
-      dispatch(actions.setErrors(fieldModel, fieldErrors));
+      dispatch(actions.setValidity(fieldModel, fieldErrors, {
+        errors: true,
+      }));
 
       return fieldErrors;
     });
@@ -79,7 +77,6 @@ class Form extends Component {
   handleSubmit(e) {
     e.preventDefault();
 
-    /* eslint-disable react/prop-types */
     const {
       model,
       modelValue,
@@ -88,9 +85,12 @@ class Form extends Component {
       dispatch,
       validators,
     } = this.props;
-    /* eslint-enable react/prop-types */
 
-    if (!validators && onSubmit && formValue.valid) {
+    const formValid = formValue
+      ? formValue.valid
+      : true;
+
+    if (!validators && onSubmit && formValid) {
       onSubmit(modelValue);
 
       return modelValue;
@@ -109,7 +109,6 @@ class Form extends Component {
   }
 
   render() {
-    /* eslint-disable react/prop-types */
     return (
       <form
         {...this.props}
@@ -118,18 +117,22 @@ class Form extends Component {
         { this.props.children }
       </form>
     );
-    /* eslint-enable react/prop-types */
   }
 }
 
 Form.propTypes = {
   validators: PropTypes.object,
+  errors: PropTypes.object,
   validateOn: PropTypes.oneOf([
     'change',
     'submit',
   ]),
   model: PropTypes.string.isRequired,
+  modelValue: PropTypes.any,
+  formValue: PropTypes.object,
   onSubmit: PropTypes.func,
+  dispatch: PropTypes.func,
+  children: PropTypes.node,
 };
 
 Form.defaultProps = {
@@ -137,10 +140,14 @@ Form.defaultProps = {
 };
 
 function selector(state, { model }) {
+  const modelString = typeof model === 'function'
+    ? model(state)
+    : model;
+
   return {
     ...state,
-    modelValue: _get(state, model),
-    formValue: getForm(state, model),
+    modelValue: _get(state, modelString),
+    formValue: getForm(state, modelString),
   };
 }
 

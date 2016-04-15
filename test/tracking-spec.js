@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
-import { Field, formReducer, modelReducer, track } from '../src';
+import { Field, Errors, formReducer, modelReducer, track } from '../src';
 
 const state = {
   deep: {
@@ -70,5 +70,41 @@ describe('track() with <Field model="...">', () => {
     assert.deepEqual(
       store.getState().test.deep.deeper[1],
       { id: 2, value: 'testing' });
+  });
+});
+
+describe('track() with <Errors model="...">', () => {
+  const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    testForm: formReducer('test'),
+    test: modelReducer('test', state),
+  }));
+
+  const tracker = track('test.deep.deeper[].value', { id: 2 });
+
+  const form = TestUtils.renderIntoDocument(
+    <Provider store={store}>
+      <form>
+        <Field model={tracker}
+          errors={{
+            foo: () => 'foo error',
+            bar: () => 'bar error',
+          }}
+        >
+          <input type="text" />
+        </Field>
+        <Errors model={tracker} />
+      </form>
+    </Provider>
+  );
+
+  const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+  it('should successfully show errors for the proper model', () => {
+    input.value = 'testing';
+    TestUtils.Simulate.change(input);
+
+    const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
+
+    assert.lengthOf(errors, 2);
   });
 });
