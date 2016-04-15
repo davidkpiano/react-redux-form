@@ -108,14 +108,18 @@ Errors.propTypes = {
 
   // Provided props
   model: PropTypes.string.isRequired,
-  messages: PropTypes.objectOf(PropTypes.oneOf([
+  messages: PropTypes.objectOf(PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
     PropTypes.bool,
   ])),
   show: PropTypes.any,
-  wrapper: PropTypes.string,
-  component: PropTypes.oneOf([
+  wrapper: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+    PropTypes.element,
+  ]),
+  component: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.func,
     PropTypes.element,
