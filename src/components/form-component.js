@@ -109,18 +109,20 @@ class Form extends Component {
   }
 
   render() {
-    return (
-      <form
-        {...this.props}
-        onSubmit={this.handleSubmit}
-      >
-        { this.props.children }
-      </form>
-    );
+    const { component, children, ...other } = this.props;
+    return React.createElement(component,
+      {
+        ...other,
+        onSubmit: this.handleSubmit,
+      }, children);
   }
 }
 
 Form.propTypes = {
+  component: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.string,
+  ]),
   validators: PropTypes.object,
   errors: PropTypes.object,
   validateOn: PropTypes.oneOf([
@@ -137,6 +139,7 @@ Form.propTypes = {
 
 Form.defaultProps = {
   validateOn: 'change',
+  component: 'form',
 };
 
 function selector(state, { model }) {

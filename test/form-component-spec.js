@@ -9,6 +9,56 @@ import thunk from 'redux-thunk';
 import { Form, modelReducer, formReducer, Field } from '../src';
 
 describe('<Form> component', () => {
+  describe('wraps component if specified', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test', {}),
+      test: modelReducer('test'),
+    }));
+
+    it('should wrap children with specified component (string)', () => {
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form model="test" component="section" />
+        </Provider>
+      );
+
+      const wrapper = TestUtils.findRenderedDOMComponentWithTag(form, 'section');
+
+      assert.ok(wrapper);
+    });
+
+    it('should wrap children with specified component (class)', () => {
+      class Wrapper extends React.Component {
+        render() {
+          const { children, ...other } = this.props;
+          return <form className="wrapper" {...other}>{children}</form>;
+        }
+      }
+      Wrapper.propTypes = {
+        children: React.PropTypes.object,
+      };
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form model="test" component={Wrapper} />
+        </Provider>
+      );
+
+      const wrapper = TestUtils.findRenderedDOMComponentWithClass(form, 'wrapper');
+
+      assert.ok(wrapper);
+    });
+    it('Renders as <form> by default', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form model="test" />
+        </Provider>
+      );
+
+      const wrapper = TestUtils.findRenderedDOMComponentWithTag(field, 'form');
+
+      assert.ok(wrapper);
+    });
+  });
   describe('validation on submit', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test', {}),
