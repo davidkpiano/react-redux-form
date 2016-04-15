@@ -281,7 +281,7 @@ describe('<Errors />', () => {
   });
 
   describe('the "wrapper" prop', () => {
-    function renderErrorsWithWrapper(wrapper) {    
+    function renderErrorsWithWrapper(wrapper, props) {    
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         testForm: formReducer('test', {}),
         test: modelReducer('test'),
@@ -296,6 +296,7 @@ describe('<Errors />', () => {
                 foo: 'foo error',
                 bar: 'bar error',
               }}
+              {...props}
             />
             <Field model="test.foo"
               validators={{
@@ -363,6 +364,24 @@ describe('<Errors />', () => {
       const form = renderErrorsWithWrapper(Wrapper);
 
       const wrapper = TestUtils.scryRenderedDOMComponentsWithClass(form, 'wrapper');
+
+      assert.lengthOf(wrapper, 1);
+
+      assert.equal(wrapper[0].childNodes.length, 2);
+    });
+
+    it('should render a specified React component with non-proprietary props', () => {
+      function Wrapper(props) {
+        assert.property(props, 'className');
+
+        return <div {...props}>{props.children}</div>;
+      }
+
+      const props = { className: 'custom-class' };
+
+      const form = renderErrorsWithWrapper(Wrapper, props);
+
+      const wrapper = TestUtils.scryRenderedDOMComponentsWithClass(form, 'custom-class');
 
       assert.lengthOf(wrapper, 1);
 
