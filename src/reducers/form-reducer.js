@@ -7,7 +7,6 @@ import isPlainObject from 'lodash/isPlainObject';
 import map from 'lodash/map';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
-import startsWith from 'lodash/startsWith';
 import flatten from 'flat';
 
 import actionTypes from '../action-types';
@@ -84,24 +83,6 @@ function formIsValid(formState) {
     && every(formState.errors, error => !error);
 }
 
-function removeDiff(state, newValue, localPath) {
-  const localKeys = Object.keys(state.fields)
-    .filter((fieldKey) => startsWith(fieldKey, localPath));
-
-  let finalState = state;
-
-  localKeys.forEach((localKey) => {
-    if (typeof _get({ [localPath]: newValue }, localKey, undefined) === 'undefined') {
-      finalState = icepick.updateIn(
-        finalState,
-        ['fields'],
-        (obj) => icepick.dissoc(obj, localKey));
-    }
-  });
-
-  return finalState;
-}
-
 function createInitialFormState(model, initialState) {
   const formState = icepick.set(initialFormState,
     'model', model);
@@ -155,10 +136,10 @@ function _createFormReducer(model, initialState) {
           pristine: false,
         });
 
-        return removeDiff(setField(setDirtyState, localPath, {
+        return setField(setDirtyState, localPath, {
           dirty: true, // will be deprecated
           pristine: false,
-        }), action.value, localPath);
+        });
       }
 
       case actionTypes.SET_DIRTY: {
