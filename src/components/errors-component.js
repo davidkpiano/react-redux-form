@@ -24,11 +24,13 @@ function mapErrorMessages(errors, messages, component) {
         return createErrorComponent(component, message, key);
       } else if (typeof error === 'string') {
         return createErrorComponent(component, error, key);
+      } else if (typeof error === 'object') {
+        return mapErrorMessages(error, messages, component);
       }
     }
 
     return false;
-  }));
+  })).reduce((a, b) => a.concat(b), []);
 }
 
 function showErrors(field, show = true) {
@@ -37,8 +39,8 @@ function showErrors(field, show = true) {
   }
 
   if (!isArray(show)
-    || typeof show !== 'object'
-    || typeof show !== 'string') {
+    && typeof show !== 'object'
+    && typeof show !== 'string') {
     return !!show;
   }
 

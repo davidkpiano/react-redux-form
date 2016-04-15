@@ -10,9 +10,7 @@ import { Form, modelReducer, formReducer, Field, Errors, actions } from '../src'
 
 describe('<Errors />', () => {
   it('should exist', () => {
-
-
-    // console.log(errors[0].childNodes);
+    assert.ok(Errors);
   });
 
   describe('displaying errors from messages', () => {
@@ -162,6 +160,67 @@ describe('<Errors />', () => {
       TestUtils.Simulate.blur(input);
 
       assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0);
+    });
+
+    it('should support a boolean and show if truthy', () => {
+      const form = renderErrorsWithShow(true);
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 1);
+    });
+
+    it('should support a boolean and not show if falsey', () => {
+      const form = renderErrorsWithShow(false);
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0);
+    });
+
+    it('should support a string and show if that field property is truthy', () => {
+      const form = renderErrorsWithShow('focus');
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0);
+
+      TestUtils.Simulate.focus(input);
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 1);
+
+      TestUtils.Simulate.blur(input);
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0);
+    });
+
+    it('should support an object and show if the properties match', () => {
+      const form = renderErrorsWithShow({
+        focus: true,
+        touched: true,
+      });
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0,
+        'not focused yet');
+
+      TestUtils.Simulate.focus(input);
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0,
+        'not touched yet');
+
+      TestUtils.Simulate.blur(input);
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0,
+        'touched but not focused');
+
+      TestUtils.Simulate.focus(input);
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 1,
+        'touched and focused');
+
+      TestUtils.Simulate.blur(input);
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0,
+        'touched but not focused');
     });
   });
 });
