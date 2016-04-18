@@ -4,6 +4,7 @@ import icepick from 'icepick';
 import isBoolean from 'lodash/isBoolean';
 import isEqual from 'lodash/isEqual';
 import isPlainObject from 'lodash/isPlainObject';
+import isFunction from 'lodash/isFunction';
 import map from 'lodash/map';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
@@ -83,25 +84,37 @@ function formIsValid(formState) {
     && every(formState.errors, error => !error);
 }
 
-function createInitialFormState(model, initialState) {
+function enhanceInitialState(initialState, stateEnhancer) {
+  if (!stateEnhancer) {
+    return initialState;
+  }
+  if (isFunction(stateEnhancer)) {
+    return stateEnhancer(initialState);
+  } else if (isPlainObject(stateEnhancer)) {
+    return icepick.merge(initialState, stateEnhancer);
+  }
+  return initialState;
+}
+
+function createInitialFormState(model, initialState, stateEnhancer) {
   const formState = icepick.set(initialFormState,
     'model', model);
 
   if (initialState) {
-    return icepick.set(formState,
+    return enhanceInitialState(icepick.set(formState,
       'fields',
       mapValues(flatten(initialState), (initialValue) =>
         icepick.set(initialFieldState,
           'initialValue', initialValue))
-    );
+    ), stateEnhancer);
   }
 
-  return formState;
+  return enhanceInitialState(formState, stateEnhancer);
 }
 
-function _createFormReducer(model, initialState) {
+function _createFormReducer(model, initialState, stateEnhancer) {
   const modelPath = toPath(model);
-  const localInitialFormState = createInitialFormState(model, initialState);
+  const localInitialFormState = createInitialFormState(model, initialState, stateEnhancer);
 
   const formReducer = (state = localInitialFormState, action) => {
     if (!action.model) {

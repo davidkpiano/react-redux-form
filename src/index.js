@@ -11,6 +11,7 @@ import {
   createFormReducer,
   formReducer,
   initialFieldState,
+  initialFormState,
   getField,
 } from './reducers/form-reducer';
 
@@ -37,6 +38,7 @@ export {
   Errors,
   getField,
   initialFieldState,
+  initialFormState,
   modeled,
   track,
 };

@@ -1,5 +1,6 @@
+import sinon from 'sinon';
 import { assert } from 'chai';
-import { actions, formReducer, initialFieldState, getField } from '../src';
+import { actions, formReducer, initialFieldState, initialFormState, getField } from '../src';
 
 describe('formReducer()', () => {
   it('should create a reducer given a model', () => {
@@ -84,6 +85,35 @@ describe('formReducer()', () => {
       'deep.two.three': {
         initialValue: 'four',
       },
+    });
+  });
+  describe('Should use stateEnhancer if provided to enhance initial state', () => {
+    it('Returns non-enhanced state if not object or function was given', () => {
+      let reducer = formReducer('test', {}, 5);
+      let actual = reducer(undefined, {});
+      assert.deepEqual(actual, { ...initialFormState, model: 'test' });
+      reducer = formReducer('test', {}, 'test');
+      actual = reducer(undefined, {});
+      assert.deepEqual(actual, { ...initialFormState, model: 'test' });
+    });
+    it('Calls enhancer function with initial state if given', () => {
+      const enhancer = sinon.spy(state => state);
+      const reducer = formReducer('test', {}, enhancer);
+      reducer(undefined, {});
+      assert.isTrue(enhancer.calledWith({ ...initialFormState, model: 'test' }));
+    });
+    it('Merges initial state with enhancer if object was given', () => {
+      let reducer = formReducer('test', {}, { myFormField: true });
+      let actual = reducer(undefined, {});
+      assert.containSubset(actual, { myFormField: true });
+      reducer = formReducer('test', { foo: 'bar' }, { fields: { foo: { myFooProp: true } } });
+      actual = reducer(undefined, {});
+      assert.containSubset(actual.fields, {
+        foo: {
+          initialValue: 'bar',
+          myFooProp: true,
+        },
+      });
     });
   });
 });
