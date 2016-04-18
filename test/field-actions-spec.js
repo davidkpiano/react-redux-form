@@ -1381,7 +1381,7 @@ describe('field actions', () => {
     });
   });
 
-  describe('validateErrorsFields() (thunk)', () => {
+  describe('validateFieldsErrors() (thunk)', () => {
     const mockStore = configureMockStore([thunk]);
 
     it('should set the errors of multiple fields in the same form', (done) => {
@@ -1408,7 +1408,7 @@ describe('field actions', () => {
         ],
         done);
 
-      const action = actions.validateErrorsFields('test', {
+      const action = actions.validateFieldsErrors('test', {
         '': (val) => val.foo === 'invalid' && 'form is invalid',
         foo: (val) => val === 'invalid' && 'foo is invalid',
         foo_valid: () => false,
@@ -1446,7 +1446,7 @@ describe('field actions', () => {
           done();
         });
 
-      const action = actions.validateErrorsFields('test', {
+      const action = actions.validateFieldsErrors('test', {
         foo: (val) => val === 'invalid',
       }, validationOptions);
 
@@ -1477,7 +1477,7 @@ describe('field actions', () => {
           done();
         });
 
-      const action = actions.validateErrorsFields('test', {
+      const action = actions.validateFieldsErrors('test', {
         foo: (val) => val === 'invalid',
       }, validationOptions);
 

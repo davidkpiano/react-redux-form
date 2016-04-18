@@ -177,7 +177,7 @@ const validateFields = (model, fieldValidators, options = {}) => (dispatch, getS
   dispatch(fieldsValiditySetter(model, fieldsValidity));
 };
 
-const validateErrorsFields = (model, fieldErrorsValidators, options = {}) =>
+const validateFieldsErrors = (model, fieldErrorsValidators, options = {}) =>
   validateFields(model, fieldErrorsValidators, {
     ...options,
     errors: true,
@@ -206,5 +206,5 @@ export default {
   validate,
   validateErrors,
   validateFields,
-  validateErrorsFields,
+  validateFieldsErrors,
 };
