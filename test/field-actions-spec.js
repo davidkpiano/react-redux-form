@@ -1380,4 +1380,108 @@ describe('field actions', () => {
       store.dispatch(action);
     });
   });
+
+  describe('validateErrorsFields() (thunk)', () => {
+    const mockStore = configureMockStore([thunk]);
+
+    it('should set the errors of multiple fields in the same form', (done) => {
+      const store = mockStore(
+        () => ({ test: { foo: 'invalid' } }),
+        [
+          {
+            fieldsValidity: {
+              '': 'form is invalid',
+              foo: 'foo is invalid',
+              foo_invalid: 'foo_invalid is invalid',
+              foo_valid: false,
+              with_keys: {
+                key_invalid: 'key_invalid is invalid',
+                key_valid: false,
+              },
+            },
+            model: 'test',
+            type: actionTypes.SET_FIELDS_VALIDITY,
+            options: {
+              errors: true,
+            },
+          },
+        ],
+        done);
+
+      const action = actions.validateErrorsFields('test', {
+        '': (val) => val.foo === 'invalid' && 'form is invalid',
+        foo: (val) => val === 'invalid' && 'foo is invalid',
+        foo_valid: () => false,
+        foo_invalid: () => 'foo_invalid is invalid',
+        with_keys: {
+          key_valid: () => false,
+          key_invalid: () => 'key_invalid is invalid',
+        },
+      });
+
+      store.dispatch(action);
+    });
+
+    it('should call a callback if validation passes', (done) => {
+      const callback = sinon.spy((val) => val);
+
+      const validationOptions = {
+        onValid: callback,
+      };
+
+      const store = mockStore(
+        () => ({ test: { foo: 'valid' } }),
+        [{
+          model: 'test',
+          type: actionTypes.SET_FIELDS_VALIDITY,
+          fieldsValidity: {
+            foo: false, // false = not an error
+          },
+          options: {
+            errors: true,
+          },
+        }],
+        () => {
+          assert.isTrue(callback.calledOnce);
+          done();
+        });
+
+      const action = actions.validateErrorsFields('test', {
+        foo: (val) => val === 'invalid',
+      }, validationOptions);
+
+      store.dispatch(action);
+    });
+
+    it('should NOT call a callback if validation fails', (done) => {
+      const callback = sinon.spy((val) => val);
+
+      const validationOptions = {
+        onValid: callback,
+      };
+
+      const store = mockStore(
+        () => ({ test: { foo: 'invalid' } }),
+        [{
+          model: 'test',
+          type: actionTypes.SET_FIELDS_VALIDITY,
+          fieldsValidity: {
+            foo: true, // true = error
+          },
+          options: {
+            errors: true,
+          },
+        }],
+        () => {
+          assert.isTrue(callback.notCalled);
+          done();
+        });
+
+      const action = actions.validateErrorsFields('test', {
+        foo: (val) => val === 'invalid',
+      }, validationOptions);
+
+      store.dispatch(action);
+    });
+  });
 });

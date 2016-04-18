@@ -2,7 +2,7 @@ import _get from 'lodash/get';
 import mapValues from 'lodash/mapValues';
 
 import actionTypes from '../action-types';
-import { getValidity, getForm, isValid } from '../utils';
+import { getValidity, getForm, isValid, isInvalid } from '../utils';
 
 const focus = model => ({
   type: actionTypes.FOCUS,
@@ -159,16 +159,29 @@ const validateFields = (model, fieldValidators, options = {}) => (dispatch, getS
   if (validCB || invalidCB) {
     const form = getForm(getState(), model);
     const formValid = form ? form.valid : true;
+    const fieldsValid = options.errors
+      ? !isInvalid(fieldsValidity)
+      : isValid(fieldsValidity);
 
-    if (validCB && formValid && isValid(fieldsValidity)) {
+    if (validCB && formValid && fieldsValid) {
       validCB();
     } else if (invalidCB) {
       invalidCB();
     }
   }
 
-  dispatch(setFieldsValidity(model, fieldsValidity));
+  const fieldsValiditySetter = options.errors
+    ? setFieldsErrors
+    : setFieldsValidity;
+
+  dispatch(fieldsValiditySetter(model, fieldsValidity));
 };
+
+const validateErrorsFields = (model, fieldErrorsValidators, options = {}) =>
+  validateFields(model, fieldErrorsValidators, {
+    ...options,
+    errors: true,
+  });
 
 export default {
   asyncSetValidity,
@@ -193,4 +206,5 @@ export default {
   validate,
   validateErrors,
   validateFields,
+  validateErrorsFields,
 };
