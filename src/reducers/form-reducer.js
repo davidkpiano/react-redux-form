@@ -210,6 +210,7 @@ function _createFormReducer(model, initialState) {
           type: actionTypes.SET_VALIDITY,
           model: `${model}.${field}`,
           validity: fieldValidity,
+          options: action.options,
         })).reduce(formReducer, state);
 
       case actionTypes.SET_ERRORS: {

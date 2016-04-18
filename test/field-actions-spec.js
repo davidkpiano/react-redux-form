@@ -1303,6 +1303,7 @@ describe('field actions', () => {
             },
             model: 'test',
             type: actionTypes.SET_FIELDS_VALIDITY,
+            options: {},
           },
         ],
         done);
@@ -1324,6 +1325,10 @@ describe('field actions', () => {
     it('should call a callback if validation passes', (done) => {
       const callback = sinon.spy((val) => val);
 
+      const validationOptions = {
+        onValid: callback,
+      };
+
       const store = mockStore(
         () => ({ test: { foo: 'bar' } }),
         [{
@@ -1332,6 +1337,7 @@ describe('field actions', () => {
           fieldsValidity: {
             foo: true,
           },
+          options: {},
         }],
         () => {
           assert.isTrue(callback.calledOnce);
@@ -1340,13 +1346,17 @@ describe('field actions', () => {
 
       const action = actions.validateFields('test', {
         foo: (val) => val === 'bar',
-      }, callback);
+      }, validationOptions);
 
       store.dispatch(action);
     });
 
     it('should NOT call a callback if validation fails', (done) => {
       const callback = sinon.spy((val) => val);
+
+      const validationOptions = {
+        onValid: callback,
+      };
 
       const store = mockStore(
         () => ({ test: { foo: 'bar' } }),
@@ -1356,6 +1366,7 @@ describe('field actions', () => {
           fieldsValidity: {
             foo: false,
           },
+          options: {},
         }],
         () => {
           assert.isTrue(callback.notCalled);
@@ -1364,7 +1375,7 @@ describe('field actions', () => {
 
       const action = actions.validateFields('test', {
         foo: (val) => val === 'invalid',
-      }, callback);
+      }, validationOptions);
 
       store.dispatch(action);
     });

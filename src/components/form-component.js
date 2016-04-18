@@ -96,14 +96,15 @@ class Form extends Component {
       return modelValue;
     }
 
-    const validCallback = dispatchValidCallback(modelValue, onSubmit);
-    const invalidCallback = dispatchInvalidCallback(model, dispatch);
+    const validationOptions = {
+      onValid: dispatchValidCallback(modelValue, onSubmit),
+      onInvalid: dispatchInvalidCallback(model, dispatch),
+    };
 
     dispatch(actions.validateFields(
       model,
       validators,
-      validCallback,
-      invalidCallback));
+      validationOptions));
 
     return modelValue;
   }

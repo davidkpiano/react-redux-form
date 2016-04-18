@@ -43,17 +43,24 @@ const setValidity = (model, validity, options = {}) => ({
   [options.errors ? 'errors' : 'validity']: validity,
 });
 
-const setFieldsValidity = (model, fieldsValidity) => ({
+const setFieldsValidity = (model, fieldsValidity, options = {}) => ({
   type: actionTypes.SET_FIELDS_VALIDITY,
   model,
   fieldsValidity,
+  options,
 });
 
-// will be deprecated
-const setErrors = (model, errors, options = {}) => setValidity(model, errors, {
-  errors: true,
-  ...options,
-});
+const setErrors = (model, errors, options = {}) =>
+  setValidity(model, errors, {
+    ...options,
+    errors: true,
+  });
+
+const setFieldsErrors = (model, fieldsErrors, options) =>
+  setFieldsValidity(model, fieldsErrors, {
+    ...options,
+    errors: true,
+  });
 
 const resetValidity = (model) => ({
   type: actionTypes.RESET_VALIDITY,
@@ -133,7 +140,7 @@ const validateErrors = (model, errorValidators) => (dispatch, getState) => {
   dispatch(setValidity(model, errors, { errors: true }));
 };
 
-const validateFields = (model, fieldValidators, validCB, invalidCB) => (dispatch, getState) => {
+const validateFields = (model, fieldValidators, options = {}) => (dispatch, getState) => {
   const value = _get(getState(), model);
 
   const fieldsValidity = mapValues(fieldValidators, (validator, field) => {
@@ -145,6 +152,9 @@ const validateFields = (model, fieldValidators, validCB, invalidCB) => (dispatch
 
     return fieldValidity;
   });
+
+  const validCB = options.onValid;
+  const invalidCB = options.onInvalid;
 
   if (validCB || invalidCB) {
     const form = getForm(getState(), model);
@@ -175,6 +185,8 @@ export default {
   setTouched,
   setUntouched,
   setValidity,
+  setFieldsValidity,
+  setFieldsErrors,
   resetValidity,
   resetErrors,
   setViewValue,
