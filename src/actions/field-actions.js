@@ -2,6 +2,7 @@ import _get from 'lodash/get';
 import mapValues from 'lodash/mapValues';
 
 import actionTypes from '../action-types';
+import batchActions from './batch-actions';
 import { getValidity, getForm, isValid, isInvalid } from '../utils';
 
 const focus = model => ({
@@ -114,17 +115,33 @@ const setViewValue = (model, value) => ({
   value,
 });
 
-const submit = (model, promise) => dispatch => {
+const submit = (model, promise, options = {}) => dispatch => {
   dispatch(setPending(model, true));
 
+  const errorsAction = options.fields
+    ? setFieldsErrors
+    : setErrors;
+
   promise.then(response => {
-    dispatch(setSubmitted(model, true));
-    dispatch(setValidity(model, response));
+    dispatch(batchActions.batch(model, [
+      setSubmitted(model, true),
+      setValidity(model, response),
+    ]));
   }).catch(error => {
-    dispatch(setSubmitFailed(model));
-    dispatch(setValidity(model, error, { errors: true }));
+    dispatch(batchActions.batch(model, [
+      setSubmitFailed(model),
+      errorsAction(model, error, { errors: true }),
+    ]));
   });
+
+  return promise;
 };
+
+const submitFields = (model, promise, options = {}) =>
+  submit(model, promise, {
+    ...options,
+    fields: true,
+  });
 
 const validate = (model, validators) => (dispatch, getState) => {
   const value = _get(getState(), model);
@@ -188,6 +205,7 @@ export default {
   blur,
   focus,
   submit,
+  submitFields,
   setDirty,
   setErrors,
   setInitial,

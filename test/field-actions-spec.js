@@ -1153,8 +1153,14 @@ describe('field actions', () => {
     it('should be able to resolve a form as valid', done => {
       const expectedActions = [
         { type: actionTypes.SET_PENDING, pending: true, model: 'test' },
-        { type: actionTypes.SET_SUBMITTED, submitted: true, model: 'test' },
-        { type: actionTypes.SET_VALIDITY, validity: true, model: 'test' },
+        {
+          type: actionTypes.BATCH,
+          model: 'test',
+          actions: [
+            { model: 'test', submitted: true, type: actionTypes.SET_SUBMITTED },
+            { model: 'test', type: actionTypes.SET_VALIDITY, validity: true },
+          ],
+        },
       ];
 
       const store = mockStore(() => ({}), expectedActions, done);
@@ -1170,8 +1176,14 @@ describe('field actions', () => {
 
       const expectedActions = [
         { type: actionTypes.SET_PENDING, pending: true, model: 'test' },
-        { type: actionTypes.SET_SUBMIT_FAILED, model: 'test' },
-        { type: actionTypes.SET_ERRORS, errors, model: 'test' },
+        {
+          type: actionTypes.BATCH,
+          model: 'test',
+          actions: [
+            { type: actionTypes.SET_SUBMIT_FAILED, model: 'test' },
+            { type: actionTypes.SET_ERRORS, errors, model: 'test' },
+          ],
+        },
       ];
 
       const store = mockStore(() => ({}), expectedActions, done);
