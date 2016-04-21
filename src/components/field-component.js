@@ -86,13 +86,14 @@ function createFieldControlComponent(control, props, options) {
     return control;
   }
 
+  /* eslint-disable react/prop-types */
+  const {
+    mapProps = options.controlPropsMap[getControlType(control, options)],
+  } = props;
+
   const controlProps = omit(props, ['children', 'className']);
 
-  /* eslint-disable react/prop-types */
-  const mapProps = props.mapProps || options.controlPropsMap[getControlType(control, options)];
-  /* eslint-enable react/prop-types */
-
-  if (!getControlType(control, options)) {
+  if (!mapProps) {
     return React.cloneElement(
       control, {
         children: React.Children.map(
@@ -112,8 +113,6 @@ function createFieldControlComponent(control, props, options) {
     );
   }
 
-  /* eslint-disable react/prop-types */
-  // TODO: Track down where to set correct propType for modelValue
   return (
     <Control
       {...controlProps}
@@ -161,7 +160,10 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
         );
       }
 
-      return createFieldControlComponent(React.Children.only(props.children), props, options);
+      return createFieldControlComponent(
+        React.Children.only(props.children),
+        props,
+        options);
     }
   }
 
@@ -190,6 +192,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       PropTypes.object,
     ]),
     mapProps: PropTypes.func,
+    modelValue: PropTypes.any,
   };
 
   Field.defaultProps = {

@@ -2,82 +2,17 @@ import { Component, cloneElement, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 
 import _get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
 
 import { sequenceEventActions } from '../utils/sequence';
-import { isMulti } from '../utils';
-
-function isChecked(props) {
-  if (isMulti(props.model)) {
-    return (props.modelValue || [])
-      .filter((item) =>
-        isEqual(item, props.value))
-      .length;
-  }
-
-  return !!props.modelValue;
-}
-
-const controlPropsMap = {
-  default: (props) => controlPropsMap.text(props),
-  checkbox: (props) => ({
-    ...props,
-    name: props.model,
-    checked: isChecked(props),
-  }),
-  radio: (props) => ({
-    ...props,
-    name: props.model,
-    checked: isEqual(props.modelValue, props.value),
-    value: props.value,
-  }),
-  select: (props) => ({
-    ...props,
-    name: props.model,
-    value: props.modelValue,
-  }),
-  text: (props) => ({
-    ...props,
-    defaultValue: props.modelValue,
-    name: props.model,
-  }),
-  textarea: (props) => controlPropsMap.text(props),
-};
-
-function getControlType({ control, mapProps, model }, options = { controlPropsMap }) {
-  const { controlPropsMap: _controlPropsMap } = options;
-
-  try {
-    let controlDisplayName = control.constructor.displayName
-      || control.type.displayName
-      || control.type.name
-      || control.type;
-
-    if (controlDisplayName === 'input') {
-      controlDisplayName = (mapProps || _controlPropsMap[control.props.type])
-        ? control.props.type
-        : 'text';
-    }
-
-    return (mapProps || _controlPropsMap[controlDisplayName])
-      ? controlDisplayName
-      : null;
-  } catch (error) {
-    return undefined;
-  }
-}
 
 function createControlProps(props) {
   const { model, modelValue, control, mapProps } = props;
-  const controlType = getControlType(props);
 
-  const _mapProps = mapProps || controlPropsMap[controlType];
-
-  if (!controlType && !_mapProps) {
+  if (!mapProps) {
     return false;
   }
 
-  return _mapProps({
+  return mapProps({
     model,
     modelValue,
     ...control.props,
@@ -87,6 +22,7 @@ function createControlProps(props) {
 
 function selector(state, props) {
   const controlProps = createControlProps(props);
+
   const model = props.model;
 
   const modelString = typeof model === 'function'
