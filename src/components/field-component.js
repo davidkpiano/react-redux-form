@@ -4,11 +4,11 @@ import connect from 'react-redux/lib/components/connect';
 import _get from 'lodash/get';
 import identity from 'lodash/identity';
 import isEqual from 'lodash/isEqual';
+import omit from 'lodash/omit';
 
 import actions from '../actions';
 import Control from './control-component';
 import { isMulti } from '../utils';
-import { sequenceEventActions } from '../utils/sequence';
 
 const {
   change,
@@ -81,32 +81,18 @@ function getControlType(control, options) {
   }
 }
 
-function createFieldProps(control, props, options) {
-  const { model, modelValue } = props;
-  const controlType = getControlType(control, options);
-
-  const { controlPropsMap: _controlPropsMap } = options;
-
-  if (!controlType) {
-    return false;
-  }
-
-  return _controlPropsMap[controlType]({
-    model,
-    modelValue,
-    ...control.props,
-    ...sequenceEventActions(control, props, options),
-  });
-}
-
 function createFieldControlComponent(control, props, options) {
   if (!control || !control.props || Object.hasOwnProperty(control.props, 'modelValue')) {
     return control;
   }
 
-  const controlProps = createFieldProps(control, props, options);
+  const controlProps = omit(props, ['children', 'className']);
 
-  if (!controlProps) {
+  /* eslint-disable react/prop-types */
+  const mapProps = props.mapProps || options.controlPropsMap[getControlType(control, options)];
+  /* eslint-enable react/prop-types */
+
+  if (!getControlType(control, options)) {
     return React.cloneElement(
       control, {
         children: React.Children.map(
@@ -133,6 +119,8 @@ function createFieldControlComponent(control, props, options) {
       {...controlProps}
       modelValue={props.modelValue}
       control={control}
+      component={control.constructor}
+      mapProps={mapProps}
     />
   );
   /* eslint-enable react/prop-types */
@@ -201,6 +189,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       PropTypes.func,
       PropTypes.object,
     ]),
+    mapProps: PropTypes.func,
   };
 
   Field.defaultProps = {
