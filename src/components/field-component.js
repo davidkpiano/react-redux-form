@@ -56,7 +56,7 @@ const controlPropsMap = {
   }),
   text: (props) => ({
     ...props,
-    defaultValue: props.modelValue,
+    value: props.modelValue,
     name: props.model,
   }),
   textarea: (props) => controlPropsMap.text(props),
