@@ -4,6 +4,7 @@ import partial from 'lodash/partial';
 import mapValues from 'lodash/mapValues';
 import compose from 'lodash/fp/compose';
 import isEqual from 'lodash/isEqual';
+import memoize from 'lodash/memoize';
 import icepick from 'icepick';
 
 import { isMulti, getValue, getValidity } from './index';
@@ -28,7 +29,7 @@ function persistEventWithCallback(callback) {
 }
 
 const modelValueUpdaterMap = {
-  checkbox: (props, eventValue) => {
+  checkbox: memoize((props, eventValue) => {
     const { model, modelValue } = props;
 
     if (isMulti(model)) {
@@ -42,8 +43,8 @@ const modelValueUpdaterMap = {
     }
 
     return !modelValue;
-  },
-  default: (props, eventValue) => eventValue,
+  }),
+  default: memoize((props, eventValue) => eventValue),
 };
 
 
@@ -59,8 +60,9 @@ function deprecateUpdateOn(updateOn) {
   return updateOn;
 }
 
-function sequenceEventActions(control, props) {
+function sequenceEventActions(props) {
   const {
+    control,
     dispatch,
     model,
     updateOn,

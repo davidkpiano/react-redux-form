@@ -2,10 +2,10 @@ import { Component, cloneElement, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 
 import _get from 'lodash/get';
-
+import memoize from 'lodash/memoize';
 import { sequenceEventActions } from '../utils/sequence';
 
-function createControlProps(props) {
+const createControlProps = memoize((props) => {
   const { model, modelValue, control, mapProps } = props;
 
   if (!mapProps) {
@@ -16,9 +16,9 @@ function createControlProps(props) {
     model,
     modelValue,
     ...control.props,
-    ...sequenceEventActions(control, props),
+    ...sequenceEventActions(props),
   });
-}
+});
 
 function selector(state, props) {
   const controlProps = createControlProps(props);

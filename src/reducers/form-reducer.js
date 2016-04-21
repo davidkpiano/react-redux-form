@@ -19,6 +19,8 @@ const initialFieldState = {
   pending: false,
   pristine: true,
   submitted: false,
+  submitFailed: false,
+  retouched: false,
   touched: false,
   untouched: true, // will be deprecated
   valid: true,
@@ -31,8 +33,6 @@ const initialFieldState = {
 const initialFormState = {
   ...initialFieldState,
   fields: {},
-  submitFailed: false,
-  retouched: false,
 };
 
 function getField(state, path) {
