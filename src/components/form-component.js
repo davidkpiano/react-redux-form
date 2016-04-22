@@ -4,7 +4,7 @@ import _get from 'lodash/get';
 import mapValues from 'lodash/mapValues';
 
 import actions from '../actions';
-import { getValidity, getForm } from '../utils';
+import { getValidity, getForm, invertValidators } from '../utils';
 
 function dispatchValidCallback(modelValue, callback) {
   return callback
@@ -65,9 +65,7 @@ class Form extends Component {
 
       const fieldErrors = getValidity(errorValidator, value);
 
-      dispatch(actions.setValidity(fieldModel, fieldErrors, {
-        errors: true,
-      }));
+      dispatch(actions.setErrors(fieldModel, fieldErrors));
 
       return fieldErrors;
     });
@@ -84,6 +82,7 @@ class Form extends Component {
       onSubmit,
       dispatch,
       validators,
+      errors,
     } = this.props;
 
     const formValid = formValue
@@ -101,9 +100,13 @@ class Form extends Component {
       onInvalid: dispatchInvalidCallback(model, dispatch),
     };
 
-    dispatch(actions.validateFields(
+
+    dispatch(actions.validateFieldsErrors(
       model,
-      validators,
+      {
+        ...invertValidators(validators),
+        ...errors,
+      },
       validationOptions));
 
     return modelValue;

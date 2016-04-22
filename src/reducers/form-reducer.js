@@ -10,6 +10,7 @@ import toPath from 'lodash/toPath';
 import flatten from 'flat';
 
 import actionTypes from '../action-types';
+import actions from '../actions/field-actions';
 import { isValid } from '../utils';
 
 const initialFieldState = {
@@ -206,12 +207,9 @@ function _createFormReducer(model, initialState) {
       }
 
       case actionTypes.SET_FIELDS_VALIDITY:
-        return map(action.fieldsValidity, (fieldValidity, field) => ({
-          type: actionTypes.SET_VALIDITY,
-          model: `${model}.${field}`,
-          validity: fieldValidity,
-          options: action.options,
-        })).reduce(formReducer, state);
+        return map(action.fieldsValidity, (fieldValidity, field) =>
+            actions.setValidity(`${model}.${field}`, fieldValidity, action.options))
+          .reduce(formReducer, state);
 
       case actionTypes.SET_ERRORS: {
         if (isPlainObject(action.errors)) {

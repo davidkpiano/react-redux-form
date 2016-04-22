@@ -74,6 +74,14 @@ function getValidity(validators, value) {
   return mapValues(validators, (validator) => getValidity(validator, modelValue));
 }
 
+function invertValidators(validators) {
+  if (typeof validators === 'function') {
+    return (val) => !validators(val);
+  }
+
+  return mapValues(validators, invertValidators);
+}
+
 function isValid(validity) {
   if (isPlainObject(validity)) {
     return every(validity, isValid);
@@ -84,10 +92,10 @@ function isValid(validity) {
 
 function isInvalid(errors) {
   if (isPlainObject(errors)) {
-    return some(errors);
+    return some(errors, isInvalid);
   }
 
-  return !errors;
+  return !!errors;
 }
 
 export {
@@ -102,4 +110,5 @@ export {
   isInvalid,
   getForm,
   getFieldFromState,
+  invertValidators,
 };

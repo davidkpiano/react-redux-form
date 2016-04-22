@@ -6,7 +6,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
-import { Form, modelReducer, formReducer, Field } from '../src';
+import { Form, modelReducer, formReducer, Field, actions } from '../src';
 
 describe('<Form> component', () => {
   describe('wraps component if specified', () => {
@@ -277,6 +277,59 @@ describe('<Form> component', () => {
           },
           valid: false,
         });
+    });
+  });
+
+  describe('error validation from silent changes on submit', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
+        foo: 'valid foo',
+        bar: '',
+      }),
+    }));
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test"
+          errors={{
+            foo: (val) => val !== 'valid foo' && 'invalid foo',
+            bar: {
+              one: (val) => val.length < 1 && 'bar too short',
+              two: (val) => val.length > 2 && 'bar too long',
+            },
+          }}
+        >
+          <Field model="test.foo">
+            <input type="text" />
+          </Field>
+
+          <Field model="test.bar">
+            <input type="text" />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+    it('should show correct initial error messages', () => {
+      assert.deepEqual(
+        store.getState().testForm.fields.bar.errors,
+        {
+          one: 'bar too short',
+          two: false,
+        });
+    });
+
+    it('should validate errors upon submit after silent changes', () => {
+      store.dispatch(actions.load('test.foo', 'nope'));
+
+      TestUtils.Simulate.submit(formElement);
+
+      assert.equal(
+        store.getState().testForm.fields.foo.errors,
+        'invalid foo');
     });
   });
 
