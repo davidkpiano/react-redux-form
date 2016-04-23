@@ -2,9 +2,16 @@ import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 import _get from 'lodash/get';
 import mapValues from 'lodash/mapValues';
+import merge from 'lodash/merge';
 
 import actions from '../actions';
-import { getValidity, getForm, invertValidators } from '../utils';
+import {
+  getValidity,
+  getForm,
+  invertValidators,
+  invertValidity,
+} from '../utils';
+import { getField } from '../reducers/form-reducer';
 
 function dispatchValidCallback(modelValue, callback) {
   return callback
@@ -41,35 +48,47 @@ class Form extends Component {
       errors,
       model,
       dispatch,
+      formValue,
     } = this.props;
 
-    /* eslint-disable consistent-return */
-    mapValues(validators, (validator, field) => {
+    let validityChanged = false;
+
+    const fieldsValidity = mapValues(validators, (validator, field) => {
       const fieldModel = [model, field].join('.');
       const value = _get(nextProps, fieldModel);
 
-      if (!initial && (value === _get(this.props, fieldModel))) return;
+      if (!initial && (value === _get(this.props, fieldModel))) {
+        return getField(formValue, fieldModel).validity;
+      }
+
+      validityChanged = true;
 
       const fieldValidity = getValidity(validator, value);
-
-      dispatch(actions.setValidity(fieldModel, fieldValidity));
 
       return fieldValidity;
     });
 
-    mapValues(errors, (errorValidator, field) => {
+    const fieldsErrorsValidity = mapValues(errors, (errorValidator, field) => {
       const fieldModel = [model, field].join('.');
       const value = _get(nextProps, fieldModel);
 
-      if (!initial && (value === _get(this.props, fieldModel))) return;
+      if (!initial && (value === _get(this.props, fieldModel))) {
+        return getField(formValue, fieldModel).errors;
+      }
+
+      validityChanged = true;
 
       const fieldErrors = getValidity(errorValidator, value);
 
-      dispatch(actions.setErrors(fieldModel, fieldErrors));
-
       return fieldErrors;
     });
-    /* eslint-enable consistent-return */
+
+    if (validityChanged) {
+      dispatch(actions.setFieldsErrors(model, merge(
+        invertValidity(fieldsValidity),
+        fieldsErrorsValidity
+      )));
+    }
   }
 
   handleSubmit(e) {
@@ -103,10 +122,10 @@ class Form extends Component {
 
     dispatch(actions.validateFieldsErrors(
       model,
-      {
-        ...invertValidators(validators),
-        ...errors,
-      },
+      merge(
+        invertValidators(validators),
+        errors
+      ),
       validationOptions));
 
     return modelValue;

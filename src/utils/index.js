@@ -82,6 +82,14 @@ function invertValidators(validators) {
   return mapValues(validators, invertValidators);
 }
 
+function invertValidity(validity) {
+  if (isPlainObject(validity)) {
+    return mapValues(validity, invertValidity);
+  }
+
+  return !validity;
+}
+
 function isValid(validity) {
   if (isPlainObject(validity)) {
     return every(validity, isValid);
@@ -111,4 +119,5 @@ export {
   getForm,
   getFieldFromState,
   invertValidators,
+  invertValidity,
 };

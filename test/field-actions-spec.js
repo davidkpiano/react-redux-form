@@ -628,11 +628,9 @@ describe('field actions', () => {
           valid: false,
           validity: {
             foo: false,
-            baz: null,
           },
           errors: {
             foo: true,
-            baz: true,
           },
         });
 
@@ -653,6 +651,42 @@ describe('field actions', () => {
             foo: false,
             baz: false,
           },
+        });
+    });
+
+    it('should overwrite the previous validity', () => {
+      const reducer = formReducer('test');
+
+      const oldValidity = {
+        existing: true,
+      };
+
+      const oldState = reducer(
+        undefined,
+        actions.setValidity('test', oldValidity));
+
+      assert.deepEqual(
+        oldState.validity,
+        oldValidity);
+
+      const newValidity = {
+        foo: true,
+        bar: false,
+      };
+
+      const newState = reducer(
+        oldState,
+        actions.setValidity('test', newValidity));
+
+      assert.deepEqual(
+        newState.validity,
+        newValidity);
+
+      assert.deepEqual(
+        newState.errors,
+        {
+          foo: false,
+          bar: true,
         });
     });
   });
@@ -826,11 +860,9 @@ describe('field actions', () => {
           valid: true,
           validity: {
             foo: true,
-            baz: true,
           },
           errors: {
             foo: false,
-            baz: null,
           },
         });
 

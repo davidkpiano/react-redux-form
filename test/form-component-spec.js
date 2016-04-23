@@ -527,6 +527,9 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.change(fooControl);
 
+      assert.isTrue(
+        store.getState().testForm.fields.foo.valid);
+
       assert.isNull(submitValue);
     });
 
@@ -549,6 +552,14 @@ describe('<Form> component', () => {
       bazControl.value = 'valid';
 
       TestUtils.Simulate.change(bazControl);
+
+      assert.deepEqual(
+        store.getState().test,
+        {
+          foo: 'valid',
+          bar: 'bar',
+          baz: 'valid',
+        });
 
       TestUtils.Simulate.submit(formElement);
 

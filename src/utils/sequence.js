@@ -5,16 +5,17 @@ import mapValues from 'lodash/mapValues';
 import compose from 'lodash/fp/compose';
 import isEqual from 'lodash/isEqual';
 import memoize from 'lodash/memoize';
+import merge from 'lodash/merge';
 import icepick from 'icepick';
 
-import { isMulti, getValue, getValidity } from './index';
+import { isMulti, getValue, getValidity, invertValidity } from './index';
 import actions from '../actions';
 
 const {
   asyncSetValidity,
   blur,
   focus,
-  setValidity,
+  setErrors,
 } = actions;
 
 function persistEventWithCallback(callback) {
@@ -109,15 +110,13 @@ function sequenceEventActions(props) {
 
   if (props.validators || props.errors) {
     const dispatchValidate = value => {
-      if (props.validators) {
-        dispatch(setValidity(model, getValidity(props.validators, value)));
-      }
+      const fieldValidity = getValidity(props.validators, value);
+      const fieldErrors = getValidity(props.errors, value);
 
-      if (props.errors) {
-        dispatch(setValidity(model, getValidity(props.errors, value), {
-          errors: true,
-        }));
-      }
+      dispatch(setErrors(model, merge(
+        invertValidity(fieldValidity),
+        fieldErrors
+      )));
 
       return value;
     };

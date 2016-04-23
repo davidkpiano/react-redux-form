@@ -71,6 +71,19 @@ function setField(state, localPath, props) {
   });
 }
 
+function setInField(state, localPath, props) {
+  if (!localPath.length) {
+    return icepick.assign(state, props);
+  }
+
+  const field = _get(state, ['fields', localPath.join('.')], initialFieldState);
+
+  return icepick.setIn(
+    state,
+    ['fields', localPath.join('.')],
+    icepick.assign(field, props));
+}
+
 function resetField(state, localPath) {
   return icepick.setIn(
     state,
@@ -181,23 +194,14 @@ function _createFormReducer(model, initialState) {
 
       case actionTypes.SET_VALIDITY: {
         if (isPlainObject(action.validity)) {
-          validity = icepick.merge(
-            getField(state, localPath).validity,
-            action.validity
-          );
-
-          errors = {
-            ...getField(state, localPath).errors,
-            ...mapValues(action.validity, valid => !valid),
-          };
+          errors = mapValues(action.validity, valid => !valid);
         } else {
-          validity = action.validity;
           errors = !action.validity;
         }
 
-        const formIsValidState = setField(state, localPath, {
+        const formIsValidState = setInField(state, localPath, {
           errors,
-          validity,
+          validity: action.validity,
           valid: isBoolean(errors) ? !errors : every(errors, error => !error),
         });
 
@@ -208,27 +212,18 @@ function _createFormReducer(model, initialState) {
 
       case actionTypes.SET_FIELDS_VALIDITY:
         return map(action.fieldsValidity, (fieldValidity, field) =>
-            actions.setValidity(`${model}.${field}`, fieldValidity, action.options))
-          .reduce(formReducer, state);
+          actions.setValidity(`${model}.${field}`, fieldValidity, action.options)
+        ).reduce(formReducer, state);
 
       case actionTypes.SET_ERRORS: {
         if (isPlainObject(action.errors)) {
-          validity = {
-            ...getField(state, localPath).validity,
-            ...mapValues(action.errors, error => !error),
-          };
-
-          errors = icepick.merge(
-            getField(state, localPath).errors,
-            action.errors
-          );
+          validity = mapValues(action.errors, error => !error);
         } else {
           validity = !action.errors;
-          errors = action.errors;
         }
 
-        const setErrorsState = setField(state, localPath, {
-          errors,
+        const setErrorsState = setInField(state, localPath, {
+          errors: action.errors,
           validity,
           valid: isValid(validity),
         });

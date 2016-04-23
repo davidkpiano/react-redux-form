@@ -585,30 +585,24 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(checkboxes[0]);
 
       assert.isTrue(store.getState().testForm.fields.items.valid);
-      assert.equal(
-        store.getState().testForm.fields.items.validity.required,
-        1);
+      assert.isTrue(
+        store.getState().testForm.fields.items.validity.required);
 
       TestUtils.Simulate.change(checkboxes[1]);
-      assert.equal(
-        store.getState().testForm.fields.items.validity.required,
-        2);
-      assert.deepEqual(
-        store.getState().testForm.fields.items.validity.values,
-        ['first', 'second']);
+      assert.isTrue(
+        store.getState().testForm.fields.items.validity.required);
+      assert.isTrue(
+        store.getState().testForm.fields.items.validity.values);
 
       TestUtils.Simulate.change(checkboxes[0]);
-      assert.equal(
-        store.getState().testForm.fields.items.validity.required,
-        1);
-      assert.deepEqual(
-        store.getState().testForm.fields.items.validity.values,
-        ['second']);
+      assert.isTrue(
+        store.getState().testForm.fields.items.validity.required);
+      assert.isTrue(
+        store.getState().testForm.fields.items.validity.values);
 
       TestUtils.Simulate.change(checkboxes[1]);
-      assert.equal(
-        store.getState().testForm.fields.items.validity.required,
-        0);
+      assert.isFalse(
+        store.getState().testForm.fields.items.validity.required);
       assert.isFalse(store.getState().testForm.fields.items.valid);
     });
   });
