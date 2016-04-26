@@ -92,8 +92,8 @@ function sequenceEventActions(props) {
     : identity;
 
   const eventActions = {
-    onFocus: [() => dispatch(focus(model))],
-    onBlur: [() => dispatch(blur(model))],
+    onFocus: [],
+    onBlur: [],
     onChange: [],
     onLoad: [], // pseudo-event
     onSubmit: [], // pseudo-event
@@ -106,6 +106,30 @@ function sequenceEventActions(props) {
   if (control.props.defaultValue) {
     eventActions.onLoad.push(() => dispatch(
       actions.change(model, control.props.defaultValue)));
+  }
+
+  let changeActionCreator;
+
+  switch (updateOnEventHandler) {
+    case 'onBlur':
+      changeActionCreator = (modelValue) => actions.batch(model, [
+        blur(model),
+        controlChangeMethod(modelValue),
+      ]);
+      eventActions.onFocus.push(() => dispatch(focus(model)));
+      break;
+    case 'onFocus':
+      changeActionCreator = (modelValue) => actions.batch(model, [
+        focus(model),
+        controlChangeMethod(modelValue),
+      ]);
+      eventActions.onBlur.push(() => dispatch(blur(model)));
+      break;
+    default:
+      changeActionCreator = (modelValue) => controlChangeMethod(modelValue);
+      eventActions.onBlur.push(() => dispatch(blur(model)));
+      eventActions.onFocus.push(() => dispatch(focus(model)));
+      break;
   }
 
   if (props.validators || props.errors) {
@@ -148,7 +172,7 @@ function sequenceEventActions(props) {
       ? modelValueUpdater(props, control.props.value)
       : event;
 
-    dispatch(controlChangeMethod(modelValue));
+    dispatch(changeActionCreator(modelValue));
 
     return modelValue;
   };
