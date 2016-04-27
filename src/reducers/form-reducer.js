@@ -7,6 +7,7 @@ import isPlainObject from 'lodash/isPlainObject';
 import map from 'lodash/map';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
+import startsWith from 'lodash/startsWith';
 import flatten from 'flat';
 
 import actionTypes from '../action-types';
@@ -150,12 +151,22 @@ function _createFormReducer(model, initialState) {
           pristine: false,
         });
 
-        if (action.removeKeys) {
-          action.removeKeys.forEach((removeKey) => {
-            // console.log('what', localPath.concat(removeKey).join('.'));
+        const removeKeys = action.removeKeys
+          ? Object.keys(state.fields).filter((fieldKey) => {
+            for (const removeKey of action.removeKeys) {
+              const removeKeyPath = localPath.concat(removeKey).join('.');
+              if (startsWith(fieldKey, removeKeyPath)) return true;
+            }
+
+            return false;
+          })
+          : false;
+
+        if (removeKeys) {
+          removeKeys.forEach((removeKey) => {
             setFieldDirtyState = setInField(
               setFieldDirtyState,
-              localPath.concat(removeKey),
+              toPath(removeKey),
               {
                 valid: true,
                 validity: initialFieldState.validity,
