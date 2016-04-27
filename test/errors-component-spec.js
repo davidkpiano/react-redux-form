@@ -521,4 +521,36 @@ describe('<Errors />', () => {
       assert.equal(components[1].innerHTML, 'bar error');
     });
   });
+
+  xdescribe('deep model paths', () => {
+    it('should work with deep model paths', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        forms: combineReducers({
+          testForm: formReducer('test', {}),
+          test: modelReducer('test'),
+        }),
+      }));
+
+      // assert.doesNotThrow(() => {      
+        const form = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <form>
+              <Errors model="forms.test.foo" 
+                messages={{
+                  required: 'This field is required',
+                }}
+              />
+              <Field model="forms.test.foo"
+                validators={{
+                  required: (v) => v && v.length,
+                }}
+              >
+                <input type="text" />
+              </Field>
+            </form>
+          </Provider>
+        );
+      // });
+    });
+  });
 });

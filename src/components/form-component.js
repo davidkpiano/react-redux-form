@@ -142,10 +142,7 @@ class Form extends Component {
 }
 
 Form.propTypes = {
-  component: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.string,
-  ]),
+  component: PropTypes.any,
   validators: PropTypes.object,
   errors: PropTypes.object,
   validateOn: PropTypes.oneOf([

@@ -1,3 +1,6 @@
+import React from 'react';
+
+import Form from '../components/form-component';
 import { createFieldClass } from '../components/field-component';
 
 const View = process.env.NODE_ENV !== 'test'
@@ -44,4 +47,18 @@ const NativeField = createFieldClass({
   component: View,
 });
 
-export { NativeField as Field };
+class NativeForm extends React.Component {
+  render() {
+    return (
+      <Form
+        component={View}
+        {...this.props}
+      />
+    );
+  }
+}
+
+export {
+  NativeField as Field,
+  NativeForm as Form,
+};

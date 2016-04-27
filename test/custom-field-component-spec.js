@@ -6,7 +6,10 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
-import { Field as NativeField } from '../src/native';
+import {
+  Field as NativeField,
+  Form as NativeForm,
+} from '../src/native';
 import { controls, createFieldClass, formReducer, modelReducer, Field } from '../src';
 
 describe('controls props mapping', () => {
@@ -190,7 +193,7 @@ describe('React Native <Field /> components', () => {
     assert.ok(NativeField);
   });
 
-  it('should map native components', () => {
+  it('should map the native field component', () => {
     // Placeholder div, for now
     class TextField extends Component {
       render() {
@@ -199,5 +202,23 @@ describe('React Native <Field /> components', () => {
     }
 
     assert.ok(<NativeField model="foo.bar"><TextField /></NativeField>);
+  });
+
+  it('should render a Form component as a View', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: 'bar' }),
+    }));
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <NativeForm model="test" />
+      </Provider>
+    );
+
+    // Placeholder div, for now
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'div');
+
+    assert.ok(formElement);
   });
 });
