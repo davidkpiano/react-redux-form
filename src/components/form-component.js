@@ -58,7 +58,7 @@ class Form extends Component {
       const value = _get(nextProps, fieldModel);
 
       if (!initial && (value === _get(this.props, fieldModel))) {
-        return getField(formValue, fieldModel).validity;
+        return getField(formValue, field).validity;
       }
 
       validityChanged = true;
@@ -73,7 +73,7 @@ class Form extends Component {
       const value = _get(nextProps, fieldModel);
 
       if (!initial && (value === _get(this.props, fieldModel))) {
-        return getField(formValue, fieldModel).errors;
+        return getField(formValue, field).errors;
       }
 
       validityChanged = true;

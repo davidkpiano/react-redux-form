@@ -476,6 +476,77 @@ describe('<Form> component', () => {
     });
   });
 
+  describe('maintaining field validation state', () => {
+    const initialState = { foo: '', bar: '' };
+
+    const required = (val) => val && val.length;
+
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test', initialState),
+      test: modelReducer('test', initialState),
+    }));
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test"
+          validators={{
+            foo: required,
+            bar: required,
+          }}
+          validateOn="change"
+        >
+          <Field model="test.foo">
+            <input type="text" />
+          </Field>
+
+          <Field model="test.bar">
+            <input type="text" />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const [fooControl, barControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+
+    it('should initially be invalid', () => {
+      assert.isFalse(store.getState().testForm.valid);
+    });
+
+    it('should still be invalid if fields are still invalid', () => {
+      fooControl.value = 'valid';
+      TestUtils.Simulate.change(fooControl);
+
+      assert.isTrue(
+        store.getState().testForm.fields.foo.valid,
+        'foo should be valid');
+      assert.isFalse(
+        store.getState().testForm.fields.bar.valid,
+        'bar should be invalid');
+
+      assert.isFalse(
+        store.getState().testForm.valid,
+        'form should be invalid');
+    });
+
+    it('should be valid once all fields are valid', () => {
+      fooControl.value = 'valid';
+      TestUtils.Simulate.change(fooControl);
+      barControl.value = 'valid';
+      TestUtils.Simulate.change(barControl);
+
+      assert.isTrue(
+        store.getState().testForm.fields.foo.valid,
+        'foo should be valid');
+      assert.isTrue(
+        store.getState().testForm.fields.bar.valid,
+        'bar should be valid');
+
+      assert.isTrue(
+        store.getState().testForm.valid,
+        'form should be valid');
+    });
+  });
+
   describe('onSubmit() prop', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test'),
