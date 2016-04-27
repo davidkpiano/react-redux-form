@@ -7,15 +7,23 @@ React Redux Form is a collection of reducer creators and action creators that ma
 
 `npm install react-redux-form --save`
 
-## Features
-
-- Separation of model state and form state for simplicity and performance
-- Ability to use [existing reducers](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-Using-Existing-Reducers) easily
-- Sync and async field [validation](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-Validation) at any part of the state
-- Convenient [`<Field>` component](http://davidkpiano.github.io/react-redux-form/#/api/API:-Field-Component) for automatically mapping props to native form controls
-- Support for Immutable.JS: `import { createModelReducer } from 'react-redux-form/lib/immutable'`
-- Support for [React-Native and custom components](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-React-Native-&-Custom-Components)
-- Multiple utility [model actions](http://davidkpiano.github.io/react-redux-form/#/api/API:-Action-Thunk-Creators)
+- Guides
+  - [Quick Start](https://davidkpiano.gitbooks.io/react-redux-form/content/step_by_step.html)
+  - [Model Reducers](https://davidkpiano.gitbooks.io/react-redux-form/content/model_reducers.html)
+  - [Form Reducers](https://davidkpiano.gitbooks.io/react-redux-form/content/form_reducers.html)
+  - [React Native & Custom Components](https://davidkpiano.gitbooks.io/react-redux-form/content/react_native_&_custom_components.html)
+  - [Validation](https://davidkpiano.gitbooks.io/react-redux-form/content/validation.html)
+  - [Tracking Collections](https://davidkpiano.gitbooks.io/react-redux-form/content/tracking_collections.html)
+  - [FAQs](https://davidkpiano.gitbooks.io/react-redux-form/content/faqs.html)
+- API Reference
+  - [Model Action Creators](https://davidkpiano.gitbooks.io/react-redux-form/content/model_actions.html)
+  - [Field Action Creators](https://davidkpiano.gitbooks.io/react-redux-form/content/field_actions.html)
+  - [Validation Action Creators](https://davidkpiano.gitbooks.io/react-redux-form/content/validation_actions.html)
+  - [Model Reducer](https://davidkpiano.gitbooks.io/react-redux-form/content/model_reducer.html)
+  - [Form Reducer](https://davidkpiano.gitbooks.io/react-redux-form/content/form_reducer.html)
+  - [`<Field>` Component](https://davidkpiano.gitbooks.io/react-redux-form/content/field_component.html)
+  - [`<Form>` Component](https://davidkpiano.gitbooks.io/react-redux-form/content/form_component.html)
+  - [`<Errors>` Component](https://davidkpiano.gitbooks.io/react-redux-form/content/errors_component.html)
 
 ## Quick Start
 
@@ -49,18 +57,24 @@ class App extends React.Component {
 // ./components/my-form-component.js'
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field } from 'react-redux-form';
+import { Field, Form } from 'react-redux-form';
 
 class MyForm extends React.Component {
+  handleSubmit(val) {
+    // Do anything you want with the form value
+    console.log(val);
+  }
+  
   render() {
     let { user } = this.props;
     
     return (
-      <form>
+      <Form model="user" onSubmit={(val) => this.handleSubmit(val)}>
         <h1>Hello, { user.name }!</h1>
         <Field model="user.name">
           <input type="text" />
         </Field>
+        <button>Submit!</button>
       </form>
     );
   }
