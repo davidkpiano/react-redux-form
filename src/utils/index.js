@@ -6,8 +6,11 @@ import some from 'lodash/some';
 import findKey from 'lodash/findKey';
 import get from 'lodash/get';
 import toPath from 'lodash/toPath';
+import startsWith from 'lodash/startsWith';
+import memoize from 'lodash/memoize';
 
 import { getField, initialFieldState } from '../reducers/form-reducer';
+import flatten from './flatten';
 
 function isMulti(model) {
   return endsWith(model, '[]');
@@ -49,15 +52,23 @@ function getValue(value) {
   return isEvent(value) ? getEventValue(value) : value;
 }
 
+const getFormStateKey = memoize((state, model) => {
+  const flatState = flatten(state);
+
+  const formStateKey = findKey(flatState, (value) =>
+    value.model && startsWith(model, value.model));
+
+  return formStateKey;
+});
+
 function getForm(state, model) {
-  const path = model.split('.');
-  const modelRoot = path.length === 1 ? state : get(state, path.slice(0, path.length - 1));
-  const formStateKey = findKey(modelRoot, { model });
-  return modelRoot && modelRoot[formStateKey];
+  const formStateKey = getFormStateKey(state, model);
+
+  return get(state, formStateKey);
 }
 
 function getFieldFromState(state, model) {
-  const form = getForm(state, toPath(model)[0]);
+  const form = getForm(state, model);
 
   if (!form) return null;
 

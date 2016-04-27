@@ -522,16 +522,16 @@ describe('<Errors />', () => {
     });
   });
 
-  xdescribe('deep model paths', () => {
+  describe('deep model paths', () => {
     it('should work with deep model paths', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         forms: combineReducers({
-          testForm: formReducer('test', {}),
-          test: modelReducer('test'),
+          testForm: formReducer('forms.test', {}),
+          test: modelReducer('forms.test'),
         }),
       }));
 
-      // assert.doesNotThrow(() => {      
+      assert.doesNotThrow(() => {      
         const form = TestUtils.renderIntoDocument(
           <Provider store={store}>
             <form>
@@ -550,7 +550,7 @@ describe('<Errors />', () => {
             </form>
           </Provider>
         );
-      // });
+      });
     });
   });
 });
