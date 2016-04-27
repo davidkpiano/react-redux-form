@@ -100,6 +100,7 @@ const remove = (model, index) => (dispatch, getState) => {
     type: actionTypes.CHANGE,
     model,
     value: icepick.splice(collection, index, 1),
+    removeKeys: [index],
   });
 };
 
@@ -146,6 +147,7 @@ const omit = (model, props = []) => (dispatch, getState) => {
     type: actionTypes.CHANGE,
     model,
     value: newValue,
+    removeKeys: propsArray,
   });
 };
 

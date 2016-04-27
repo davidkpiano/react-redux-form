@@ -145,14 +145,30 @@ function _createFormReducer(model, initialState) {
       case actionTypes.CHANGE: {
         if (action.silent) return state;
 
-        const setDirtyState = icepick.merge(state, {
+        let setFieldDirtyState = setField(state, localPath, {
           dirty: true, // will be deprecated
           pristine: false,
         });
 
-        return setField(setDirtyState, localPath, {
+        if (action.removeKeys) {
+          action.removeKeys.forEach((removeKey) => {
+            // console.log('what', localPath.concat(removeKey).join('.'));
+            setFieldDirtyState = setInField(
+              setFieldDirtyState,
+              localPath.concat(removeKey),
+              {
+                valid: true,
+                validity: initialFieldState.validity,
+                errors: initialFieldState.errors,
+                deleted: true,
+              });
+          });
+        }
+
+        return icepick.merge(setFieldDirtyState, {
           dirty: true, // will be deprecated
           pristine: false,
+          valid: formIsValid(setFieldDirtyState),
         });
       }
 

@@ -86,4 +86,27 @@ describe('formReducer()', () => {
       },
     });
   });
+
+  it('should become valid when an invalid field is removed', () => {
+    const reducer = formReducer('test', {
+      items: [],
+    });
+
+    const validItem = reducer(undefined, actions.setValidity('test.items[0]', true));
+    const invalidItem = reducer(validItem, actions.setValidity('test.items[1]', false));
+
+    assert.isFalse(invalidItem.valid, 'form should be invalid');
+
+    let removedState;
+
+    const dispatch = (action) => {
+      removedState = reducer(invalidItem, action);
+    };
+
+    const getState = () => invalidItem;
+
+    actions.remove('test.items', 1)(dispatch, getState);
+
+    assert.isTrue(removedState.valid);
+  });
 });
