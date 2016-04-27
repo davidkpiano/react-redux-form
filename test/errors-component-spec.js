@@ -553,4 +553,28 @@ describe('<Errors />', () => {
       });
     });
   });
+
+  describe('single string error messages', () => {
+    it('should work with single string error messages', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: formReducer('test', {}),
+        test: modelReducer('test'),
+      }));
+     
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Errors model="test" />
+        </Provider>
+      );
+
+      store.dispatch(actions.setErrors('test', 'this is a single error message'));
+
+      let error;
+
+      assert.doesNotThrow(() => error = TestUtils
+        .findRenderedDOMComponentWithTag(form, 'span'));
+
+      assert.equal(error.innerHTML, 'this is a single error message');
+    });
+  });
 });

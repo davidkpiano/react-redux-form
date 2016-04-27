@@ -31,6 +31,10 @@ class Errors extends Component {
   mapErrorMessages(errors) {
     const { messages } = this.props;
 
+    if (typeof errors === 'string') {
+      return this.renderError(errors, 'error');
+    }
+
     return compact(map(errors, (error, key) => {
       const message = messages[key];
 
