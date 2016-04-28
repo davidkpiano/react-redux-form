@@ -202,6 +202,7 @@ function _createFormReducer(model, initialState) {
 
         return icepick.merge(fieldState, {
           touched: true,
+          retouched: state.submitted || state.submitFailed,
           untouched: false, // will be deprecated
         });
       }
