@@ -56,7 +56,7 @@ const getFormStateKey = memoize((state, model) => {
   const flatState = flatten(state);
 
   const formStateKey = findKey(flatState, (value) =>
-    value.model && startsWith(model, value.model));
+    value && value.model && startsWith(model, value.model));
 
   return formStateKey;
 });
