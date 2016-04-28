@@ -41,6 +41,10 @@ class Control extends Component {
     super(props);
 
     this.handleKeyPress = this.handleKeyPress.bind(this);
+
+    this.state = {
+      value: props.modelValue,
+    };
   }
 
   componentWillMount() {

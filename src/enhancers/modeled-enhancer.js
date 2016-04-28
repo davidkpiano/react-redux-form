@@ -1,4 +1,4 @@
-import { modelReducer } from '../reducers/model-reducer';
+import modelReducer from '../reducers/model-reducer';
 
 const NULL_ACTION = { type: null };
 

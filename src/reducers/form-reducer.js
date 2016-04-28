@@ -396,8 +396,8 @@ function createFormReducer(...args) {
 
 export {
   createFormReducer,
-  _createFormReducer as formReducer,
   initialFieldState,
   initialFormState,
   getField,
 };
+export default _createFormReducer;

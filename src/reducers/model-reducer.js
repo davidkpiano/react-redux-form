@@ -88,6 +88,6 @@ function createModelReducer(...args) {
 
 export {
   createModeler,
-  modelReducer,
   createModelReducer,
 };
+export default modelReducer;
