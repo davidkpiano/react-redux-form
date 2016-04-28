@@ -258,6 +258,52 @@ describe('<Errors />', () => {
       assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0);
     });
 
+    it('should support a function that shows based on field and form value', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: formReducer('test', {}),
+        test: modelReducer('test'),
+      }));
+
+      const showFn = (field, form) => field.focus || form.submitFailed;
+
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <form>
+            <Errors model="test.foo" 
+              messages={{
+                required: 'This field is required',
+              }}
+              show={ showFn }
+            />
+            <Field model="test.foo"
+              validators={{
+                required: (v) => v && v.length,
+              }}
+            >
+              <input type="text" />
+            </Field>
+          </form>
+        </Provider>
+      );
+
+      const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0);
+
+      TestUtils.Simulate.focus(input);
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 1);
+
+      TestUtils.Simulate.blur(input);
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 0);
+
+      store.dispatch(actions.setSubmitFailed('test'));
+
+      assert.lengthOf(TestUtils.scryRenderedDOMComponentsWithTag(form, 'span'), 1, 'form submit failed');
+    });
+
     it('should support a boolean and show if truthy', () => {
       const form = renderErrorsWithShow(true);
       const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');

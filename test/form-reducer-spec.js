@@ -32,7 +32,6 @@ describe('formReducer()', () => {
 
       const actual = reducer(undefined, actions.focus('test.foo'));
 
-
       assert.deepEqual(getField(actual, 'foo'), {
         ...initialFieldState,
         focus: true,

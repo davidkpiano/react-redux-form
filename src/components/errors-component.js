@@ -7,11 +7,11 @@ import iteratee from 'lodash/iteratee';
 import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
 
-import { getFieldFromState } from '../utils';
+import { getFieldFromState, getForm } from '../utils';
 
-function showErrors(field, show = true) {
+function showErrors(field, form, show = true) {
   if (typeof show === 'function') {
-    return show(field);
+    return show(field, form);
   }
 
   if (!isArray(show)
@@ -24,8 +24,9 @@ function showErrors(field, show = true) {
 }
 
 class Errors extends Component {
-  shouldComponentUpdate({ fieldValue }) {
-    return fieldValue !== this.props.fieldValue;
+  shouldComponentUpdate({ fieldValue, formValue }) {
+    return fieldValue !== this.props.fieldValue
+      || formValue !== this.props.formValue;
   }
 
   mapErrorMessages(errors) {
@@ -86,11 +87,12 @@ class Errors extends Component {
         valid,
         errors,
       },
+      formValue,
       show,
       wrapper,
     } = this.props;
 
-    if (!showErrors(fieldValue, show)) {
+    if (!showErrors(fieldValue, formValue, show)) {
       return null;
     }
 
@@ -108,6 +110,7 @@ class Errors extends Component {
 Errors.propTypes = {
   // Computed props
   modelValue: PropTypes.any,
+  formValue: PropTypes.object,
   fieldValue: PropTypes.object,
 
   // Provided props
@@ -142,12 +145,14 @@ function selector(state, { model }) {
     ? model(state)
     : model;
 
+  const formValue = getForm(state, modelString);
   const fieldValue = getFieldFromState(state, modelString);
 
   return {
     ...state,
     model: modelString,
     modelValue: _get(state, modelString),
+    formValue,
     fieldValue,
   };
 }
