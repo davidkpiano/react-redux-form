@@ -167,12 +167,7 @@ function _createFormReducer(model, initialState) {
             setFieldDirtyState = setInField(
               setFieldDirtyState,
               toPath(removeKey),
-              {
-                valid: true,
-                validity: initialFieldState.validity,
-                errors: initialFieldState.errors,
-                deleted: true,
-              });
+              initialFieldState);
           });
         }
 

@@ -87,7 +87,7 @@ describe('formReducer()', () => {
     });
   });
 
-  it('should become valid when an invalid field is removed', () => {
+  it('should become valid when an invalid field is removed', (done) => {
     const reducer = formReducer('test', {
       items: [],
     });
@@ -101,16 +101,16 @@ describe('formReducer()', () => {
 
     const dispatch = (action) => {
       removedState = reducer(invalidItem, action);
+      assert.isTrue(removedState.valid);
+      done();
     };
 
     const getState = () => invalidItem;
 
     actions.remove('test.items', 1)(dispatch, getState);
-
-    assert.isTrue(removedState.valid);
   });
 
-  it('should become valid when a field with an invalid property is removed', () => {
+  it('should become valid when a field with an invalid property is removed', (done) => {
     const reducer = formReducer('test', {
       items: [
         { name: 'item1' },
@@ -127,12 +127,12 @@ describe('formReducer()', () => {
 
     const dispatch = (action) => {
       removedState = reducer(invalidItem, action);
+      assert.isTrue(removedState.valid);
+      done();
     };
 
     const getState = () => invalidItem;
 
     actions.remove('test.items', 1)(dispatch, getState);
-
-    assert.isTrue(removedState.valid);
   });
 });
