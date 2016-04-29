@@ -94,6 +94,39 @@ describe('<Field /> component', () => {
       'should update state when control is changed');
   });
 
+  it('should handle nested control components created with React.Children.only', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: 'bar' }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <label />
+          <div>
+            { React.Children.only(<input />) }
+          </div>
+        </Field>
+      </Provider>
+    );
+
+    const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    assert.equal(
+      control.value,
+      'bar',
+      'should set control to initial value');
+
+    control.value = 'testing';
+
+    TestUtils.Simulate.change(control);
+
+    assert.equal(
+      store.getState().test.foo,
+      'testing',
+      'should update state when control is changed');
+  });
+
   it('should bypass null/falsey children', () => {
     assert.doesNotThrow(() => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({

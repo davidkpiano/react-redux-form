@@ -81,8 +81,30 @@ function getControlType(control, options) {
   }
 }
 
+function mapFieldChildrenToControl(children, props, options) {
+  if (React.Children.count(children) > 1) {
+    return React.Children.map(
+      children,
+      (child) => createFieldControlComponent(
+        child,
+        {
+          ...props,
+          ...(child && child.props
+            ? child.props
+            : {}),
+        },
+        options
+      )
+    );
+  }
+
+  return createFieldControlComponent(children, props, options);
+}
+
 function createFieldControlComponent(control, props, options) {
-  if (!control || !control.props || Object.hasOwnProperty(control.props, 'modelValue')) {
+  if (!control
+    || !control.props
+    || control instanceof Control) {
     return control;
   }
 
@@ -95,21 +117,9 @@ function createFieldControlComponent(control, props, options) {
 
   if (!mapProps) {
     return React.cloneElement(
-      control, {
-        children: React.Children.map(
-          control.props.children,
-          child => createFieldControlComponent(
-            child,
-            {
-              ...props,
-              ...(child && child.props
-                ? child.props
-                : {}),
-            },
-            options
-          )
-        ),
-      }
+      control,
+      null,
+      mapFieldChildrenToControl(control.props.children, props, options)
     );
   }
 
