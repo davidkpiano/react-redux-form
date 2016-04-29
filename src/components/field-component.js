@@ -142,7 +142,7 @@ function getFieldWrapper(props) {
     return props.component;
   }
 
-  if (props.className || props.children.length > 1) {
+  if (props.className || (props.children && props.children.length > 1)) {
     return 'div';
   }
 
