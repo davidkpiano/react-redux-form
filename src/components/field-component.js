@@ -81,6 +81,7 @@ function getControlType(control, options) {
   }
 }
 
+/* eslint-disable no-use-before-define */
 function mapFieldChildrenToControl(children, props, options) {
   if (React.Children.count(children) > 1) {
     return React.Children.map(
@@ -134,6 +135,7 @@ function createFieldControlComponent(control, props, options) {
   );
   /* eslint-enable react/prop-types */
 }
+/* eslint-enable no-use-before-define */
 
 function getFieldWrapper(props) {
   if (props.component) {
