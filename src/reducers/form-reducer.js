@@ -28,6 +28,7 @@ const initialFieldState = {
   valid: true,
   validating: false,
   viewValue: null,
+  array: false,
   validity: {},
   errors: {},
 };
@@ -77,7 +78,7 @@ function setInField(state, localPath, props) {
     return icepick.assign(state, props);
   }
 
-  const field = _get(state, ['fields', localPath.join('.')], initialFieldState);
+  const field = getField(state, localPath);
 
   return icepick.setIn(
     state,
@@ -141,6 +142,7 @@ function _createFormReducer(model, initialState) {
         return setField(state, localPath, {
           blur: false, // will be deprecated
           focus: true,
+          array: Array.isArray(action.value),
         });
 
       case actionTypes.CHANGE: {
@@ -149,25 +151,51 @@ function _createFormReducer(model, initialState) {
         let setFieldDirtyState = setField(state, localPath, {
           dirty: true, // will be deprecated
           pristine: false,
+          value: action.value,
         });
 
-        const removeKeys = action.removeKeys
-          ? Object.keys(state.fields).filter((fieldKey) => {
+        if (action.removeKeys) {
+          const persistKeys = [];
+
+          const removeKeys = Object.keys(state.fields).filter((fieldKey) => {
+            const localStringPath = localPath.join('.');
+
             for (const removeKey of action.removeKeys) {
-              const removeKeyPath = localPath.concat(removeKey).join('.');
+              const removeKeyPath = `${localStringPath}.${removeKey}`;
               if (startsWith(fieldKey, removeKeyPath)) return true;
             }
 
-            return false;
-          })
-          : false;
+            if (startsWith(fieldKey, `${localStringPath}.`)) {
+              persistKeys.push(fieldKey);
+            }
 
-        if (removeKeys) {
+            return false;
+          });
+
           removeKeys.forEach((removeKey) => {
+            setFieldDirtyState = icepick.updateIn(
+              setFieldDirtyState,
+              ['fields'],
+              (field) => icepick.dissoc(field, removeKey));
+          });
+
+          persistKeys.forEach((persistKey, index) => {
+            const newPersistKeyPath = toPath(persistKey);
+            newPersistKeyPath[localPath.length] = index;
+
+            const persistField = getField(state, persistKey);
+
+            // Update field to new key
             setFieldDirtyState = setInField(
               setFieldDirtyState,
-              toPath(removeKey),
-              initialFieldState);
+              newPersistKeyPath,
+              persistField);
+
+            // Remove old key
+            setFieldDirtyState = icepick.updateIn(
+              setFieldDirtyState,
+              ['fields'],
+              (field) => icepick.dissoc(field, persistKey));
           });
         }
 

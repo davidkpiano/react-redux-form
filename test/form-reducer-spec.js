@@ -134,4 +134,44 @@ describe('formReducer()', () => {
 
     actions.remove('test.items', 1)(dispatch, getState);
   });
+
+  it('should clean after itself when a field is removed', (done) => {
+    const reducer = formReducer('test', {
+      items: [
+        { name: 'item1' },
+        { name: 'item2' },
+      ],
+    });
+
+    const validItem = reducer(
+      undefined,
+      actions.setValidity('test.items[0].name', true));
+    const invalidItem = reducer(
+      validItem,
+      actions.setValidity('test.items[1].name', false));
+
+    assert.isFalse(invalidItem.valid, 'form should be invalid');
+
+    let removedState;
+
+    const dispatch = action => {
+      removedState = reducer(invalidItem, action);
+      assert.isFalse(removedState.valid);
+      assert.isUndefined(removedState.fields['items.1.name']);
+    };
+
+    const getState = () => invalidItem;
+
+    actions.remove('test.items', 0)(dispatch, getState);
+
+    const dispatch2 = action => {
+      const removedState2 = reducer(removedState, action);
+      assert.isTrue(removedState2.valid);
+      done();
+    };
+
+    const getState2 = () => removedState;
+
+    actions.remove('test.items', 0)(dispatch2, getState2);
+  });
 });
