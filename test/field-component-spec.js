@@ -99,13 +99,28 @@ describe('<Field /> component', () => {
       test: modelReducer('test', { foo: 'bar' }),
     }));
 
+    class ChildOnlyComp extends React.Component {
+      render() {
+        const child = React.Children.only(this.props.children);
+
+        return (
+          <div>
+            {child}
+          </div>
+        );
+      }
+    }
+
+    ChildOnlyComp.propTypes = {
+      children: React.PropTypes.node,
+    };
+
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Field model="test.foo">
-          <label />
-          <div>
-            { React.Children.only(<input />) }
-          </div>
+          <ChildOnlyComp>
+            <input />
+          </ChildOnlyComp>
         </Field>
       </Provider>
     );
