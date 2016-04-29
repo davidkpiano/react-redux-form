@@ -174,4 +174,26 @@ describe('formReducer()', () => {
 
     actions.remove('test.items', 0)(dispatch2, getState2);
   });
+
+  it('should have correct overall validity after a field validity is reset', () => {
+    const reducer = formReducer('test', {
+      foo: 'one',
+      bar: 'two',
+    });
+
+    const bothInvalidState = reducer(undefined, actions.setFieldsValidity('test', {
+      foo: false,
+      bar: false,
+    }));
+
+    assert.isFalse(bothInvalidState.valid);
+
+    const oneInvalidState = reducer(bothInvalidState, actions.setValidity('test.foo', true));
+
+    assert.isFalse(oneInvalidState.valid);
+
+    const validState = reducer(oneInvalidState, actions.setValidity('test.bar', true));
+
+    assert.isTrue(validState.valid);
+  });
 });

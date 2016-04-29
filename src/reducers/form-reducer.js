@@ -338,7 +338,9 @@ function _createFormReducer(model, initialState) {
           );
         }
 
-        return resetValidityState;
+        return icepick.merge(resetValidityState, {
+          valid: formIsValid(resetValidityState),
+        });
       }
 
       case actionTypes.SET_PRISTINE: {
