@@ -185,17 +185,17 @@ function _createFormReducer(model, initialState) {
 
             const persistField = getField(state, persistKey);
 
-            // Update field to new key
-            setFieldDirtyState = setInField(
-              setFieldDirtyState,
-              newPersistKeyPath,
-              persistField);
-
             // Remove old key
             setFieldDirtyState = icepick.updateIn(
               setFieldDirtyState,
               ['fields'],
               (field) => icepick.dissoc(field, persistKey));
+
+            // Update field to new key
+            setFieldDirtyState = setInField(
+              setFieldDirtyState,
+              newPersistKeyPath,
+              persistField);
           });
         }
 

@@ -196,4 +196,38 @@ describe('formReducer()', () => {
 
     assert.isTrue(validState.valid);
   });
+
+  it('should clean after itself when a valid field (scenario with 3 items)', (done) => {
+    const reducer = formReducer('test', {
+      items: [
+        { name: 'item1' },
+        { name: 'item2' },
+        { name: 'item3' },
+      ],
+    });
+
+    const state1 = reducer(
+      undefined,
+      actions.setValidity('test.items[0].name', true));
+    const state2 = reducer(
+      state1,
+      actions.setValidity('test.items[1].name', false));
+    const state3 = reducer(
+      state2,
+      actions.setValidity('test.items[2].name', true));
+
+    assert.isFalse(state3.valid, 'form should be invalid');
+
+    let removedState;
+
+    const dispatch = action => {
+      removedState = reducer(state3, action);
+      assert.isFalse(removedState.valid, 'form should still be invalid');
+      done();
+    };
+
+    const getState = () => state3;
+
+    actions.remove('test.items', 2)(dispatch, getState);
+  });
 });
