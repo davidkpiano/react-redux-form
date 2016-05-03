@@ -230,4 +230,31 @@ describe('formReducer()', () => {
 
     actions.remove('test.items', 2)(dispatch, getState);
   });
+
+  it('should clean all props after itself when a field is removed', (done) => {
+    const reducer = formReducer('test', {
+      items: [
+        { name: 'item1', dummy: true },
+        { name: 'item2', dummy: true },
+      ],
+    });
+
+    const invalidItem = reducer(
+      undefined,
+      actions.setValidity('test.items[1].name', false)
+    );
+
+    let removedState;
+
+    const dispatch = action => {
+      removedState = reducer(invalidItem, action);
+      assert.isUndefined(removedState.fields['items.1.name']);
+      assert.isUndefined(removedState.fields['items.1.dummy']); // <-- this field is leftover
+      done();
+    };
+
+    const getState = () => invalidItem;
+
+    actions.remove('test.items', 0)(dispatch, getState);
+  });
 });

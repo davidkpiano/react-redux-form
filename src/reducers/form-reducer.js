@@ -179,9 +179,23 @@ function _createFormReducer(model, initialState) {
               (field) => icepick.dissoc(field, removeKey));
           });
 
-          persistKeys.forEach((persistKey, index) => {
+          const persistKeysIndexMapping = {};
+          let nextIndex = -1;
+
+          // Note: this code is really hairy but will be
+          // completely refactored in V1.0.
+          persistKeys.forEach((persistKey) => {
             const newPersistKeyPath = toPath(persistKey);
-            newPersistKeyPath[localPath.length] = index;
+            const currentIndex = newPersistKeyPath[localPath.length];
+            const mappedIndex = persistKeysIndexMapping[currentIndex];
+
+            if (typeof mappedIndex !== 'undefined') {
+              newPersistKeyPath[localPath.length] = mappedIndex;
+            } else {
+              newPersistKeyPath[localPath.length] =
+                persistKeysIndexMapping[currentIndex] =
+                ++nextIndex;
+            }
 
             const persistField = getField(state, persistKey);
 
