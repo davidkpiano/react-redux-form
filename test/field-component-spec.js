@@ -1,5 +1,6 @@
 /* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
 import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import { assert } from 'chai';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';
@@ -1169,6 +1170,49 @@ describe('<Field /> component', () => {
       assert.equal(
         store.getState().test.foo,
         'testing');
+    });
+  });
+
+  describe('swapping fields', () => {
+    const reducer = modelReducer('test', { a: 'a value', b: 'b value' });
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: reducer,
+    }));
+
+    const ToggleFields = ({ field }) => (
+      field === 'a'
+      ? <Field
+        model="test.a"
+      >
+        <input type="text" />
+      </Field>
+      : <Field
+        model="test.b"
+      >
+        <input type="text" />
+      </Field>);
+
+    ToggleFields.propTypes = { field: PropTypes.string.isRequired };
+
+    it('should change the value of the control', () => {
+      const toggle = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <ToggleFields field="a" />
+        </Provider>,
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(toggle, 'input');
+      assert.equal(control.value, 'a value');
+
+      ReactDOM.render(
+        <Provider store={store}>
+          <ToggleFields field="b" />
+        </Provider>,
+      ReactDOM.findDOMNode(toggle).parentNode);
+
+      const newControl = TestUtils.findRenderedDOMComponentWithTag(toggle, 'input');
+      assert.equal(newControl.name, 'test.b');
+      assert.equal(newControl.value, 'b value');
     });
   });
 
