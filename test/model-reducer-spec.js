@@ -14,8 +14,6 @@ describe('modelReducer()', () => {
     assert.deepEqual(
       reducer(undefined, {}),
       { foo: 'bar' });
-
-    assert.equal(reducer(undefined, {}).$model, 'test');
   });
 
   it('should ignore external actions', () => {

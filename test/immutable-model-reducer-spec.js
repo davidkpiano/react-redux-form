@@ -18,8 +18,6 @@ describe('immutable modelReducer()', () => {
     assert.deepEqual(
       reducer(undefined, {}),
       Immutable.fromJS({ foo: 'bar' }));
-
-    assert.equal(reducer(undefined, {}).$model, 'test');
   });
 
   it('should ignore external actions', () => {
