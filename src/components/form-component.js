@@ -101,7 +101,7 @@ class Form extends Component {
       onSubmit,
       dispatch,
       validators,
-      errors,
+      errors: errorValidators,
     } = this.props;
 
     const formValid = formValue
@@ -119,13 +119,13 @@ class Form extends Component {
       onInvalid: dispatchInvalidCallback(model, dispatch),
     };
 
+    const finalErrorValidators = validators
+      ? merge(invertValidators(validators), errorValidators)
+      : errorValidators;
 
     dispatch(actions.validateFieldsErrors(
       model,
-      merge(
-        invertValidators(validators),
-        errors
-      ),
+      finalErrorValidators,
       validationOptions));
 
     return modelValue;

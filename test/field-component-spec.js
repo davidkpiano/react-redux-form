@@ -750,7 +750,6 @@ describe('<Field /> component', () => {
   describe('errors property', () => {
     const reducer = formReducer('test');
 
-
     it('should set the proper field state for errors', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         testForm: reducer,
@@ -869,6 +868,40 @@ describe('<Field /> component', () => {
           length: 'too long',
           valid: 'not valid',
         });
+    });
+
+    it('should handle a validator function for errors', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: reducer,
+        test: modelReducer('test', {
+          foo: '',
+        }),
+      }));
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+            errors={(val) => !val && !val.length && 'Required'}
+          >
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      assert.equal(
+        store.getState().testForm.fields.foo.errors,
+        'Required');
+
+      control.value = 'valid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.fields.foo.errors,
+        false);
     });
   });
 

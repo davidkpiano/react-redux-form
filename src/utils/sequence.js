@@ -136,10 +136,11 @@ function sequenceEventActions(props) {
       const fieldValidity = getValidity(props.validators, value);
       const fieldErrors = getValidity(props.errors, value);
 
-      dispatch(setErrors(model, merge(
-        invertValidity(fieldValidity),
-        fieldErrors
-      )));
+      const errors = props.validators
+        ? merge(invertValidity(fieldValidity), fieldErrors)
+        : fieldErrors;
+
+      dispatch(setErrors(model, errors));
 
       return value;
     };

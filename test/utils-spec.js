@@ -1,4 +1,8 @@
-import { invertValidators, getValidity, isInvalid } from '../src/utils/index';
+import {
+  invertValidators,
+  getValidity,
+  isInvalid,
+} from '../src/utils/index';
 import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
 import { assert } from 'chai';
@@ -56,6 +60,16 @@ describe('utils', () => {
           two: false,
         },
       });
+    });
+  });
+
+  describe('getValidity()', () => {
+    it('should handle an error validator that returns a string', () => {
+      const validators = { test: (val) => !val && 'Required' };
+
+      assert.deepEqual(
+        getValidity(validators, ''),
+        { test: 'Required' });
     });
   });
 });
