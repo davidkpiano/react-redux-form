@@ -9,9 +9,22 @@ function icepickSet(state, path, value) {
   return icepick.setIn(state, path, value);
 }
 
+function setModelProp(state, model) {
+  if (state.$model) return state;
+
+  Object.defineProperty(state, '$model', {
+    enumerable: false,
+    value: model,
+  });
+
+  return state;
+}
+
 function createModeler(getter = _get, setter = icepickSet, initialModelState = {}) {
   return function _createModelReducer(model, initialState = initialModelState) {
     const modelPath = toPath(model);
+    
+    initialState = setModelProp(initialState, model);
 
     const modelReducer = (state = initialState, action) => {
       if (!action.model) {
