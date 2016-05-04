@@ -17,7 +17,7 @@
 //     assert.ok(Control);
 //   });
 
-//   it('should work as expected with a model (happy path)', () => {
+//   it.only('should work as expected with a model (happy path)', () => {
 //     const store = createTestStore({
 //       test: modelReducer('test', { foo: 'bar' }),
 //       testForm: formReducer('test', { foo: 'bar' }),

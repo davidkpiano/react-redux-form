@@ -2,6 +2,7 @@ import actions from './actions';
 import actionTypes from './action-types';
 
 import Field, { controlPropsMap, createFieldClass } from './components/field-component';
+import Control from './components/control-component';
 import Form from './components/form-component';
 import Errors from './components/errors-component';
 
@@ -33,6 +34,7 @@ export {
   modelFormReducer,
   modelForm,
   Field,
+  Control,
   Form,
   Errors,
   getField,

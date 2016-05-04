@@ -1,5 +1,5 @@
 import _get from 'lodash/get';
-import mapValues from 'lodash/mapValues';
+import mapValues from '../utils/map-values';
 
 import actionTypes from '../action-types';
 import batchActions from './batch-actions';

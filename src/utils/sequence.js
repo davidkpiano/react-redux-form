@@ -1,7 +1,7 @@
 import identity from 'lodash/identity';
 import capitalize from 'lodash/capitalize';
 import partial from 'lodash/partial';
-import mapValues from 'lodash/mapValues';
+import mapValues from '../utils/map-values';
 import compose from 'lodash/fp/compose';
 import isEqual from 'lodash/isEqual';
 import memoize from 'lodash/memoize';
@@ -49,9 +49,8 @@ const modelValueUpdaterMap = {
 };
 
 
-function isReadOnlyValue(control) {
-  return control.type === 'input' // verify === is okay
-    && ~['radio', 'checkbox'].indexOf(control.props.type);
+function isReadOnlyValue(controlProps) {
+  return ~['radio', 'checkbox'].indexOf(controlProps.type);
 }
 
 function deprecateUpdateOn(updateOn) {
@@ -63,19 +62,19 @@ function deprecateUpdateOn(updateOn) {
 
 function sequenceEventActions(props) {
   const {
-    control,
     dispatch,
     model,
-    updateOn,
+    updateOn = 'change',
     parser,
-    changeAction,
+    changeAction = identity,
+    controlProps = {},
   } = props;
 
   const {
     onChange = identity,
     onBlur = identity,
     onFocus = identity,
-  } = control.props;
+  } = controlProps;
 
   const controlOnChange = persistEventWithCallback(onChange);
   const controlOnBlur = persistEventWithCallback(onBlur);
@@ -83,7 +82,7 @@ function sequenceEventActions(props) {
 
   const updateOnEventHandler = (typeof updateOn === 'function')
     ? 'onChange'
-    : `on${capitalize(props.updateOn)}`;
+    : `on${capitalize(updateOn)}`;
   const validateOn = `on${capitalize(props.validateOn)}`;
   const asyncValidateOn = `on${capitalize(props.asyncValidateOn)}`;
 
@@ -100,12 +99,12 @@ function sequenceEventActions(props) {
   };
 
   const controlChangeMethod = partial(changeAction, model);
-  const modelValueUpdater = modelValueUpdaterMap[control.props.type]
+  const modelValueUpdater = modelValueUpdaterMap[controlProps.type]
     || modelValueUpdaterMap.default;
 
-  if (control.props.defaultValue) {
+  if (controlProps.defaultValue) {
     eventActions.onLoad.push(() => dispatch(
-      actions.change(model, control.props.defaultValue)));
+      actions.change(model, controlProps.defaultValue)));
   }
 
   let changeActionCreator;
@@ -168,8 +167,8 @@ function sequenceEventActions(props) {
   }
 
   const dispatchChange = (event) => {
-    const modelValue = isReadOnlyValue(control)
-      ? modelValueUpdater(props, control.props.value)
+    const modelValue = isReadOnlyValue(controlProps)
+      ? modelValueUpdater(props, controlProps.value)
       : event;
 
     dispatch(changeActionCreator(modelValue));
@@ -179,7 +178,7 @@ function sequenceEventActions(props) {
 
   eventActions.onSubmit.push(updaterFn(dispatchChange));
 
-  if (!isReadOnlyValue(control)) {
+  if (!isReadOnlyValue(controlProps)) {
     eventActions[updateOnEventHandler].push(
       compose(
         updaterFn(dispatchChange),

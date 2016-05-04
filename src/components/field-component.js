@@ -129,7 +129,8 @@ function createFieldControlComponent(control, props, options) {
       {...controlProps}
       modelValue={props.modelValue}
       control={control}
-      component={control.constructor}
+      controlProps={control.props}
+      component={control.type}
       mapProps={mapProps}
     />
   );

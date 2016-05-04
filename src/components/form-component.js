@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 import _get from 'lodash/get';
-import mapValues from 'lodash/mapValues';
+import mapValues from '../utils/map-values';
 import merge from 'lodash/merge';
 
 import actions from '../actions';

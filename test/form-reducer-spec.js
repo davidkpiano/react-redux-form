@@ -50,211 +50,213 @@ describe('formReducer()', () => {
     });
   });
 
-  it('should be able to handle model at deep state path', () => {
-    const reducer = formReducer('forms.test');
-    const actual = reducer(undefined, actions.focus('forms.test.foo'));
-    assert.deepEqual(actual.fields.foo, {
-      ...initialFieldState,
-      focus: true,
-      blur: false,
+  describe('deep paths', () => {
+    it('should be able to handle model at deep state path', () => {
+      const reducer = formReducer('forms.test');
+      const actual = reducer(undefined, actions.focus('forms.test.foo'));
+      assert.deepEqual(actual.fields.foo, {
+        ...initialFieldState,
+        focus: true,
+        blur: false,
+      });
     });
-  });
 
-  it('should initialize fields given an initial state', () => {
-    const reducer = formReducer('test', {
-      foo: 'bar',
-      deep: {
-        one: 'one',
-        two: {
-          three: 'four',
+    it('should initialize fields given an initial state', () => {
+      const reducer = formReducer('test', {
+        foo: 'bar',
+        deep: {
+          one: 'one',
+          two: {
+            three: 'four',
+          },
         },
-      },
+      });
+
+      const actual = reducer(undefined, {});
+
+      assert.containSubset(actual.fields, {
+        foo: {
+          initialValue: 'bar',
+        },
+        'deep.one': {
+          initialValue: 'one',
+        },
+        'deep.two.three': {
+          initialValue: 'four',
+        },
+      });
     });
 
-    const actual = reducer(undefined, {});
+    it('should become valid when an invalid field is removed', (done) => {
+      const reducer = formReducer('test', {
+        items: [],
+      });
 
-    assert.containSubset(actual.fields, {
-      foo: {
-        initialValue: 'bar',
-      },
-      'deep.one': {
-        initialValue: 'one',
-      },
-      'deep.two.three': {
-        initialValue: 'four',
-      },
-    });
-  });
+      const validItem = reducer(undefined, actions.setValidity('test.items[0]', true));
+      const invalidItem = reducer(validItem, actions.setValidity('test.items[1]', false));
 
-  it('should become valid when an invalid field is removed', (done) => {
-    const reducer = formReducer('test', {
-      items: [],
-    });
+      assert.isFalse(invalidItem.valid, 'form should be invalid');
 
-    const validItem = reducer(undefined, actions.setValidity('test.items[0]', true));
-    const invalidItem = reducer(validItem, actions.setValidity('test.items[1]', false));
+      let removedState;
 
-    assert.isFalse(invalidItem.valid, 'form should be invalid');
+      const dispatch = (action) => {
+        removedState = reducer(invalidItem, action);
+        assert.isTrue(removedState.valid);
+        done();
+      };
 
-    let removedState;
+      const getState = () => invalidItem;
 
-    const dispatch = (action) => {
-      removedState = reducer(invalidItem, action);
-      assert.isTrue(removedState.valid);
-      done();
-    };
-
-    const getState = () => invalidItem;
-
-    actions.remove('test.items', 1)(dispatch, getState);
-  });
-
-  it('should become valid when a field with an invalid property is removed', (done) => {
-    const reducer = formReducer('test', {
-      items: [
-        { name: 'item1' },
-        { name: 'item2' },
-      ],
+      actions.remove('test.items', 1)(dispatch, getState);
     });
 
-    const validItem = reducer(undefined, actions.setValidity('test.items[0].name', true));
-    const invalidItem = reducer(validItem, actions.setValidity('test.items[1].name', false));
+    it('should become valid when a field with an invalid property is removed', (done) => {
+      const reducer = formReducer('test', {
+        items: [
+          { name: 'item1' },
+          { name: 'item2' },
+        ],
+      });
 
-    assert.isFalse(invalidItem.valid, 'form should be invalid');
+      const validItem = reducer(undefined, actions.setValidity('test.items[0].name', true));
+      const invalidItem = reducer(validItem, actions.setValidity('test.items[1].name', false));
 
-    let removedState;
+      assert.isFalse(invalidItem.valid, 'form should be invalid');
 
-    const dispatch = (action) => {
-      removedState = reducer(invalidItem, action);
-      assert.isTrue(removedState.valid);
-      done();
-    };
+      let removedState;
 
-    const getState = () => invalidItem;
+      const dispatch = (action) => {
+        removedState = reducer(invalidItem, action);
+        assert.isTrue(removedState.valid);
+        done();
+      };
 
-    actions.remove('test.items', 1)(dispatch, getState);
-  });
+      const getState = () => invalidItem;
 
-  it('should clean after itself when a field is removed', (done) => {
-    const reducer = formReducer('test', {
-      items: [
-        { name: 'item1' },
-        { name: 'item2' },
-      ],
+      actions.remove('test.items', 1)(dispatch, getState);
     });
 
-    const validItem = reducer(
-      undefined,
-      actions.setValidity('test.items[0].name', true));
-    const invalidItem = reducer(
-      validItem,
-      actions.setValidity('test.items[1].name', false));
+    it('should clean after itself when a field is removed', (done) => {
+      const reducer = formReducer('test', {
+        items: [
+          { name: 'item1' },
+          { name: 'item2' },
+        ],
+      });
 
-    assert.isFalse(invalidItem.valid, 'form should be invalid');
+      const validItem = reducer(
+        undefined,
+        actions.setValidity('test.items[0].name', true));
+      const invalidItem = reducer(
+        validItem,
+        actions.setValidity('test.items[1].name', false));
 
-    let removedState;
+      assert.isFalse(invalidItem.valid, 'form should be invalid');
 
-    const dispatch = action => {
-      removedState = reducer(invalidItem, action);
-      assert.isFalse(removedState.valid);
-      assert.isUndefined(removedState.fields['items.1.name']);
-    };
+      let removedState;
 
-    const getState = () => invalidItem;
+      const dispatch = action => {
+        removedState = reducer(invalidItem, action);
+        assert.isFalse(removedState.valid);
+        assert.isUndefined(removedState.fields['items.1.name']);
+      };
 
-    actions.remove('test.items', 0)(dispatch, getState);
+      const getState = () => invalidItem;
 
-    const dispatch2 = action => {
-      const removedState2 = reducer(removedState, action);
-      assert.isTrue(removedState2.valid);
-      done();
-    };
+      actions.remove('test.items', 0)(dispatch, getState);
 
-    const getState2 = () => removedState;
+      const dispatch2 = action => {
+        const removedState2 = reducer(removedState, action);
+        assert.isTrue(removedState2.valid);
+        done();
+      };
 
-    actions.remove('test.items', 0)(dispatch2, getState2);
-  });
+      const getState2 = () => removedState;
 
-  it('should have correct overall validity after a field validity is reset', () => {
-    const reducer = formReducer('test', {
-      foo: 'one',
-      bar: 'two',
+      actions.remove('test.items', 0)(dispatch2, getState2);
     });
 
-    const bothInvalidState = reducer(undefined, actions.setFieldsValidity('test', {
-      foo: false,
-      bar: false,
-    }));
+    it('should have correct overall validity after a field validity is reset', () => {
+      const reducer = formReducer('test', {
+        foo: 'one',
+        bar: 'two',
+      });
 
-    assert.isFalse(bothInvalidState.valid);
+      const bothInvalidState = reducer(undefined, actions.setFieldsValidity('test', {
+        foo: false,
+        bar: false,
+      }));
 
-    const oneInvalidState = reducer(bothInvalidState, actions.setValidity('test.foo', true));
+      assert.isFalse(bothInvalidState.valid);
 
-    assert.isFalse(oneInvalidState.valid);
+      const oneInvalidState = reducer(bothInvalidState, actions.setValidity('test.foo', true));
 
-    const validState = reducer(oneInvalidState, actions.setValidity('test.bar', true));
+      assert.isFalse(oneInvalidState.valid);
 
-    assert.isTrue(validState.valid);
-  });
+      const validState = reducer(oneInvalidState, actions.setValidity('test.bar', true));
 
-  it('should clean after itself when a valid field (scenario with 3 items)', (done) => {
-    const reducer = formReducer('test', {
-      items: [
-        { name: 'item1' },
-        { name: 'item2' },
-        { name: 'item3' },
-      ],
+      assert.isTrue(validState.valid);
     });
 
-    const state1 = reducer(
-      undefined,
-      actions.setValidity('test.items[0].name', true));
-    const state2 = reducer(
-      state1,
-      actions.setValidity('test.items[1].name', false));
-    const state3 = reducer(
-      state2,
-      actions.setValidity('test.items[2].name', true));
+    it('should clean after itself when a valid field (scenario with 3 items)', (done) => {
+      const reducer = formReducer('test', {
+        items: [
+          { name: 'item1' },
+          { name: 'item2' },
+          { name: 'item3' },
+        ],
+      });
 
-    assert.isFalse(state3.valid, 'form should be invalid');
+      const state1 = reducer(
+        undefined,
+        actions.setValidity('test.items[0].name', true));
+      const state2 = reducer(
+        state1,
+        actions.setValidity('test.items[1].name', false));
+      const state3 = reducer(
+        state2,
+        actions.setValidity('test.items[2].name', true));
 
-    let removedState;
+      assert.isFalse(state3.valid, 'form should be invalid');
 
-    const dispatch = action => {
-      removedState = reducer(state3, action);
-      assert.isFalse(removedState.valid, 'form should still be invalid');
-      done();
-    };
+      let removedState;
 
-    const getState = () => state3;
+      const dispatch = action => {
+        removedState = reducer(state3, action);
+        assert.isFalse(removedState.valid, 'form should still be invalid');
+        done();
+      };
 
-    actions.remove('test.items', 2)(dispatch, getState);
-  });
+      const getState = () => state3;
 
-  it('should clean all props after itself when a field is removed', (done) => {
-    const reducer = formReducer('test', {
-      items: [
-        { name: 'item1', dummy: true },
-        { name: 'item2', dummy: true },
-      ],
+      actions.remove('test.items', 2)(dispatch, getState);
     });
 
-    const invalidItem = reducer(
-      undefined,
-      actions.setValidity('test.items[1].name', false)
-    );
+    it('should clean all props after itself when a field is removed', (done) => {
+      const reducer = formReducer('test', {
+        items: [
+          { name: 'item1', dummy: true },
+          { name: 'item2', dummy: true },
+        ],
+      });
 
-    let removedState;
+      const invalidItem = reducer(
+        undefined,
+        actions.setValidity('test.items[1].name', false)
+      );
 
-    const dispatch = action => {
-      removedState = reducer(invalidItem, action);
-      assert.isUndefined(removedState.fields['items.1.name']);
-      assert.isUndefined(removedState.fields['items.1.dummy']); // <-- this field is leftover
-      done();
-    };
+      let removedState;
 
-    const getState = () => invalidItem;
+      const dispatch = action => {
+        removedState = reducer(invalidItem, action);
+        assert.isUndefined(removedState.fields['items.1.name']);
+        assert.isUndefined(removedState.fields['items.1.dummy']); // <-- this field is leftover
+        done();
+      };
 
-    actions.remove('test.items', 0)(dispatch, getState);
+      const getState = () => invalidItem;
+
+      actions.remove('test.items', 0)(dispatch, getState);
+    });
   });
 });

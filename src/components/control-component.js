@@ -1,12 +1,13 @@
-import { Component, cloneElement, PropTypes } from 'react';
+import { Component, createElement, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 
 import _get from 'lodash/get';
 import memoize from 'lodash/memoize';
 import { sequenceEventActions } from '../utils/sequence';
+import actions from '../actions';
 
 const createControlProps = memoize((props) => {
-  const { model, modelValue, control, mapProps } = props;
+  const { model, modelValue, controlProps, mapProps } = props;
 
   if (!mapProps) {
     return false;
@@ -15,7 +16,7 @@ const createControlProps = memoize((props) => {
   return mapProps({
     model,
     modelValue,
-    ...control.props,
+    ...controlProps,
     ...sequenceEventActions(props),
   });
 });
@@ -64,12 +65,12 @@ class Control extends Component {
   }
 
   render() {
-    const { control } = this.props;
+    const { controlProps, component } = this.props;
 
-    return cloneElement(
-      control,
+    return createElement(
+      component,
       {
-        ...control.props,
+        ...controlProps,
         ...this.props,
         onKeyPress: this.handleKeyPress,
       });
@@ -82,6 +83,15 @@ Control.propTypes = {
   onSubmit: PropTypes.func,
   modelValue: PropTypes.any,
   mapProps: PropTypes.func,
+  changeAction: PropTypes.func,
+  updateOn: PropTypes.string,
+  controlProps: PropTypes.object,
+  component: PropTypes.any,
+};
+
+Control.defaultProps = {
+  changeAction: actions.change,
+  updateOn: 'change',
 };
 
 export default connect(selector)(Control);

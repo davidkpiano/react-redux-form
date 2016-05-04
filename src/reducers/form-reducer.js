@@ -5,7 +5,7 @@ import isBoolean from 'lodash/isBoolean';
 import isEqual from 'lodash/isEqual';
 import isPlainObject from 'lodash/isPlainObject';
 import map from 'lodash/map';
-import mapValues from 'lodash/mapValues';
+import mapValues from '../utils/map-values';
 import toPath from 'lodash/toPath';
 import startsWith from 'lodash/startsWith';
 import flatten from 'flat';

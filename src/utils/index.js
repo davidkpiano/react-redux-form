@@ -1,5 +1,5 @@
 import endsWith from 'lodash/endsWith';
-import mapValues from 'lodash/mapValues';
+import mapValues from '../utils/map-values';
 import isPlainObject from 'lodash/isPlainObject';
 import every from 'lodash/every';
 import some from 'lodash/some';
