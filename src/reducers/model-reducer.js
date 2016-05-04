@@ -31,16 +31,6 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
           return action.actions.reduce(modelReducer, state);
 
         case actionTypes.CHANGE:
-          if (!localPath.length) {
-            return action.value;
-          }
-
-          if (isEqual(getter(state, localPath), action.value)) {
-            return state;
-          }
-
-          return setter(state, localPath, action.value);
-
         case actionTypes.LOAD:
           if (!localPath.length) {
             return action.value;
@@ -51,7 +41,6 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
           }
 
           return setter(state, localPath, action.value);
-
 
         case actionTypes.RESET:
           if (!localPath.length) {
