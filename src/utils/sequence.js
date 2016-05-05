@@ -4,7 +4,6 @@ import partial from 'lodash/partial';
 import mapValues from '../utils/map-values';
 import compose from 'lodash/fp/compose';
 import isEqual from 'lodash/isEqual';
-import memoize from 'lodash/memoize';
 import merge from 'lodash/merge';
 import icepick from 'icepick';
 
