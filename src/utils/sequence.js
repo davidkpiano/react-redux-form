@@ -30,7 +30,7 @@ function persistEventWithCallback(callback) {
 }
 
 const modelValueUpdaterMap = {
-  checkbox: memoize((props, eventValue) => {
+  checkbox: (props, eventValue) => {
     const { model, modelValue } = props;
 
     if (isMulti(model)) {
@@ -44,8 +44,8 @@ const modelValueUpdaterMap = {
     }
 
     return !modelValue;
-  }),
-  default: memoize((props, eventValue) => eventValue),
+  },
+  default: (props, eventValue) => eventValue,
 };
 
 
