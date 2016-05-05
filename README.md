@@ -75,7 +75,7 @@ class MyForm extends React.Component {
           <input type="text" />
         </Field>
         <button>Submit!</button>
-      </form>
+      </Form>
     );
   }
 }
