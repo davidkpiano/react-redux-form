@@ -5,8 +5,9 @@ import TestUtils from 'react-addons-test-utils';
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
+import createTestStore from 'redux-test-store';
 
-import { Form, modelReducer, formReducer, Field, actions } from '../src';
+import { Form, modelReducer, formReducer, Field, actions, actionTypes } from '../src';
 
 describe('<Form> component', () => {
   describe('wraps component if specified', () => {
@@ -930,7 +931,7 @@ describe('<Form> component', () => {
   });
 
   describe('deep state path', () => {
-    const fromsReducer = combineReducers({
+    const formsReducer = combineReducers({
       testForm: formReducer('forms.test'),
       test: modelReducer('forms.test', {
         foo: '',
@@ -938,7 +939,7 @@ describe('<Form> component', () => {
       }),
     });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      forms: fromsReducer,
+      forms: formsReducer,
     }));
 
     const form = TestUtils.renderIntoDocument(
@@ -956,6 +957,51 @@ describe('<Form> component', () => {
 
     it('should resolve the form value', () => {
       assert.containSubset(props.formValue, { valid: true, model: 'forms.test' });
+    });
+  });
+
+  describe('invalidating async validity on form change', () => {
+    const store = createTestStore(applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { val: 'invalid' }),
+      testForm: formReducer('test', { val: 'invalid' }),
+    })));
+
+    function handleSubmit() {
+      const promise = new Promise((resolve, reject) => reject('Form is invalid'));
+
+      store.dispatch(actions.submit('test', promise));
+    }
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test"
+          onSubmit={handleSubmit}
+        >
+          <Field model="test.foo">
+            <input type="text" />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+    const inputElement = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+    it('should set errors from rejected submit handler on valid submit', (done) => {
+      store.when(actionTypes.SET_ERRORS, (state) => {
+        assert.isFalse(state.testForm.valid);
+        assert.equal(state.testForm.errors, 'Form is invalid');
+        done();
+      });
+
+      TestUtils.Simulate.submit(formElement);
+    });
+
+    it('should set validity on form changes after submit failed', () => {
+      inputElement.value = 'valid';
+      TestUtils.Simulate.change(inputElement);
+
+      assert.isTrue(store.getState().testForm.valid);
     });
   });
 });
