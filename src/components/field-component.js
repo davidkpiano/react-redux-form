@@ -14,7 +14,7 @@ const {
   change,
 } = actions;
 
-function selector(state, { model }) {
+function mapStateToProps(state, { model }) {
   const modelString = typeof model === 'function'
     ? model(state)
     : model;
@@ -56,7 +56,9 @@ const controlPropsMap = {
   }),
   text: (props) => ({
     ...props,
-    defaultValue: props.modelValue,
+    value: props.updateOn === 'change' && !props.defaultValue
+      ? props.modelValue
+      : undefined,
     name: props.model,
   }),
   textarea: (props) => controlPropsMap.text(props),
@@ -217,7 +219,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     ...defaultProps,
   };
 
-  return connect(selector)(Field);
+  return connect(mapStateToProps)(Field);
 }
 
 export {

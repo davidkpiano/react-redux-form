@@ -2,39 +2,26 @@ import { Component, createElement, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 
 import _get from 'lodash/get';
-import memoize from 'lodash/memoize';
 import { sequenceEventActions } from '../utils/sequence';
 import actions from '../actions';
 
-const createControlProps = memoize((props) => {
-  const { model, modelValue, controlProps, mapProps } = props;
-
-  if (!mapProps) {
-    return false;
-  }
-
-  return mapProps({
-    model,
-    modelValue,
-    ...controlProps,
-    ...sequenceEventActions(props),
-  });
-});
-
-function selector(state, props) {
-  const controlProps = createControlProps(props);
-
-  const model = props.model;
-
+function mapStateToProps(state, props) {
+  const { model, controlProps, mapProps } = props;
   const modelString = typeof model === 'function'
     ? model(state)
     : model;
 
-  return {
-    model: modelString,
+  if (!mapProps) {
+    return props;
+  }
+
+  return mapProps({
+    model,
     modelValue: _get(state, modelString),
+    ...props,
     ...controlProps,
-  };
+    ...sequenceEventActions(props),
+  });
 }
 
 class Control extends Component {
@@ -94,4 +81,4 @@ Control.defaultProps = {
   updateOn: 'change',
 };
 
-export default connect(selector)(Control);
+export default connect(mapStateToProps)(Control);

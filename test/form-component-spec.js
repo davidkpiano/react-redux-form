@@ -59,58 +59,87 @@ describe('<Form> component', () => {
       assert.ok(wrapper);
     });
   });
+
   describe('validation on submit', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('test', {}),
-      test: modelReducer('test'),
-    }));
+    function fixture() {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: formReducer('test', { foo: '', bar: '' }),
+        test: modelReducer('test', { foo: '', bar: '' }),
+      }));
 
-    let timesValidated = 0;
+      let timesValidated = 0;
 
-    const form = TestUtils.renderIntoDocument(
-      <Provider store={store}>
-        <Form model="test"
-          validators={{
-            foo: (val) => {
-              timesValidated += 1;
-              return val === 'testing foo';
-            },
-            bar: {
-              one: (val) => val && val.length >= 1,
-              two: (val) => val && val.length >= 2,
-            },
-          }}
-          validateOn="submit"
-        >
-          <Field model="test.foo">
-            <input type="text" />
-          </Field>
+      function getTimesValidated() {
+        return timesValidated;
+      }
 
-          <Field model="test.bar">
-            <input type="text" />
-          </Field>
-        </Form>
-      </Provider>
-    );
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form model="test"
+            validators={{
+              foo: (val) => {
+                timesValidated += 1;
+                return val === 'testing foo';
+              },
+              bar: {
+                one: (val) => val && val.length >= 1,
+                two: (val) => val && val.length >= 2,
+              },
+            }}
+            validateOn="submit"
+          >
+            <Field model="test.foo">
+              <input type="text" />
+            </Field>
 
-    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+            <Field model="test.bar">
+              <input type="text" />
+            </Field>
+          </Form>
+        </Provider>
+      );
 
-    const [fooControl, barControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+      const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+      const [fooControl, barControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+
+      return {
+        store,
+        form,
+        formElement,
+        fooControl,
+        barControl,
+        timesValidated: getTimesValidated,
+      };
+    }
 
     it('should only have validated once (on load) before submit', () => {
-      assert.equal(timesValidated, 1);
+      const { timesValidated } = fixture();
+
+      assert.equal(timesValidated(), 1);
     });
 
     it('should not validate on change', () => {
+      const { fooControl, timesValidated } = fixture();
+
       TestUtils.Simulate.change(fooControl);
 
-      assert.equal(timesValidated, 1);
+      assert.equal(timesValidated(), 1);
     });
 
     it('should validate all validators on submit', () => {
+      const {
+        formElement,
+        store,
+        timesValidated,
+        fooControl,
+      } = fixture();
+
+      assert.equal(timesValidated(), 1);
+
       TestUtils.Simulate.submit(formElement);
 
-      assert.equal(timesValidated, 2);
+      assert.equal(timesValidated(), 2);
 
       assert.containSubset(
         store.getState().testForm.fields.foo,
@@ -120,11 +149,16 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.change(fooControl);
 
-      assert.equal(timesValidated, 2);
+      assert.equal(
+        store.getState().test.foo,
+        'testing foo');
+
+      assert.equal(timesValidated(), 2,
+        'should not have validated again before submit');
 
       TestUtils.Simulate.submit(formElement);
 
-      assert.equal(timesValidated, 3);
+      assert.equal(timesValidated(), 3);
 
       assert.containSubset(
         store.getState().testForm.fields.foo,
@@ -132,6 +166,8 @@ describe('<Form> component', () => {
     });
 
     it('should allow for keywise validation', () => {
+      const { formElement, store, barControl } = fixture();
+
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
@@ -143,6 +179,11 @@ describe('<Form> component', () => {
 
       barControl.value = '1';
       TestUtils.Simulate.change(barControl);
+
+      assert.equal(
+        store.getState().test.bar,
+        '1');
+
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
@@ -154,6 +195,11 @@ describe('<Form> component', () => {
 
       barControl.value = '12';
       TestUtils.Simulate.change(barControl);
+
+      assert.equal(
+        store.getState().test.bar,
+        '12');
+
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
@@ -169,6 +215,7 @@ describe('<Form> component', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test'),
       test: modelReducer('test', {
+        foo: '',
         bar: '',
       }),
     }));
@@ -336,7 +383,10 @@ describe('<Form> component', () => {
   describe('validation on change (default)', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test'),
-      test: modelReducer('test', { bar: '' }),
+      test: modelReducer('test', {
+        foo: '',
+        bar: '',
+      }),
     }));
 
     let timesBarValidationCalled = 0;
@@ -409,7 +459,10 @@ describe('<Form> component', () => {
   describe('error validation on change', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test'),
-      test: modelReducer('test', { bar: '' }),
+      test: modelReducer('test', {
+        foo: '',
+        bar: '',
+      }),
     }));
 
     let timesBarValidationCalled = 0;
@@ -550,7 +603,11 @@ describe('<Form> component', () => {
   describe('onSubmit() prop', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test'),
-      test: modelReducer('test'),
+      test: modelReducer('test', {
+        foo: '',
+        bar: '',
+        baz: '',
+      }),
     }));
 
     let submitValue = null;

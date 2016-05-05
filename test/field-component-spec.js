@@ -516,7 +516,10 @@ describe('<Field /> component', () => {
     const reducer = formReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: reducer,
-      test: modelReducer('test', {}),
+      test: modelReducer('test', {
+        foo: '',
+        blur: '',
+      }),
     }));
 
     it('should set the proper field state for validation', () => {
@@ -1150,7 +1153,7 @@ describe('<Field /> component', () => {
   });
 
   describe('syncing control defaultValue on load', () => {
-    const reducer = modelReducer('test');
+    const reducer = modelReducer('test', { foo: '' });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
     }));
@@ -1207,7 +1210,7 @@ describe('<Field /> component', () => {
   });
 
   describe('changeAction prop', () => {
-    const reducer = modelReducer('test');
+    const reducer = modelReducer('test', { foo: '' });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
     }));
@@ -1244,7 +1247,7 @@ describe('<Field /> component', () => {
   });
 
   describe('event handlers on control', () => {
-    const reducer = modelReducer('test');
+    const reducer = modelReducer('test', { foo: '' });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
     }));
