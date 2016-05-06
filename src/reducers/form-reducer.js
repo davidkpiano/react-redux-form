@@ -27,6 +27,7 @@ const initialFieldState = {
   untouched: true, // will be deprecated
   valid: true,
   validating: false,
+  validated: false,
   viewValue: null,
   array: false,
   validity: {},
@@ -152,6 +153,7 @@ function _createFormReducer(model, initialState) {
           dirty: true, // will be deprecated
           pristine: false,
           value: action.value,
+          validated: false,
         });
 
         if (action.removeKeys) {
@@ -268,6 +270,7 @@ function _createFormReducer(model, initialState) {
           errors,
           validity: action.validity,
           valid: isBoolean(errors) ? !errors : every(errors, error => !error),
+          validated: true,
         });
 
         return icepick.merge(formIsValidState, {
@@ -291,6 +294,7 @@ function _createFormReducer(model, initialState) {
           errors: action.errors,
           validity,
           valid: isValid(validity),
+          validated: true,
         });
 
         return icepick.merge(setErrorsState, {

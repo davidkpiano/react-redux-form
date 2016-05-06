@@ -519,6 +519,7 @@ describe('<Field /> component', () => {
       test: modelReducer('test', {
         foo: '',
         blur: '',
+        external: '',
       }),
     }));
 
@@ -611,6 +612,38 @@ describe('<Field /> component', () => {
           bad: true,
           custom: false,
         }, 'should only validate upon blur');
+    });
+
+    it('should validate on external change', () => {
+      let timesValidationCalled = 0;
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.external"
+            validators={{
+              required: (val) => {
+                timesValidationCalled += 1;
+                return val && val.length;
+              },
+            }}
+          >
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      assert.equal(timesValidationCalled, 1,
+        'validation called on load');
+
+      assert.isFalse(store.getState().testForm.fields.external.valid);
+
+      store.dispatch(actions.change('test.external', 'valid'));
+
+      assert.isTrue(store.getState().testForm.fields.external.valid);
+
+      assert.equal(timesValidationCalled, 2,
+        'validation called because of external change');
     });
 
     it('should send the proper model value to the validators', () => {
