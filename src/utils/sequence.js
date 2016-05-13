@@ -1,6 +1,5 @@
 import identity from 'lodash/identity';
-import capitalize from 'lodash/capitalize';
-import partial from 'lodash/partial';
+import capitalize from '../utils/capitalize';
 import mapValues from '../utils/map-values';
 import compose from 'lodash/fp/compose';
 import isEqual from 'lodash/isEqual';
@@ -97,7 +96,7 @@ function sequenceEventActions(props) {
     onSubmit: [], // pseudo-event
   };
 
-  const controlChangeMethod = partial(changeAction, model);
+  const controlChangeMethod = (...args) => changeAction(model, ...args);
   const modelValueUpdater = modelValueUpdaterMap[controlProps.type]
     || modelValueUpdaterMap.default;
 
@@ -182,7 +181,7 @@ function sequenceEventActions(props) {
     eventActions[updateOnEventHandler].push(
       compose(
         updaterFn(dispatchChange),
-        partial(modelValueUpdater, props),
+        (...args) => modelValueUpdater(props, ...args),
         parser,
         getValue,
         controlOnChange));
