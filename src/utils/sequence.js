@@ -64,7 +64,7 @@ function sequenceEventActions(props) {
     dispatch,
     model,
     updateOn = 'change',
-    parser,
+    parser = identity,
     changeAction = identity,
     controlProps = {},
   } = props;

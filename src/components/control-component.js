@@ -96,7 +96,7 @@ class Control extends Component {
   }
 
   render() {
-    const { controlProps, component } = this.props;
+    const { controlProps = {}, component } = this.props;
 
     return createElement(
       component,
@@ -104,7 +104,8 @@ class Control extends Component {
         ...controlProps,
         ...this.props,
         onKeyPress: this.handleKeyPress,
-      });
+      },
+      controlProps.children);
   }
 }
 
