@@ -7,8 +7,9 @@ import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 import capitalize from 'lodash/capitalize';
 import sinon from 'sinon';
+import createTestStore from 'redux-test-store';
 
-import { Field, actions, formReducer, modelReducer } from '../src';
+import { Field, actions, actionTypes, formReducer, modelReducer } from '../src';
 
 describe('<Field /> component', () => {
   const textFieldElements = [
@@ -1378,5 +1379,57 @@ describe('<Field /> component', () => {
           `testing ${event}`);
       });
     });
+  });
+
+  it('should remove the item at the specified index of the array'
+    + 'represented by the model', (done) => {
+    const store = createTestStore(applyMiddleware(thunk)(createStore)(combineReducers({
+      form: formReducer('test'),
+      test: modelReducer('test', {
+        foo: [
+          { val: 1 },
+          { val: 2 },
+          { val: 3 },
+        ],
+      }),
+    })), done);
+    const index = 1;
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo.0.val">
+          <div>
+            <label />
+            <input defaultValue="value" />
+          </div>
+        </Field>
+      </Provider>
+    );
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo.1.val">
+          <div>
+            <label />
+            <input defaultValue="value" />
+          </div>
+        </Field>
+      </Provider>
+    );
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo.2.val">
+          <div>
+            <label />
+            <input defaultValue="value" />
+          </div>
+        </Field>
+      </Provider>
+    );
+    assert.equal(store.getState().test.foo.length, 3);
+
+    store.when(actionTypes.CHANGE, (state) => {
+      assert.equal(state.test.foo.length, 2);
+    });
+
+    store.dispatch(actions.remove('test.foo', index));
   });
 });
