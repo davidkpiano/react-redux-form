@@ -1,10 +1,8 @@
 import identity from 'lodash/identity';
-import capitalize from 'lodash/capitalize';
-import partial from 'lodash/partial';
+import capitalize from '../utils/capitalize';
 import mapValues from '../utils/map-values';
 import compose from 'lodash/fp/compose';
 import isEqual from 'lodash/isEqual';
-import memoize from 'lodash/memoize';
 import merge from 'lodash/merge';
 import icepick from 'icepick';
 
@@ -30,7 +28,7 @@ function persistEventWithCallback(callback) {
 }
 
 const modelValueUpdaterMap = {
-  checkbox: memoize((props, eventValue) => {
+  checkbox: (props, eventValue) => {
     const { model, modelValue } = props;
 
     if (isMulti(model)) {
@@ -44,8 +42,8 @@ const modelValueUpdaterMap = {
     }
 
     return !modelValue;
-  }),
-  default: memoize((props, eventValue) => eventValue),
+  },
+  default: (props, eventValue) => eventValue,
 };
 
 
@@ -65,7 +63,7 @@ function sequenceEventActions(props) {
     dispatch,
     model,
     updateOn = 'change',
-    parser,
+    parser = identity,
     changeAction = identity,
     controlProps = {},
   } = props;
@@ -98,7 +96,7 @@ function sequenceEventActions(props) {
     onSubmit: [], // pseudo-event
   };
 
-  const controlChangeMethod = partial(changeAction, model);
+  const controlChangeMethod = (...args) => changeAction(model, ...args);
   const modelValueUpdater = modelValueUpdaterMap[controlProps.type]
     || modelValueUpdaterMap.default;
 
@@ -183,7 +181,7 @@ function sequenceEventActions(props) {
     eventActions[updateOnEventHandler].push(
       compose(
         updaterFn(dispatchChange),
-        partial(modelValueUpdater, props),
+        (...args) => modelValueUpdater(props, ...args),
         parser,
         getValue,
         controlOnChange));

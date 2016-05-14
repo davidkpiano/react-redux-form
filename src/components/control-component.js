@@ -1,40 +1,34 @@
 import { Component, createElement, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
-
 import _get from 'lodash/get';
-import memoize from 'lodash/memoize';
+import merge from 'lodash/merge';
+
+import { invertValidity, getFieldFromState, getValidity } from '../utils';
 import { sequenceEventActions } from '../utils/sequence';
 import actions from '../actions';
 
-const createControlProps = memoize((props) => {
-  const { model, modelValue, controlProps, mapProps } = props;
+function mapStateToProps(state, props) {
+  const { model, controlProps, mapProps } = props;
+  const modelString = typeof model === 'function'
+    ? model(state)
+    : model;
+  const fieldValue = getFieldFromState(state, modelString);
 
   if (!mapProps) {
-    return false;
+    return {
+      ...props,
+      fieldValue,
+    };
   }
 
   return mapProps({
     model,
-    modelValue,
+    modelValue: _get(state, modelString),
+    fieldValue,
+    ...props,
     ...controlProps,
     ...sequenceEventActions(props),
   });
-});
-
-function selector(state, props) {
-  const controlProps = createControlProps(props);
-
-  const model = props.model;
-
-  const modelString = typeof model === 'function'
-    ? model(state)
-    : model;
-
-  return {
-    model: modelString,
-    modelValue: _get(state, modelString),
-    ...controlProps,
-  };
 }
 
 class Control extends Component {
@@ -56,6 +50,22 @@ class Control extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    const {
+      modelValue,
+      fieldValue,
+      validateOn,
+    } = this.props;
+
+    if (fieldValue
+      && !fieldValue.validated
+      && modelValue !== prevProps.modelValue
+      && validateOn === 'change'
+    ) {
+      this.validate();
+    }
+  }
+
   handleKeyPress(event) {
     const { onSubmit } = this.props;
 
@@ -64,8 +74,29 @@ class Control extends Component {
     }
   }
 
+  validate() {
+    const {
+      model,
+      modelValue,
+      validators,
+      errors: errorValidators,
+      dispatch,
+    } = this.props;
+
+    const fieldValidity = getValidity(validators, modelValue);
+    const fieldErrors = getValidity(errorValidators, modelValue);
+
+    const errors = validators
+      ? merge(invertValidity(fieldValidity), fieldErrors)
+      : fieldErrors;
+
+    dispatch(actions.setErrors(model, errors));
+
+    return modelValue;
+  }
+
   render() {
-    const { controlProps, component } = this.props;
+    const { controlProps = {}, component } = this.props;
 
     return createElement(
       component,
@@ -73,20 +104,36 @@ class Control extends Component {
         ...controlProps,
         ...this.props,
         onKeyPress: this.handleKeyPress,
-      });
+      },
+      controlProps.children);
   }
 }
 
 Control.propTypes = {
+  model: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.string,
+  ]),
   control: PropTypes.any,
   onLoad: PropTypes.func,
   onSubmit: PropTypes.func,
   modelValue: PropTypes.any,
+  fieldValue: PropTypes.object,
   mapProps: PropTypes.func,
   changeAction: PropTypes.func,
   updateOn: PropTypes.string,
+  validateOn: PropTypes.string,
+  validators: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
+  errors: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
   controlProps: PropTypes.object,
   component: PropTypes.any,
+  dispatch: PropTypes.func,
 };
 
 Control.defaultProps = {
@@ -94,4 +141,4 @@ Control.defaultProps = {
   updateOn: 'change',
 };
 
-export default connect(selector)(Control);
+export default connect(mapStateToProps)(Control);

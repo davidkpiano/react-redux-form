@@ -7,8 +7,9 @@ import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 import capitalize from 'lodash/capitalize';
 import sinon from 'sinon';
+import createTestStore from 'redux-test-store';
 
-import { Field, actions, formReducer, modelReducer } from '../src';
+import { Field, actions, actionTypes, formReducer, modelReducer } from '../src';
 
 describe('<Field /> component', () => {
   const textFieldElements = [
@@ -516,7 +517,11 @@ describe('<Field /> component', () => {
     const reducer = formReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: reducer,
-      test: modelReducer('test', {}),
+      test: modelReducer('test', {
+        foo: '',
+        blur: '',
+        external: '',
+      }),
     }));
 
     it('should set the proper field state for validation', () => {
@@ -608,6 +613,38 @@ describe('<Field /> component', () => {
           bad: true,
           custom: false,
         }, 'should only validate upon blur');
+    });
+
+    it('should validate on external change', () => {
+      let timesValidationCalled = 0;
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.external"
+            validators={{
+              required: (val) => {
+                timesValidationCalled += 1;
+                return val && val.length;
+              },
+            }}
+          >
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      assert.equal(timesValidationCalled, 1,
+        'validation called on load');
+
+      assert.isFalse(store.getState().testForm.fields.external.valid);
+
+      store.dispatch(actions.change('test.external', 'valid'));
+
+      assert.isTrue(store.getState().testForm.fields.external.valid);
+
+      assert.equal(timesValidationCalled, 2,
+        'validation called because of external change');
     });
 
     it('should send the proper model value to the validators', () => {
@@ -1150,7 +1187,7 @@ describe('<Field /> component', () => {
   });
 
   describe('syncing control defaultValue on load', () => {
-    const reducer = modelReducer('test');
+    const reducer = modelReducer('test', { foo: '' });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
     }));
@@ -1207,7 +1244,7 @@ describe('<Field /> component', () => {
   });
 
   describe('changeAction prop', () => {
-    const reducer = modelReducer('test');
+    const reducer = modelReducer('test', { foo: '' });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
     }));
@@ -1244,7 +1281,7 @@ describe('<Field /> component', () => {
   });
 
   describe('event handlers on control', () => {
-    const reducer = modelReducer('test');
+    const reducer = modelReducer('test', { foo: '' });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
     }));
@@ -1342,5 +1379,57 @@ describe('<Field /> component', () => {
           `testing ${event}`);
       });
     });
+  });
+
+  it('should remove the item at the specified index of the array'
+    + 'represented by the model', (done) => {
+    const store = createTestStore(applyMiddleware(thunk)(createStore)(combineReducers({
+      form: formReducer('test'),
+      test: modelReducer('test', {
+        foo: [
+          { val: 1 },
+          { val: 2 },
+          { val: 3 },
+        ],
+      }),
+    })), done);
+    const index = 1;
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo.0.val">
+          <div>
+            <label />
+            <input defaultValue="value" />
+          </div>
+        </Field>
+      </Provider>
+    );
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo.1.val">
+          <div>
+            <label />
+            <input defaultValue="value" />
+          </div>
+        </Field>
+      </Provider>
+    );
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo.2.val">
+          <div>
+            <label />
+            <input defaultValue="value" />
+          </div>
+        </Field>
+      </Provider>
+    );
+    assert.equal(store.getState().test.foo.length, 3);
+
+    store.when(actionTypes.CHANGE, (state) => {
+      assert.equal(state.test.foo.length, 2);
+    });
+
+    store.dispatch(actions.remove('test.foo', index));
   });
 });

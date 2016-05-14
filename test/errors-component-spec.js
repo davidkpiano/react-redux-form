@@ -15,8 +15,8 @@ describe('<Errors />', () => {
 
   describe('displaying errors from messages', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('test', {}),
-      test: modelReducer('test'),
+      testForm: formReducer('test', { foo: '' }),
+      test: modelReducer('test', { foo: '' }),
     }));
 
     const form = TestUtils.renderIntoDocument(
@@ -115,8 +115,8 @@ describe('<Errors />', () => {
 
   describe('displaying errors from form .errors', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('test', {}),
-      test: modelReducer('test'),
+      testForm: formReducer('test', { foo: '' }),
+      test: modelReducer('test', { foo: '' }),
     }));
 
     let formValid = false;
@@ -161,8 +161,8 @@ describe('<Errors />', () => {
 
   describe('displaying custom messages', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('test', {}),
-      test: modelReducer('test'),
+      testForm: formReducer('test', { foo: '' }),
+      test: modelReducer('test', { foo: '' }),
     }));
 
     const form = TestUtils.renderIntoDocument(

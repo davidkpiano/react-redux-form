@@ -7,6 +7,8 @@ import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
 import { assert } from 'chai';
 
+import { utils } from '../src/index';
+
 describe('utils', () => {
   describe('invertValidators()', () => {
     it('should invert the validity of a validator function', () => {
@@ -70,6 +72,12 @@ describe('utils', () => {
       assert.deepEqual(
         getValidity(validators, ''),
         { test: 'Required' });
+    });
+  });
+
+  describe('getFieldFromState()', () => {
+    it('should exist', () => {
+      assert.isFunction(utils.getFieldFromState);
     });
   });
 });

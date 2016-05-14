@@ -22,6 +22,8 @@ import {
   track,
 } from './utils/track';
 
+import * as utils from './utils';
+
 export {
   actions,
   actionTypes,
@@ -41,4 +43,5 @@ export {
   initialFieldState,
   modeled,
   track,
+  utils,
 };

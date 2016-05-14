@@ -8,8 +8,8 @@ import { modelReducer, formReducer, Field } from '../src';
 
 describe('<Field parser={...} />', () => {
   const store = createStore(combineReducers({
-    test: modelReducer('test'),
-    testForm: formReducer('test'),
+    test: modelReducer('test', { foo: '' }),
+    testForm: formReducer('test', { foo: '' }),
   }));
 
   const parseValue = val => ({
