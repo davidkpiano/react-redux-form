@@ -625,7 +625,10 @@ describe('<Form> component', () => {
           errors={{
             bar: (val) => val !== 'bar' && 'bar invalid',
           }}
-          onSubmit={(val) => (submitValue = val, true)}
+          onSubmit={(val) => {
+            submitValue = val;
+            return true;
+          }}
         >
           <Field model="test.foo">
             <input type="text" />
