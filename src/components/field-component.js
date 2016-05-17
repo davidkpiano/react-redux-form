@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import shallowCompare from 'react-addons-shallow-compare';
 import connect from 'react-redux/lib/components/connect';
 
 import _get from 'lodash/get';
@@ -161,6 +162,10 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
   };
 
   class Field extends Component {
+    shouldComponentUpdate(nextProps, nextState) {
+      return shallowCompare(this, nextProps, nextState);
+    }
+
     render() {
       const { props } = this;
       const component = getFieldWrapper(props);

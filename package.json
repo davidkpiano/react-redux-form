@@ -72,7 +72,8 @@
   "dependencies": {
     "flat": "^2.0.0",
     "icepick": "^1.1.0",
-    "lodash": "^4.10.0"
+    "lodash": "^4.10.0",
+    "react-addons-shallow-compare": "^15.0.2"
   },
   "peerDependencies": {
     "react": "^0.14.0 || ^15.0.0",
