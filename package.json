@@ -68,7 +68,8 @@
     "redux-thunk": "^2.0.1",
     "should": "^8.2.2",
     "sinon": "^1.17.3",
-    "webpack": "^1.12.14"
+    "webpack": "^1.12.14",
+    "webpack-bundle-size-analyzer": "^2.0.1"
   },
   "dependencies": {
     "flat": "^2.0.0",
