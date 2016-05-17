@@ -15,6 +15,12 @@ module.exports = {
       commonjs: 'redux',
       amd: 'redux',
     },
+    'react-addons-shallow-compare': {
+      root: 'react-addons-shallow-compare',
+      commonjs2: 'react-addons-shallow-compare',
+      commonjs: 'react-addons-shallow-compare',
+      amd: 'react-addons-shallow-compare',
+    },
     'react-redux': {
       root: 'ReactRedux',
       commonjs2: 'react-redux',
