@@ -154,6 +154,7 @@ function _createFormReducer(model, initialState) {
           pristine: false,
           value: action.value,
           validated: false,
+          retouched: state.submitted || state.submitFailed,
         });
 
         if (action.removeKeys) {
@@ -219,6 +220,7 @@ function _createFormReducer(model, initialState) {
           dirty: true, // will be deprecated
           pristine: false,
           valid: formIsValid(setFieldDirtyState),
+          retouched: state.submitted || state.submitFailed,
         });
       }
 
@@ -239,8 +241,8 @@ function _createFormReducer(model, initialState) {
         const fieldState = setField(state, localPath, {
           focus: false,
           touched: true,
-          retouched: state.submitted || state.submitFailed,
           blur: true, // will be deprecated
+          retouched: state.submitted || state.submitFailed,
           untouched: false, // will be deprecated
         });
 
