@@ -577,26 +577,28 @@ describe('<Errors />', () => {
         }),
       }));
 
-      assert.doesNotThrow(() => {      
-        const form = TestUtils.renderIntoDocument(
-          <Provider store={store}>
-            <form>
-              <Errors model="forms.test.foo" 
-                messages={{
-                  required: 'This field is required',
-                }}
-              />
-              <Field model="forms.test.foo"
-                validators={{
-                  required: (v) => v && v.length,
-                }}
-              >
-                <input type="text" />
-              </Field>
-            </form>
-          </Provider>
-        );
-      });
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <form>
+            <Errors model="forms.test.foo"
+              messages={{
+                required: 'This field is required',
+              }}
+            />
+            <Field model="forms.test.foo"
+              validators={{
+                required: (v) => v && v.length,
+              }}
+            >
+              <input type="text" />
+            </Field>
+          </form>
+        </Provider>
+      );
+
+      const spans = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span')
+      assert.lengthOf(spans, 1);
+      assert.equal(spans[0].innerHTML, 'This field is required')
     });
   });
 
