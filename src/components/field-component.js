@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import shallowCompare from 'react/lib/shallowCompare';
 import connect from 'react-redux/lib/components/connect';
 
-import _get from 'lodash/get';
+import _get from '../utils/get';
 import identity from 'lodash/identity';
 import isEqual from 'lodash/isEqual';
 import omit from 'lodash/omit';

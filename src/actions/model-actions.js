@@ -1,4 +1,4 @@
-import _get from 'lodash/get';
+import _get from '../utils/get';
 import endsWith from 'lodash/endsWith';
 import isEqual from 'lodash/isEqual';
 import icepick from 'icepick';

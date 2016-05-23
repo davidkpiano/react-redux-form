@@ -4,8 +4,8 @@ import isPlainObject from 'lodash/isPlainObject';
 import every from 'lodash/every';
 import some from 'lodash/some';
 import findKey from 'lodash/findKey';
-import get from 'lodash/get';
-import toPath from 'lodash/toPath';
+import _get from '../utils/get';
+import toPath from '../utils/to-path';
 import startsWith from 'lodash/startsWith';
 import memoize from 'lodash/memoize';
 
@@ -64,7 +64,7 @@ const getFormStateKey = memoize((state, model) => {
 function getForm(state, model) {
   const formStateKey = getFormStateKey(state, model);
 
-  return get(state, formStateKey);
+  return _get(state, formStateKey);
 }
 
 function getFieldFromState(state, model) {
@@ -74,6 +74,7 @@ function getFieldFromState(state, model) {
 
   const formPath = toPath(form.model);
   const fieldPath = toPath(model).slice(formPath.length);
+
   return getField(form, fieldPath.length ? [fieldPath.join('.')] : []);
 }
 
@@ -119,6 +120,12 @@ function isInvalid(errors) {
   return !!errors;
 }
 
+function getModelPath(model, field = '') {
+  return field.length
+    ? `${model}.${field}`
+    : model;
+}
+
 export {
   isFocused,
   isMulti,
@@ -133,4 +140,5 @@ export {
   getFieldFromState,
   invertValidators,
   invertValidity,
+  getModelPath,
 };

@@ -1,5 +1,5 @@
 import findKey from 'lodash/findKey';
-import get from 'lodash/get';
+import _get from '../utils/get';
 
 function track(model, predicate) {
   return (state) => {
@@ -7,7 +7,7 @@ function track(model, predicate) {
       parentModelPath,
       childModelPath = '',
     ] = model.split(/\[\]\.?/);
-    const parentValue = get(state, parentModelPath);
+    const parentValue = _get(state, parentModelPath);
 
     return [
       parentModelPath,
