@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import shallowCompare from 'react-addons-shallow-compare';
+import shallowCompare from 'react/lib/shallowCompare';
 import connect from 'react-redux/lib/components/connect';
 
 import _get from 'lodash/get';
