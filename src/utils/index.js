@@ -72,7 +72,9 @@ function getFieldFromState(state, model) {
 
   if (!form) return null;
 
-  return getField(form, toPath(model).slice(1));
+  const formPath = toPath(form.model);
+  const fieldPath = toPath(model).slice(formPath.length);
+  return getField(form, fieldPath.length ? [fieldPath.join('.')] : []);
 }
 
 function getValidity(validators, value) {
