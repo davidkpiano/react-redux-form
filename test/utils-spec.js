@@ -7,7 +7,7 @@ import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
 import { assert } from 'chai';
 
-import { utils } from '../src/index';
+import { actions, formReducer, utils } from '../src';
 
 describe('utils', () => {
   describe('invertValidators()', () => {
@@ -78,6 +78,36 @@ describe('utils', () => {
   describe('getFieldFromState()', () => {
     it('should exist', () => {
       assert.isFunction(utils.getFieldFromState);
+    });
+
+    context('standard form', () => {
+      it('finds the field in state', () => {
+        const reducer = formReducer('person');
+        const personForm = reducer(undefined, actions.change('person.name', 'john'));
+
+        const field = utils.getFieldFromState({ personForm }, 'person.name');
+        assert.strictEqual(personForm.fields.name, field);
+      });
+    });
+
+    context('nested form', () => {
+      it('finds the field in state', () => {
+        const reducer = formReducer('app.car');
+        const carForm = reducer(undefined, actions.change('app.car.make', 'mazda'));
+
+        const field = utils.getFieldFromState({ carForm }, 'app.car.make');
+        assert.strictEqual(carForm.fields.make, field);
+      });
+    });
+
+    context('nested field', () => {
+      it('finds the field in state', () => {
+        const reducer = formReducer('district.library');
+        const libraryForm = reducer(undefined, actions.change('district.library.hours.open', 8));
+
+        const field = utils.getFieldFromState({ libraryForm }, 'district.library.hours.open');
+        assert.strictEqual(libraryForm.fields['hours.open'], field);
+      });
     });
   });
 });
