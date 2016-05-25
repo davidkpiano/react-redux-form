@@ -1477,4 +1477,51 @@ describe('<Field /> component', () => {
 
     TestUtils.Simulate.click(main);
   });
+
+  it('should not override custom value prop', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: '' }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input value="defined" />
+        </Field>
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    assert.equal(input.value, 'defined');
+
+    input.value = 'changed';
+
+    TestUtils.Simulate.change(input);
+
+    assert.equal(input.value, 'defined',
+      'externally controlled input should not change');
+  });
+
+  it('should allow an input to remain uncontrolled with value={undefined}', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: '' }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input value={undefined} />
+        </Field>
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    input.value = 'changed';
+
+    TestUtils.Simulate.change(input);
+
+    assert.equal(input.value, 'changed');
+  });
 });

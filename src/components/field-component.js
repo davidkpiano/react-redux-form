@@ -57,9 +57,11 @@ const controlPropsMap = {
   }),
   text: (props) => ({
     ...props,
-    value: props.updateOn === 'change' && !props.defaultValue
+    value: props.updateOn === 'change'
+      && !props.defaultValue
+      && !props.hasOwnProperty('value')
       ? props.modelValue
-      : undefined,
+      : props.value,
     name: props.model,
   }),
   textarea: (props) => controlPropsMap.text(props),
