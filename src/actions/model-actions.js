@@ -57,7 +57,7 @@ const push = (model, item = null) => (dispatch, getState) => {
   });
 };
 
-const toggle = model => (dispatch, getState) => {
+const toggle = (model) => (dispatch, getState) => {
   const value = !_get(getState(), model);
 
   dispatch({
@@ -78,7 +78,7 @@ const filter = (model, iteratee = identity) => (dispatch, getState) => {
   });
 };
 
-const reset = model => ({
+const reset = (model) => ({
   type: actionTypes.RESET,
   model,
 });
