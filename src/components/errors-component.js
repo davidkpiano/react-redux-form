@@ -3,7 +3,7 @@ import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
 import map from 'lodash/map';
 import compact from 'lodash/compact';
-import iteratee from 'lodash/iteratee';
+import iteratee from 'lodash/_baseIteratee';
 import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
 

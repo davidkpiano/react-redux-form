@@ -2,3 +2,4 @@ dist
 lib/
 umd/
 docs/
+webpack.config.*
