@@ -19,6 +19,35 @@ describe('field actions', () => {
     });
   });
 
+  describe('change()', () => {
+    it('should set the retouched property to true upon change after submit', () => {
+      const reducer = formReducer('test');
+      const state = reducer(undefined, actions.setSubmitted('test'));
+
+      assert.containSubset(
+        state,
+        {
+          submitted: true,
+          retouched: false,
+        }, 'not retouched yet');
+
+      const changedState = reducer(state, actions.change('test.foo', 'new'));
+
+      assert.containSubset(
+        changedState,
+        {
+          submitted: true,
+          retouched: true,
+        }, 'form retouched after submit');
+
+      assert.containSubset(
+        changedState.fields.foo,
+        {
+          retouched: true,
+        }, 'field retouched after submit');
+    });
+  });
+
   describe('reset()', () => {
     it('should set the field to the initial field state', () => {
       const reducer = formReducer('test');

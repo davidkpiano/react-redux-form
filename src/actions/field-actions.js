@@ -1,4 +1,4 @@
-import _get from 'lodash/get';
+import _get from '../utils/get';
 import mapValues from '../utils/map-values';
 
 import actionTypes from '../action-types';

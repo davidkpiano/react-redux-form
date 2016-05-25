@@ -1,6 +1,6 @@
-import { Component, createElement, PropTypes } from 'react';
+import { Component, createElement, cloneElement, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
-import _get from 'lodash/get';
+import _get from '../utils/get';
 import merge from 'lodash/merge';
 
 import { invertValidity, getFieldFromState, getValidity } from '../utils';
@@ -96,7 +96,21 @@ class Control extends Component {
   }
 
   render() {
-    const { controlProps = {}, component } = this.props;
+    const {
+      controlProps = {},
+      component,
+      control,
+    } = this.props;
+
+    // If there is an existing control, clone it
+    if (control) {
+      return cloneElement(
+        control,
+        {
+          ...this.props,
+          onKeyPress: this.handleKeyPress,
+        });
+    }
 
     return createElement(
       component,

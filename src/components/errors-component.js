@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
-import _get from 'lodash/get';
+import _get from '../utils/get';
 import map from 'lodash/map';
 import compact from 'lodash/compact';
 import iteratee from 'lodash/iteratee';

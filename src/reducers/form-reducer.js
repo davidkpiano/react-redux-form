@@ -1,4 +1,4 @@
-import _get from 'lodash/get';
+import _get from '../utils/get';
 import every from 'lodash/every';
 import icepick from 'icepick';
 import isBoolean from 'lodash/isBoolean';
@@ -6,7 +6,7 @@ import isEqual from 'lodash/isEqual';
 import isPlainObject from 'lodash/isPlainObject';
 import map from 'lodash/map';
 import mapValues from '../utils/map-values';
-import toPath from 'lodash/toPath';
+import toPath from '../utils/to-path';
 import startsWith from 'lodash/startsWith';
 import flatten from 'flat';
 
@@ -154,6 +154,7 @@ function _createFormReducer(model, initialState) {
           pristine: false,
           value: action.value,
           validated: false,
+          retouched: state.submitted || state.submitFailed,
         });
 
         if (action.removeKeys) {
@@ -219,6 +220,7 @@ function _createFormReducer(model, initialState) {
           dirty: true, // will be deprecated
           pristine: false,
           valid: formIsValid(setFieldDirtyState),
+          retouched: state.submitted || state.submitFailed,
         });
       }
 
@@ -239,8 +241,8 @@ function _createFormReducer(model, initialState) {
         const fieldState = setField(state, localPath, {
           focus: false,
           touched: true,
-          retouched: state.submitted || state.submitFailed,
           blur: true, // will be deprecated
+          retouched: state.submitted || state.submitFailed,
           untouched: false, // will be deprecated
         });
 
@@ -280,7 +282,9 @@ function _createFormReducer(model, initialState) {
 
       case actionTypes.SET_FIELDS_VALIDITY:
         return map(action.fieldsValidity, (fieldValidity, field) =>
-          actions.setValidity(`${model}.${field}`, fieldValidity, action.options)
+          actions.setValidity(field.length
+            ? `${model}.${field}`
+            : model, fieldValidity, action.options)
         ).reduce(formReducer, state);
 
       case actionTypes.SET_ERRORS: {

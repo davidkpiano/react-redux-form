@@ -1,7 +1,7 @@
-import _get from 'lodash/get';
+import _get from '../utils/get';
 import icepick from 'icepick';
 import isEqual from 'lodash/isEqual';
-import toPath from 'lodash/toPath';
+import toPath from '../utils/to-path';
 
 import actionTypes from '../action-types';
 

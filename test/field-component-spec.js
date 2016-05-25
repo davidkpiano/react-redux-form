@@ -1432,4 +1432,49 @@ describe('<Field /> component', () => {
 
     store.dispatch(actions.remove('test.foo', index));
   });
+
+  it('should maintain child references', (done) => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: '' }),
+    }));
+
+    class TestContainer extends React.Component {
+      constructor() {
+        super();
+
+        this.handleClick = this.handleClick.bind(this);
+        this.assignRef = this.assignRef.bind(this);
+      }
+
+      handleClick() {
+        assert.isDefined(this._ref,
+          'reference should exist');
+        done();
+      }
+
+      assignRef(node) {
+        this._ref = node;
+      }
+
+      render() {
+        return (
+          <main onClick={this.handleClick}>
+            <Field model="test.foo">
+              <input ref={this.assignRef} />
+            </Field>
+          </main>
+        );
+      }
+    }
+
+    const foo = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <TestContainer />
+      </Provider>
+    );
+
+    const main = TestUtils.findRenderedDOMComponentWithTag(foo, 'main');
+
+    TestUtils.Simulate.click(main);
+  });
 });
