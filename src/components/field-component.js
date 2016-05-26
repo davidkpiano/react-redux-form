@@ -59,7 +59,7 @@ const controlPropsMap = {
     value: props.updateOn === 'change'
       && !props.defaultValue
       && !props.hasOwnProperty('value')
-      ? props.modelValue
+      ? props.formatter(props.modelValue)
       : props.value,
     name: props.model,
   }),
@@ -195,6 +195,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       PropTypes.string,
     ]),
     parser: PropTypes.func,
+    formatter: PropTypes.func,
     updateOn: PropTypes.oneOf([
       'change',
       'blur',
@@ -221,6 +222,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     validateOn: 'change',
     asyncValidateOn: 'blur',
     parser: identity,
+    formatter: identity,
     changeAction: change,
     ...defaultProps,
   };

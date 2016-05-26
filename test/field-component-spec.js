@@ -1524,4 +1524,35 @@ describe('<Field /> component', () => {
 
     assert.equal(input.value, 'changed');
   });
+
+  describe('formatter property', () => {
+    it('should format a raw value for text inputs', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: '' }),
+      }));
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+            formatter={(val) => val + '!!!'}
+          >
+            <input />
+          </Field>
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      input.value = 'testing';
+
+      TestUtils.Simulate.change(input);
+
+      assert.equal(input.value, 'testing!!!',
+        'should format the view value');
+
+      assert.equal(store.getState().test.foo, 'testing',
+        'should not alter the model');
+    });
+  });
 });
