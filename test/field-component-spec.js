@@ -1524,4 +1524,26 @@ describe('<Field /> component', () => {
 
     assert.equal(input.value, 'changed');
   });
+
+  it('should render a Component with an idempotent mapStateToProps', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: '' }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input />
+        </Field>
+      </Provider>
+    );
+    const filter = ({constructor}) =>
+      constructor.displayName === 'Connect(Control)';
+    const components = TestUtils.findAllInRenderedTree(field, filter);
+    assert.lengthOf(components, 1, 'exactly one connected Control was rendered');
+    const [component] = components;
+    assert.isFalse(
+      component.updateStatePropsIfNeeded(),
+      'component does not need to update its state props with constant state');
+  });
 });
