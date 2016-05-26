@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import shallowCompare from 'react/lib/shallowCompare';
 import connect from 'react-redux/lib/components/connect';
+import icepick from 'icepick';
 
 import _get from '../utils/get';
 import identity from 'lodash/identity';
@@ -36,12 +37,30 @@ function isChecked(props) {
   return !!props.modelValue;
 }
 
+function checkboxChanger(props, eventValue) {
+  const { model, modelValue } = props;
+
+  if (isMulti(model)) {
+    const valueWithItem = modelValue || [];
+    const valueWithoutItem = (valueWithItem || [])
+      .filter(item => item !== eventValue);
+    const value = (valueWithoutItem.length === valueWithItem.length)
+      ? icepick.push(valueWithItem, eventValue)
+      : valueWithoutItem;
+
+    return value;
+  }
+
+  return !modelValue;
+}
+
 const controlPropsMap = {
   default: (props) => controlPropsMap.text(props),
   checkbox: (props) => ({
     ...props,
     name: props.model,
     checked: isChecked(props),
+    updater: checkboxChanger,
   }),
   radio: (props) => ({
     ...props,
@@ -114,9 +133,7 @@ function createFieldControlComponent(control, props, options) {
   }
 
   /* eslint-disable react/prop-types */
-  const {
-    mapProps = options.controlPropsMap[getControlType(control, options)],
-  } = props;
+  const mapProps = options.controlPropsMap[getControlType(control, options)];
 
   const controlProps = omit(props, ['children', 'className']);
 
@@ -196,6 +213,11 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     ]),
     parser: PropTypes.func,
     formatter: PropTypes.func,
+    formatOn: PropTypes.oneOf([
+      'change',
+      'blur',
+      'focus',
+    ]),
     updateOn: PropTypes.oneOf([
       'change',
       'blur',
@@ -213,7 +235,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       PropTypes.func,
       PropTypes.object,
     ]),
-    mapProps: PropTypes.func,
     modelValue: PropTypes.any,
   };
 
@@ -221,6 +242,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     updateOn: 'change',
     validateOn: 'change',
     asyncValidateOn: 'blur',
+    formatOn: 'blur',
     parser: identity,
     formatter: identity,
     changeAction: change,

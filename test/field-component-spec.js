@@ -1535,7 +1535,7 @@ describe('<Field /> component', () => {
         <Provider store={store}>
           <Field
             model="test.foo"
-            formatter={(val) => val + '!!!'}
+            formatter={(val) => `${val}!!!`}
           >
             <input />
           </Field>
