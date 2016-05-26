@@ -53,7 +53,10 @@ class Form extends Component {
     } = this.props;
 
     if (!validators && !errors && (modelValue !== nextProps.modelValue)) {
-      dispatch(actions.setValidity(model, true));
+      if (!formValue.valid) {
+        dispatch(actions.setValidity(model, true));
+      }
+
       return;
     }
 
