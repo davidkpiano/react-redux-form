@@ -2,7 +2,6 @@ import identity from 'lodash/identity';
 import capitalize from '../utils/capitalize';
 import mapValues from '../utils/map-values';
 import compose from 'redux/lib/compose';
-import isEqual from 'lodash/isEqual';
 import merge from '../utils/merge';
 import icepick from 'icepick';
 
@@ -33,7 +32,8 @@ const modelValueUpdaterMap = {
 
     if (isMulti(model)) {
       const valueWithItem = modelValue || [];
-      const valueWithoutItem = (valueWithItem || []).filter(item => !isEqual(item, eventValue));
+      const valueWithoutItem = (valueWithItem || [])
+        .filter(item => item !== eventValue);
       const value = (valueWithoutItem.length === valueWithItem.length)
         ? icepick.push(valueWithItem, eventValue)
         : valueWithoutItem;
