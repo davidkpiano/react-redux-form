@@ -8,46 +8,59 @@ import { sequenceEventActions } from '../utils/sequence';
 import actions from '../actions';
 
 function mapStateToProps(state, props) {
-  const { model, controlProps, mapProps } = props;
+  const { model, mapProps } = props;
+
+  if (!mapProps) return props;
+
   const modelString = typeof model === 'function'
     ? model(state)
     : model;
   const fieldValue = getFieldFromState(state, modelString);
 
-  if (!mapProps) {
-    return {
-      ...props,
-      fieldValue,
-    };
-  }
-
-  return mapProps({
+  return {
     model,
     modelValue: _get(state, modelString),
     fieldValue,
-    ...props,
-    ...controlProps,
-    ...sequenceEventActions(props),
-  });
+  };
 }
 
 class Control extends Component {
   constructor(props) {
     super(props);
 
+    const { controlProps, mapProps } = props;
+
     this.handleKeyPress = this.handleKeyPress.bind(this);
 
     this.state = {
       value: props.modelValue,
+      mappedProps: mapProps({
+        ...props,
+        ...controlProps,
+        ...sequenceEventActions(props),
+      }),
     };
   }
 
   componentWillMount() {
-    const { onLoad, modelValue } = this.props;
+    const { modelValue } = this.props;
+    const { onLoad } = this.state.mappedProps;
 
     if (onLoad) {
       onLoad(modelValue);
     }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const { mapProps } = nextProps;
+
+    this.setState({
+      mappedProps: mapProps({
+        ...nextProps,
+        ...nextProps.controlProps,
+        ...sequenceEventActions(nextProps),
+      }),
+    });
   }
 
   componentDidUpdate(prevProps) {
@@ -67,7 +80,7 @@ class Control extends Component {
   }
 
   handleKeyPress(event) {
-    const { onSubmit } = this.props;
+    const { onSubmit } = this.state.mappedProps;
 
     if (onSubmit && event.key === 'Enter') {
       onSubmit(event);
@@ -107,7 +120,7 @@ class Control extends Component {
       return cloneElement(
         control,
         {
-          ...this.props,
+          ...this.state.mappedProps,
           onKeyPress: this.handleKeyPress,
         });
     }
@@ -116,7 +129,7 @@ class Control extends Component {
       component,
       {
         ...controlProps,
-        ...this.props,
+        ...this.state.mappedProps,
         onKeyPress: this.handleKeyPress,
       },
       controlProps.children);

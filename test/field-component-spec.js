@@ -1537,7 +1537,7 @@ describe('<Field /> component', () => {
         </Field>
       </Provider>
     );
-    const filter = ({constructor}) =>
+    const filter = ({ constructor }) =>
       constructor.displayName === 'Connect(Control)';
     const components = TestUtils.findAllInRenderedTree(field, filter);
     assert.lengthOf(components, 1, 'exactly one connected Control was rendered');
