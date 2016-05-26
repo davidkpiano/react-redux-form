@@ -1,6 +1,5 @@
 import _get from '../utils/get';
 import endsWith from 'lodash/endsWith';
-import isEqual from 'lodash/isEqual';
 import identity from 'lodash/identity';
 import icepick from 'icepick';
 
@@ -34,9 +33,9 @@ const change = (model, value, options = {}) => {
   };
 };
 
-const xor = (model, item) => (dispatch, getState) => {
+const xor = (model, item, iteratee = (value) => value === item) => (dispatch, getState) => {
   const state = _get(getState(), model, []);
-  const stateWithoutItem = state.filter(stateItem => !isEqual(stateItem, item));
+  const stateWithoutItem = state.filter(stateItem => !iteratee(stateItem));
   const value = (state.length === stateWithoutItem.length) ? [...state, item] : stateWithoutItem;
 
   dispatch({

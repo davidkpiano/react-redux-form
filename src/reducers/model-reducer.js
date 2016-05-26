@@ -1,6 +1,6 @@
 import _get from '../utils/get';
 import icepick from 'icepick';
-import isEqual from 'lodash/isEqual';
+import arraysEqual from '../utils/arrays-equal';
 import toPath from '../utils/to-path';
 
 import actionTypes from '../action-types';
@@ -20,7 +20,7 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
 
       const path = toPath(action.model);
 
-      if (!isEqual(path.slice(0, modelPath.length), modelPath)) {
+      if (!arraysEqual(path.slice(0, modelPath.length), modelPath)) {
         return state;
       }
 
@@ -36,7 +36,7 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
             return action.value;
           }
 
-          if (isEqual(getter(state, localPath), action.value)) {
+          if (getter(state, localPath) === action.value) {
             return state;
           }
 
@@ -47,7 +47,7 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
             return initialState;
           }
 
-          if (isEqual(getter(state, localPath), getter(initialState, localPath))) {
+          if (getter(state, localPath) === getter(initialState, localPath)) {
             return state;
           }
 

@@ -2,7 +2,7 @@ import _get from '../utils/get';
 import every from 'lodash/every';
 import icepick from 'icepick';
 import isBoolean from 'lodash/isBoolean';
-import isEqual from 'lodash/isEqual';
+import arraysEqual from '../utils/arrays-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import map from 'lodash/map';
 import mapValues from '../utils/map-values';
@@ -127,7 +127,7 @@ function _createFormReducer(model, initialState) {
 
     const path = toPath(action.model);
 
-    if (!isEqual(path.slice(0, modelPath.length), modelPath)) {
+    if (!arraysEqual(path.slice(0, modelPath.length), modelPath)) {
       return state;
     }
 

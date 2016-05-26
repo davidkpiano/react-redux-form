@@ -4,7 +4,6 @@ import connect from 'react-redux/lib/components/connect';
 
 import _get from '../utils/get';
 import identity from 'lodash/identity';
-import isEqual from 'lodash/isEqual';
 import omit from 'lodash/omit';
 
 import actions from '../actions';
@@ -30,7 +29,7 @@ function isChecked(props) {
   if (isMulti(props.model)) {
     return (props.modelValue || [])
       .filter((item) =>
-        isEqual(item, props.value))
+        item === props.value)
       .length;
   }
 
@@ -47,7 +46,7 @@ const controlPropsMap = {
   radio: (props) => ({
     ...props,
     name: props.model,
-    checked: isEqual(props.modelValue, props.value),
+    checked: props.modelValue === props.value,
     value: props.value,
   }),
   select: (props) => ({
