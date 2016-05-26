@@ -1524,4 +1524,30 @@ describe('<Field /> component', () => {
 
     assert.equal(input.value, 'changed');
   });
+
+  it('should render a Component with an idempotent mapStateToProps', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: '' }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input />
+        </Field>
+      </Provider>
+    );
+    const filter = ({constructor}) =>
+      constructor.displayName === 'Connect(Control)';
+    const components = TestUtils.findAllInRenderedTree(field, filter);
+    assert.lengthOf(components, 1, 'exactly one connected Control was rendered');
+    const [component] = components;
+    const oldStateProps = component.stateProps;
+    const didUpdate = component.updateStatePropsIfNeeded();
+    const failures = Object.keys(component.stateProps).filter((k) =>
+      component.stateProps[k] !== oldStateProps[k]);
+    assert(
+      !didUpdate,
+      `stateProps should not have changed, changed props: ${failures.join(', ')}`);
+  });
 });
