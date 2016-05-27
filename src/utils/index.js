@@ -52,17 +52,34 @@ function getValue(value) {
   return isEvent(value) ? getEventValue(value) : value;
 }
 
-const getFormStateKey = memoize((state, model) => {
+function getFormStateKey(state, model) {
   const flatState = flatten(state);
 
   const formStateKey = findKey(flatState, (value) =>
     value && value.model && startsWith(model, value.model));
 
   return formStateKey;
-});
+}
+
+const formStateKeyCaches = {};
+
+function getFormStateKeyCached(state, model) {
+  if (!formStateKeyCaches.hasOwnProperty(model)) {
+    formStateKeyCaches[model] = new memoize.Cache();
+  }
+
+  const cache = formStateKeyCaches[model];
+  if (cache.has(state)) {
+    return cache.get(state);
+  }
+
+  const formStateKey = getFormStateKey(state, model);
+  cache.set(state, formStateKey);
+  return formStateKey;
+}
 
 function getForm(state, model) {
-  const formStateKey = getFormStateKey(state, model);
+  const formStateKey = getFormStateKeyCached(state, model);
 
   return _get(state, formStateKey);
 }
