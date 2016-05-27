@@ -65,7 +65,7 @@
     "redux-mock-store": "0.0.6",
     "redux-test-store": "^0.4.0",
     "redux-thunk": "^2.0.1",
-    "should": "^8.2.2",
+    "should": "^8.3.0",
     "sinon": "^1.17.3",
     "webpack": "^1.12.14",
     "webpack-bundle-size-analyzer": "^2.0.1"
