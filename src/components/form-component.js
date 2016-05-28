@@ -31,10 +31,6 @@ class Form extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
-  }
-
   componentDidMount() {
     this.validate(this.props, true);
   }
@@ -45,6 +41,10 @@ class Form extends Component {
     if (validateOn !== 'change') return;
 
     this.validate(nextProps);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
   }
 
   validate(nextProps, initial = false) {
