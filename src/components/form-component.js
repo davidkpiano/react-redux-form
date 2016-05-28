@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import shallowCompare from 'react/lib/shallowCompare';
 import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
 import mapValues from '../utils/map-values';
@@ -28,6 +29,10 @@ class Form extends Component {
     super(props);
 
     this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
   }
 
   componentDidMount() {
