@@ -5,6 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "start": "npm run build",
+    "examples": "node examples/server.js",
     "lint": "eslint --ext .js,.jsx .",
     "lint:fix": "eslint --fix --ext .js,.jsx .",
     "test": "NODE_ENV=test mocha --require babel-register --require ./test/spec-setup.js",
@@ -49,11 +50,14 @@
     "babel-register": "^6.5.2",
     "chai": "^3.5.0",
     "chai-subset": "^1.2.1",
+    "css-loader": "^0.23.1",
     "eslint": "^2.7.0",
     "eslint-config-airbnb": "^7.0.0",
     "eslint-plugin-jsx-a11y": "^0.6.2",
     "eslint-plugin-react": "^4.3.0",
     "estraverse-fb": "^1.3.1",
+    "express": "^4.13.4",
+    "express-urlrewrite": "^1.2.0",
     "immutable": "^3.7.6",
     "jsdom": "^9.2.0",
     "mocha": "^2.5.1",
@@ -67,8 +71,10 @@
     "redux-thunk": "^2.0.1",
     "should": "^8.2.2",
     "sinon": "^1.17.3",
+    "style-loader": "^0.13.1",
     "webpack": "^1.12.14",
-    "webpack-bundle-size-analyzer": "^2.0.1"
+    "webpack-bundle-size-analyzer": "^2.0.1",
+    "webpack-dev-middleware": "^1.6.1"
   },
   "dependencies": {
     "flat": "^2.0.0",
