@@ -63,31 +63,41 @@ class Form extends Component {
     let validityChanged = false;
 
     const fieldsValidity = mapValues(validators, (validator, field) => {
-      const fieldModel = [model, field].join('.');
-      const value = _get(nextProps, fieldModel);
+      const nextValue = field
+        ? _get(nextProps.modelValue, field)
+        : nextProps.modelValue;
 
-      if (!initial && (value === _get(this.props, fieldModel))) {
+      const currentValue = field
+        ? _get(modelValue, field)
+        : modelValue;
+
+      if (!initial && (nextValue === currentValue)) {
         return getField(formValue, field).validity;
       }
 
       validityChanged = true;
 
-      const fieldValidity = getValidity(validator, value);
+      const fieldValidity = getValidity(validator, nextValue);
 
       return fieldValidity;
     });
 
     const fieldsErrorsValidity = mapValues(errors, (errorValidator, field) => {
-      const fieldModel = [model, field].join('.');
-      const value = _get(nextProps, fieldModel);
+      const nextValue = field
+        ? _get(nextProps.modelValue, field)
+        : nextProps.modelValue;
 
-      if (!initial && (value === _get(this.props, fieldModel))) {
+      const currentValue = field
+        ? _get(modelValue, field)
+        : modelValue;
+
+      if (!initial && (nextValue === currentValue)) {
         return getField(formValue, field).errors;
       }
 
       validityChanged = true;
 
-      const fieldErrors = getValidity(errorValidator, value);
+      const fieldErrors = getValidity(errorValidator, nextValue);
 
       return fieldErrors;
     });
@@ -171,16 +181,15 @@ Form.defaultProps = {
   component: 'form',
 };
 
-function selector(state, { model }) {
+function mapStateToProps(state, { model }) {
   const modelString = typeof model === 'function'
     ? model(state)
     : model;
 
   return {
-    ...state,
     modelValue: _get(state, modelString),
     formValue: getForm(state, modelString),
   };
 }
 
-export default connect(selector)(Form);
+export default connect(mapStateToProps)(Form);
