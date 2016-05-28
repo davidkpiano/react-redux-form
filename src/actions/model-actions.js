@@ -1,6 +1,6 @@
 import _get from '../utils/get';
 import endsWith from 'lodash/endsWith';
-import isEqual from 'lodash/isEqual';
+import identity from 'lodash/identity';
 import icepick from 'icepick';
 
 import actionTypes from '../action-types';
@@ -33,9 +33,9 @@ const change = (model, value, options = {}) => {
   };
 };
 
-const xor = (model, item) => (dispatch, getState) => {
+const xor = (model, item, iteratee = (value) => value === item) => (dispatch, getState) => {
   const state = _get(getState(), model, []);
-  const stateWithoutItem = state.filter(stateItem => !isEqual(stateItem, item));
+  const stateWithoutItem = state.filter(stateItem => !iteratee(stateItem));
   const value = (state.length === stateWithoutItem.length) ? [...state, item] : stateWithoutItem;
 
   dispatch({
@@ -56,7 +56,7 @@ const push = (model, item = null) => (dispatch, getState) => {
   });
 };
 
-const toggle = model => (dispatch, getState) => {
+const toggle = (model) => (dispatch, getState) => {
   const value = !_get(getState(), model);
 
   dispatch({
@@ -66,9 +66,9 @@ const toggle = model => (dispatch, getState) => {
   });
 };
 
-const filter = (model, iterate = a => a) => (dispatch, getState) => {
+const filter = (model, iteratee = identity) => (dispatch, getState) => {
   const collection = _get(getState(), model);
-  const value = collection.filter(iterate);
+  const value = collection.filter(iteratee);
 
   dispatch({
     type: actionTypes.CHANGE,
@@ -77,14 +77,14 @@ const filter = (model, iterate = a => a) => (dispatch, getState) => {
   });
 };
 
-const reset = model => ({
+const reset = (model) => ({
   type: actionTypes.RESET,
   model,
 });
 
-const map = (model, iterate = a => a) => (dispatch, getState) => {
+const map = (model, iteratee = identity) => (dispatch, getState) => {
   const collection = _get(getState(), model, []);
-  const value = collection.map(iterate);
+  const value = collection.map(iteratee);
 
   dispatch({
     type: actionTypes.CHANGE,

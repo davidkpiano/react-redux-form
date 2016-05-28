@@ -1,5 +1,6 @@
 # Docs
 docs/
+dist/
 
 # Misc
 node_modules/
@@ -10,3 +11,4 @@ node_modules/
 .gitignore
 .travis.yml
 wallaby.config.js
+stats.json

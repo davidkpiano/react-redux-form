@@ -2,7 +2,7 @@ import _get from '../utils/get';
 import every from 'lodash/every';
 import icepick from 'icepick';
 import isBoolean from 'lodash/isBoolean';
-import isEqual from 'lodash/isEqual';
+import arraysEqual from '../utils/arrays-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import map from 'lodash/map';
 import mapValues from '../utils/map-values';
@@ -127,7 +127,7 @@ function _createFormReducer(model, initialState) {
 
     const path = toPath(action.model);
 
-    if (!isEqual(path.slice(0, modelPath.length), modelPath)) {
+    if (!arraysEqual(path.slice(0, modelPath.length), modelPath)) {
       return state;
     }
 
@@ -400,23 +400,43 @@ function _createFormReducer(model, initialState) {
           untouched: true, // will be deprecated
         });
 
-      case actionTypes.SET_SUBMITTED:
-        return setField(state, localPath, {
+      case actionTypes.SET_SUBMITTED: {
+        const submittedState = {
           pending: false,
           submitted: !!action.submitted,
           submitFailed: false,
           touched: true,
           untouched: false, // will be deprecated
-        });
+        };
 
-      case actionTypes.SET_SUBMIT_FAILED:
-        return setField(state, localPath, {
+        if (!localPath.length) {
+          return icepick.merge(state, {
+            ...submittedState,
+            fields: mapValues(state.fields, (field) => icepick.merge(field, submittedState)),
+          });
+        }
+
+        return setField(state, localPath, submittedState);
+      }
+
+      case actionTypes.SET_SUBMIT_FAILED: {
+        const submitFailedState = {
           pending: false,
           submitted: false,
           submitFailed: true,
           touched: true,
-          untouched: false, // will be deprecated
-        });
+          untouched: false,
+        };
+
+        if (!localPath.length) {
+          return icepick.merge(state, {
+            ...submitFailedState,
+            fields: mapValues(state.fields, (field) => icepick.merge(field, submitFailedState)),
+          });
+        }
+
+        return setField(state, localPath, submitFailedState);
+      }
 
       case actionTypes.SET_INITIAL:
       case actionTypes.RESET:

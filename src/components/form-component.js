@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import shallowCompare from 'react/lib/shallowCompare';
 import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
 import mapValues from '../utils/map-values';
-import merge from 'lodash/merge';
+import merge from '../utils/merge';
 
 import actions from '../actions';
 import {
@@ -42,6 +43,10 @@ class Form extends Component {
     this.validate(nextProps);
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
+  }
+
   validate(nextProps, initial = false) {
     const {
       validators,
@@ -53,38 +58,51 @@ class Form extends Component {
     } = this.props;
 
     if (!validators && !errors && (modelValue !== nextProps.modelValue)) {
-      dispatch(actions.setValidity(model, true));
+      if (!formValue.valid) {
+        dispatch(actions.setValidity(model, true));
+      }
+
       return;
     }
 
     let validityChanged = false;
 
     const fieldsValidity = mapValues(validators, (validator, field) => {
-      const fieldModel = [model, field].join('.');
-      const value = _get(nextProps, fieldModel);
+      const nextValue = field
+        ? _get(nextProps.modelValue, field)
+        : nextProps.modelValue;
 
-      if (!initial && (value === _get(this.props, fieldModel))) {
+      const currentValue = field
+        ? _get(modelValue, field)
+        : modelValue;
+
+      if (!initial && (nextValue === currentValue)) {
         return getField(formValue, field).validity;
       }
 
       validityChanged = true;
 
-      const fieldValidity = getValidity(validator, value);
+      const fieldValidity = getValidity(validator, nextValue);
 
       return fieldValidity;
     });
 
     const fieldsErrorsValidity = mapValues(errors, (errorValidator, field) => {
-      const fieldModel = [model, field].join('.');
-      const value = _get(nextProps, fieldModel);
+      const nextValue = field
+        ? _get(nextProps.modelValue, field)
+        : nextProps.modelValue;
 
-      if (!initial && (value === _get(this.props, fieldModel))) {
+      const currentValue = field
+        ? _get(modelValue, field)
+        : modelValue;
+
+      if (!initial && (nextValue === currentValue)) {
         return getField(formValue, field).errors;
       }
 
       validityChanged = true;
 
-      const fieldErrors = getValidity(errorValidator, value);
+      const fieldErrors = getValidity(errorValidator, nextValue);
 
       return fieldErrors;
     });
@@ -168,16 +186,15 @@ Form.defaultProps = {
   component: 'form',
 };
 
-function selector(state, { model }) {
+function mapStateToProps(state, { model }) {
   const modelString = typeof model === 'function'
     ? model(state)
     : model;
 
   return {
-    ...state,
     modelValue: _get(state, modelString),
     formValue: getForm(state, modelString),
   };
 }
 
-export default connect(selector)(Form);
+export default connect(mapStateToProps)(Form);

@@ -3,7 +3,7 @@ import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
 import map from 'lodash/map';
 import compact from 'lodash/compact';
-import iteratee from 'lodash/iteratee';
+import iteratee from 'lodash/_baseIteratee';
 import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
 
@@ -140,7 +140,7 @@ Errors.defaultProps = {
   show: true,
 };
 
-function selector(state, { model }) {
+function mapStateToProps(state, { model }) {
   const modelString = typeof model === 'function'
     ? model(state)
     : model;
@@ -149,7 +149,6 @@ function selector(state, { model }) {
   const fieldValue = getFieldFromState(state, modelString);
 
   return {
-    ...state,
     model: modelString,
     modelValue: _get(state, modelString),
     formValue,
@@ -157,4 +156,4 @@ function selector(state, { model }) {
   };
 }
 
-export default connect(selector)(Errors);
+export default connect(mapStateToProps)(Errors);

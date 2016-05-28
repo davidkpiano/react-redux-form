@@ -111,7 +111,7 @@ describe('model actions', () => {
         },
         {
           init: { foo: ['primitive', { a: 'b' }] },
-          params: ['test.foo', { a: 'b' }],
+          params: ['test.foo', { a: 'b' }, (item) => item.a === 'b'],
           expected: { foo: ['primitive'] },
         },
       ],

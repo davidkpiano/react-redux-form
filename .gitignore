@@ -35,3 +35,6 @@ dist/
 # Build files
 lib/
 umd/
+
+# Analysis files
+stats.json

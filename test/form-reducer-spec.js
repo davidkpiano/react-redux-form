@@ -266,4 +266,54 @@ describe('formReducer()', () => {
       actions.remove('test.items', 0)(dispatch, getState);
     });
   });
+
+  describe('SET_SUBMIT_FAILED action', () => {
+    it('should set all fields to submitFailed = true when form submitFailed = true', () => {
+      const reducer = formReducer('test', { foo: '', bar: '' });
+
+      const actual = reducer(undefined, actions.setSubmitFailed('test'));
+
+      assert.containSubset(actual, {
+        submitFailed: true,
+        submitted: false,
+        fields: {
+          foo: {
+            submitFailed: true,
+            touched: true,
+            submitted: false,
+          },
+          bar: {
+            submitFailed: true,
+            touched: true,
+            submitted: false,
+          },
+        },
+      });
+    });
+
+    it('should set all fields to submitFailed = false when form submitFailed = false', () => {
+      const reducer = formReducer('test', { foo: '', bar: '' });
+
+      const submitFailed = reducer(undefined, actions.setSubmitFailed('test', false));
+
+      const actual = reducer(submitFailed, actions.setSubmitted('test'));
+
+      assert.containSubset(actual, {
+        submitFailed: false,
+        submitted: true,
+        fields: {
+          foo: {
+            submitFailed: false,
+            touched: true,
+            submitted: true,
+          },
+          bar: {
+            submitFailed: false,
+            touched: true,
+            submitted: true,
+          },
+        },
+      });
+    });
+  });
 });
