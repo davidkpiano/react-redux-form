@@ -1550,4 +1550,22 @@ describe('<Field /> component', () => {
       !didUpdate,
       `stateProps should not have changed, changed props: ${failures.join(', ')}`);
   });
+
+  it('should not override the name prop', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: '' }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input name="another[name]" />
+        </Field>
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    assert.equal(input.name, 'another[name]');
+  });
 });
