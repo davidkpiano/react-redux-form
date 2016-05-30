@@ -69,7 +69,7 @@
     "redux-mock-store": "0.0.6",
     "redux-test-store": "^0.4.0",
     "redux-thunk": "^2.0.1",
-    "should": "^8.2.2",
+    "should": "^9.0.0",
     "sinon": "^1.17.3",
     "style-loader": "^0.13.1",
     "webpack": "^1.12.14",
