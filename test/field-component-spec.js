@@ -9,7 +9,7 @@ import capitalize from 'lodash/capitalize';
 import sinon from 'sinon';
 import createTestStore from 'redux-test-store';
 
-import { Field, actions, actionTypes, formReducer, modelReducer } from '../src';
+import { Field, actions, actionTypes, formReducer, modelReducer, controls } from '../src';
 
 describe('<Field /> component', () => {
   const textFieldElements = [
@@ -1567,5 +1567,40 @@ describe('<Field /> component', () => {
     const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
     assert.equal(input.name, 'another[name]');
+  });
+
+  it('should allow a custom mapProps() prop for use in Control', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: 'initial' }),
+    }));
+
+    const CustomInput = (props) => (
+      <div><input {...props} /></div>
+    );
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field
+          model="test.foo"
+          mapProps={controls.text}
+        >
+          <CustomInput />
+        </Field>
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    assert.equal(input.value, 'initial');
+
+    input.value = 'new value';
+
+    TestUtils.Simulate.change(input);
+
+    assert.equal(input.value, 'new value');
+    assert.equal(
+      store.getState().test.foo,
+      'new value'
+    );
   });
 });

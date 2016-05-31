@@ -114,7 +114,9 @@ function createFieldControlComponent(control, props, options) {
   }
 
   /* eslint-disable react/prop-types */
-  const mapProps = options.controlPropsMap[getControlType(control, options)];
+  const {
+    mapProps = options.controlPropsMap[getControlType(control, options)],
+  } = props;
 
   const controlProps = omit(props, ['children', 'className']);
 
@@ -211,6 +213,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       PropTypes.object,
     ]),
     modelValue: PropTypes.any,
+    mapProps: PropTypes.func,
   };
 
   Field.defaultProps = {
