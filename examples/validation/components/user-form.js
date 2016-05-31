@@ -42,8 +42,9 @@ class UserForm extends React.Component {
             show={{ touched: true, focus: false }}
             model="user.firstName"
             messages={{
-              isRequired: "Please provide a first name.",
-            }}/>
+              isRequired: 'Please provide a first name.',
+            }}
+          />
         </Field>
 
         <Field model="user.lastName" validators={{ isRequired }}>
@@ -54,8 +55,9 @@ class UserForm extends React.Component {
             show={{ touched: true, focus: false }}
             model="user.lastName"
             messages={{
-              isRequired: "Please provide a last name.",
-            }}/>
+              isRequired: 'Please provide a last name.',
+            }}
+          />
         </Field>
 
         <SubmitButton />
