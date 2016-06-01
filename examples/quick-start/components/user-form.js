@@ -50,7 +50,7 @@ UserForm.propTypes = {
   user: React.PropTypes.shape({
     firstName: React.PropTypes.string.isRequired,
     lastName: React.PropTypes.string.isRequired,
-  }),
+  }).isRequired,
 };
 
 function mapStateToProps(state) {
