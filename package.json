@@ -3,6 +3,7 @@
   "version": "0.13.3",
   "description": "Create Forms Easily with React and Redux",
   "main": "lib/index.js",
+  "typings": "react-redux-form.d.ts",
   "scripts": {
     "start": "npm run build",
     "examples": "node examples/server.js",
