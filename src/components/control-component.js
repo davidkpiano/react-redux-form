@@ -24,6 +24,14 @@ function mapStateToProps(state, props) {
   };
 }
 
+function getMappedProps(props, mapProps) {
+  return mapProps({
+    ...props,
+    ...props.controlProps,
+    ...sequenceEventActions(props),
+  });
+}
+
 class Control extends Component {
   constructor(props) {
     super(props);
@@ -31,14 +39,11 @@ class Control extends Component {
     const { controlProps, mapProps } = props;
 
     this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.handleFocus = this.handleFocus.bind(this);
 
     this.state = {
       value: props.modelValue,
-      mappedProps: mapProps({
-        ...props,
-        ...controlProps,
-        ...sequenceEventActions(props),
-      }),
+      mappedProps: getMappedProps(props, mapProps),
     };
   }
 
@@ -55,11 +60,7 @@ class Control extends Component {
     const { mapProps } = nextProps;
 
     this.setState({
-      mappedProps: mapProps({
-        ...nextProps,
-        ...nextProps.controlProps,
-        ...sequenceEventActions(nextProps),
-      }),
+      mappedProps: getMappedProps(nextProps, mapProps),
     });
   }
 
@@ -85,6 +86,12 @@ class Control extends Component {
     if (onSubmit && event.key === 'Enter') {
       onSubmit(event);
     }
+  }
+
+  handleFocus() {
+    const { dispatch, model } = this.props;
+
+    dispatch(actions.focus(model));
   }
 
   validate() {
@@ -122,6 +129,7 @@ class Control extends Component {
         {
           ...this.state.mappedProps,
           onKeyPress: this.handleKeyPress,
+          // onFocus: this.handleFocus,
         });
     }
 
@@ -131,6 +139,7 @@ class Control extends Component {
         ...controlProps,
         ...this.state.mappedProps,
         onKeyPress: this.handleKeyPress,
+        // onFocus: this.handleFocus,
       },
       controlProps.children);
   }
