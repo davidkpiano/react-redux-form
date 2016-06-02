@@ -4,6 +4,7 @@ import mapValues from '../utils/map-values';
 import compose from 'redux/lib/compose';
 import merge from '../utils/merge';
 import icepick from 'icepick';
+import shallowEqual from 'react-redux/lib/utils/shallowEqual';
 
 import { isMulti, getValue, getValidity, invertValidity } from './index';
 import actions from '../actions';
@@ -66,6 +67,7 @@ function sequenceEventActions(props) {
     parser = identity,
     changeAction = identity,
     controlProps = {},
+    fieldValue,
   } = props;
 
   const {
@@ -138,7 +140,9 @@ function sequenceEventActions(props) {
         ? merge(invertValidity(fieldValidity), fieldErrors)
         : fieldErrors;
 
-      dispatch(setErrors(model, errors));
+      if (fieldValue && !shallowEqual(errors, fieldValue.errors)) {
+        dispatch(setErrors(model, errors));
+      }
 
       return value;
     };
