@@ -1346,6 +1346,39 @@ describe('<Field /> component', () => {
       assert.isFalse(onChangeFnSpy.called);
     });
 
+    it('should only execute custom onChange function pertaining to the changed input', () => {
+      const onChangeFnFoo = (val) => val;
+      const onChangeFnBar = (val) => val;
+      const onChangeFnFooSpy = sinon.spy(onChangeFnFoo);
+      const onChangeFnBarSpy = sinon.spy(onChangeFnBar);
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <div>
+            <Field
+              model="test.foo"
+            >
+              <input type="text" onChange={onChangeFnFooSpy} />
+            </Field>
+            <Field
+              model="test.bar"
+            >
+              <input type="text" onChange={onChangeFnBarSpy} />
+            </Field>
+          </div>
+        </Provider>
+      );
+
+      const [_, controlBar] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+      controlBar.value = 'testing';
+
+      TestUtils.Simulate.change(controlBar);
+
+      assert.isFalse(onChangeFnFooSpy.called);
+      assert.isTrue(onChangeFnBarSpy.called);
+    });
+
     it('should persist and return the event even when not returned', () => {
       const onChangeFn = () => {};
       const onChangeFnSpy = sinon.spy(onChangeFn);
