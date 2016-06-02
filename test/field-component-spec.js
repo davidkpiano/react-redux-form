@@ -1281,7 +1281,7 @@ describe('<Field /> component', () => {
   });
 
   describe('event handlers on control', () => {
-    const reducer = modelReducer('test', { foo: '' });
+    const reducer = modelReducer('test', { foo: '', bar: '' });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
     }));
@@ -1314,6 +1314,36 @@ describe('<Field /> component', () => {
       assert.equal(
         onChangeFnSpy.returnValues[0].target.value,
         'testing');
+    });
+
+    it('should not execute custom onChange functions of unchanged controls', () => {
+      const onChangeFn = (val) => val;
+      const onChangeFnSpy = sinon.spy(onChangeFn);
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <div>
+            <Field
+              model="test.foo"
+            >
+              <input type="text" onChange={onChangeFnSpy} />
+            </Field>
+            <Field
+              model="test.bar"
+            >
+              <input type="text" />
+            </Field>
+          </div>
+        </Provider>
+      );
+
+      const [_, controlBar] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+      controlBar.value = 'testing';
+
+      TestUtils.Simulate.change(controlBar);
+
+      assert.isFalse(onChangeFnSpy.called);
     });
 
     it('should persist and return the event even when not returned', () => {
