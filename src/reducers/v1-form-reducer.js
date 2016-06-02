@@ -53,68 +53,90 @@ function createInitialState(state, initialValue) {
   return initialState;
 }
 
-function newField(value) {
-  if (isPlainObject(value)) {
-    return mapValues(value, newField);
-  }
-
-  return icepick.merge(initialFieldState, { value });
-}
-
-function updateField(prev = {}, props) {
-  return icepick.merge(prev, props);
-}
-
-function percolatedProps(props) {
-  const percolatedProps = {};
-
-  if (props.pristine) {
-    percolatedProps.pristine = props.pristine;
-  }
-
-  return props;
+function formIsValid(formState) {
+  return every(mapValues(formState.fields, field => field.valid))
+    && every(formState.errors, error => !error);
 }
 
 const reactions = {
   [actionTypes.FOCUS]: {
-    form: { focus: true },
-    field: { focus: true },
+    form: () => ({ focus: true }),
+    field: () => ({ focus: true }),
   },
   [actionTypes.SET_PRISTINE]: {
-    form: { pristine: true },
-    field: { pristine: true },
+    form: () => ({ pristine: true }),
+    field: () => ({ pristine: true }),
   },
   [actionTypes.SET_DIRTY]: {
-    form: { pristine: false },
-    field: { pristine: false },
+    form: () => ({ pristine: false }),
+    field: () => ({ pristine: false }),
   },
   [actionTypes.BLUR]: (action, state) => ({
-    form: {
+    form: () => ({
       focus: false,
       touched: true,
       retouched: !!(state.submitted || state.submitFailed),
-    },
-    field: {
+    }),
+    field: () => ({
       focus: false,
       touched: true,
       retouched: !!(state.submitted || state.submitFailed),
-    },
+    }),
   }),
   [actionTypes.SET_TOUCHED]: (action, state) => reactions[actionTypes.BLUR](action, state),
   [actionTypes.SET_PENDING]: (action) => ({
-    form: {
+    form: () => ({
       pending: action.pending,
       submitted: false,
       submitFailed: false,
       retouched: false,
-    },
-    field: {
+    }),
+    field: () => ({
       pending: action.pending,
       submitted: false,
       submitFailed: false,
       retouched: false,
-    },
+    }),
   }),
+  [actionTypes.SET_VALIDITY]: (action) => {
+    let errors;
+    if (isPlainObject(action.validity)) {
+      errors = mapValues(action.validity, valid => !valid);
+    } else {
+      errors = !action.validity;
+    }
+
+    return {
+      form: (state) => ({
+        valid: formIsValid(state),
+      }),
+      field: () => ({
+        validity: action.validity,
+        valid: isBoolean(errors) ? !errors : every(errors, (error) => !error),
+        validated: true,
+      }),
+    };
+  },
+  [actionTypes.SET_ERRORS]: (action) => {
+    let validity;
+    if (isPlainObject(action.errors)) {
+      validity = mapValues(action.errors, (error) => !error);
+    } else {
+      validity = !action.errors;
+    }
+
+    return {
+      form: (state) => ({
+        valid: formIsValid(state),
+      }),
+      field: () => ({
+        errors: action.errors,
+        validity,
+        valid: isValid(validity),
+        validated: true,
+      }),
+    };
+  },
 };
 
 function getReaction(action, state) {
@@ -137,14 +159,17 @@ export function fieldReducer(state = {}, action, path) {
   if (!parentKey && !childPath.length) {
     if (!reaction) return state;
 
-    return icepick.merge(state, reaction.field);
+    return icepick.merge(state, reaction.field(state));
   }
 
   if (!reaction) return state;
 
-  return icepick.merge(state, {
-    $form: reaction.form,
+  const subFieldState = icepick.merge(state, {
     [parentKey]: fieldReducer(state[parentKey], action, childPath),
+  });
+
+  return icepick.merge(subFieldState, {
+    $form: reaction.form(subFieldState),
   });
 }
 

@@ -1,12 +1,12 @@
 import { assert } from 'chai';
-import { actions, actionTypes, formReducer, initialFieldState, getField } from '../src';
-import newFormReducer, { fieldReducer } from '../src/reducers/v1-form-reducer';
+import { actions, formReducer, initialFieldState, getField } from '../src';
+import newFormReducer from '../src/reducers/v1-form-reducer';
 
 describe.only('fieldReducer()', () => {
   it('should do stuff', () => {
-    console.log( newFormReducer('foo')({ }, actions.setPending('foo.bar')) )
-  })
-})
+    console.log(newFormReducer('foo')({ }, actions.setValidity('foo.bar', false)));
+  });
+});
 
 describe('formReducer()', () => {
   it('should create a reducer given a model', () => {
