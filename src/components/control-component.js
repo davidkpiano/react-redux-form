@@ -1,9 +1,13 @@
 import { Component, createElement, cloneElement, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
+import compose from 'redux/lib/compose';
+import identity from 'lodash/identity';
 import _get from '../utils/get';
 import merge from '../utils/merge';
+import shallowEqual from 'react-redux/lib/utils/shallowEqual';
+import mapValues from '../utils/map-values';
 
-import { invertValidity, getFieldFromState, getValidity } from '../utils';
+import { invertValidity, getFieldFromState, getValidity, getValue } from '../utils';
 import { sequenceEventActions } from '../utils/sequence';
 import actions from '../actions';
 
@@ -24,13 +28,40 @@ function mapStateToProps(state, props) {
   };
 }
 
-function getMappedProps(props, mapProps) {
-  return mapProps({
-    ...props,
-    ...props.controlProps,
-    ...sequenceEventActions(props),
-  });
+function isReadOnlyValue(controlProps) {
+  return ~['radio', 'checkbox'].indexOf(controlProps.type);
 }
+
+function persistEventWithCallback(callback) {
+  return (event) => {
+    if (event && event.persist) {
+      event.persist();
+    }
+
+    callback(event);
+    return event;
+  };
+}
+
+const modelValueUpdaterMap = {
+  checkbox: (props, eventValue) => {
+    const { model, modelValue } = props;
+
+    if (isMulti(model)) {
+      const valueWithItem = modelValue || [];
+      const valueWithoutItem = (valueWithItem || [])
+        .filter(item => item !== eventValue);
+      const value = (valueWithoutItem.length === valueWithItem.length)
+        ? icepick.push(valueWithItem, eventValue)
+        : valueWithoutItem;
+
+      return value;
+    }
+
+    return !modelValue;
+  },
+  default: (props, eventValue) => eventValue,
+};
 
 class Control extends Component {
   constructor(props) {
@@ -38,12 +69,15 @@ class Control extends Component {
 
     const { controlProps, mapProps } = props;
 
+    this.getChangeAction = this.getChangeAction.bind(this);
+    this.getValidateAction = this.getValidateAction.bind(this);
+
     this.handleKeyPress = this.handleKeyPress.bind(this);
-    this.handleFocus = this.handleFocus.bind(this);
+    this.createEventHandler = this.createEventHandler.bind(this);
 
     this.state = {
       value: props.modelValue,
-      mappedProps: getMappedProps(props, mapProps),
+      mappedProps: this.getMappedProps(props, mapProps),
     };
   }
 
@@ -60,7 +94,7 @@ class Control extends Component {
     const { mapProps } = nextProps;
 
     this.setState({
-      mappedProps: getMappedProps(nextProps, mapProps),
+      mappedProps: this.getMappedProps(nextProps, mapProps),
     });
   }
 
@@ -80,6 +114,70 @@ class Control extends Component {
     }
   }
 
+  getMappedProps(props, mapProps) {
+    return mapProps({
+      ...props,
+      ...props.controlProps,
+      ...sequenceEventActions(props),
+      onFocus: this.createEventHandler('focus'),
+      onBlur: this.createEventHandler('blur'),
+      onKeyPress: this.handleKeyPress,
+    });
+  }
+
+  getChangeAction(value) {
+    const { changeAction, model } = this.props;
+
+    return changeAction(model, value);
+  }
+
+  getValidateAction(value) {
+    const {
+      validators,
+      errors,
+      model,
+      fieldValue,
+    } = this.props;
+
+    if (validators || errors) {
+      const fieldValidity = getValidity(validators, value);
+      const fieldErrors = getValidity(errors, value);
+
+      const mergedErrors = validators
+        ? merge(invertValidity(fieldValidity), fieldErrors)
+        : fieldErrors;
+
+      if (fieldValue && !shallowEqual(mergedErrors, fieldValue.errors)) {
+        return actions.setErrors(model, mergedErrors);
+      }
+    }
+
+    return identity;
+  }
+
+  getAsyncValidateAction(value) {
+    const {
+      asyncValidators,
+      model,
+    } = this.props;
+
+    if (!asyncValidators) return identity;
+
+    return (dispatch) => {
+      mapValues(asyncValidators,
+        (validator, key) => dispatch(actions.asyncSetValidity(model,
+          (_, done) => {
+            const outerDone = (valid) => done({ [key]: valid });
+
+            validator(getValue(value), outerDone);
+          })
+        )
+      );
+
+      return value;
+    }
+  }
+
   handleKeyPress(event) {
     const { onSubmit } = this.state.mappedProps;
 
@@ -88,10 +186,66 @@ class Control extends Component {
     }
   }
 
-  handleFocus() {
-    const { dispatch, model } = this.props;
+  createEventHandler(eventName) {
+    return (event) => {    
+      const {
+        dispatch,
+        model,
+        modelValue,
+        updateOn,
+        validateOn,
+        asyncValidateOn,
+        controlProps = {},
+        parser,
+      } = this.props;
 
-    dispatch(actions.focus(model));
+      const modelValueUpdater = modelValueUpdaterMap[controlProps.type]
+        || modelValueUpdaterMap.default;
+
+      const eventAction = {
+        focus: actions.focus,
+        blur: actions.blur,
+      }[eventName];
+
+      const controlEventHandler = {
+        focus: controlProps.onFocus,
+        blur: controlProps.onBlur,
+      }[eventName];
+
+
+      const dispatchChange = (persistedEvent) => {
+        let eventActions = [ eventAction(model) ];
+
+        if (validateOn === eventName) {
+          eventActions.push(this.getValidateAction(persistedEvent));
+        }
+
+        if (asyncValidateOn === eventName) {
+          eventActions.push(this.getAsyncValidateAction(persistedEvent));
+        }
+
+        if (updateOn === eventName) {
+          eventActions.push(this.getChangeAction(persistedEvent));
+        }
+
+        dispatch(actions.batch(model, eventActions));
+      }
+
+      if (isReadOnlyValue(controlProps)) {
+        return compose(
+          dispatchChange,
+          persistEventWithCallback(controlEventHandler || identity)
+        )(event);
+      }
+
+      return compose(
+        dispatchChange,
+        (value) => modelValueUpdater(this.props, value),
+        parser,
+        getValue,
+        persistEventWithCallback(controlEventHandler || identity)
+      )(event);
+    }
   }
 
   validate() {
@@ -128,8 +282,6 @@ class Control extends Component {
         control,
         {
           ...this.state.mappedProps,
-          onKeyPress: this.handleKeyPress,
-          // onFocus: this.handleFocus,
         });
     }
 
@@ -138,8 +290,6 @@ class Control extends Component {
       {
         ...controlProps,
         ...this.state.mappedProps,
-        onKeyPress: this.handleKeyPress,
-        // onFocus: this.handleFocus,
       },
       controlProps.children);
   }

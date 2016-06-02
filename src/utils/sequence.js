@@ -91,8 +91,8 @@ function sequenceEventActions(props) {
     : identity;
 
   const eventActions = {
-    onFocus: [],
-    onBlur: [],
+    // onFocus: [],
+    // onBlur: [],
     onChange: [],
     onLoad: [], // pseudo-event
     onSubmit: [], // pseudo-event
@@ -107,29 +107,29 @@ function sequenceEventActions(props) {
       actions.change(model, controlProps.defaultValue)));
   }
 
-  let changeActionCreator;
+  let changeActionCreator = (modelValue) => controlChangeMethod(modelValue);
 
-  switch (updateOnEventHandler) {
-    case 'onBlur':
-      changeActionCreator = (modelValue) => actions.batch(model, [
-        blur(model),
-        controlChangeMethod(modelValue),
-      ]);
-      eventActions.onFocus.push(() => dispatch(focus(model)));
-      break;
-    case 'onFocus':
-      changeActionCreator = (modelValue) => actions.batch(model, [
-        focus(model),
-        controlChangeMethod(modelValue),
-      ]);
-      eventActions.onBlur.push(() => dispatch(blur(model)));
-      break;
-    default:
-      changeActionCreator = (modelValue) => controlChangeMethod(modelValue);
-      eventActions.onBlur.push(() => dispatch(blur(model)));
-      eventActions.onFocus.push(() => dispatch(focus(model)));
-      break;
-  }
+  // switch (updateOnEventHandler) {
+  //   case 'onBlur':
+  //     // changeActionCreator = (modelValue) => actions.batch(model, [
+  //     //   blur(model),
+  //     //   controlChangeMethod(modelValue),
+  //     // ]);
+  //     // eventActions.onFocus.push(() => dispatch(focus(model)));
+  //     break;
+  //   case 'onFocus':
+  //     // changeActionCreator = (modelValue) => actions.batch(model, [
+  //     //   focus(model),
+  //     //   controlChangeMethod(modelValue),
+  //     // ]);
+  //     // eventActions.onBlur.push(() => dispatch(blur(model)));
+  //     break;
+  //   default:
+  //     changeActionCreator = (modelValue) => controlChangeMethod(modelValue);
+  //     // eventActions.onBlur.push(() => dispatch(blur(model)));
+  //     // eventActions.onFocus.push(() => dispatch(focus(model)));
+  //     break;
+  // }
 
   if (props.validators || props.errors) {
     const dispatchValidate = value => {
@@ -147,7 +147,10 @@ function sequenceEventActions(props) {
       return value;
     };
 
-    eventActions[validateOn].push(dispatchValidate);
+    if (validateOn !== 'onFocus' && validateOn !== 'onBlur') { 
+      eventActions[validateOn].push(dispatchValidate);
+    }
+
     eventActions.onLoad.push(dispatchValidate);
   }
 
@@ -166,7 +169,10 @@ function sequenceEventActions(props) {
       return value;
     };
 
-    eventActions[asyncValidateOn].push(dispatchAsyncValidate);
+    if (asyncValidateOn !== 'onFocus' && asyncValidateOn !== 'onBlur') { 
+      console.log('fuck', asyncValidateOn);
+      eventActions[asyncValidateOn].push(dispatchAsyncValidate);
+    }
   }
 
   const dispatchChange = (event) => {
@@ -181,19 +187,21 @@ function sequenceEventActions(props) {
 
   eventActions.onSubmit.push(updaterFn(dispatchChange));
 
-  if (!isReadOnlyValue(controlProps)) {
-    eventActions[updateOnEventHandler].push(
-      compose(
-        updaterFn(dispatchChange),
-        (...args) => modelValueUpdater(props, ...args),
-        parser,
-        getValue,
-        controlOnChange));
-  } else {
-    eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
+  if (updateOnEventHandler !== 'onFocus' && updateOnEventHandler !== 'onBlur') {  
+    if (!isReadOnlyValue(controlProps)) {
+      eventActions[updateOnEventHandler].push(
+        compose(
+          updaterFn(dispatchChange),
+          (...args) => modelValueUpdater(props, ...args),
+          parser,
+          getValue,
+          controlOnChange));
+    } else {
+      eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
+    }
   }
-  eventActions.onBlur.push(controlOnBlur);
-  eventActions.onFocus.push(controlOnFocus);
+  // eventActions.onBlur.push(controlOnBlur);
+  // eventActions.onFocus.push(controlOnFocus);
 
   return mapValues(eventActions, _actions => compose(..._actions));
 }
