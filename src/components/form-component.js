@@ -4,6 +4,7 @@ import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
 import mapValues from '../utils/map-values';
 import merge from '../utils/merge';
+import identity from 'lodash/identity';
 
 import actions from '../actions';
 import {
@@ -14,21 +15,13 @@ import {
 } from '../utils';
 import { getField } from '../reducers/form-reducer';
 
-function dispatchValidCallback(modelValue, callback) {
-  return callback
-    ? () => callback(modelValue)
-    : undefined;
-}
-
-function dispatchInvalidCallback(model, dispatch) {
-  return () => dispatch(actions.setSubmitFailed(model));
-}
-
 class Form extends Component {
   constructor(props) {
     super(props);
 
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleValidSubmit = this.handleValidSubmit.bind(this);
+    this.handleInvalidSubmit = this.handleInvalidSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -119,6 +112,28 @@ class Form extends Component {
     }
   }
 
+  handleValidSubmit() {
+    const {
+      dispatch,
+      model,
+      modelValue,
+      onSubmit = identity,
+    } = this.props;
+
+    dispatch(actions.setSubmitted(model));
+
+    return onSubmit(modelValue);
+  }
+
+  handleInvalidSubmit() {
+    const {
+      dispatch,
+      model,
+    } = this.props;
+
+    dispatch(actions.setSubmitFailed(model));
+  }
+
   handleSubmit(e) {
     e.preventDefault();
 
@@ -143,8 +158,8 @@ class Form extends Component {
     }
 
     const validationOptions = {
-      onValid: dispatchValidCallback(modelValue, onSubmit),
-      onInvalid: dispatchInvalidCallback(model, dispatch),
+      onValid: this.handleValidSubmit,
+      onInvalid: this.handleInvalidSubmit,
     };
 
     const finalErrorValidators = validators

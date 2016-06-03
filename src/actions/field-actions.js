@@ -175,7 +175,9 @@ const validateFields = (model, fieldValidators, options = {}) => (dispatch, getS
 
   if (validCB || invalidCB) {
     const form = getForm(getState(), model);
-    const formValid = form ? form.valid : true;
+    const formValid = (form && !fieldsValidity.hasOwnProperty(''))
+      ? form.valid
+      : true;
     const fieldsValid = options.errors
       ? !isInvalid(fieldsValidity)
       : isValid(fieldsValidity);
