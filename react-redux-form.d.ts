@@ -236,7 +236,7 @@ export interface ErrorsProps {
 	 * * If a message is not provided for an error key, the message will default to the key value in the field .errors property.
 	 *   * This means if you're using setErrors or the errors prop in <Field> to set error messages, they will automatically be shown in <Errors />.
 	 */
-	messages: ErrorsComponentMessages;
+	messages?: ErrorsComponentMessages;
 	/**
 	 * The show prop determines when error messages should be shown, based on the model's field state (determined by the form reducer).
 	 * It can be a boolean, or a function, string, or object as a Lodash iteratee (https://lodash.com/docs#iteratee)
@@ -252,7 +252,7 @@ export interface ErrorsProps {
 	 * * Use show as a boolean if you want to calculate when an error should be shown based on external factors, such as form state.
 	 * @see https://lodash.com/docs#iteratee
 	 */
-	show: FieldState | FieldStatePredicate | boolean | string;
+	show?: FieldState | FieldStatePredicate | boolean | string;
 	/**
 	 * The `wrapper` component, which is the component that wraps all errors, can be configured using this prop. Default: "div".
 	 *
@@ -263,7 +263,7 @@ export interface ErrorsProps {
 	 *   * fieldValue - the current field state of the model
 	 * * wrapper={CustomErrors} will wrap all errors in a <CustomErrors> component, which will receive the same props as above.
 	 */
-	wrapper: string | React.StatelessComponent<ErrorsProps & WrapperProps> | React.ComponentClass<ErrorsProps & WrapperProps>;
+	wrapper?: string | React.StatelessComponent<ErrorsProps & WrapperProps> | React.ComponentClass<ErrorsProps & WrapperProps>;
 	/**
 	 * The `component`, which is the component for each error message, can be configured using this prop. Default: "span".
 	 *
@@ -275,7 +275,7 @@ export interface ErrorsProps {
 	 *   * children - the error message (text).
 	 * * component={CustomError} will wrap the error in a <CustomError> component, which will receive the same props as above.
 	 */
-	component: string | React.StatelessComponent<ErrorsProps & CustomComponentProps> | React.ComponentClass<ErrorsProps & CustomComponentProps>;
+	component?: string | React.StatelessComponent<ErrorsProps & CustomComponentProps> | React.ComponentClass<ErrorsProps & CustomComponentProps>;
 }
 
 export class Errors extends React.Component<ErrorsProps, {}> {
