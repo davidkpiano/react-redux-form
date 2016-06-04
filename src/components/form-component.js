@@ -50,9 +50,7 @@ class Form extends Component {
       modelValue,
     } = this.props;
 
-    if (!formValue) {
-      return;
-    }
+    if (!formValue) return;
 
     if (!validators && !errors && (modelValue !== nextProps.modelValue)) {
       if (!formValue.valid) {
@@ -104,11 +102,18 @@ class Form extends Component {
       return fieldErrors;
     });
 
+    const fieldsErrors = merge(
+      invertValidity(fieldsValidity),
+      fieldsErrorsValidity
+    );
+
+    // Compute form-level validity
+    if (!fieldsValidity.hasOwnProperty('') && !fieldsErrorsValidity.hasOwnProperty('')) {
+      fieldsErrors[''] = false;
+    }
+
     if (validityChanged) {
-      dispatch(actions.setFieldsErrors(model, merge(
-        invertValidity(fieldsValidity),
-        fieldsErrorsValidity
-      )));
+      dispatch(actions.setFieldsErrors(model, fieldsErrors));
     }
   }
 
@@ -120,7 +125,7 @@ class Form extends Component {
       onSubmit = identity,
     } = this.props;
 
-    dispatch(actions.setSubmitted(model));
+    dispatch(actions.setPending(model));
 
     return onSubmit(modelValue);
   }

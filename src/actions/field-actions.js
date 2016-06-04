@@ -130,7 +130,7 @@ const submit = (model, promise, options = {}) => dispatch => {
   }).catch(error => {
     dispatch(batchActions.batch(model, [
       setSubmitFailed(model),
-      errorsAction(model, error, { errors: true }),
+      errorsAction(model, error),
     ]));
   });
 
