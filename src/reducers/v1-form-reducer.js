@@ -12,6 +12,7 @@ import compareKeys from '../utils/compare-keys';
 import toPath from '../utils/to-path';
 import startsWith from 'lodash/startsWith';
 import flatten from 'flat';
+import compose from 'redux/lib/compose';
 
 import actionTypes from '../action-types';
 import actions from '../actions/field-actions';
@@ -46,7 +47,7 @@ function createInitialState(state, initialValue) {
     });
   }
 
-  initialState.$field = icepick.merge(initialFieldState, {
+  initialState.$form = icepick.merge(initialFieldState, {
     initialValue: state,
   });
 
@@ -173,7 +174,7 @@ export function fieldReducer(state = {}, action, path) {
   });
 }
 
-export default function createFormReducer(model, initialState) {
+export default function createFormReducer(model, initialState, plugins = []) {
   const modelPath = toPath(model);
   const initialFormState = createInitialState(initialState);
 
