@@ -6,6 +6,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import createTestStore from 'redux-test-store';
+import sinon from 'sinon';
 
 import { Form, modelReducer, formReducer, Field, actions, actionTypes } from '../src';
 
@@ -1005,6 +1006,136 @@ describe('<Form> component', () => {
       TestUtils.Simulate.change(inputElement);
 
       assert.isTrue(store.getState().testForm.valid);
+    });
+  });
+
+  describe('invalidating async validity on form change with form validators', () => {
+    const store = createTestStore(applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: 'invalid' }),
+      testForm: formReducer('test', { foo: 'invalid' }),
+    })));
+
+    function handleSubmit() {
+      store.dispatch(actions.batch('test', [
+        actions.setSubmitFailed('test'),
+        actions.setErrors('test', 'Form is invalid', { errors: true }),
+      ]));
+    }
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test"
+          validators={{
+            foo: (val) => val && val.length,
+          }}
+          onSubmit={handleSubmit}
+        >
+          <Field model="test.foo">
+            <input type="text" />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+    const inputElement = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+    it('should set errors from rejected submit handler on valid submit', () => {
+      TestUtils.Simulate.submit(formElement);
+
+      assert.containSubset(
+        store.getState().testForm,
+        { errors: 'Form is invalid' });
+    });
+
+    it('should set validity on form changes after submit failed', () => {
+      inputElement.value = 'valid';
+      TestUtils.Simulate.change(inputElement);
+
+      assert.isTrue(store.getState().testForm.valid);
+    });
+  });
+
+  describe('submit after invalid', () => {
+    const handleSubmit = sinon.spy((val) => val);
+
+    const store = createTestStore(applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { pass1: '', pass2: '' }),
+      testForm: formReducer('test', { pass1: '', pass2: '' }),
+    })));
+
+    const passwordsMatch = (val) => val.pass1 === val.pass2;
+    const required = (val) => val && val.length;
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form
+          model="test"
+          validators={{
+            '': [passwordsMatch],
+            pass1: [required],
+            pass2: [required],
+          }}
+          onSubmit={handleSubmit}
+          validateOn="submit"
+        >
+          <Field model="test.pass1">
+            <input />
+          </Field>
+          <Field model="test.pass2">
+            <input />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+    const [pass1, pass2] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+
+    it('should fail to submit with an invalid form', () => {
+      TestUtils.Simulate.submit(formElement);
+
+      assert.containSubset(
+        store.getState().testForm,
+        {
+          valid: false,
+          submitFailed: true,
+        });
+
+      pass1.value = 'aaa';
+      pass2.value = 'bbb';
+
+      TestUtils.Simulate.change(pass1);
+      TestUtils.Simulate.change(pass2);
+
+      TestUtils.Simulate.submit(formElement);
+
+      assert.containSubset(
+        store.getState().testForm,
+        {
+          valid: false,
+          submitFailed: true,
+        });
+    });
+
+    it('should submit with a valid form', () => {
+      pass2.value = 'aaa';
+
+      TestUtils.Simulate.change(pass2);
+
+
+      TestUtils.Simulate.submit(formElement);
+
+      assert.isTrue(store.getState().testForm.valid);
+
+      assert.isTrue(handleSubmit.calledOnce);
+
+      assert.containSubset(
+        store.getState().testForm,
+        {
+          valid: true,
+          submitFailed: false,
+        });
     });
   });
 });
