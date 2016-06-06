@@ -105,12 +105,12 @@ function getFormStateKeyCached(state, model) {
   }
 
   const cache = formStateKeyCaches[model];
-  if (cache.has(state)) {
-    return cache.get(state);
+  if (cache.has(model)) {
+    return cache.get(model);
   }
 
   const formStateKey = getFormStateKey(state, model);
-  cache.set(state, formStateKey);
+  cache.set(model, formStateKey);
   return formStateKey;
 }
 
