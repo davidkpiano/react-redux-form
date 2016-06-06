@@ -77,7 +77,6 @@
     "webpack-dev-middleware": "^1.6.1"
   },
   "dependencies": {
-    "flat": "^2.0.0",
     "icepick": "^1.1.0",
     "lodash": "^4.10.0"
   },
