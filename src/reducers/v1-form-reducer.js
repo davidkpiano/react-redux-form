@@ -73,7 +73,7 @@ const reactions = {
     form: () => ({ pristine: false }),
     field: () => ({ pristine: false }),
   },
-  [actionTypes.BLUR]: (action, state) => ({
+  [actionTypes.BLUR]: (state, action) => ({
     form: () => ({
       focus: false,
       touched: true,
@@ -85,8 +85,8 @@ const reactions = {
       retouched: !!(state.submitted || state.submitFailed),
     }),
   }),
-  [actionTypes.SET_TOUCHED]: (action, state) => reactions[actionTypes.BLUR](action, state),
-  [actionTypes.SET_PENDING]: (action) => ({
+  [actionTypes.SET_TOUCHED]: (state, action) => reactions[actionTypes.BLUR](action, state),
+  [actionTypes.SET_PENDING]: (_, action) => ({
     form: () => ({
       pending: action.pending,
       submitted: false,
@@ -100,7 +100,7 @@ const reactions = {
       retouched: false,
     }),
   }),
-  [actionTypes.SET_VALIDITY]: (action) => {
+  [actionTypes.SET_VALIDITY]: (_, action) => {
     let errors;
     if (isPlainObject(action.validity)) {
       errors = mapValues(action.validity, valid => !valid);
@@ -119,7 +119,7 @@ const reactions = {
       }),
     };
   },
-  [actionTypes.SET_ERRORS]: (action) => {
+  [actionTypes.SET_ERRORS]: (_, action) => {
     let validity;
     if (isPlainObject(action.errors)) {
       validity = mapValues(action.errors, (error) => !error);
@@ -141,13 +141,13 @@ const reactions = {
   },
 };
 
-function getReaction(action, state) {
+function getReaction(state, action) {
   const reaction = reactions[action.type];
 
   if (!reaction) return false;
 
   if (typeof reaction === 'function') {
-    return reaction(action, state);
+    return reaction(state, action);
   }
 
   return reaction;
@@ -156,7 +156,7 @@ function getReaction(action, state) {
 function formActionReducer(state = {}, action, path) {
   const [ parentKey = false, ...childPath ] = toPath(path);
 
-  const reaction = getReaction(action, state);
+  const reaction = getReaction(state, action);
 
   if (!parentKey && !childPath.length) {
     if (!reaction) return state;
