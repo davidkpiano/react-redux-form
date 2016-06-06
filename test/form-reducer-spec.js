@@ -264,49 +264,47 @@ describe.only('formReducer()', () => {
 
   describe('SET_SUBMIT_FAILED action', () => {
     it('should set all fields to submitFailed = true when form submitFailed = true', () => {
-      const reducer = formReducer('test', { foo: '', bar: '' });
+      const reducer = newFormReducer('test', { foo: '', bar: '' });
 
       const actual = reducer(undefined, actions.setSubmitFailed('test'));
 
       assert.containSubset(actual, {
-        submitFailed: true,
-        submitted: false,
-        fields: {
-          foo: {
-            submitFailed: true,
-            touched: true,
-            submitted: false,
-          },
-          bar: {
-            submitFailed: true,
-            touched: true,
-            submitted: false,
-          },
+        $form: {        
+          submitFailed: true,
+          submitted: false,
+        },
+        foo: {
+          submitFailed: true,
+          touched: true,
+          submitted: false,
+        },
+        bar: {
+          submitFailed: true,
+          touched: true,
+          submitted: false,
         },
       });
     });
 
     it('should set all fields to submitFailed = false when form submitFailed = false', () => {
-      const reducer = formReducer('test', { foo: '', bar: '' });
+      const reducer = newFormReducer('test', { foo: '', bar: '' });
 
-      const submitFailed = reducer(undefined, actions.setSubmitFailed('test', false));
-
-      const actual = reducer(submitFailed, actions.setSubmitted('test'));
+      const actual = reducer(undefined, actions.setSubmitFailed('test', false));
 
       assert.containSubset(actual, {
-        submitFailed: false,
-        submitted: true,
-        fields: {
-          foo: {
-            submitFailed: false,
-            touched: true,
-            submitted: true,
-          },
-          bar: {
-            submitFailed: false,
-            touched: true,
-            submitted: true,
-          },
+        $form: {        
+          submitFailed: false,
+          submitted: false,
+        },
+        foo: {
+          submitFailed: false,
+          touched: true,
+          submitted: false,
+        },
+        bar: {
+          submitFailed: false,
+          touched: true,
+          submitted: false,
         },
       });
     });

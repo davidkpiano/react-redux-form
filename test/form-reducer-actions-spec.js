@@ -10,6 +10,8 @@ describe('formReducer() (V1)', () => {
     assert.isFunction(formReducer);
   });
 
+  console.log(formReducer('test', { foo: '' })(undefined, actions.setSubmitFailed('test')));
+
   const formActionsSpec = {
     [actionTypes.FOCUS]: [
       {
