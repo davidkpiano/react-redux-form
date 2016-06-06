@@ -3,14 +3,12 @@ import mapValues from '../utils/map-values';
 import isPlainObject from 'lodash/isPlainObject';
 import every from 'lodash/every';
 import some from 'lodash/some';
-import findKey from 'lodash/findKey';
 import _get from '../utils/get';
 import toPath from '../utils/to-path';
 import pathStartsWith from '../utils/path-starts-with';
 import memoize from 'lodash/memoize';
 
 import { getField, initialFieldState } from '../reducers/form-reducer';
-import flatten from './flatten';
 
 function isMulti(model) {
   return endsWith(model, '[]');
@@ -59,13 +57,44 @@ function getValue(value) {
   return isEvent(value) ? getEventValue(value) : value;
 }
 
-function getFormStateKey(state, model) {
-  const flatState = flatten(state);
+function getFormStateKey(state, model, currentPath = '') {
+  const deepCandidateKeys = [];
+  let result = null;
 
-  const formStateKey = findKey(flatState, (value) =>
-    value && value.model && pathStartsWith(model, value.model));
+  Object.keys(state).some((key) => {
+    const subState = state[key];
 
-  return formStateKey;
+    if (subState && subState.model) {
+      if (pathStartsWith(model, subState.model)) {
+        result = currentPath
+          ? [currentPath, key].join('.')
+          : key;
+
+        return true;
+      }
+
+      return false;
+    }
+
+    if (isPlainObject(subState)) {
+      deepCandidateKeys.push(key);
+    }
+
+    return false;
+  });
+
+  if (result) return result;
+
+  deepCandidateKeys.some((key) => {
+    result = getFormStateKey(state[key], model,
+      currentPath ? [currentPath, key].join('.') : key);
+
+    return !!result;
+  });
+
+  if (result) return result;
+
+  return null;
 }
 
 const formStateKeyCaches = {};
@@ -166,4 +195,5 @@ export {
   invertValidity,
   getModelPath,
   pathStartsWith,
+  getFormStateKey,
 };
