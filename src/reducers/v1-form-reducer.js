@@ -19,7 +19,7 @@ import actionTypes from '../action-types';
 import actions from '../actions/field-actions';
 import { isValid } from '../utils';
 
-const initialFieldState = {
+export const initialFieldState = {
   focus: false,
   pending: false,
   pristine: true,
@@ -86,6 +86,12 @@ const reactions = {
     }),
   }),
   [actionTypes.SET_TOUCHED]: (state, action) => reactions[actionTypes.BLUR](action, state),
+  [actionTypes.SET_UNTOUCHED]: {
+    form: (state) => state,
+    field: () => ({
+      touched: false,
+    }),
+  },
   [actionTypes.SET_PENDING]: (_, action) => ({
     form: () => ({
       pending: action.pending,
@@ -139,6 +145,37 @@ const reactions = {
       }),
     };
   },
+  [actionTypes.SET_SUBMITTED]: (_, action) => ({
+    form: () => ({
+      pending: false,
+      submitted: !!action.submitted,
+      submitFailed: !action.submitted,
+      touched: true,
+    }),
+    field: () => ({
+      pending: false,
+      submitted: !!action.submitted,
+      submitFailed: !action.submitted,
+      touched: true,
+    }),
+  }),
+  [actionTypes.SET_SUBMIT_FAILED]: (_, action) => {
+    return {
+      form: () => ({
+        touched: true,
+      }),
+      field: (state) => ({
+        pending: false,
+        submitted: !action.submitFailed,
+        submitFailed: !!action.submitFailed,
+        touched: true,
+        ...mapFields(state, (field) => icepick.merge(field, {
+          submitted: !action.submitFailed,
+          submitFailed: !!action.submitFailed,
+        })),
+      }),
+    }
+  },
 };
 
 function getReaction(state, action) {
@@ -153,18 +190,30 @@ function getReaction(state, action) {
   return reaction;
 }
 
-function formActionReducer(state = {}, action, path) {
+function mapFields(state, iterator) {
+  return mapValues(state, (field, fieldName) => {
+    if (fieldName === '$form') return field;
+
+    return iterator(field, state);
+  });
+}
+
+function formActionReducer(state = initialFieldState, action, path) {
   const [ parentKey = false, ...childPath ] = toPath(path);
 
   const reaction = getReaction(state, action);
 
+  if (!reaction) return state;
+
   if (!parentKey && !childPath.length) {
-    if (!reaction) return state;
+    if (state.hasOwnProperty('$form')) {
+      return icepick.merge(state, {
+        $form: reaction.field(state),
+      });
+    }
 
     return icepick.merge(state, reaction.field(state));
   }
-
-  if (!reaction) return state;
 
   const subFieldState = icepick.merge(state, {
     [parentKey]: formActionReducer(state[parentKey], action, childPath),

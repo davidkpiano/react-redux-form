@@ -1,8 +1,8 @@
 import { assert } from 'chai';
 import { actions, formReducer, initialFieldState, getField } from '../src';
-import newFormReducer from '../src/reducers/v1-form-reducer';
+import newFormReducer, { initialFieldState as newInitialFieldState } from '../src/reducers/v1-form-reducer';
 
-describe('formReducer()', () => {
+describe.only('formReducer()', () => {
   it('should create a reducer given a model', () => {
     const reducer = newFormReducer('test');
 
@@ -10,7 +10,7 @@ describe('formReducer()', () => {
   });
 
   it('should work with non-form actions', () => {
-    const reducer = formReducer('test');
+    const reducer = newFormReducer('test');
 
     assert.doesNotThrow(() => reducer(undefined, { type: 'ANY' }));
   });
@@ -53,17 +53,16 @@ describe('formReducer()', () => {
 
   describe('deep paths', () => {
     it('should be able to handle model at deep state path', () => {
-      const reducer = formReducer('forms.test');
+      const reducer = newFormReducer('forms.test');
       const actual = reducer(undefined, actions.focus('forms.test.foo'));
-      assert.deepEqual(actual.fields.foo, {
-        ...initialFieldState,
+      assert.deepEqual(actual.foo, {
+        ...newInitialFieldState,
         focus: true,
-        blur: false,
       });
     });
 
     it('should initialize fields given an initial state', () => {
-      const reducer = formReducer('test', {
+      const reducer = newFormReducer('test', {
         foo: 'bar',
         deep: {
           one: 'one',
@@ -75,15 +74,17 @@ describe('formReducer()', () => {
 
       const actual = reducer(undefined, {});
 
-      assert.containSubset(actual.fields, {
+      assert.containSubset(actual, {
         foo: {
           initialValue: 'bar',
         },
-        'deep.one': {
-          initialValue: 'one',
+        deep: {
+          one: { initialValue: 'one' },
         },
-        'deep.two.three': {
-          initialValue: 'four',
+        deep: {
+          two: {
+            three: { initialValue: 'four' },
+          },
         },
       });
     });

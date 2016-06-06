@@ -103,9 +103,10 @@ const setSubmitted = (model, submitted = true) => ({
   submitted,
 });
 
-const setSubmitFailed = (model) => ({
+const setSubmitFailed = (model, submitFailed = true) => ({
   type: actionTypes.SET_SUBMIT_FAILED,
   model,
+  submitFailed,
 });
 
 

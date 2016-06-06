@@ -3,7 +3,7 @@ import { actions, actionTypes, initialFieldState, getField } from '../src';
 import formReducer from '../src/reducers/v1-form-reducer';
 import mapValues from 'lodash/mapValues';
 
-describe.only('formReducer() (V1)', () => {
+describe('formReducer() (V1)', () => {
   const nullAction = { type: '' };
 
   it('should exist as a function', () => {
