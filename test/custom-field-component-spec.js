@@ -25,14 +25,6 @@ describe('createFieldClass()', () => {
 });
 
 describe('custom <Field /> components with createFieldClass()', () => {
-  const CustomField = createFieldClass({
-    CustomText: props => ({
-      customOnChange: props.onChange,
-    }),
-    FamiliarText: controls.text,
-    InputFoo: controls.checkbox,
-  });
-
   class CustomText extends Component {
     handleChange(e) {
       const { customOnChange } = this.props;
@@ -66,6 +58,33 @@ describe('custom <Field /> components with createFieldClass()', () => {
   }
 
   FamiliarText.propTypes = { onChange: PropTypes.function };
+
+  const MinifiedText = class MT extends Component {
+    render() {
+      const { onChange } = this.props;
+
+      return (
+        <div>
+          <input onChange={e => onChange(e)} />
+        </div>
+      );
+    }
+  };
+
+  MinifiedText.propTypes = { onChange: PropTypes.function };
+
+  const CustomField = createFieldClass({
+    CustomText: props => ({
+      customOnChange: props.onChange,
+    }),
+    FamiliarText: controls.text,
+    InputFoo: controls.checkbox,
+    MinifiedText: controls.text,
+  }, {
+    componentMap: {
+      MinifiedText,
+    },
+  });
 
   it('should return a Field component class', () => {
     assert.equal(CustomField.constructor, Field.constructor);
@@ -185,6 +204,31 @@ describe('custom <Field /> components with createFieldClass()', () => {
     assert.equal(
       store.getState().test.foo,
       true);
+  });
+
+  it('should work with minified components (no displayName)', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: 'bar' }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <CustomField model="test.foo">
+          <MinifiedText />
+        </CustomField>
+      </Provider>
+    );
+
+    const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    control.value = 'testing';
+
+    TestUtils.Simulate.change(control);
+
+    assert.equal(
+      store.getState().test.foo,
+      'testing');
   });
 });
 
