@@ -1,6 +1,7 @@
 import { assert } from 'chai';
-import { actions, initialFieldState, getField } from '../src';
+import { actions, actionTypes, initialFieldState, getField } from '../src';
 import formReducer from '../src/reducers/v1-form-reducer';
+import mapValues from 'lodash/mapValues';
 
 describe.only('formReducer() (V1)', () => {
   const nullAction = { type: '' };
@@ -9,32 +10,52 @@ describe.only('formReducer() (V1)', () => {
     assert.isFunction(formReducer);
   });
 
-  describe('FOCUS action', () => {
-    const reducer = formReducer('user', { name: '' });
+  const formActionsSpec = {
+    [actionTypes.FOCUS]: [
+      {
+        action: actions.focus,
+        args: [],
+        expectedForm: { focus: true },
+        expectedField: { focus: true },
+      },
+    ],
+    [actionTypes.SET_PRISTINE]: [
+      {
+        action: actions.setPristine,
+        args: [],
+        expectedForm: { pristine: true },
+        expectedField: { pristine: true },
+      },
+    ],
+    [actionTypes.SET_DIRTY]: [
+      {
+        action: actions.setDirty,
+        args: [],
+        expectedForm: { pristine: false },
+        expectedField: { pristine: false },
+      },
+    ],
+  };
 
-    const unfocusedState = reducer(undefined, nullAction);
-    const focusedState = reducer(undefined, actions.focus('user.name'));
+  mapValues(formActionsSpec, (tests, actionType) => tests.forEach(({
+    action,
+    args,
+    expectedForm,
+    expectedField,
+    initialState = undefined,
+  }) => {
+    describe(`${actionType} action`, () => {
+      const reducer = formReducer('user', { name: '' });
 
-    it('should initially be unfocused', () => {    
-      assert.containSubset(unfocusedState, {
-        $form: { focus: false },
+      const updatedState = reducer(initialState, action('user.name'));
+
+      it('should properly set the field state', () => {
+        assert.containSubset(updatedState.name, expectedField);
       });
 
-      assert.containSubset(unfocusedState, {
-        name: { focus: false },
+      it('should properly set the form state', () => {
+        assert.containSubset(updatedState.name, expectedForm);
       });
     });
-
-    it('should set the specified field to focused', () => {
-      assert.containSubset(focusedState.name, {
-        focus: true,
-      });
-    });
-
-    it('should set the form to focused', () => {
-      assert.containSubset(focusedState.$form, {
-        focus: true,
-      });
-    });
-  });
+  }));
 });

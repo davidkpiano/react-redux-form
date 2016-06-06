@@ -3,7 +3,7 @@ import _get from 'lodash/get';
 import every from 'lodash/every';
 import icepick from 'icepick';
 import isBoolean from 'lodash/isBoolean';
-import isEqual from 'lodash/isEqual';
+import arraysEqual from '../utils/arrays-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import isArray from 'lodash/isArray';
 import map from 'lodash/map';
@@ -13,6 +13,7 @@ import toPath from '../utils/to-path';
 import startsWith from 'lodash/startsWith';
 import flatten from 'flat';
 import compose from 'redux/lib/compose';
+import composeReducers from '../utils/compose-reducers';
 
 import actionTypes from '../action-types';
 import actions from '../actions/field-actions';
@@ -152,7 +153,7 @@ function getReaction(action, state) {
   return reaction;
 }
 
-export function fieldReducer(state = {}, action, path) {
+function formActionReducer(state = {}, action, path) {
   const [ parentKey = false, ...childPath ] = toPath(path);
 
   const reaction = getReaction(action, state);
@@ -166,7 +167,7 @@ export function fieldReducer(state = {}, action, path) {
   if (!reaction) return state;
 
   const subFieldState = icepick.merge(state, {
-    [parentKey]: fieldReducer(state[parentKey], action, childPath),
+    [parentKey]: formActionReducer(state[parentKey], action, childPath),
   });
 
   return icepick.merge(subFieldState, {
@@ -183,15 +184,15 @@ export default function createFormReducer(model, initialState, plugins = []) {
 
     const path = toPath(action.model);
 
-    if (!isEqual(path.slice(0, modelPath.length), modelPath)) {
+    if (!arraysEqual(path.slice(0, modelPath.length), modelPath)) {
       return state;
     }
 
     const localPath = path.slice(modelPath.length);
 
-    return fieldReducer(state, action, localPath);
+    return formActionReducer(state, action, localPath);
   }
 
-  return formReducer;
+  return composeReducers(...plugins, formReducer);
 }
 /* eslint-enable */
