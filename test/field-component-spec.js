@@ -454,6 +454,40 @@ describe('<Field /> component', () => {
     });
   });
 
+  describe('with <input type="file" />', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: [] }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input type="file" />
+        </Field>
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    TestUtils.Simulate.change(input, {
+      target: {
+        type: 'file',
+        files: [
+          { name: 'first.jpg' },
+          { name: 'second.jpg' },
+        ],
+      },
+    });
+
+    assert.deepEqual(
+      store.getState().test.foo,
+      [
+        { name: 'first.jpg' },
+        { name: 'second.jpg' },
+      ]);
+  });
+
   describe('with <select>', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test'),

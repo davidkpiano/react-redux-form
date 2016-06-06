@@ -33,7 +33,9 @@ function isEvent(event) {
 }
 
 function getEventValue(event) {
-  if (!event.target) {
+  const { target } = event;
+
+  if (!target) {
     if (!event.nativeEvent) {
       return undefined;
     }
@@ -41,11 +43,16 @@ function getEventValue(event) {
     return event.nativeEvent.text;
   }
 
-  if (event.target.multiple) {
-    return [...event.target.selectedOptions].map(option => option.value);
+  if (target.type === 'file') {
+    return [...target.files]
+      || (target.dataTransfer && [...target.dataTransfer.files]);
   }
 
-  return event.target.value;
+  if (target.multiple) {
+    return [...target.selectedOptions].map(option => option.value);
+  }
+
+  return target.value;
 }
 
 function getValue(value) {
