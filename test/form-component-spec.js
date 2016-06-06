@@ -1138,4 +1138,51 @@ describe('<Form> component', () => {
         });
     });
   });
+
+  describe('form reducer name isolation', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      user: modelReducer('user'),
+      userForm: formReducer('user'),
+      userEx: modelReducer('userEx'),
+      userExForm: formReducer('userEx'),
+    }));
+
+    const isRequired = (val) => val && val.length;
+
+    class UserForm extends React.Component {
+      componentDidMount() {
+        store.dispatch(actions.change('userEx', { username: '', email: '' }));
+      }
+      render() {
+        return (
+          <Form
+            model="userEx"
+            validators={{
+              username: isRequired,
+              email: isRequired,
+            }}
+          >
+            <Field model="userEx.username">
+              <input type="text" />
+            </Field>
+
+            <Field model="userEx.email">
+              <input type="text" />
+            </Field>
+          </Form>
+        );
+      }
+    }
+
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <UserForm />
+      </Provider>
+    );
+
+    it('the similarly-named userEx form should not be valid in presence of'
+      + 'valid user form', () => {
+      assert.isFalse(store.getState().userExForm.valid);
+    });
+  });
 });

@@ -7,7 +7,7 @@ import isPlainObject from 'lodash/isPlainObject';
 import map from 'lodash/map';
 import mapValues from '../utils/map-values';
 import toPath from '../utils/to-path';
-import startsWith from 'lodash/startsWith';
+import pathStartsWith from '../utils/path-starts-with';
 import flatten from 'flat';
 
 import actionTypes from '../action-types';
@@ -161,14 +161,12 @@ function _createFormReducer(model, initialState) {
           const persistKeys = [];
 
           const removeKeys = Object.keys(state.fields).filter((fieldKey) => {
-            const localStringPath = localPath.join('.');
-
             for (const removeKey of action.removeKeys) {
-              const removeKeyPath = `${localStringPath}.${removeKey}`;
-              if (startsWith(fieldKey, removeKeyPath)) return true;
+              const removeKeyPath = localPath.concat(removeKey);
+              if (pathStartsWith(fieldKey, removeKeyPath)) return true;
             }
 
-            if (startsWith(fieldKey, `${localStringPath}.`)) {
+            if (pathStartsWith(fieldKey, localPath)) {
               persistKeys.push(fieldKey);
             }
 

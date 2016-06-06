@@ -6,7 +6,7 @@ import some from 'lodash/some';
 import findKey from 'lodash/findKey';
 import _get from '../utils/get';
 import toPath from '../utils/to-path';
-import startsWith from 'lodash/startsWith';
+import pathStartsWith from '../utils/path-starts-with';
 import memoize from 'lodash/memoize';
 
 import { getField, initialFieldState } from '../reducers/form-reducer';
@@ -56,7 +56,7 @@ function getFormStateKey(state, model) {
   const flatState = flatten(state);
 
   const formStateKey = findKey(flatState, (value) =>
-    value && value.model && startsWith(model, value.model));
+    value && value.model && pathStartsWith(model, value.model));
 
   return formStateKey;
 }
@@ -158,4 +158,5 @@ export {
   invertValidators,
   invertValidity,
   getModelPath,
+  pathStartsWith,
 };
