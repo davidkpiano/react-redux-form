@@ -67,8 +67,9 @@ function createInitialState(state, initialValue) {
 }
 
 function formIsValid(formState) {
-  return every(mapValues(formState.fields, field => field.valid))
-    && every(formState.errors, error => !error);
+  console.log(formState);
+  return every(mapValues(formState, (field) => field.valid))
+    && every(formState.$form.errors, error => !error);
 }
 
 const reactions = {
@@ -107,8 +108,6 @@ const reactions = {
   [actionTypes.SET_PENDING]: (_, action) => ({
     form: () => ({
       pending: action.pending,
-      submitted: false,
-      submitFailed: false,
       retouched: false,
     }),
     field: () => ({
@@ -127,8 +126,8 @@ const reactions = {
     }
 
     return {
-      form: (state) => ({
-        valid: formIsValid(state),
+      form: (form, formFields) => ({
+        valid: formIsValid(formFields),
       }),
       field: () => ({
         validity: action.validity,
@@ -146,8 +145,8 @@ const reactions = {
     }
 
     return {
-      form: (state) => ({
-        valid: formIsValid(state),
+      form: (_, fields) => ({
+        valid: formIsValid(fields),
       }),
       field: () => ({
         errors: action.errors,
@@ -157,21 +156,21 @@ const reactions = {
       }),
     };
   },
-  [actionTypes.SET_SUBMITTED]: {
-    form: (_, action) => ({
+  [actionTypes.SET_SUBMITTED]: (_, action) => ({
+    form: () => ({
       pending: false,
       submitted: !!action.submitted,
       submitFailed: !action.submitted,
       touched: true,
       wtf: 'nah',
     }),
-    field: (_, action) => ({
+    field: () => ({
       pending: false,
       submitted: !!action.submitted,
       submitFailed: !action.submitted,
       touched: true,
     }),
-  },
+  }),
   [actionTypes.SET_SUBMIT_FAILED]: (_, action) => {
     return {
       form: () => ({
@@ -233,7 +232,6 @@ function formActionReducer(state, action, _path) {
   function recurse(subState, path) {
     const [ parentKey = false, ...childPath ] = toPath(path);
 
-
     if (!parentKey && !childPath.length) {
       if (subState.hasOwnProperty('$form')) {
         return icepick.merge(subState, {
@@ -256,7 +254,7 @@ function formActionReducer(state, action, _path) {
     return icepick.merge(subFieldState, {
       $form: icepick.merge(
         subFieldState.$form,
-        formReaction(subFieldState.$form)),
+        formReaction(subFieldState.$form, subFieldState)),
     });
   }
 
@@ -268,7 +266,6 @@ export default function createFormReducer(model, initialState = {}, plugins = []
   const initialFormState = createInitialState(initialState);
 
   const formReducer = (state = initialFormState, action) => {
-    console.log('here', state);
     if (!action.model) return state;
 
     const path = toPath(action.model);
@@ -278,8 +275,6 @@ export default function createFormReducer(model, initialState = {}, plugins = []
     }
 
     const localPath = path.slice(modelPath.length);
-
-    console.log('final', formActionReducer(state, action, localPath));
 
     return formActionReducer(state, action, localPath);
   }

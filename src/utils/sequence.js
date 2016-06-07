@@ -170,7 +170,6 @@ function sequenceEventActions(props) {
     };
 
     if (asyncValidateOn !== 'onFocus' && asyncValidateOn !== 'onBlur') { 
-      console.log('fuck', asyncValidateOn);
       eventActions[asyncValidateOn].push(dispatchAsyncValidate);
     }
   }

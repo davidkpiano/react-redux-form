@@ -2,13 +2,8 @@ import { assert } from 'chai';
 import { actions, actionTypes, initialFieldState, getField } from '../src';
 import formReducer from '../src/reducers/v1-form-reducer';
 import mapValues from 'lodash/mapValues';
-
-const red = formReducer('test', {name:''});
-const st1 = red(undefined, actions.setSubmitted('test'));
-console.log('FIRST -------\n', st1);
-const st2 = red(st1, actions.blur('test.name'));
-console.log('SECOND ------\n', st2);
-
+import toPath from 'lodash/toPath';
+import get from 'lodash/get';
 
 describe.only('formReducer() (V1)', () => {
   const nullAction = { type: '' };
@@ -82,6 +77,69 @@ describe.only('formReducer() (V1)', () => {
         },
       },
     ],
+    [actionTypes.SET_UNTOUCHED]: [
+      {
+        action: actions.setUntouched,
+        args: [],
+        expectedField: { touched: false },
+      },
+    ],
+    [actionTypes.SET_TOUCHED]: [
+      {
+        action: actions.setTouched,
+        args: [],
+        expectedForm: { touched: true },
+        expectedField: { touched: true },
+      },
+    ],
+    [actionTypes.SET_PENDING]: [
+      {
+        action: actions.setPending,
+        args: [],
+        expectedForm: {
+          pending: true,
+          retouched: false,
+        },
+        expectedField: {
+          pending: true,
+          submitted: false,
+          submitFailed: false,
+          retouched: false,
+        },
+      },
+    ],
+    [actionTypes.SET_VALIDITY]: [
+      {
+        action: actions.setValidity,
+        args: [{ foo: true }],
+        expectedForm: { valid: true },
+        expectedField: {
+          validity: { foo: true },
+          valid: true,
+          validated: true,
+        },
+      },
+      {
+        action: actions.setValidity,
+        args: [{ foo: false }],
+        expectedForm: { valid: false },
+        expectedField: {
+          validity: { foo: false },
+          valid: false,
+          validated: true,
+        },
+      },
+      {
+        action: actions.setValidity,
+        args: [{ foo: false, bar: true }],
+        expectedForm: { valid: false },
+        expectedField: {
+          validity: { foo: false, bar: true },
+          valid: false,
+          validated: true,
+        },
+      },
+    ],
   };
 
   mapValues(formActionsSpec, (tests, actionType) => tests.forEach(({
@@ -91,21 +149,31 @@ describe.only('formReducer() (V1)', () => {
     expectedField,
     initialState = undefined,
     label = '',
+    model = 'user.name',
   }) => {
     describe(`${actionType} action ${label}`, () => {
+      const modelPath = toPath(model);
+      const localModelPath = modelPath.slice(1);
+      const localFormPath = localModelPath.slice(0, -1).concat(['$form']);
+
       const reducer = formReducer('user', { name: '' });
+      const updatedState = reducer(initialState, action(model, ...args));
 
-      if (label) console.log('yeehaw', initialState)
+      if (expectedField) {      
+        it('should properly set the field state', () => {
+          assert.containSubset(
+            get(updatedState, localModelPath),
+            expectedField);
+        });
+      }
 
-      const updatedState = reducer(initialState, action('user.name'));
-
-      it('should properly set the field state', () => {
-        assert.containSubset(updatedState.name, expectedField);
-      });
-
-      it('should properly set the form state', () => {
-        assert.containSubset(updatedState.$form, expectedForm);
-      });
+      if (expectedForm) {      
+        it('should properly set the form state', () => {
+          assert.containSubset(
+            get(updatedState, localFormPath),
+            expectedForm);
+        });
+      }
     });
   }));
 });
