@@ -3,14 +3,19 @@ import { actions, actionTypes, initialFieldState, getField } from '../src';
 import formReducer from '../src/reducers/v1-form-reducer';
 import mapValues from 'lodash/mapValues';
 
-describe('formReducer() (V1)', () => {
+const red = formReducer('test', {name:''});
+const st1 = red(undefined, actions.setSubmitted('test'));
+console.log('FIRST -------\n', st1);
+const st2 = red(st1, actions.blur('test.name'));
+console.log('SECOND ------\n', st2);
+
+
+describe.only('formReducer() (V1)', () => {
   const nullAction = { type: '' };
 
   it('should exist as a function', () => {
     assert.isFunction(formReducer);
   });
-
-  console.log(formReducer('test', { foo: '' })(undefined, actions.setSubmitFailed('test')));
 
   const formActionsSpec = {
     [actionTypes.FOCUS]: [
@@ -37,17 +42,60 @@ describe('formReducer() (V1)', () => {
         expectedField: { pristine: false },
       },
     ],
+    [actionTypes.BLUR]: [
+      {
+        action: actions.blur,
+        args: [],
+        expectedForm: {
+          focus: false,
+          touched: true,
+        },
+        expectedField: {
+          focus: false,
+          touched: true,
+        },
+      },
+      {
+        label: 'after submitted',
+        action: actions.blur,
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            submitted: true,
+            retouched: false,
+          },
+          name: {
+            ...initialFieldState,
+            retouched: false,
+          }
+        },
+        expectedForm: {
+          focus: false,
+          touched: true,
+          submitted: true,
+          retouched: true,
+        },
+        expectedField: {
+          focus: false,
+          touched: true,
+          retouched: true,
+        },
+      },
+    ],
   };
 
   mapValues(formActionsSpec, (tests, actionType) => tests.forEach(({
     action,
-    args,
+    args = [],
     expectedForm,
     expectedField,
     initialState = undefined,
+    label = '',
   }) => {
-    describe(`${actionType} action`, () => {
+    describe(`${actionType} action ${label}`, () => {
       const reducer = formReducer('user', { name: '' });
+
+      if (label) console.log('yeehaw', initialState)
 
       const updatedState = reducer(initialState, action('user.name'));
 
@@ -56,7 +104,7 @@ describe('formReducer() (V1)', () => {
       });
 
       it('should properly set the form state', () => {
-        assert.containSubset(updatedState.name, expectedForm);
+        assert.containSubset(updatedState.$form, expectedForm);
       });
     });
   }));
