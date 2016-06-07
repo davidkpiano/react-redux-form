@@ -1241,7 +1241,11 @@ describe('field actions', () => {
           type: actionTypes.BATCH,
           model: 'test',
           actions: [
-            { type: actionTypes.SET_SUBMIT_FAILED, model: 'test' },
+            {
+              type: actionTypes.SET_SUBMIT_FAILED,
+              submitFailed: true,
+              model: 'test'
+            },
             { type: actionTypes.SET_ERRORS, errors, model: 'test' },
           ],
         },

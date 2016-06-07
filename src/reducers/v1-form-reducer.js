@@ -1,5 +1,5 @@
 /* eslint-disable */
-import _get from 'lodash/get';
+import _get from '../utils/get';
 import every from 'lodash/every';
 import icepick from 'icepick';
 import isBoolean from 'lodash/isBoolean';
@@ -11,7 +11,6 @@ import mapValues from '../utils/map-values';
 import compareKeys from '../utils/compare-keys';
 import toPath from '../utils/to-path';
 import pathStartsWith from '../utils/path-starts-with';
-import flatten from 'flat';
 import compose from 'redux/lib/compose';
 import composeReducers from '../utils/compose-reducers';
 import identity from 'lodash/identity';
@@ -35,6 +34,17 @@ export const initialFieldState = {
   validity: {},
   errors: {},
 };
+
+export function getField(state, path) {
+  if (process.env.NODE_ENV !== 'production') {
+    if (!isPlainObject(state)) {
+      throw new Error(`Could not retrieve field '${path}' `
+        + `from an invalid/empty form state.`);
+    }
+  }
+
+  return _get(state, path, initialFieldState);
+}
 
 function createInitialState(state, initialValue) {
   let initialState;
@@ -239,7 +249,7 @@ function formActionReducer(state = initialFieldState, action, path) {
   });
 }
 
-export default function createFormReducer(model, initialState, plugins = []) {
+export default function createFormReducer(model, initialState = {}, plugins = []) {
   const modelPath = toPath(model);
   const initialFormState = createInitialState(initialState);
 

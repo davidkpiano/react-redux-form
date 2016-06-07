@@ -1,8 +1,11 @@
 import { assert } from 'chai';
 import { actions, formReducer, initialFieldState, getField } from '../src';
-import newFormReducer, { initialFieldState as newInitialFieldState } from '../src/reducers/v1-form-reducer';
+import newFormReducer, {
+  initialFieldState as newInitialFieldState,
+  getField as newGetField,
+} from '../src/reducers/v1-form-reducer';
 
-describe.only('formReducer()', () => {
+describe('formReducer()', () => {
   it('should create a reducer given a model', () => {
     const reducer = newFormReducer('test');
 
@@ -17,37 +20,34 @@ describe.only('formReducer()', () => {
 
   describe('getField() function', () => {
     it('should return an initialFieldState given an uninitialized model', () => {
-      const reducer = formReducer('test');
+      const reducer = newFormReducer('test');
 
       const actual = reducer(undefined, { type: 'ANY' });
 
-      assert.isFunction(getField);
+      assert.isFunction(newGetField);
 
-      assert.deepEqual(getField(actual, 'any'), initialFieldState);
+      assert.deepEqual(newGetField(actual, 'any'), newInitialFieldState);
 
-      assert.isObject(getField(actual, 'foo').errors);
+      assert.isObject(newGetField(actual, 'foo').errors);
     });
 
     it('should maintain the full fieldState of an updated model', () => {
-      const reducer = formReducer('test');
+      const reducer = newFormReducer('test');
 
       const actual = reducer(undefined, actions.focus('test.foo'));
 
-      assert.deepEqual(getField(actual, 'foo'), {
-        ...initialFieldState,
+      assert.deepEqual(newGetField(actual, 'foo'), {
+        ...newInitialFieldState,
         focus: true,
-        blur: false,
       });
 
-      assert.isObject(getField(actual, 'foo').errors);
+      assert.isObject(newGetField(actual, 'foo').errors);
     });
 
-
     it('should throw an error when given an invalid argument for form state', () => {
-      assert.throws(() => getField(true, 'foo'));
-      assert.throws(() => getField({}, 'foo'));
-      assert.throws(() => getField(undefined, 'foo'));
-      assert.throws(() => getField(null, 'foo'));
+      assert.throws(() => newGetField(true, 'foo'));
+      assert.throws(() => newGetField(undefined, 'foo'));
+      assert.throws(() => newGetField(null, 'foo'));
     });
   });
 
