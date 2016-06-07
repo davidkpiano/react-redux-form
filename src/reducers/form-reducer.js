@@ -8,7 +8,7 @@ import map from 'lodash/map';
 import mapValues from '../utils/map-values';
 import toPath from '../utils/to-path';
 import pathStartsWith from '../utils/path-starts-with';
-import flatten from 'flat';
+import flatten from '../utils/flatten';
 
 import actionTypes from '../action-types';
 import actions from '../actions/field-actions';

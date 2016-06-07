@@ -3,14 +3,12 @@ import mapValues from '../utils/map-values';
 import isPlainObject from 'lodash/isPlainObject';
 import every from 'lodash/every';
 import some from 'lodash/some';
-import findKey from 'lodash/findKey';
 import _get from '../utils/get';
 import toPath from '../utils/to-path';
 import pathStartsWith from '../utils/path-starts-with';
 import memoize from 'lodash/memoize';
 
 import { getField, initialFieldState } from '../reducers/form-reducer';
-import flatten from './flatten';
 
 function isMulti(model) {
   return endsWith(model, '[]');
@@ -33,7 +31,9 @@ function isEvent(event) {
 }
 
 function getEventValue(event) {
-  if (!event.target) {
+  const { target } = event;
+
+  if (!target) {
     if (!event.nativeEvent) {
       return undefined;
     }
@@ -41,24 +41,60 @@ function getEventValue(event) {
     return event.nativeEvent.text;
   }
 
-  if (event.target.multiple) {
-    return [...event.target.selectedOptions].map(option => option.value);
+  if (target.type === 'file') {
+    return [...target.files]
+      || (target.dataTransfer && [...target.dataTransfer.files]);
   }
 
-  return event.target.value;
+  if (target.multiple) {
+    return [...target.selectedOptions].map(option => option.value);
+  }
+
+  return target.value;
 }
 
 function getValue(value) {
   return isEvent(value) ? getEventValue(value) : value;
 }
 
-function getFormStateKey(state, model) {
-  const flatState = flatten(state);
+function getFormStateKey(state, model, currentPath = '') {
+  const deepCandidateKeys = [];
+  let result = null;
 
-  const formStateKey = findKey(flatState, (value) =>
-    value && value.model && pathStartsWith(model, value.model));
+  Object.keys(state).some((key) => {
+    const subState = state[key];
 
-  return formStateKey;
+    if (subState && subState.model) {
+      if (pathStartsWith(model, subState.model)) {
+        result = currentPath
+          ? [currentPath, key].join('.')
+          : key;
+
+        return true;
+      }
+
+      return false;
+    }
+
+    if (isPlainObject(subState)) {
+      deepCandidateKeys.push(key);
+    }
+
+    return false;
+  });
+
+  if (result) return result;
+
+  deepCandidateKeys.some((key) => {
+    result = getFormStateKey(state[key], model,
+      currentPath ? [currentPath, key].join('.') : key);
+
+    return !!result;
+  });
+
+  if (result) return result;
+
+  return null;
 }
 
 const formStateKeyCaches = {};
@@ -69,12 +105,12 @@ function getFormStateKeyCached(state, model) {
   }
 
   const cache = formStateKeyCaches[model];
-  if (cache.has(state)) {
-    return cache.get(state);
+  if (cache.has(model)) {
+    return cache.get(model);
   }
 
   const formStateKey = getFormStateKey(state, model);
-  cache.set(state, formStateKey);
+  cache.set(model, formStateKey);
   return formStateKey;
 }
 
@@ -159,4 +195,5 @@ export {
   invertValidity,
   getModelPath,
   pathStartsWith,
+  getFormStateKey,
 };

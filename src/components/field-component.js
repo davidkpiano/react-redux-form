@@ -39,35 +39,41 @@ function isChecked(props) {
 const controlPropsMap = {
   default: (props) => controlPropsMap.text(props),
   checkbox: (props) => ({
-    ...props,
     name: props.name || props.model,
     checked: isChecked(props),
+    ...props,
   }),
   radio: (props) => ({
-    ...props,
     name: props.name || props.model,
     checked: props.modelValue === props.value,
     value: props.value,
+    ...props,
   }),
   select: (props) => ({
-    ...props,
     name: props.name || props.model,
     value: props.modelValue,
+    ...props,
   }),
   text: (props) => ({
-    ...props,
     value: props.updateOn === 'change'
       && !props.defaultValue
       && !props.hasOwnProperty('value')
       ? props.modelValue
       : props.value,
     name: props.name || props.model,
+    ...props,
   }),
   textarea: (props) => controlPropsMap.text(props),
 };
 
-function getControlType(control, options) {
+function getControlType(control, props, options) {
+  const { componentMap } = props;
   const { controlPropsMap: _controlPropsMap } = options;
+
+  const controlDisplayNames = Object.keys(componentMap).filter(
+    (controlName) => control.type === componentMap[controlName]);
+
+  if (controlDisplayNames.length) return controlDisplayNames[0];
 
   try {
     let controlDisplayName = control.constructor.displayName
@@ -115,7 +121,7 @@ function createFieldControlComponent(control, props, options) {
 
   /* eslint-disable react/prop-types */
   const {
-    mapProps = options.controlPropsMap[getControlType(control, options)],
+    mapProps = options.controlPropsMap[getControlType(control, props, options)],
   } = props;
 
   const controlProps = omit(props, ['children', 'className']);
@@ -214,6 +220,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     ]),
     modelValue: PropTypes.any,
     mapProps: PropTypes.func,
+    componentMap: PropTypes.object,
   };
 
   Field.defaultProps = {
@@ -222,6 +229,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     asyncValidateOn: 'blur',
     parser: identity,
     changeAction: change,
+    componentMap: {},
     ...defaultProps,
   };
 

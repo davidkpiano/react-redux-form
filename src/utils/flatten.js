@@ -1,34 +1,36 @@
-const flattenObject = function flatten(target) {
+function flatten(data) {
+  const result = {};
   const delimiter = '.';
-  let currentDepth = 1;
-  const output = {};
 
-  function step(object, prev) {
-    Object.keys(object).forEach((key) => {
-      const value = object[key];
-      const isarray = Array.isArray(value);
-      const type = Object.prototype.toString.call(value);
-      const isobject = (
-        type === '[object Object]' ||
-        type === '[object Array]'
-      );
+  function recurse(cur, prop = '') {
+    if (Object(cur) !== cur) {
+      result[prop] = cur;
+    } else if (Array.isArray(cur)) {
+      if (!cur.length) result[prop] = [];
 
-      const newKey = prev
-        ? prev + delimiter + key
-        : key;
+      cur.forEach((item, i) => {
+        recurse(cur[i], prop
+          ? [prop, i].join(delimiter)
+          : `${i}`);
+      });
+    } else {
+      let isEmpty = true;
 
-      if (!isarray && isobject && Object.keys(value).length && !value.model) {
-        ++currentDepth;
-        step(value, newKey);
-      } else {
-        output[newKey] = value;
+      for (const key in cur) {
+        if (Object.hasOwnProperty.call(cur, key)) {
+          isEmpty = false;
+          recurse(cur[key], prop
+            ? [prop, key].join(delimiter)
+            : key);
+        }
       }
-    });
+      if (isEmpty) result[prop] = {};
+    }
   }
 
-  step(target);
+  recurse(data);
 
-  return output;
-};
+  return result;
+}
 
-export default flattenObject;
+export default flatten;

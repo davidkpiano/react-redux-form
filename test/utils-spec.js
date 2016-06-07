@@ -2,7 +2,10 @@ import {
   invertValidators,
   getValidity,
   isInvalid,
+  getFormStateKey,
 } from '../src/utils/index';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import thunk from 'redux-thunk';
 import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
 import { assert } from 'chai';
@@ -108,6 +111,39 @@ describe('utils', () => {
         const field = utils.getFieldFromState({ libraryForm }, 'district.library.hours.open');
         assert.strictEqual(libraryForm.fields['hours.open'], field);
       });
+    });
+  });
+
+  describe('getFormStateKey()', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      firstForm: formReducer('first'),
+      deep: combineReducers({
+        secondForm: formReducer('second'),
+      }),
+    }));
+
+    it('should find a shallow form reducer state key', () => {
+      assert.equal(
+        getFormStateKey(store.getState(), 'first'),
+        'firstForm');
+    });
+
+    it('should find a shallow form reducer state key with deep model', () => {
+      assert.equal(
+        getFormStateKey(store.getState(), 'first.anything'),
+        'firstForm');
+    });
+
+    it('should find a deep form reducer state key', () => {
+      assert.equal(
+        getFormStateKey(store.getState(), 'second'),
+        'deep.secondForm');
+    });
+
+    it('should find a deep form reducer state key with deep model', () => {
+      assert.equal(
+        getFormStateKey(store.getState(), 'second.anything'),
+        'deep.secondForm');
     });
   });
 });
