@@ -115,6 +115,7 @@ describe.only('formReducer() (V1)', () => {
         expectedForm: { valid: true },
         expectedField: {
           validity: { foo: true },
+          errors: { foo: false },
           valid: true,
           validated: true,
         },
@@ -125,6 +126,7 @@ describe.only('formReducer() (V1)', () => {
         expectedForm: { valid: false },
         expectedField: {
           validity: { foo: false },
+          errors: { foo: true },
           valid: false,
           validated: true,
         },
@@ -135,8 +137,72 @@ describe.only('formReducer() (V1)', () => {
         expectedForm: { valid: false },
         expectedField: {
           validity: { foo: false, bar: true },
+          errors: { foo: true, bar: false },
           valid: false,
           validated: true,
+        },
+      },
+      {
+        label: 'validating the form (invalid)',
+        action: actions.setValidity,
+        model: 'user',
+        args: [{ foo: false, bar: true }],
+        expectedForm: {
+          valid: false,
+          validity: { foo: false, bar: true },
+          errors: { foo: true, bar: false },
+          validated: true,
+        },
+      },
+      {
+        label: 'validating the form (valid)',
+        action: actions.setValidity,
+        model: 'user',
+        args: [{ foo: true, bar: true }],
+        expectedForm: {
+          valid: true,
+          validity: { foo: true, bar: true },
+          errors: { foo: false, bar: false },
+          validated: true,
+        },
+      },
+    ],
+    [actionTypes.SET_SUBMITTED]: [
+      {
+        action: actions.setSubmitted,
+        args: [],
+        expectedForm: {
+          touched: true,
+        },
+        expectedField: {
+          pending: false,
+          submitted: true,
+          submitFailed: false,
+          touched: true,
+          retouched: false,
+        },
+      },
+    ],
+    [actionTypes.SET_SUBMIT_FAILED]: [
+      {
+        action: actions.setSubmitFailed,
+        model: 'user',
+        args: [],
+        expectedForm: {
+          touched: true,
+        },
+        expectedField: {
+          pending: false,
+          submitted: false,
+          submitFailed: true,
+          touched: true,
+          retouched: false,
+        },
+        expectedSubField: {
+          submitted: false,
+          submitFailed: true,
+          touched: true,
+          retouched: false,
         },
       },
     ],
@@ -147,6 +213,7 @@ describe.only('formReducer() (V1)', () => {
     args = [],
     expectedForm,
     expectedField,
+    expectedSubField,
     initialState = undefined,
     label = '',
     model = 'user.name',
@@ -161,9 +228,31 @@ describe.only('formReducer() (V1)', () => {
 
       if (expectedField) {      
         it('should properly set the field state', () => {
+          const updatedFieldState = localModelPath.length
+            ? get(updatedState, localModelPath)
+            : updatedState.$form;
+
           assert.containSubset(
-            get(updatedState, localModelPath),
+            updatedFieldState,
             expectedField);
+        });
+      }
+
+      if (expectedSubField) {      
+        it('should properly set the state of the child fields', () => {
+          const localFieldsPath = localModelPath.slice(0, -1);
+
+          const updatedFieldsState = localFieldsPath.length
+            ? get(updatedState, localFieldsPath)
+            : updatedState;
+
+          mapValues(updatedFieldsState, (field, key) => {
+            if (key === '$form') return true;
+
+            assert.containSubset(
+              field,
+              expectedSubField);
+          });
         });
       }
 

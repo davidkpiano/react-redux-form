@@ -72,6 +72,10 @@ function formIsValid(formState) {
     && every(formState.$form.errors, error => !error);
 }
 
+function inverse(value) {
+  return !value;
+}
+
 const reactions = {
   [actionTypes.FOCUS]: {
     form: () => ({ focus: true }),
@@ -118,31 +122,26 @@ const reactions = {
     }),
   }),
   [actionTypes.SET_VALIDITY]: (_, action) => {
-    let errors;
-    if (isPlainObject(action.validity)) {
-      errors = mapValues(action.validity, valid => !valid);
-    } else {
-      errors = !action.validity;
-    }
+    const errors = isPlainObject(action.validity)
+      ? mapValues(action.validity, inverse)
+      : !action.validity;
 
     return {
-      form: (form, formFields) => ({
+      form: (_, formFields) => ({
         valid: formIsValid(formFields),
       }),
       field: () => ({
         validity: action.validity,
         valid: isBoolean(errors) ? !errors : every(errors, (error) => !error),
+        errors,
         validated: true,
       }),
     };
   },
   [actionTypes.SET_ERRORS]: (_, action) => {
-    let validity;
-    if (isPlainObject(action.errors)) {
-      validity = mapValues(action.errors, (error) => !error);
-    } else {
-      validity = !action.errors;
-    }
+    const validity = isPlainObject(action.errors)
+      ? mapValues(action.errors, inverse)
+      : !action.errors;
 
     return {
       form: (_, fields) => ({
@@ -158,17 +157,14 @@ const reactions = {
   },
   [actionTypes.SET_SUBMITTED]: (_, action) => ({
     form: () => ({
-      pending: false,
-      submitted: !!action.submitted,
-      submitFailed: !action.submitted,
       touched: true,
-      wtf: 'nah',
     }),
     field: () => ({
       pending: false,
       submitted: !!action.submitted,
       submitFailed: !action.submitted,
       touched: true,
+      retouched: false,
     }),
   }),
   [actionTypes.SET_SUBMIT_FAILED]: (_, action) => {
@@ -181,11 +177,13 @@ const reactions = {
         submitted: field.submitted && !action.submitFailed,
         submitFailed: !!action.submitFailed,
         touched: true,
+        retouched: false,
       }),
       subField: (subField) => ({
         submitFailed: !!action.submitFailed,
         submitted: subField.submitted && !action.submitFailed,
         touched: true,
+        retouched: false,
       }),
     }
   },
