@@ -1,13 +1,11 @@
 import { assert } from 'chai';
-import { actions, actionTypes, initialFieldState, getField } from '../src';
+import { actions, actionTypes, initialFieldState } from '../src';
 import formReducer from '../src/reducers/v1-form-reducer';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
 import get from 'lodash/get';
 
-describe.only('formReducer() (V1)', () => {
-  const nullAction = { type: '' };
-
+describe('formReducer() (V1)', () => {
   it('should exist as a function', () => {
     assert.isFunction(formReducer);
   });
@@ -62,7 +60,7 @@ describe.only('formReducer() (V1)', () => {
           name: {
             ...initialFieldState,
             retouched: false,
-          }
+          },
         },
         expectedForm: {
           focus: false,
@@ -226,7 +224,7 @@ describe.only('formReducer() (V1)', () => {
       const reducer = formReducer('user', { name: '' });
       const updatedState = reducer(initialState, action(model, ...args));
 
-      if (expectedField) {      
+      if (expectedField) {
         it('should properly set the field state', () => {
           const updatedFieldState = localModelPath.length
             ? get(updatedState, localModelPath)
@@ -238,7 +236,7 @@ describe.only('formReducer() (V1)', () => {
         });
       }
 
-      if (expectedSubField) {      
+      if (expectedSubField) {
         it('should properly set the state of the child fields', () => {
           const localFieldsPath = localModelPath.slice(0, -1);
 
@@ -247,7 +245,7 @@ describe.only('formReducer() (V1)', () => {
             : updatedState;
 
           mapValues(updatedFieldsState, (field, key) => {
-            if (key === '$form') return true;
+            if (key === '$form') return;
 
             assert.containSubset(
               field,
@@ -256,7 +254,7 @@ describe.only('formReducer() (V1)', () => {
         });
       }
 
-      if (expectedForm) {      
+      if (expectedForm) {
         it('should properly set the form state', () => {
           assert.containSubset(
             get(updatedState, localFormPath),

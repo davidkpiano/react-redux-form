@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { actions, formReducer, initialFieldState, getField } from '../src';
+import { actions, formReducer } from '../src';
 import newFormReducer, {
   initialFieldState as newInitialFieldState,
   getField as newGetField,
@@ -80,8 +80,6 @@ describe('formReducer()', () => {
         },
         deep: {
           one: { initialValue: 'one' },
-        },
-        deep: {
           two: {
             three: { initialValue: 'four' },
           },
@@ -269,7 +267,7 @@ describe('formReducer()', () => {
       const actual = reducer(undefined, actions.setSubmitFailed('test'));
 
       assert.containSubset(actual, {
-        $form: {        
+        $form: {
           submitFailed: true,
           submitted: false,
         },
@@ -292,7 +290,7 @@ describe('formReducer()', () => {
       const actual = reducer(undefined, actions.setSubmitFailed('test', false));
 
       assert.containSubset(actual, {
-        $form: {        
+        $form: {
           submitFailed: false,
           submitted: false,
         },

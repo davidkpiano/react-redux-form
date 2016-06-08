@@ -227,7 +227,7 @@ function formActionReducer(state, action, _path) {
   const fieldFormPath = toPath(_path).slice(0, -1).concat(['$form']);
   const fieldFormState = _get(state, fieldFormPath);
 
-  function recurse(subState, path) {
+  function recurse(subState = initialFieldState, path) {
     const [ parentKey = false, ...childPath ] = toPath(path);
 
     if (!parentKey && !childPath.length) {

@@ -6,8 +6,9 @@ import _get from '../utils/get';
 import merge from '../utils/merge';
 import shallowEqual from 'react-redux/lib/utils/shallowEqual';
 import mapValues from '../utils/map-values';
+import icepick from 'icepick';
 
-import { invertValidity, getFieldFromState, getValidity, getValue } from '../utils';
+import { isMulti, invertValidity, getFieldFromState, getValidity, getValue } from '../utils';
 import { sequenceEventActions } from '../utils/sequence';
 import actions from '../actions';
 
@@ -67,7 +68,7 @@ class Control extends Component {
   constructor(props) {
     super(props);
 
-    const { controlProps, mapProps } = props;
+    const { mapProps } = props;
 
     this.getChangeAction = this.getChangeAction.bind(this);
     this.getValidateAction = this.getValidateAction.bind(this);
@@ -175,7 +176,7 @@ class Control extends Component {
       );
 
       return value;
-    }
+    };
   }
 
   handleKeyPress(event) {
@@ -187,11 +188,10 @@ class Control extends Component {
   }
 
   createEventHandler(eventName) {
-    return (event) => {    
+    return (event) => {
       const {
         dispatch,
         model,
-        modelValue,
         updateOn,
         validateOn,
         asyncValidateOn,
@@ -214,7 +214,7 @@ class Control extends Component {
 
 
       const dispatchChange = (persistedEvent) => {
-        let eventActions = [ eventAction(model) ];
+        const eventActions = [eventAction(model)];
 
         if (validateOn === eventName) {
           eventActions.push(this.getValidateAction(persistedEvent));
@@ -229,7 +229,7 @@ class Control extends Component {
         }
 
         dispatch(actions.batch(model, eventActions));
-      }
+      };
 
       if (isReadOnlyValue(controlProps)) {
         return compose(
@@ -245,7 +245,7 @@ class Control extends Component {
         getValue,
         persistEventWithCallback(controlEventHandler || identity)
       )(event);
-    }
+    };
   }
 
   validate() {
@@ -300,16 +300,22 @@ Control.propTypes = {
     PropTypes.func,
     PropTypes.string,
   ]),
+  modelValue: PropTypes.any,
   control: PropTypes.any,
   onLoad: PropTypes.func,
   onSubmit: PropTypes.func,
-  modelValue: PropTypes.any,
   fieldValue: PropTypes.object,
   mapProps: PropTypes.func,
   changeAction: PropTypes.func,
   updateOn: PropTypes.string,
   validateOn: PropTypes.string,
+  asyncValidateOn: PropTypes.string,
+  parser: PropTypes.func,
   validators: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
+  asyncValidators: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.object,
   ]),

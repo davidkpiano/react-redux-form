@@ -11,8 +11,6 @@ import actions from '../actions';
 
 const {
   asyncSetValidity,
-  blur,
-  focus,
   setErrors,
 } = actions;
 
@@ -72,13 +70,13 @@ function sequenceEventActions(props) {
 
   const {
     onChange = identity,
-    onBlur = identity,
-    onFocus = identity,
+    // onBlur = identity,
+    // onFocus = identity,
   } = controlProps;
 
   const controlOnChange = persistEventWithCallback(onChange);
-  const controlOnBlur = persistEventWithCallback(onBlur);
-  const controlOnFocus = persistEventWithCallback(onFocus);
+  // const controlOnBlur = persistEventWithCallback(onBlur);
+  // const controlOnFocus = persistEventWithCallback(onFocus);
 
   const updateOnEventHandler = (typeof updateOn === 'function')
     ? 'onChange'
@@ -107,7 +105,7 @@ function sequenceEventActions(props) {
       actions.change(model, controlProps.defaultValue)));
   }
 
-  let changeActionCreator = (modelValue) => controlChangeMethod(modelValue);
+  const changeActionCreator = (modelValue) => controlChangeMethod(modelValue);
 
   // switch (updateOnEventHandler) {
   //   case 'onBlur':
@@ -147,7 +145,7 @@ function sequenceEventActions(props) {
       return value;
     };
 
-    if (validateOn !== 'onFocus' && validateOn !== 'onBlur') { 
+    if (validateOn !== 'onFocus' && validateOn !== 'onBlur') {
       eventActions[validateOn].push(dispatchValidate);
     }
 
@@ -169,7 +167,7 @@ function sequenceEventActions(props) {
       return value;
     };
 
-    if (asyncValidateOn !== 'onFocus' && asyncValidateOn !== 'onBlur') { 
+    if (asyncValidateOn !== 'onFocus' && asyncValidateOn !== 'onBlur') {
       eventActions[asyncValidateOn].push(dispatchAsyncValidate);
     }
   }
@@ -186,7 +184,7 @@ function sequenceEventActions(props) {
 
   eventActions.onSubmit.push(updaterFn(dispatchChange));
 
-  if (updateOnEventHandler !== 'onFocus' && updateOnEventHandler !== 'onBlur') {  
+  if (updateOnEventHandler !== 'onFocus' && updateOnEventHandler !== 'onBlur') {
     if (!isReadOnlyValue(controlProps)) {
       eventActions[updateOnEventHandler].push(
         compose(

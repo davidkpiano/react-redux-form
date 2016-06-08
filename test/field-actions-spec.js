@@ -1244,7 +1244,7 @@ describe('field actions', () => {
             {
               type: actionTypes.SET_SUBMIT_FAILED,
               submitFailed: true,
-              model: 'test'
+              model: 'test',
             },
             { type: actionTypes.SET_ERRORS, errors, model: 'test' },
           ],
