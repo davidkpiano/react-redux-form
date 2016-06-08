@@ -40,12 +40,16 @@ const controlPropsMap = {
   default: (props) => controlPropsMap.text(props),
   checkbox: (props) => ({
     name: props.name || props.model,
-    checked: isChecked(props),
+    checked: props.defaultChecked
+      ? props.checked
+      : isChecked(props),
     ...props,
   }),
   radio: (props) => ({
     name: props.name || props.model,
-    checked: props.modelValue === props.value,
+    checked: props.defaultChecked
+      ? props.checked
+      : props.modelValue === props.value,
     value: props.value,
     ...props,
   }),
@@ -58,7 +62,7 @@ const controlPropsMap = {
     value: props.updateOn === 'change'
       && !props.defaultValue
       && !props.hasOwnProperty('value')
-      ? props.modelValue
+      ? props.modelValue || ''
       : props.value,
     name: props.name || props.model,
     ...props,
