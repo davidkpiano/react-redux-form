@@ -1185,4 +1185,43 @@ describe('<Form> component', () => {
       assert.isFalse(store.getState().userExForm.valid);
     });
   });
+
+  describe('field validation and external changes', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: '', bar: '' }),
+      testForm: formReducer('test', { foo: '', bar: '' }),
+    }));
+
+    it('should validate form on external (async) change', () => {
+      const required = (val) => val && val.length;
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form model="user">
+            <Field
+              model="test.foo"
+              validators={{ required }}
+            >
+              <input type="text" />
+            </Field>
+            <Field
+              model="test.bar"
+              validators={{ required }}
+            >
+              <input type="text" />
+            </Field>
+          </Form>
+        </Provider>
+      );
+
+      assert.isFalse(store.getState().testForm.valid);
+
+      store.dispatch(actions.merge('test', {
+        foo: 'foo valid',
+        bar: 'bar valid',
+      }));
+
+      assert.isTrue(store.getState().testForm.valid);
+    });
+  });
 });

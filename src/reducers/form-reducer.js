@@ -157,6 +157,15 @@ function _createFormReducer(model, initialState) {
           retouched: state.submitted || state.submitFailed,
         });
 
+        setFieldDirtyState = icepick.assoc(
+          setFieldDirtyState,
+          ['fields'],
+          mapValues(setFieldDirtyState.fields, (field, fieldKey) =>
+            (pathStartsWith(fieldKey, localPath)
+              ? icepick.merge(field, { validated: false })
+              : field)
+          ));
+
         if (action.removeKeys) {
           const persistKeys = [];
 
