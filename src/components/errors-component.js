@@ -36,6 +36,8 @@ class Errors extends Component {
       return this.renderError(errors, 'error');
     }
 
+    if (!errors) return null;
+
     return compact(map(errors, (error, key) => {
       const message = messages[key];
 
@@ -99,6 +101,8 @@ class Errors extends Component {
     const errorMessages = valid
       ? null
       : this.mapErrorMessages(errors);
+
+    if (!errorMessages) return null;
 
     return React.createElement(
       wrapper,

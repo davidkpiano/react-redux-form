@@ -159,6 +159,24 @@ describe('<Errors />', () => {
     });
   });
 
+  describe('displaying no errors', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test', { foo: '' }),
+      test: modelReducer('test', { foo: '' }),
+    }));
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Errors model="test"/>
+      </Provider>
+    );
+
+    it('should not render a component if there are no errors', () => {
+      const divs = TestUtils.scryRenderedDOMComponentsWithTag(form, 'div');
+      assert.lengthOf(divs, 0);
+    });
+  });
+
   describe('displaying custom messages', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test', { foo: '' }),
@@ -611,7 +629,10 @@ describe('<Errors />', () => {
      
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Errors model="test" />
+          <Errors model="test" messages={{
+            foo: 'foo',
+            bar: 'bar',
+          }}/>
         </Provider>
       );
 
