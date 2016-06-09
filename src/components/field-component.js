@@ -9,15 +9,14 @@ import omit from 'lodash/omit';
 import actions from '../actions';
 import Control from './control-component';
 import { isMulti } from '../utils';
+import getModel from '../utils/get-model';
 
 const {
   change,
 } = actions;
 
 function mapStateToProps(state, { model }) {
-  const modelString = typeof model === 'function'
-    ? model(state)
-    : model;
+  const modelString = getModel(model, state);
 
   return {
     model: modelString,

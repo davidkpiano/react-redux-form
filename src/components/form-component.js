@@ -13,6 +13,7 @@ import {
   invertValidators,
   invertValidity,
 } from '../utils';
+import getModel from '../utils/get-model';
 import { getField } from '../reducers/form-reducer';
 
 class Form extends Component {
@@ -211,9 +212,7 @@ Form.defaultProps = {
 };
 
 function mapStateToProps(state, { model }) {
-  const modelString = typeof model === 'function'
-    ? model(state)
-    : model;
+  const modelString = getModel(model, state);
 
   return {
     modelValue: _get(state, modelString),

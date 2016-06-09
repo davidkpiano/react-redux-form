@@ -8,6 +8,7 @@ import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
 
 import { getFieldFromState, getForm } from '../utils';
+import getModel from '../utils/get-model';
 
 function showErrors(field, form, show = true) {
   if (typeof show === 'function') {
@@ -145,9 +146,7 @@ Errors.defaultProps = {
 };
 
 function mapStateToProps(state, { model }) {
-  const modelString = typeof model === 'function'
-    ? model(state)
-    : model;
+  const modelString = getModel(model, state);
 
   const formValue = getForm(state, modelString);
   const fieldValue = getFieldFromState(state, modelString);

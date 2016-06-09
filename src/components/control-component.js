@@ -9,6 +9,8 @@ import mapValues from '../utils/map-values';
 import icepick from 'icepick';
 
 import { isMulti, invertValidity, getFieldFromState, getValidity, getValue } from '../utils';
+import getModel from '../utils/get-model';
+import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
 
 function mapStateToProps(state, props) {
@@ -16,9 +18,7 @@ function mapStateToProps(state, props) {
 
   if (!mapProps) return props;
 
-  const modelString = typeof model === 'function'
-    ? model(state)
-    : model;
+  const modelString = getModel(model, state);
   const fieldValue = getFieldFromState(state, modelString);
 
   return {
@@ -30,17 +30,6 @@ function mapStateToProps(state, props) {
 
 function isReadOnlyValue(controlProps) {
   return ~['radio', 'checkbox'].indexOf(controlProps.type);
-}
-
-function persistEventWithCallback(callback) {
-  return (event) => {
-    if (event && event.persist) {
-      event.persist();
-    }
-
-    callback(event);
-    return event;
-  };
 }
 
 const modelValueUpdaterMap = {
