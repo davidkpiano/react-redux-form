@@ -1,5 +1,6 @@
 /* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
 import React, { PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import { assert } from 'chai';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';
@@ -1699,5 +1700,35 @@ describe('<Field /> component', () => {
       store.getState().test.foo,
       'new value'
     );
+  });
+
+  describe('unmounting', () => {
+    it('should set the validity of the model to true when umounted', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      }));
+
+      const container = document.createElement('div');
+
+      const field = ReactDOM.render(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+          >
+            <input />
+          </Field>
+        </Provider>,
+      container);
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      store.dispatch(actions.setValidity('test.foo', false));
+      assert.isFalse(store.getState().testForm.fields.foo.valid);
+
+      ReactDOM.unmountComponentAtNode(container);
+
+      assert.isTrue(store.getState().testForm.fields.foo.valid);
+    });
   });
 });
