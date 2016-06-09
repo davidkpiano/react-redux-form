@@ -65,11 +65,14 @@ class Control extends Component {
     this.createEventHandler = this.createEventHandler.bind(this);
     this.handleFocus = this.createEventHandler('focus').bind(this);
     this.handleBlur = this.createEventHandler('blur').bind(this);
-    this.handleChange = this.createEventHandler('change').bind(this);
+    this.handleChange = compose(
+      this.createEventHandler('change').bind(this),
+      this.updateViewValue.bind(this));
     this.handleLoad = this.handleLoad.bind(this);
+    this.getMappedProps = this.getMappedProps.bind(this);
 
     this.state = {
-      value: props.modelValue,
+      viewValue: props.modelValue,
       mappedProps: this.getMappedProps(props, mapProps),
     };
   }
@@ -202,6 +205,12 @@ class Control extends Component {
     const { dispatch } = this.props;
 
     dispatch(this.getChangeAction(event));
+  }
+
+  updateViewValue(event) {
+    this.setState({ viewValue: getValue(event) });
+
+    return event;
   }
 
   createEventHandler(eventName) {
