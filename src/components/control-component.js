@@ -9,7 +9,6 @@ import mapValues from '../utils/map-values';
 import icepick from 'icepick';
 
 import { isMulti, invertValidity, getFieldFromState, getValidity, getValue } from '../utils';
-import { sequenceEventActions } from '../utils/sequence';
 import actions from '../actions';
 
 function mapStateToProps(state, props) {
@@ -87,8 +86,6 @@ class Control extends Component {
   }
 
   componentWillMount() {
-    const { modelValue } = this.props;
-    
     this.handleLoad();
   }
 
@@ -120,7 +117,6 @@ class Control extends Component {
     return mapProps({
       ...props,
       ...props.controlProps,
-      ...sequenceEventActions(props),
       onFocus: this.handleFocus,
       onBlur: this.handleBlur,
       onChange: this.handleChange,
@@ -187,21 +183,21 @@ class Control extends Component {
   }
 
   handleKeyPress(event) {
-    const { onSubmit } = this.state.mappedProps;
-
-    if (onSubmit && event.key === 'Enter') {
-      onSubmit(event);
+    if (event.key === 'Enter') {
+      this.handleSubmit(event);
     }
   }
 
   handleLoad() {
     const { model, modelValue, controlProps = {}, dispatch } = this.props;
     const loadActions = [];
-    const defaultValue = controlProps.hasOwnProperty('defaultValue')
-      ? controlProps.defaultValue
-      : controlProps.hasOwnProperty('defaultChecked')
-        ? controlProps.defaultChecked
-        : undefined;
+    let defaultValue = undefined;
+
+    if (controlProps.hasOwnProperty('defaultValue')) {
+      defaultValue = controlProps.defaultValue;
+    } else if (controlProps.hasOwnProperty('defaultChecked')) {
+      defaultValue = controlProps.defaultChecked;
+    }
 
     if (typeof defaultValue !== 'undefined') {
       loadActions.push(this.getValidateAction(defaultValue));
@@ -211,6 +207,12 @@ class Control extends Component {
     }
 
     dispatch(actions.batch(model, loadActions));
+  }
+
+  handleSubmit(event) {
+    const { dispatch } = this.props;
+
+    dispatch(this.getChangeAction(event));
   }
 
   createEventHandler(eventName) {
@@ -224,9 +226,6 @@ class Control extends Component {
         controlProps = {},
         parser,
       } = this.props;
-
-      const modelValueUpdater = modelValueUpdaterMap[controlProps.type]
-        || modelValueUpdaterMap.default;
 
       const eventAction = {
         focus: actions.focus,
