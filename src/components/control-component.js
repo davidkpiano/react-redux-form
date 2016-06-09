@@ -78,6 +78,7 @@ class Control extends Component {
     this.handleFocus = this.createEventHandler('focus').bind(this);
     this.handleBlur = this.createEventHandler('blur').bind(this);
     this.handleChange = this.createEventHandler('change').bind(this);
+    this.handleLoad = this.handleLoad.bind(this);
 
     this.state = {
       value: props.modelValue,
@@ -87,11 +88,8 @@ class Control extends Component {
 
   componentWillMount() {
     const { modelValue } = this.props;
-    const { onLoad } = this.state.mappedProps;
-
-    if (onLoad) {
-      onLoad(modelValue);
-    }
+    
+    this.handleLoad();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -194,6 +192,25 @@ class Control extends Component {
     if (onSubmit && event.key === 'Enter') {
       onSubmit(event);
     }
+  }
+
+  handleLoad() {
+    const { model, modelValue, controlProps = {}, dispatch } = this.props;
+    const loadActions = [];
+    const defaultValue = controlProps.hasOwnProperty('defaultValue')
+      ? controlProps.defaultValue
+      : controlProps.hasOwnProperty('defaultChecked')
+        ? controlProps.defaultChecked
+        : undefined;
+
+    if (typeof defaultValue !== 'undefined') {
+      loadActions.push(this.getValidateAction(defaultValue));
+      loadActions.push(actions.change(model, defaultValue));
+    } else {
+      loadActions.push(this.getValidateAction(modelValue));
+    }
+
+    dispatch(actions.batch(model, loadActions));
   }
 
   createEventHandler(eventName) {

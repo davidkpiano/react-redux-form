@@ -69,43 +69,13 @@ function sequenceEventActions(props) {
   } = props;
 
   const eventActions = {
-    onLoad: [], // pseudo-event
     onSubmit: [], // pseudo-event
   };
 
-  // const controlChangeMethod = (...args) => changeAction(model, ...args);
   const modelValueUpdater = modelValueUpdaterMap[controlProps.type]
     || modelValueUpdaterMap.default;
 
-  if (controlProps.defaultValue) {
-    eventActions.onLoad.push(() => dispatch(
-      actions.change(model, controlProps.defaultValue)));
-  }
-
   const changeActionCreator = (modelValue) => changeAction(model, modelValue);
-
-  if (props.validators || props.errors) {
-    const dispatchValidate = value => {
-      const fieldValidity = getValidity(props.validators, value);
-      const fieldErrors = getValidity(props.errors, value);
-
-      const errors = props.validators
-        ? merge(invertValidity(fieldValidity), fieldErrors)
-        : fieldErrors;
-
-      if (fieldValue && !shallowEqual(errors, fieldValue.errors)) {
-        dispatch(setErrors(model, errors));
-      }
-
-      return value;
-    };
-
-    // if (validateOn !== 'onFocus' && validateOn !== 'onBlur') {
-    //   eventActions[validateOn].push(dispatchValidate);
-    // }
-
-    eventActions.onLoad.push(dispatchValidate);
-  }
 
   const dispatchChange = (event) => {
     const modelValue = isReadOnlyValue(controlProps)
@@ -118,11 +88,6 @@ function sequenceEventActions(props) {
   };
 
   eventActions.onSubmit.push(dispatchChange);
-
-  // eventActions.onBlur.push(controlOnBlur);
-  // eventActions.onFocus.push(controlOnFocus);
-
-  delete eventActions.onChange;
 
   return mapValues(eventActions, _actions => compose(..._actions));
 }
