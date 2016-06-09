@@ -68,35 +68,12 @@ function sequenceEventActions(props) {
     fieldValue,
   } = props;
 
-  const {
-    onChange = identity,
-    // onBlur = identity,
-    // onFocus = identity,
-  } = controlProps;
-
-  const controlOnChange = persistEventWithCallback(onChange);
-  // const controlOnBlur = persistEventWithCallback(onBlur);
-  // const controlOnFocus = persistEventWithCallback(onFocus);
-
-  const updateOnEventHandler = (typeof updateOn === 'function')
-    ? 'onChange'
-    : `on${capitalize(updateOn)}`;
-  const validateOn = `on${capitalize(props.validateOn)}`;
-  const asyncValidateOn = `on${capitalize(props.asyncValidateOn)}`;
-
-  const updaterFn = (typeof updateOn === 'function')
-    ? deprecateUpdateOn(updateOn)
-    : identity;
-
   const eventActions = {
-    // onFocus: [],
-    // onBlur: [],
-    onChange: [],
     onLoad: [], // pseudo-event
     onSubmit: [], // pseudo-event
   };
 
-  const controlChangeMethod = (...args) => changeAction(model, ...args);
+  // const controlChangeMethod = (...args) => changeAction(model, ...args);
   const modelValueUpdater = modelValueUpdaterMap[controlProps.type]
     || modelValueUpdaterMap.default;
 
@@ -105,29 +82,7 @@ function sequenceEventActions(props) {
       actions.change(model, controlProps.defaultValue)));
   }
 
-  const changeActionCreator = (modelValue) => controlChangeMethod(modelValue);
-
-  // switch (updateOnEventHandler) {
-  //   case 'onBlur':
-  //     // changeActionCreator = (modelValue) => actions.batch(model, [
-  //     //   blur(model),
-  //     //   controlChangeMethod(modelValue),
-  //     // ]);
-  //     // eventActions.onFocus.push(() => dispatch(focus(model)));
-  //     break;
-  //   case 'onFocus':
-  //     // changeActionCreator = (modelValue) => actions.batch(model, [
-  //     //   focus(model),
-  //     //   controlChangeMethod(modelValue),
-  //     // ]);
-  //     // eventActions.onBlur.push(() => dispatch(blur(model)));
-  //     break;
-  //   default:
-  //     changeActionCreator = (modelValue) => controlChangeMethod(modelValue);
-  //     // eventActions.onBlur.push(() => dispatch(blur(model)));
-  //     // eventActions.onFocus.push(() => dispatch(focus(model)));
-  //     break;
-  // }
+  const changeActionCreator = (modelValue) => changeAction(model, modelValue);
 
   if (props.validators || props.errors) {
     const dispatchValidate = value => {
@@ -145,31 +100,11 @@ function sequenceEventActions(props) {
       return value;
     };
 
-    if (validateOn !== 'onFocus' && validateOn !== 'onBlur') {
-      eventActions[validateOn].push(dispatchValidate);
-    }
+    // if (validateOn !== 'onFocus' && validateOn !== 'onBlur') {
+    //   eventActions[validateOn].push(dispatchValidate);
+    // }
 
     eventActions.onLoad.push(dispatchValidate);
-  }
-
-  if (props.asyncValidators) {
-    const dispatchAsyncValidate = value => {
-      mapValues(props.asyncValidators,
-        (validator, key) => dispatch(asyncSetValidity(model,
-          (_, done) => {
-            const outerDone = valid => done({ [key]: valid });
-
-            validator(getValue(value), outerDone);
-          })
-        )
-      );
-
-      return value;
-    };
-
-    if (asyncValidateOn !== 'onFocus' && asyncValidateOn !== 'onBlur') {
-      eventActions[asyncValidateOn].push(dispatchAsyncValidate);
-    }
   }
 
   const dispatchChange = (event) => {
@@ -182,23 +117,12 @@ function sequenceEventActions(props) {
     return modelValue;
   };
 
-  eventActions.onSubmit.push(updaterFn(dispatchChange));
+  eventActions.onSubmit.push(dispatchChange);
 
-  if (updateOnEventHandler !== 'onFocus' && updateOnEventHandler !== 'onBlur') {
-    if (!isReadOnlyValue(controlProps)) {
-      eventActions[updateOnEventHandler].push(
-        compose(
-          updaterFn(dispatchChange),
-          (...args) => modelValueUpdater(props, ...args),
-          parser,
-          getValue,
-          controlOnChange));
-    } else {
-      eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
-    }
-  }
   // eventActions.onBlur.push(controlOnBlur);
   // eventActions.onFocus.push(controlOnFocus);
+
+  delete eventActions.onChange;
 
   return mapValues(eventActions, _actions => compose(..._actions));
 }

@@ -75,6 +75,9 @@ class Control extends Component {
 
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.createEventHandler = this.createEventHandler.bind(this);
+    this.handleFocus = this.createEventHandler('focus').bind(this);
+    this.handleBlur = this.createEventHandler('blur').bind(this);
+    this.handleChange = this.createEventHandler('change').bind(this);
 
     this.state = {
       value: props.modelValue,
@@ -120,14 +123,20 @@ class Control extends Component {
       ...props,
       ...props.controlProps,
       ...sequenceEventActions(props),
-      onFocus: this.createEventHandler('focus'),
-      onBlur: this.createEventHandler('blur'),
+      onFocus: this.handleFocus,
+      onBlur: this.handleBlur,
+      onChange: this.handleChange,
       onKeyPress: this.handleKeyPress,
     });
   }
 
-  getChangeAction(value) {
-    const { changeAction, model } = this.props;
+  getChangeAction(event) {
+    const { changeAction, model, controlProps } = this.props;
+    const modelValueUpdater = modelValueUpdaterMap[controlProps.type]
+        || modelValueUpdaterMap.default;
+    const value = isReadOnlyValue(controlProps)
+      ? modelValueUpdater(this.props, controlProps.value)
+      : event;
 
     return changeAction(model, value);
   }
@@ -153,7 +162,7 @@ class Control extends Component {
       }
     }
 
-    return identity;
+    return false;
   }
 
   getAsyncValidateAction(value) {
@@ -210,11 +219,13 @@ class Control extends Component {
       const controlEventHandler = {
         focus: controlProps.onFocus,
         blur: controlProps.onBlur,
+        change: controlProps.onChange,
       }[eventName];
 
-
-      const dispatchChange = (persistedEvent) => {
-        const eventActions = [eventAction(model)];
+      const dispatchBatchActions = (persistedEvent) => {
+        const eventActions = eventAction
+          ? [eventAction(model)]
+          : [];
 
         if (validateOn === eventName) {
           eventActions.push(this.getValidateAction(persistedEvent));
@@ -233,14 +244,13 @@ class Control extends Component {
 
       if (isReadOnlyValue(controlProps)) {
         return compose(
-          dispatchChange,
+          dispatchBatchActions,
           persistEventWithCallback(controlEventHandler || identity)
         )(event);
       }
 
       return compose(
-        dispatchChange,
-        (value) => modelValueUpdater(this.props, value),
+        dispatchBatchActions,
         parser,
         getValue,
         persistEventWithCallback(controlEventHandler || identity)

@@ -78,7 +78,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
       customOnChange: props.onChange,
     }),
     FamiliarText: controls.text,
-    InputFoo: controls.checkbox,
+    CustomCheckbox: controls.checkbox,
     MinifiedText: controls.text,
   }, {
     componentMap: {
@@ -171,7 +171,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
       test: modelReducer('test', { foo: 'bar' }),
     }));
 
-    class InputFoo extends React.Component {
+    class CustomCheckbox extends React.Component {
       render() {
         return <div><input {...this.props} /></div>;
       }
@@ -180,7 +180,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <CustomField model="test.foo">
-          <InputFoo type="checkbox" />
+          <CustomCheckbox type="checkbox" />
         </CustomField>
       </Provider>
     );
