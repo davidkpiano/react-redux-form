@@ -270,7 +270,13 @@ class Control extends Component {
           eventActions.push(this.getChangeAction(persistedEvent));
         }
 
-        dispatch(actions.batch(model, eventActions));
+        const dispatchableEventActions = eventActions.filter((action) => !!action);
+
+        if (dispatchableEventActions.length) {
+          dispatch(actions.batch(model, dispatchableEventActions));
+        }
+
+        return persistedEvent;
       };
 
       if (isReadOnlyValue(controlProps)) {
