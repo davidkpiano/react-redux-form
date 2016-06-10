@@ -35,38 +35,36 @@ function isChecked(props) {
   return !!props.modelValue;
 }
 
+const textPropsMap = {
+  value: (props) => (props.updateOn === 'change'
+    && !props.defaultValue
+    && !props.hasOwnProperty('value')
+    ? props.modelValue || ''
+    : props.value),
+  name: (props) => props.name || props.model,
+};
+
 const controlPropsMap = {
-  default: (props) => controlPropsMap.text(props),
-  checkbox: (props) => ({
-    name: props.name || props.model,
-    checked: props.defaultChecked
+  default: textPropsMap,
+  checkbox: {
+    name: (props) => props.name || props.model,
+    checked: (props) => (props.defaultChecked
       ? props.checked
-      : isChecked(props),
-    ...props,
-  }),
-  radio: (props) => ({
-    name: props.name || props.model,
-    checked: props.defaultChecked
+      : isChecked(props)),
+  },
+  radio: {
+    name: (props) => props.name || props.model,
+    checked: (props) => (props.defaultChecked
       ? props.checked
-      : props.modelValue === props.value,
-    value: props.value,
-    ...props,
-  }),
-  select: (props) => ({
-    name: props.name || props.model,
-    value: props.modelValue,
-    ...props,
-  }),
-  text: (props) => ({
-    value: props.updateOn === 'change'
-      && !props.defaultValue
-      && !props.hasOwnProperty('value')
-      ? props.modelValue || ''
-      : props.value,
-    name: props.name || props.model,
-    ...props,
-  }),
-  textarea: (props) => controlPropsMap.text(props),
+      : props.modelValue === props.value),
+    value: (props) => props.value,
+  },
+  select: {
+    name: (props) => (props.name || props.model),
+    value: (props) => (props.modelValue),
+  },
+  text: textPropsMap,
+  textarea: textPropsMap,
 };
 
 function getControlType(control, props, options) {

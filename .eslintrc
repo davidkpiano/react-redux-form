@@ -17,6 +17,10 @@
       {
         "varsIgnorePattern": "^_"
       }
+    ],
+    "no-confusing-arrow": [
+      "error",
+      {"allowParens": true}
     ]
   }
 }

@@ -6,6 +6,7 @@ import _get from '../utils/get';
 import merge from '../utils/merge';
 import shallowEqual from 'react-redux/lib/utils/shallowEqual';
 import mapValues from '../utils/map-values';
+import isPlainObject from 'redux/lib/utils/isPlainObject';
 import icepick from 'icepick';
 
 import { isMulti, invertValidity, getFieldFromState, getValidity, getValue } from '../utils';
@@ -114,7 +115,7 @@ class Control extends Component {
   getMappedProps(props, mapProps) {
     const { viewValue } = this.state;
 
-    return mapProps({
+    const originalProps = {
       ...props,
       ...props.controlProps,
       onFocus: this.handleFocus,
@@ -122,7 +123,14 @@ class Control extends Component {
       onChange: this.handleChange,
       onKeyPress: this.handleKeyPress,
       viewValue,
-    });
+    };
+
+    if (isPlainObject(mapProps)) {
+      return icepick.merge(originalProps,
+        mapValues(mapProps, (value) => value(originalProps)));
+    }
+
+    return mapProps(originalProps);
   }
 
   getChangeAction(event) {
@@ -332,7 +340,10 @@ Control.propTypes = {
   onLoad: PropTypes.func,
   onSubmit: PropTypes.func,
   fieldValue: PropTypes.object,
-  mapProps: PropTypes.func,
+  mapProps: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
   changeAction: PropTypes.func,
   updateOn: PropTypes.string,
   validateOn: PropTypes.string,
