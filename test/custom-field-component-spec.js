@@ -79,10 +79,9 @@ describe('custom <Field /> components with createFieldClass()', () => {
     }),
     FamiliarText: controls.text,
     CustomCheckbox: controls.checkbox,
-    MinifiedText: controls.text,
-  }, {
-    componentMap: {
-      MinifiedText,
+    MinifiedText: {
+      ...controls.text,
+      component: MinifiedText,
     },
   });
 

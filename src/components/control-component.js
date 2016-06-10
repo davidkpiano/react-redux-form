@@ -127,7 +127,13 @@ class Control extends Component {
 
     if (isPlainObject(mapProps)) {
       return icepick.merge(originalProps,
-        mapValues(mapProps, (value) => value(originalProps)));
+        mapValues(mapProps, (value, key) => {
+          if (typeof value === 'function' && key !== 'component') {
+            return value(originalProps);
+          }
+
+          return value;
+        }));
     }
 
     return mapProps(originalProps);

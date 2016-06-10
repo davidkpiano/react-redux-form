@@ -5,6 +5,7 @@ import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
 import identity from 'lodash/identity';
 import omit from 'lodash/omit';
+import isPlainObject from 'redux/lib/utils/isPlainObject';
 
 import actions from '../actions';
 import Control from './control-component';
@@ -68,11 +69,18 @@ const controlPropsMap = {
 };
 
 function getControlType(control, props, options) {
-  const { componentMap } = props;
   const { controlPropsMap: _controlPropsMap } = options;
 
-  const controlDisplayNames = Object.keys(componentMap).filter(
-    (controlName) => control.type === componentMap[controlName]);
+  const controlDisplayNames = Object.keys(_controlPropsMap)
+    .filter((controlKey) => {
+      const propsMap = _controlPropsMap[controlKey];
+
+      if (isPlainObject(propsMap) && propsMap.component) {
+        return control.type === propsMap.component;
+      }
+
+      return false;
+    });
 
   if (controlDisplayNames.length) return controlDisplayNames[0];
 
@@ -221,7 +229,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     ]),
     modelValue: PropTypes.any,
     mapProps: PropTypes.func,
-    componentMap: PropTypes.object,
   };
 
   Field.defaultProps = {
@@ -230,7 +237,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     asyncValidateOn: 'blur',
     parser: identity,
     changeAction: change,
-    componentMap: {},
     ...defaultProps,
   };
 
