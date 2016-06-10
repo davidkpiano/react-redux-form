@@ -56,8 +56,6 @@ class Control extends Component {
   constructor(props) {
     super(props);
 
-    const { mapProps } = props;
-
     this.getChangeAction = this.getChangeAction.bind(this);
     this.getValidateAction = this.getValidateAction.bind(this);
 
@@ -65,26 +63,28 @@ class Control extends Component {
     this.createEventHandler = this.createEventHandler.bind(this);
     this.handleFocus = this.createEventHandler('focus').bind(this);
     this.handleBlur = this.createEventHandler('blur').bind(this);
-    this.handleChange = compose(
-      this.createEventHandler('change').bind(this),
-      this.updateViewValue.bind(this));
+    this.handleChange = this.createEventHandler('change').bind(this);
     this.handleLoad = this.handleLoad.bind(this);
     this.getMappedProps = this.getMappedProps.bind(this);
 
     this.state = {
       viewValue: props.modelValue,
-      mappedProps: this.getMappedProps(props, mapProps),
+      mappedProps: {},
     };
   }
 
   componentWillMount() {
+    const { props, props: { mapProps } } = this;
+
+    this.setState({ mappedProps: this.getMappedProps(props, mapProps) });
     this.handleLoad();
   }
 
   componentWillReceiveProps(nextProps) {
-    const { mapProps } = nextProps;
+    const { mapProps, modelValue } = nextProps;
 
     this.setState({
+      viewValue: modelValue,
       mappedProps: this.getMappedProps(nextProps, mapProps),
     });
   }
@@ -105,7 +105,15 @@ class Control extends Component {
     }
   }
 
+  componentWillUnmount() {
+    const { model, dispatch } = this.props;
+
+    dispatch(actions.resetValidity(model));
+  }
+
   getMappedProps(props, mapProps) {
+    const { viewValue } = this.state;
+
     return mapProps({
       ...props,
       ...props.controlProps,
@@ -113,6 +121,7 @@ class Control extends Component {
       onBlur: this.handleBlur,
       onChange: this.handleChange,
       onKeyPress: this.handleKeyPress,
+      viewValue,
     });
   }
 
@@ -157,7 +166,7 @@ class Control extends Component {
       model,
     } = this.props;
 
-    if (!asyncValidators) return identity;
+    if (!asyncValidators) return false;
 
     return (dispatch) => {
       mapValues(asyncValidators,
@@ -205,12 +214,6 @@ class Control extends Component {
     const { dispatch } = this.props;
 
     dispatch(this.getChangeAction(event));
-  }
-
-  updateViewValue(event) {
-    this.setState({ viewValue: getValue(event) });
-
-    return event;
   }
 
   createEventHandler(eventName) {

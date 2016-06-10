@@ -1,27 +1,37 @@
 import actionTypes from '../action-types';
 import partition from 'lodash/partition';
-import every from 'lodash/every';
+import isPlainObject from 'lodash/isPlainObject';
+
+const nullAction = {
+  type: actionTypes.NULL,
+};
 
 function batch(model, actions) {
-  if (every(actions, (action) => typeof action !== 'function')) {
+  const dispatchableActions = actions.filter((action) => !!action);
+
+  if (!dispatchableActions.length) return nullAction;
+
+  if (dispatchableActions.length && dispatchableActions.every(isPlainObject)) {
     return {
       type: actionTypes.BATCH,
       model,
-      actions,
+      actions: dispatchableActions,
     };
   }
 
   return (dispatch) => {
-    const [plainActions, actionThunks] = partition(actions,
+    const [plainActions, actionThunks] = partition(dispatchableActions,
       (action) => typeof action !== 'function');
 
-    dispatch({
-      type: actionTypes.BATCH,
-      model,
-      actions: plainActions,
-    });
+    if (plainActions.length) {
+      dispatch({
+        type: actionTypes.BATCH,
+        model,
+        actions: plainActions,
+      });
+    }
 
-    actionThunks.map(dispatch);
+    actionThunks.forEach(dispatch);
   };
 }
 

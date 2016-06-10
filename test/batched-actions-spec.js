@@ -2,19 +2,18 @@ import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-
 import { formReducer, modelReducer, actions, actionTypes } from '../src';
 
-describe('batched actions', (done) => {
+describe('batched actions', () => {
   const mockStore = configureMockStore([thunk]);
 
-  const action = actions.batch('test.foo', [
-    actions.change('test.foo', 'testing'),
-    actions.focus('test.foo'),
-    actions.toggle('test.foo'),
-  ]);
+  it('should batch actions', (done) => {
+    const action = actions.batch('test.foo', [
+      actions.change('test.foo', 'testing'),
+      actions.focus('test.foo'),
+      actions.toggle('test.foo'),
+    ]);
 
-  it('should batch actions', () => {
     const expectedActions = [
       {
         type: actionTypes.BATCH,
@@ -73,5 +72,19 @@ describe('batched actions', (done) => {
     const actual = reducer(undefined, testAction);
 
     assert.equal(actual.foo, 'testing');
+  });
+
+  it('should dispatch a null action if all actions are falsey', (done) => {
+    const testAction = actions.batch('test.foo', [
+      false,
+      null,
+      undefined,
+    ]);
+
+    const expectedActions = [{ type: actionTypes.NULL }];
+
+    const store = mockStore({}, expectedActions, done);
+
+    store.dispatch(testAction);
   });
 });
