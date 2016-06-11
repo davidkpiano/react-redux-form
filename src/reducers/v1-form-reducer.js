@@ -213,6 +213,22 @@ function mapFields(state, iterator) {
   return result;
 }
 
+function wrapFormReducer(plugin, modelPath, initialState) {
+  return (state = initialState, action) => {
+    if (!action.model) return state;
+
+    const path = toPath(action.model);
+
+    if (!arraysEqual(path.slice(0, modelPath.length), modelPath)) {
+      return state;
+    }
+
+    const localPath = path.slice(modelPath.length);
+
+    return plugin(state, action, localPath);
+  }
+}
+
 function formActionReducer(state, action, _path) {
   const reaction = getReaction(state, action);
 
@@ -263,20 +279,10 @@ export default function createFormReducer(model, initialState = {}, plugins = []
   const modelPath = toPath(model);
   const initialFormState = createInitialState(initialState);
 
-  const formReducer = (state = initialFormState, action) => {
-    if (!action.model) return state;
+  const formReducer = wrapFormReducer(formActionReducer, modelPath, initialFormState);
 
-    const path = toPath(action.model);
+  const wrappedPlugins = plugins.map((plugin) => wrapFormReducer(plugin, modelPath, initialFormState));
 
-    if (!arraysEqual(path.slice(0, modelPath.length), modelPath)) {
-      return state;
-    }
-
-    const localPath = path.slice(modelPath.length);
-
-    return formActionReducer(state, action, localPath);
-  }
-  return formReducer;
-  return composeReducers(...plugins, formReducer);
+  return composeReducers(...wrappedPlugins, formReducer);
 }
 /* eslint-enable */
