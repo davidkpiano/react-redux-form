@@ -18,6 +18,7 @@ import identity from 'lodash/identity';
 import actionTypes from '../action-types';
 import actions from '../actions/field-actions';
 import { isValid } from '../utils';
+import changeActionReducer from './form/change-action-reducer';
 
 export const initialFieldState = {
   focus: false,
@@ -56,18 +57,19 @@ function createInitialState(state, initialValue) {
   } else {
     return icepick.merge(initialFieldState, {
       initialValue: state,
+      value: state,
     });
   }
 
   initialState.$form = icepick.merge(initialFieldState, {
     initialValue: state,
+    value: state,
   });
 
   return initialState;
 }
 
 function formIsValid(formState) {
-  console.log(formState);
   return every(mapValues(formState, (field) => field.valid))
     && every(formState.$form.errors, error => !error);
 }
@@ -275,13 +277,15 @@ function formActionReducer(state, action, _path) {
   return recurse(state, _path);
 }
 
+const defaultPlugins = [changeActionReducer];
+
 export default function createFormReducer(model, initialState = {}, plugins = []) {
   const modelPath = toPath(model);
   const initialFormState = createInitialState(initialState);
 
   const formReducer = wrapFormReducer(formActionReducer, modelPath, initialFormState);
 
-  const wrappedPlugins = plugins.map((plugin) => wrapFormReducer(plugin, modelPath, initialFormState));
+  const wrappedPlugins = plugins.concat(defaultPlugins).map((plugin) => wrapFormReducer(plugin, modelPath, initialFormState));
 
   return composeReducers(...wrappedPlugins, formReducer);
 }

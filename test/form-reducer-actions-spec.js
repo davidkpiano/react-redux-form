@@ -5,6 +5,8 @@ import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
 import get from 'lodash/get';
 
+import changeActionReducer from '../src/reducers/form/change-action-reducer';
+
 describe('formReducer() (V1)', () => {
   it('should exist as a function', () => {
     assert.isFunction(formReducer);
@@ -263,4 +265,18 @@ describe('formReducer() (V1)', () => {
       }
     });
   }));
+
+  describe('CHANGE action', () => {
+    // const reducer = formReducer('user', {
+    //   phones: [10, 20, 30],
+    // }, [changeActionReducer]);
+
+    // console.log(reducer(undefined, actions.change('user.phones', [11, 20])).phones);
+
+    const reducer = formReducer('user', {
+      foo: { one: 10, two: 20, three: 30 },
+    });
+
+    console.log(reducer(undefined, actions.change('user.foo', { one: 10, two: 22 })).foo);
+  });
 });
