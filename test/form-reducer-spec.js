@@ -4,6 +4,7 @@ import newFormReducer, {
   initialFieldState as newInitialFieldState,
   getField as newGetField,
 } from '../src/reducers/v1-form-reducer';
+import selectForm from '../src/utils/select-form';
 
 describe('formReducer()', () => {
   it('should create a reducer given a model', () => {
@@ -88,24 +89,25 @@ describe('formReducer()', () => {
     });
 
     it('should become valid when an invalid field is removed', (done) => {
-      const reducer = formReducer('test', {
-        items: [],
+      const reducer = newFormReducer('test', {
+        items: [1, 2],
       });
 
       const validItem = reducer(undefined, actions.setValidity('test.items[0]', true));
       const invalidItem = reducer(validItem, actions.setValidity('test.items[1]', false));
 
-      assert.isFalse(invalidItem.valid, 'form should be invalid');
+      assert.isFalse(selectForm(invalidItem).$form.valid, 'form should be invalid');
 
       let removedState;
 
       const dispatch = (action) => {
         removedState = reducer(invalidItem, action);
-        assert.isTrue(removedState.valid);
+        assert.isTrue(selectForm(removedState).$form.valid);
+
         done();
       };
 
-      const getState = () => invalidItem;
+      const getState = () => ({ test: { items: [1, 2] } });
 
       actions.remove('test.items', 1)(dispatch, getState);
     });

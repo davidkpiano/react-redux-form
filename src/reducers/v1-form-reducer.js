@@ -18,7 +18,9 @@ import identity from 'lodash/identity';
 import actionTypes from '../action-types';
 import actions from '../actions/field-actions';
 import { isValid } from '../utils';
+
 import changeActionReducer from './form/change-action-reducer';
+import setValidityActionReducer from './form/set-validity-action-reducer';
 
 export const initialFieldState = {
   focus: false,
@@ -47,7 +49,7 @@ export function getField(state, path) {
   return _get(state, path, initialFieldState);
 }
 
-function createInitialState(state, initialValue) {
+function createInitialState(state) {
   let initialState;
 
   if (isArray(state)) {
@@ -61,17 +63,21 @@ function createInitialState(state, initialValue) {
     });
   }
 
-  initialState.$form = icepick.merge(initialFieldState, {
+  const initialForm = icepick.merge(initialFieldState, {
     initialValue: state,
     value: state,
   });
 
-  return initialState;
+  return icepick.set(initialState, '$form', initialForm);
 }
 
 function formIsValid(formState) {
-  return every(mapValues(formState, (field) => field.valid))
-    && every(formState.$form.errors, error => !error);
+  const formValid = formState.$form
+    ? every(formState.$form.errors, error => !error)
+    : true;
+
+  return every(mapFields(formState, (field) => field.valid))
+    && formValid;
 }
 
 function inverse(value) {
@@ -123,23 +129,6 @@ const reactions = {
       retouched: false,
     }),
   }),
-  [actionTypes.SET_VALIDITY]: (_, action) => {
-    const errors = isPlainObject(action.validity)
-      ? mapValues(action.validity, inverse)
-      : !action.validity;
-
-    return {
-      form: (_, formFields) => ({
-        valid: formIsValid(formFields),
-      }),
-      field: () => ({
-        validity: action.validity,
-        valid: isBoolean(errors) ? !errors : every(errors, (error) => !error),
-        errors,
-        validated: true,
-      }),
-    };
-  },
   [actionTypes.SET_ERRORS]: (_, action) => {
     const validity = isPlainObject(action.errors)
       ? mapValues(action.errors, inverse)
@@ -204,6 +193,10 @@ function getReaction(state, action) {
 }
 
 function mapFields(state, iterator) {
+  if (Array.isArray(state)) {
+    return state.map(iterator);
+  }
+
   const result = mapValues(state, (field, fieldName) => {
     if (fieldName === '$form') return field;
 
@@ -277,7 +270,7 @@ function formActionReducer(state, action, _path) {
   return recurse(state, _path);
 }
 
-const defaultPlugins = [changeActionReducer];
+const defaultPlugins = [changeActionReducer, setValidityActionReducer];
 
 export default function createFormReducer(model, initialState = {}, plugins = []) {
   const modelPath = toPath(model);

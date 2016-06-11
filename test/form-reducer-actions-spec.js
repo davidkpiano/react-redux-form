@@ -5,7 +5,7 @@ import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
 import get from 'lodash/get';
 
-import changeActionReducer from '../src/reducers/form/change-action-reducer';
+import selectForm from '../src/utils/select-form';
 
 describe('formReducer() (V1)', () => {
   it('should exist as a function', () => {
@@ -224,7 +224,8 @@ describe('formReducer() (V1)', () => {
       const localFormPath = localModelPath.slice(0, -1).concat(['$form']);
 
       const reducer = formReducer('user', { name: '' });
-      const updatedState = reducer(initialState, action(model, ...args));
+      const updatedState = selectForm(
+        reducer(initialState, action(model, ...args)));
 
       if (expectedField) {
         it('should properly set the field state', () => {
@@ -265,18 +266,4 @@ describe('formReducer() (V1)', () => {
       }
     });
   }));
-
-  describe('CHANGE action', () => {
-    // const reducer = formReducer('user', {
-    //   phones: [10, 20, 30],
-    // }, [changeActionReducer]);
-
-    // console.log(reducer(undefined, actions.change('user.phones', [11, 20])).phones);
-
-    const reducer = formReducer('user', {
-      foo: { one: 10, two: 20, three: 30 },
-    });
-
-    console.log(reducer(undefined, actions.change('user.foo', { one: 10, two: 22 })).foo);
-  });
 });
