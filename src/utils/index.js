@@ -157,17 +157,17 @@ function invertValidity(validity) {
   return !validity;
 }
 
-function isValid(validity) {
+function isValidityValid(validity) {
   if (isPlainObject(validity)) {
-    return every(validity, isValid);
+    return every(validity, isValidityValid);
   }
 
   return !!validity;
 }
 
-function isInvalid(errors) {
+function isValidityInvalid(errors) {
   if (isPlainObject(errors)) {
-    return some(errors, isInvalid);
+    return some(errors, isValidityInvalid);
   }
 
   return !!errors;
@@ -187,8 +187,8 @@ export {
   getEventValue,
   getValue,
   getValidity,
-  isValid,
-  isInvalid,
+  isValidityValid,
+  isValidityInvalid,
   getForm,
   getFieldFromState,
   invertValidators,

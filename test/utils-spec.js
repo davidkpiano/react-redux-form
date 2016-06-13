@@ -1,7 +1,7 @@
 import {
   invertValidators,
   getValidity,
-  isInvalid,
+  isValidityInvalid,
   getFormStateKey,
 } from '../src/utils/index';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
@@ -17,7 +17,7 @@ describe('utils', () => {
     it('should invert the validity of a validator function', () => {
       const validator = (val) => val === 'foo';
       const inverted = invertValidators(validator);
-      const error = isInvalid(getValidity(inverted, 'foo'));
+      const error = isValidityInvalid(getValidity(inverted, 'foo'));
 
       assert.isFalse(error);
     });
@@ -28,7 +28,7 @@ describe('utils', () => {
         isBar: (val) => val === 'bar',
       };
       const inverted = invertValidators(validators);
-      const error = isInvalid(getValidity(inverted, 'foo'));
+      const error = isValidityInvalid(getValidity(inverted, 'foo'));
 
       assert.isTrue(error);
     });

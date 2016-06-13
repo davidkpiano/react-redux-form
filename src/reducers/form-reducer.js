@@ -12,7 +12,7 @@ import flatten from '../utils/flatten';
 
 import actionTypes from '../action-types';
 import actions from '../actions/field-actions';
-import { isValid } from '../utils';
+import { isValidityValid } from '../utils';
 
 const initialFieldState = {
   blur: true, // will be deprecated
@@ -304,7 +304,7 @@ function _createFormReducer(model, initialState) {
         const setErrorsState = setInField(state, localPath, {
           errors: action.errors,
           validity,
-          valid: isValid(validity),
+          valid: isValidityValid(validity),
           validated: true,
         });
 

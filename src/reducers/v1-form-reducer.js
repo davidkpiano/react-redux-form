@@ -17,7 +17,6 @@ import identity from 'lodash/identity';
 
 import actionTypes from '../action-types';
 import actions from '../actions/field-actions';
-import { isValid } from '../utils';
 
 import changeActionReducer from './form/change-action-reducer';
 import setValidityActionReducer from './form/set-validity-action-reducer';
@@ -66,15 +65,6 @@ function createInitialState(state) {
   });
 
   return icepick.set(initialState, '$form', initialForm);
-}
-
-function formIsValid(formState) {
-  const formValid = formState.$form
-    ? every(formState.$form.errors, error => !error)
-    : true;
-
-  return every(mapFields(formState, (field) => field.valid))
-    && formValid;
 }
 
 function inverse(value) {
@@ -126,23 +116,6 @@ const reactions = {
       retouched: false,
     }),
   }),
-  // [actionTypes.SET_ERRORS]: (_, action) => {
-  //   const validity = isPlainObject(action.errors)
-  //     ? mapValues(action.errors, inverse)
-  //     : !action.errors;
-
-  //   return {
-  //     form: (_, fields) => ({
-  //       valid: formIsValid(fields),
-  //     }),
-  //     field: () => ({
-  //       errors: action.errors,
-  //       validity,
-  //       valid: isValid(validity),
-  //       validated: true,
-  //     }),
-  //   };
-  // },
   [actionTypes.SET_SUBMITTED]: (_, action) => ({
     form: () => ({
       touched: true,

@@ -3,7 +3,7 @@ import mapValues from '../utils/map-values';
 
 import actionTypes from '../action-types';
 import batchActions from './batch-actions';
-import { getValidity, getForm, isValid, isInvalid } from '../utils';
+import { getValidity, getForm, isValidityValid, isValidityInvalid } from '../utils';
 
 const focus = model => ({
   type: actionTypes.FOCUS,
@@ -180,8 +180,8 @@ const validateFields = (model, fieldValidators, options = {}) => (dispatch, getS
       ? form.valid
       : true;
     const fieldsValid = options.errors
-      ? !isInvalid(fieldsValidity)
-      : isValid(fieldsValidity);
+      ? !isValidityInvalid(fieldsValidity)
+      : isValidityValid(fieldsValidity);
 
     if (validCB && formValid && fieldsValid) {
       validCB();
