@@ -9,17 +9,17 @@ import { initialFieldState } from '../v1-form-reducer';
 function updateFieldValue(field, value) {
   let method;
 
+  if (shallowEqual(field.value, value)) return field;
+
   if (Array.isArray(value)) {
     method = (val, iter) => Array.prototype.map.call(val, iter).filter(a => !!a);
   } else if (isPlainObject(value)) {
-    method = mapValues;
-  }
-
-  if (shallowEqual(field.value, value)) return field;
-
-  if (!Array.isArray(value) && !isPlainObject(value)) {
+    method = (val, iter) => mapValues(val, iter);
+  } else {
     return icepick.merge(initialFieldState, {
       value,
+      pristine: false,
+      validated: false,
     });
   }
 
@@ -42,7 +42,7 @@ function updateFieldValue(field, value) {
       });
     }
 
-    // Subfield is deleted
+    // Subfield did not exist or was removed
     return false;
   });
 

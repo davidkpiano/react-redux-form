@@ -5,14 +5,45 @@ import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
 import get from 'lodash/get';
 
-import selectForm from '../src/utils/select-form';
-
 describe('formReducer() (V1)', () => {
   it('should exist as a function', () => {
     assert.isFunction(formReducer);
   });
 
   const formActionsSpec = {
+    [actionTypes.CHANGE]: [
+      {
+        action: actions.change,
+        args: ['foo'],
+        expectedField: {
+          pristine: false,
+          validated: false,
+          value: 'foo',
+        },
+      },
+      {
+        action: actions.change,
+        args: [{ foo: 'bar' }],
+        expectedField: {
+          $form: {
+            pristine: false,
+            validated: false,
+            value: { foo: 'bar' },
+          },
+        },
+      },
+      {
+        action: actions.change,
+        args: [[1, 2, 3]],
+        expectedField: {
+          $form: {
+            pristine: false,
+            validated: false,
+            value: [1, 2, 3],
+          },
+        },
+      },
+    ],
     [actionTypes.FOCUS]: [
       {
         action: actions.focus,
@@ -112,33 +143,27 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setValidity,
         args: [{ foo: true }],
-        expectedForm: { valid: true },
         expectedField: {
           validity: { foo: true },
           errors: { foo: false },
-          valid: true,
           validated: true,
         },
       },
       {
         action: actions.setValidity,
         args: [{ foo: false }],
-        expectedForm: { valid: false },
         expectedField: {
           validity: { foo: false },
           errors: { foo: true },
-          valid: false,
           validated: true,
         },
       },
       {
         action: actions.setValidity,
         args: [{ foo: false, bar: true }],
-        expectedForm: { valid: false },
         expectedField: {
           validity: { foo: false, bar: true },
           errors: { foo: true, bar: false },
-          valid: false,
           validated: true,
         },
       },
@@ -148,7 +173,6 @@ describe('formReducer() (V1)', () => {
         model: 'user',
         args: [{ foo: false, bar: true }],
         expectedForm: {
-          valid: false,
           validity: { foo: false, bar: true },
           errors: { foo: true, bar: false },
           validated: true,
@@ -160,7 +184,71 @@ describe('formReducer() (V1)', () => {
         model: 'user',
         args: [{ foo: true, bar: true }],
         expectedForm: {
-          valid: true,
+          validity: { foo: true, bar: true },
+          errors: { foo: false, bar: false },
+          validated: true,
+        },
+      },
+    ],
+    [actionTypes.SET_ERRORS]: [
+      {
+        label: '1',
+        action: actions.setErrors,
+        args: [{ foo: true }],
+        expectedField: {
+          validity: { foo: false },
+          errors: { foo: true },
+          validated: true,
+        },
+      },
+      {
+        label: '2',
+        action: actions.setErrors,
+        args: [{ foo: false }],
+        expectedField: {
+          validity: { foo: true },
+          errors: { foo: false },
+          validated: true,
+        },
+      },
+      {
+        label: '3',
+        action: actions.setErrors,
+        args: [{ foo: false, bar: true }],
+        expectedField: {
+          validity: { foo: true, bar: false },
+          errors: { foo: false, bar: true },
+          validated: true,
+        },
+      },
+      {
+        label: 'validating the form (invalid)',
+        action: actions.setErrors,
+        model: 'user',
+        args: [{ foo: false, bar: true }],
+        expectedForm: {
+          validity: { foo: true, bar: false },
+          errors: { foo: false, bar: true },
+          validated: true,
+        },
+      },
+      {
+        label: 'validating the form (invalid)',
+        action: actions.setErrors,
+        model: 'user',
+        args: [{ foo: true, bar: true }],
+        expectedForm: {
+          validity: { foo: false, bar: false },
+          errors: { foo: true, bar: true },
+          validated: true,
+        },
+      },
+      {
+        label: 'validating the form (valid)',
+        action: actions.setErrors,
+        model: 'user',
+        args: [{ foo: false, bar: false }],
+        expectedForm: {
           validity: { foo: true, bar: true },
           errors: { foo: false, bar: false },
           validated: true,
@@ -224,8 +312,7 @@ describe('formReducer() (V1)', () => {
       const localFormPath = localModelPath.slice(0, -1).concat(['$form']);
 
       const reducer = formReducer('user', { name: '' });
-      const updatedState = selectForm(
-        reducer(initialState, action(model, ...args)));
+      const updatedState = reducer(initialState, action(model, ...args));
 
       if (expectedField) {
         it('should properly set the field state', () => {

@@ -30,7 +30,6 @@ export const initialFieldState = {
   submitFailed: false,
   retouched: false,
   touched: false,
-  valid: true,
   validating: false,
   validated: false,
   viewValue: null,
@@ -52,9 +51,7 @@ export function getField(state, path) {
 function createInitialState(state) {
   let initialState;
 
-  if (isArray(state)) {
-    initialState = state.map(createInitialState);
-  } else if (isPlainObject(state)) {  
+  if (isArray(state) || isPlainObject(state)) {  
     initialState = mapValues(state, createInitialState);
   } else {
     return icepick.merge(initialFieldState, {
@@ -129,23 +126,23 @@ const reactions = {
       retouched: false,
     }),
   }),
-  [actionTypes.SET_ERRORS]: (_, action) => {
-    const validity = isPlainObject(action.errors)
-      ? mapValues(action.errors, inverse)
-      : !action.errors;
+  // [actionTypes.SET_ERRORS]: (_, action) => {
+  //   const validity = isPlainObject(action.errors)
+  //     ? mapValues(action.errors, inverse)
+  //     : !action.errors;
 
-    return {
-      form: (_, fields) => ({
-        valid: formIsValid(fields),
-      }),
-      field: () => ({
-        errors: action.errors,
-        validity,
-        valid: isValid(validity),
-        validated: true,
-      }),
-    };
-  },
+  //   return {
+  //     form: (_, fields) => ({
+  //       valid: formIsValid(fields),
+  //     }),
+  //     field: () => ({
+  //       errors: action.errors,
+  //       validity,
+  //       valid: isValid(validity),
+  //       validated: true,
+  //     }),
+  //   };
+  // },
   [actionTypes.SET_SUBMITTED]: (_, action) => ({
     form: () => ({
       touched: true,
