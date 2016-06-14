@@ -48,7 +48,6 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.focus,
         args: [],
-        expectedForm: { focus: true },
         expectedField: { focus: true },
       },
     ],
@@ -56,7 +55,6 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setPristine,
         args: [],
-        expectedForm: { pristine: true },
         expectedField: { pristine: true },
       },
     ],
@@ -64,7 +62,6 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setDirty,
         args: [],
-        expectedForm: { pristine: false },
         expectedField: { pristine: false },
       },
     ],
@@ -72,10 +69,6 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.blur,
         args: [],
-        expectedForm: {
-          focus: false,
-          touched: true,
-        },
         expectedField: {
           focus: false,
           touched: true,
@@ -95,12 +88,6 @@ describe('formReducer() (V1)', () => {
             retouched: false,
           },
         },
-        expectedForm: {
-          focus: false,
-          touched: true,
-          submitted: true,
-          retouched: true,
-        },
         expectedField: {
           focus: false,
           touched: true,
@@ -119,7 +106,6 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setTouched,
         args: [],
-        expectedForm: { touched: true },
         expectedField: { touched: true },
       },
     ],

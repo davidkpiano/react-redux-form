@@ -20,6 +20,10 @@ import actions from '../actions/field-actions';
 
 import changeActionReducer from './form/change-action-reducer';
 import setValidityActionReducer from './form/set-validity-action-reducer';
+import focusActionReducer from './form/focus-action-reducer';
+import setPristineActionReducer from './form/set-pristine-action-reducer';
+import setDirtyActionReducer from './form/set-dirty-action-reducer';
+import blurTouchActionReducer from './form/blur-touch-action-reducer';
 
 export const initialFieldState = {
   focus: false,
@@ -72,32 +76,6 @@ function inverse(value) {
 }
 
 const reactions = {
-  [actionTypes.FOCUS]: {
-    form: () => ({ focus: true }),
-    field: () => ({ focus: true }),
-  },
-  [actionTypes.SET_PRISTINE]: {
-    form: () => ({ pristine: true }),
-    field: () => ({ pristine: true }),
-  },
-  [actionTypes.SET_DIRTY]: {
-    form: () => ({ pristine: false }),
-    field: () => ({ pristine: false }),
-  },
-  [actionTypes.BLUR]: (state, action) => ({    
-    form: (form) => ({
-      focus: false,
-      touched: true,
-      retouched: !!(form.submitted || form.submitFailed),
-      submitted: form.submitted,
-    }),
-    field: (_, form) => ({
-      focus: false,
-      touched: true,
-      retouched: !!(form.submitted || form.submitFailed),
-    }),
-  }),
-  [actionTypes.SET_TOUCHED]: (state, action) => reactions[actionTypes.BLUR](action, state),
   [actionTypes.SET_UNTOUCHED]: {
     form: (state) => state,
     field: () => ({
@@ -240,7 +218,14 @@ function formActionReducer(state, action, _path) {
   return recurse(state, _path);
 }
 
-const defaultPlugins = [changeActionReducer, setValidityActionReducer];
+const defaultPlugins = [
+  focusActionReducer,
+  blurTouchActionReducer,
+  setPristineActionReducer,
+  setDirtyActionReducer,
+  changeActionReducer,
+  setValidityActionReducer,
+];
 
 export default function createFormReducer(model, initialState = {}, plugins = []) {
   const modelPath = toPath(model);

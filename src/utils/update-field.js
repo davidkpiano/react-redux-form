@@ -13,7 +13,11 @@ export default function updateField(state, path, newState) {
 
   const fieldState = get(state, fieldPath, initialFieldState);
 
+  const updatedFieldState = typeof newState === 'function'
+    ? newState(fieldState)
+    : newState;
+
   return icepick.setIn(state, fieldPath, icepick.merge(
     fieldState,
-    newState));
+    icepick.merge(fieldState, updatedFieldState)));
 }
