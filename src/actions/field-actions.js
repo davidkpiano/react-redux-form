@@ -85,9 +85,11 @@ const asyncSetValidity = (model, validator) => (dispatch, getState) => {
 
   dispatch(setPending(model, true));
 
-  const done = validity => {
-    dispatch(setValidity(model, validity));
-    dispatch(setPending(model, false));
+  const done = (validity) => {
+    dispatch(batchActions.batch(model, [
+      setValidity(model, validity),
+      setPending(model, false),
+    ]));
   };
 
   const immediateResult = validator(value, done);

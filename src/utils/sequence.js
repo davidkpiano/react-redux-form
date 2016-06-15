@@ -156,7 +156,11 @@ function sequenceEventActions(props) {
       mapValues(props.asyncValidators,
         (validator, key) => dispatch(asyncSetValidity(model,
           (_, done) => {
-            const outerDone = valid => done({ [key]: valid });
+            const outerDone = (valid) => {
+              const validity = icepick.merge(fieldValue.validity, { [key]: valid });
+
+              done(validity);
+            };
 
             validator(getValue(value), outerDone);
           })

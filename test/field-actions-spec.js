@@ -1078,10 +1078,10 @@ describe('field actions', () => {
   });
 
   describe('asyncSetValidity() (thunk)', () => {
-    it('should asynchronously call setValidity() action', testDone => {
+    it('should asynchronously call setValidity() action', (testDone) => {
       const reducer = formReducer('test');
       const dispatch = action => {
-        if (action.type === actionTypes.SET_VALIDITY) {
+        if (action.type === actionTypes.BATCH) {
           testDone(assert.containSubset(
             reducer(undefined, action)
               .fields.foo,
@@ -1110,7 +1110,7 @@ describe('field actions', () => {
     it('should work with forms to asynchronously call setValidity() action', testDone => {
       const reducer = formReducer('test');
       const dispatch = action => {
-        if (action.type === actionTypes.SET_VALIDITY) {
+        if (action.type === actionTypes.BATCH) {
           testDone(assert.containSubset(
             reducer(undefined, action),
             {
@@ -1141,7 +1141,7 @@ describe('field actions', () => {
         const executedActions = [];
 
         const reducer = formReducer('test');
-        const dispatch = action => {
+        const dispatch = (action) => {
           executedActions.push(action);
           const state = reducer(undefined, action);
 
@@ -1149,12 +1149,12 @@ describe('field actions', () => {
             pendingStates.push(action.pending);
 
             assert.equal(state.fields.foo.pending, action.pending);
+          } else if (action.type === actionTypes.BATCH) {
+            pendingStates.push(state.fields.foo.pending);
 
-            if (action.pending === false) {
-              testDone(assert.deepEqual(
-                pendingStates,
-                [true, false]));
-            }
+            testDone(assert.deepEqual(
+              pendingStates,
+              [true, false]));
           }
         };
 
@@ -1179,12 +1179,12 @@ describe('field actions', () => {
             pendingStates.push(action.pending);
 
             assert.equal(state.pending, action.pending);
+          } else if (action.type === actionTypes.BATCH) {
+            pendingStates.push(state.pending);
 
-            if (action.pending === false) {
-              testDone(assert.deepEqual(
-                pendingStates,
-                [true, false]));
-            }
+            testDone(assert.deepEqual(
+              pendingStates,
+              [true, false]));
           }
         };
 
