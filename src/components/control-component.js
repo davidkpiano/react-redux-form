@@ -177,6 +177,7 @@ class Control extends Component {
   getAsyncValidateAction(value) {
     const {
       asyncValidators,
+      fieldValue,
       model,
     } = this.props;
 
@@ -186,7 +187,11 @@ class Control extends Component {
       mapValues(asyncValidators,
         (validator, key) => dispatch(actions.asyncSetValidity(model,
           (_, done) => {
-            const outerDone = (valid) => done({ [key]: valid });
+           const outerDone = (valid) => {
+              const validity = icepick.merge(fieldValue.validity, { [key]: valid });
+
+              done(validity);
+            };
 
             validator(getValue(value), outerDone);
           })

@@ -755,8 +755,7 @@ describe('<Field /> component', () => {
       const expectedStates = [
         { blur: true },
         { pending: true, valid: true }, // initially valid
-        { pending: true, valid: true }, // true after validating
-        { pending: false, valid: true },
+        { pending: false, valid: true }, // true after validating
       ];
 
       const actualStates = [];
@@ -797,8 +796,7 @@ describe('<Field /> component', () => {
       const expectedStates = [
         { blur: true },
         { pending: true, valid: true }, // initially valid
-        { pending: true, valid: false }, // false after validating
-        { pending: false, valid: false },
+        { pending: false, valid: false }, // false after validating
       ];
 
       const actualStates = [];
@@ -818,6 +816,45 @@ describe('<Field /> component', () => {
       });
 
       TestUtils.Simulate.blur(control);
+    });
+  });
+
+  describe('sync and async validators', () => {
+    const reducer = formReducer('test');
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: reducer,
+      test: modelReducer('test', {}),
+    }));
+
+    it('async validation should not override sync validity', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+            validators={{
+              required: (val) => val && val.length,
+            }}
+            asyncValidators={{
+              asyncValid: (_, asyncDone) => asyncDone(false),
+            }}
+          >
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      input.value = '';
+      TestUtils.Simulate.change(input);
+      TestUtils.Simulate.blur(input);
+
+      assert.deepEqual(
+        store.getState().testForm.fields.foo.validity,
+        {
+          required: false,
+          asyncValid: false,
+        });
     });
   });
 
