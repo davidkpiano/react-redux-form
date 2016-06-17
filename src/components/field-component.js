@@ -67,6 +67,10 @@ const controlPropsMap = {
     name: props.name || props.model,
     ...props,
   }),
+  file: (props) => ({
+    name: props.name || props.model,
+    ...props,
+  }),
   textarea: (props) => controlPropsMap.text(props),
 };
 
