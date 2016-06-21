@@ -162,7 +162,7 @@ function wrapFormReducer(plugin, modelPath, initialState) {
 
     const path = toPath(action.model);
 
-    if (!arraysEqual(path.slice(0, modelPath.length), modelPath)) {
+    if (modelPath.length && !arraysEqual(path.slice(0, modelPath.length), modelPath)) {
       return state;
     }
 
