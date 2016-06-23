@@ -143,8 +143,6 @@ class Form extends Component {
   handleReset(e) {
     e.preventDefault();
 
-    console.log('WHAT');
-
     const {
       model,
       dispatch,

@@ -195,6 +195,7 @@ function sequenceEventActions(props) {
         controlOnChange));
   } else {
     eventActions[updateOnEventHandler].push(updaterFn(dispatchChange));
+    eventActions[updateOnEventHandler].push(controlOnChange);
   }
   eventActions.onBlur.push(controlOnBlur);
   eventActions.onFocus.push(controlOnFocus);

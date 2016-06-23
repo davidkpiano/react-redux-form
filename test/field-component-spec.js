@@ -455,6 +455,37 @@ describe('<Field /> component', () => {
     });
   });
 
+  describe('with <input type="checkbox" /> (custom onChange)', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
+        foo: true,
+      }),
+    }));
+
+    const handleOnChange = sinon.spy((e) => e);
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input type="checkbox" onChange={handleOnChange} />
+        </Field>
+      </Provider>
+    );
+
+    const checkbox = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    TestUtils.Simulate.change(checkbox);
+
+    it('should call the custom onChange event handler', () => {
+      assert.ok(handleOnChange.calledOnce);
+    });
+
+    it('should update the state as expected', () => {
+      assert.isFalse(store.getState().test.foo);
+    });
+  });
+
   describe('with <input type="file" />', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test'),
