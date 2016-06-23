@@ -20,6 +20,7 @@ class Form extends Component {
     super(props);
 
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleReset = this.handleReset.bind(this);
     this.handleValidSubmit = this.handleValidSubmit.bind(this);
     this.handleInvalidSubmit = this.handleInvalidSubmit.bind(this);
   }
@@ -139,6 +140,19 @@ class Form extends Component {
     dispatch(actions.setSubmitFailed(model));
   }
 
+  handleReset(e) {
+    e.preventDefault();
+
+    console.log('WHAT');
+
+    const {
+      model,
+      dispatch,
+    } = this.props;
+
+    dispatch(actions.reset(model));
+  }
+
   handleSubmit(e) {
     e.preventDefault();
 
@@ -181,10 +195,12 @@ class Form extends Component {
 
   render() {
     const { component, children, ...other } = this.props;
+
     return React.createElement(component,
       {
         ...other,
         onSubmit: this.handleSubmit,
+        onReset: this.handleReset,
       }, children);
   }
 }

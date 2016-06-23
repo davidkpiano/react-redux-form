@@ -1224,4 +1224,39 @@ describe('<Form> component', () => {
       assert.isTrue(store.getState().testForm.valid);
     });
   });
+
+  xdescribe('reset event on form', () => {
+    it('should reset the model on the onReset event', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      }));
+
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form model="test">
+            <Field
+              model="test.foo"
+            >
+              <input type="text" />
+            </Field>
+            <button type="reset" />
+          </Form>
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+      const reset = TestUtils.findRenderedDOMComponentWithTag(form, 'button');
+
+      input.value = 'changed';
+
+      TestUtils.Simulate.change(input);
+
+      assert.equal(store.getState().test.foo, 'changed');
+
+      TestUtils.Simulate.click(reset);
+
+      assert.equal(store.getState().test.foo, '');
+    });
+  });
 });

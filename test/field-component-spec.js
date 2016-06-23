@@ -1768,4 +1768,44 @@ describe('<Field /> component', () => {
       assert.isTrue(store.getState().testForm.fields.foo.valid);
     });
   });
+
+  describe('with input type="reset"', () => {
+    it('should reset the given model', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      }));
+
+      const container = document.createElement('div');
+
+      const field = ReactDOM.render(
+        <Provider store={store}>
+          <div>
+            <Field
+              model="test.foo"
+            >
+              <input type="text" />
+            </Field>
+            <Field
+              model="test.foo"
+            >
+              <input type="reset" />
+            </Field>
+          </div>
+        </Provider>,
+      container);
+
+      const [input, reset] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+      input.value = 'changed';
+
+      TestUtils.Simulate.change(input);
+
+      assert.equal(store.getState().test.foo, 'changed');
+
+      TestUtils.Simulate.click(reset);
+
+      assert.equal(store.getState().test.foo, '');
+    });
+  });
 });

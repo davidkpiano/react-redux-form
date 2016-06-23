@@ -72,6 +72,13 @@ const controlPropsMap = {
     ...props,
   }),
   textarea: (props) => controlPropsMap.text(props),
+  reset: (props) => ({
+    onClick: (event) => {
+      event.preventDefault();
+
+      props.dispatch(actions.reset(props.model));
+    },
+  }),
 };
 
 function getControlType(control, props, options) {
