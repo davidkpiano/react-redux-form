@@ -80,9 +80,11 @@ class Control extends Component {
   }
 
   componentWillUnmount() {
-    const { model, dispatch } = this.props;
+    const { model, fieldValue, dispatch } = this.props;
 
-    dispatch(actions.resetValidity(model));
+    if (!fieldValue.valid) {
+      dispatch(actions.resetValidity(model));
+    }
   }
 
   handleKeyPress(event) {
