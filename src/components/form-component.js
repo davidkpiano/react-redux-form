@@ -43,6 +43,8 @@ class Form extends Component {
   }
 
   attachNode(node) {
+    if (!node) return;
+
     this._node = node;
 
     this._node.submit = this.handleSubmit;
