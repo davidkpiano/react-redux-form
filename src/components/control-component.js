@@ -82,6 +82,8 @@ class Control extends Component {
   componentWillUnmount() {
     const { model, fieldValue, dispatch } = this.props;
 
+    if (!fieldValue) return;
+
     if (!fieldValue.valid) {
       dispatch(actions.resetValidity(model));
     }
