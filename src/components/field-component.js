@@ -66,6 +66,15 @@ const controlPropsMap = {
   },
   text: textPropsMap,
   textarea: textPropsMap,
+  file: {
+    name: (props) => props.name || props.model,
+  },
+  reset: {
+    onClick: (props) => (event) => {
+      event.preventDefault();
+      props.dispatch(actions.reset(props.model));
+    },
+  },
 };
 
 function getControlType(control, props, options) {

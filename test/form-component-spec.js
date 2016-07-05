@@ -1,6 +1,7 @@
 /* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
 import { assert } from 'chai';
 import React from 'react';
+import { findDOMNode } from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -1223,5 +1224,120 @@ describe('<Form> component', () => {
 
       assert.isTrue(store.getState().testForm.valid);
     });
+  });
+
+  xdescribe('reset event on form', () => {
+    it('should reset the model on the onReset event', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      }));
+
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form model="test">
+            <Field
+              model="test.foo"
+            >
+              <input type="text" />
+            </Field>
+            <button type="reset" />
+          </Form>
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+      const reset = TestUtils.findRenderedDOMComponentWithTag(form, 'button');
+
+      input.value = 'changed';
+
+      TestUtils.Simulate.change(input);
+
+      assert.equal(store.getState().test.foo, 'changed');
+
+      TestUtils.Simulate.click(reset);
+
+      assert.equal(store.getState().test.foo, '');
+    });
+  });
+
+  describe('programmatically submitting', () => {
+    it('the form node should be able to be submitted with submit()', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      }));
+
+      const handleSubmit = sinon.spy((val) => val);
+
+      const app = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form
+            model="test"
+            onSubmit={handleSubmit}
+          >
+            <Field
+              model="test.foo"
+            >
+              <input type="text" />
+            </Field>
+          </Form>
+        </Provider>
+      );
+
+      const form = TestUtils.findRenderedDOMComponentWithTag(app, 'form');
+
+      form.submit();
+
+      assert.isTrue(handleSubmit.calledOnce);
+    });
+  });
+
+  it('the form node should be able to be referenced', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: '' }),
+      testForm: formReducer('test', { foo: '' }),
+    }));
+
+    const handleSubmit = sinon.spy((val) => val);
+
+    class App extends React.Component {
+      attachNode(node) {
+        this._node = findDOMNode(node);
+      }
+      handleClick() {
+        this._node.submit();
+      }
+      render() {
+        return (
+          <div>
+            <Form
+              model="test"
+              onSubmit={handleSubmit}
+              ref={this.attachNode.bind(this)}
+            >
+              <Field
+                model="test.foo"
+              >
+                <input type="text" />
+              </Field>
+            </Form>
+            <button onClick={this.handleClick.bind(this)} />
+          </div>
+        );
+      }
+    }
+
+    const app = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <App />
+      </Provider>
+    );
+
+    const button = TestUtils.findRenderedDOMComponentWithTag(app, 'button');
+
+    TestUtils.Simulate.click(button);
+
+    assert.isTrue(handleSubmit.calledOnce);
   });
 });

@@ -455,6 +455,37 @@ describe('<Field /> component', () => {
     });
   });
 
+  describe('with <input type="checkbox" /> (custom onChange)', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
+        foo: true,
+      }),
+    }));
+
+    const handleOnChange = sinon.spy((e) => e);
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field model="test.foo">
+          <input type="checkbox" onChange={handleOnChange} />
+        </Field>
+      </Provider>
+    );
+
+    const checkbox = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    TestUtils.Simulate.change(checkbox);
+
+    it('should call the custom onChange event handler', () => {
+      assert.ok(handleOnChange.calledOnce);
+    });
+
+    it('should update the state as expected', () => {
+      assert.isFalse(store.getState().test.foo);
+    });
+  });
+
   describe('with <input type="file" />', () => {
     it('should update with an array of files', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
@@ -1728,6 +1759,46 @@ describe('<Field /> component', () => {
       ReactDOM.unmountComponentAtNode(container);
 
       assert.isTrue(store.getState().testForm.fields.foo.valid);
+    });
+  });
+
+  describe('with input type="reset"', () => {
+    it('should reset the given model', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      }));
+
+      const container = document.createElement('div');
+
+      const field = ReactDOM.render(
+        <Provider store={store}>
+          <div>
+            <Field
+              model="test.foo"
+            >
+              <input type="text" />
+            </Field>
+            <Field
+              model="test.foo"
+            >
+              <input type="reset" />
+            </Field>
+          </div>
+        </Provider>,
+      container);
+
+      const [input, reset] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+      input.value = 'changed';
+
+      TestUtils.Simulate.change(input);
+
+      assert.equal(store.getState().test.foo, 'changed');
+
+      TestUtils.Simulate.click(reset);
+
+      assert.equal(store.getState().test.foo, '');
     });
   });
 });

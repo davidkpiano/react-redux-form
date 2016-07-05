@@ -21,8 +21,10 @@ class Form extends Component {
     super(props);
 
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleReset = this.handleReset.bind(this);
     this.handleValidSubmit = this.handleValidSubmit.bind(this);
     this.handleInvalidSubmit = this.handleInvalidSubmit.bind(this);
+    this.attachNode = this.attachNode.bind(this);
   }
 
   componentDidMount() {
@@ -39,6 +41,14 @@ class Form extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     return shallowCompare(this, nextProps, nextState);
+  }
+
+  attachNode(node) {
+    if (!node) return;
+
+    this._node = node;
+
+    this._node.submit = this.handleSubmit;
   }
 
   validate(nextProps, initial = false) {
@@ -140,8 +150,19 @@ class Form extends Component {
     dispatch(actions.setSubmitFailed(model));
   }
 
+  handleReset(e) {
+    if (e) e.preventDefault();
+
+    const {
+      model,
+      dispatch,
+    } = this.props;
+
+    dispatch(actions.reset(model));
+  }
+
   handleSubmit(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
 
     const {
       model,
@@ -182,10 +203,13 @@ class Form extends Component {
 
   render() {
     const { component, children, ...other } = this.props;
+
     return React.createElement(component,
       {
         ...other,
         onSubmit: this.handleSubmit,
+        onReset: this.handleReset,
+        ref: this.attachNode,
       }, children);
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "react-redux-form",
-  "version": "0.13.8",
+  "version": "0.13.10",
   "description": "Create Forms Easily with React and Redux",
   "main": "lib/index.js",
   "typings": "react-redux-form.d.ts",
@@ -60,7 +60,7 @@
     "express": "^4.13.4",
     "express-urlrewrite": "^1.2.0",
     "immutable": "^3.7.6",
-    "jsdom": "^9.2.0",
+    "jsdom": "^9.2.1",
     "mocha": "^2.5.1",
     "react": "^15.0.2",
     "react-addons-test-utils": "^15.0.1",
