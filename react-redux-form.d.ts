@@ -81,7 +81,7 @@ export interface FieldProps {
 	/**
 	 * If updateOn is a function, the function given will be called with the change action creator.
 	 * The function given will be called in onChange.
-	 * 
+	 *
 	 * If a string, updateOn can be one of these values:
 	 * * change - will dispatch in onChange
 	 * * blur - will dispatch in onBlur
@@ -100,22 +100,22 @@ export interface FieldProps {
 	validators?: Validators;
 	/**
 	 * Indicates when to validate the field
-	 * 
+	 *
 	 * change - will dispatch in onChange
 	 * blur - will dispatch in onBlur
 	 * focus - will dispatch in onFocus
-	 * 
+	 *
 	 * @default change
 	 */
 	validateOn?: 'change' | 'blur' | 'focus';
 	asyncValidators?: AsyncValidators;
 	/**
 	 * Indicates when to validate the field asynchronously
-	 * 
+	 *
 	 * change - will dispatch in onChange
 	 * blur - will dispatch in onBlur
 	 * focus - will dispatch in onFocus
-	 * 
+	 *
 	 * @default change
 	 */
 	asyncValidateOn?: 'change' | 'blur' | 'focus';
@@ -133,7 +133,7 @@ export interface FieldProps {
 	parser?: (value: any, previous?: any) => any;
 	/**
 	 * An action creator (function) that specifies which action the <Field> component should use when dispatching a change to the model.
-	 * 
+	 *
 	 * By default, this action is:
 	 * * actions.change(model, value) for text input controls
 	 * * actions.toggle(model, value) for checkboxes (single-value models)
@@ -162,7 +162,7 @@ export interface FormProps {
 	 * The string representing the model of the form in the store.
 	 * OR
 	 * A function that, when called with state, will return the first full model string (with the sub-model) that matches the predicate iteratee.
-	 * 
+	 *
 	 * Typically, the <Field> components nested inside <Form> would be members of the form model;
 	 * e.g. user.email and user.password are members of the user model.
 	 */
@@ -173,10 +173,10 @@ export interface FormProps {
 	 * * The values are validator(s) for the field model. They can be:
 	 * ** A validator function, which receives the field model value, or
 	 * ** A validator object, with validation keys and validator functions as values, also receiving the field model value.
-	 * 
+	 *
 	 * If the key is the empty string ('': {...}), then the validator will belong to the form model itself.
 	 * Validation will occur on any field model change by default, and only the validators for the fields that have changed will be run (as a performance enhancement)!
-	 * 
+	 *
 	 * Tips
 	 * * Specifying validators on the form is usually sufficient - you don't need to put validators on the <Field> for most use cases.
 	 * * If you need validators to run on submit, this is the place to put them.
@@ -187,11 +187,11 @@ export interface FormProps {
 	 * By default, validators will only run whenever a field changes, and
 	 * * Only for the field that has changed, and
 	 * * Always for any form-wide validators.
-	 * 
+	 *
 	 * The possible values are:
 	 * * change (Default): run validation whenever a field model value changes
 	 * * submit: run validation only when submitting the form.
-	 * 
+	 *
 	 * Tips
 	 * * Keep in mind, validation will always run initially, when the form is loaded.
 	 * * If you want better performance, you can use validateOn="submit", depending on your use-case.
@@ -446,7 +446,7 @@ export const controls: ControlPropsMap;
 export function modelReducer(model: string, initialState?: any): Reducer<any>;
 
 interface ActionThunk {
-	(dispatch: (action: any) => void, getState: () => any);
+	(dispatch: (action: any) => void, getState: () => any): any;
 }
 
 interface BaseFormAction {
@@ -489,9 +489,9 @@ interface Actions {
 	 * When the change action is handled by a formReducer, the field model's .dirty state is set to true and its corresponding .pristine state is set to false.
 	 *
 	 * The model path can be as deep as you want. E.g. actions.change('user.phones[0].type', 'home')
-	 * 
-	 * @param model 
-	 * @param value 
+	 *
+	 * @param model
+	 * @param value
 	 */
 	change: (model: string, value: any, options?: ChangeOptions) => ModelAction;
 
@@ -500,11 +500,11 @@ interface Actions {
 	 * The load action is NOT handled by any formReducer. The field model's .dirty and .pristine states are NOT affected.
 	 *
 	 * This action is useful for loading the initial data set into the model store state, without affecting the form store state (i.e. not marking the form or any fields as touched/dirty).
-	 * 
+	 *
 	 * The model path can be as deep as you want. E.g. actions.change('user.phones[0].type', 'home')
-	 * 
-	 * @param model 
-	 * @param value 
+	 *
+	 * @param model
+	 * @param value
 	 */
 	load: (model: string, value: any) => ModelAction;
 
@@ -532,7 +532,7 @@ interface Actions {
 	xor: (model: string, item: any) => ActionThunk;
 	/**
 	 * Dispatches an actions.change(...) action that "pushes" the item to the array represented by the model.
-	 * 
+	 *
 	 * This action does not mutate the model. It only simulates the mutable .push() method.
 	 */
 	push: (model: string, item: any) => ActionThunk;
@@ -579,20 +579,20 @@ interface Actions {
 
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .focus state of the field model in the form to true, as well as the corresponding .blur state to false.
-	 * 
+	 *
 	 * The "focus" state indicates that the field model is the currently focused field in the form.
 	 */
 	focus: (model: string) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .blur state of the field model in the form to true, as well as the corresponding .focus state to false.
 	 * It also indicates that the field model has been .touched, and will set that state to true and the untouched state to false.
-	 * 
+	 *
 	 * The "blur" state indicates that the field model is not focused.
 	 */
 	blur: (model: string) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .pristine state of the field model in the form to true, as well as the corresponding .dirty state to false.
-	 * 
+	 *
 	 * The "pristine" state indicates that the user has not interacted with this field model yet.
 	 *
 	 * Whenever a field is set to pristine, the entire form is set to:
@@ -603,7 +603,7 @@ interface Actions {
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .dirty state of the field model in the form to true, as well as the corresponding .pristine state to false.
 	 * The "dirty" state indicates that the model value has been changed.
-	 * 
+	 *
 	 * Whenever a field is set to dirty, the entire form is set to dirty.
 	 */
 	setDirty: (model: string) => FieldAction;
@@ -616,7 +616,7 @@ interface Actions {
 	setPending: (model: string) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .touched state of the field model in the form to true. It simultaneously sets the .untouched state to false.
-	 * 
+	 *
 	 * The "touched" state indicates that this model has been interacted with.
 	 *
 	 * Tips:
@@ -626,7 +626,7 @@ interface Actions {
 	setTouched: (model: string) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .untouched state of the field model in the form to true. It simultaneously sets the .touched state to true.
-	 * 
+	 *
 	 * The "untouched" state indicates that this model has not been interacted with yet.
 	 *
 	 * Tips:
@@ -636,7 +636,7 @@ interface Actions {
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .submitted state of the field model in the form to submitted (true or false).
 	 * It simultaneously sets the .pending state to the inverse of submitted.
-	 * 
+	 *
 	 * The "submitted" state indicates that this model has been "sent off," or an action has been completed for the model.
 	 *
 	 * Tips:
@@ -659,7 +659,7 @@ interface Actions {
 	 * If the promise fails, the action will:
 	 * * set .submitFailed property of form for model to true
 	 * * set .errors property of form for model to the response
-	 * 
+	 *
 	 * @param model The top-level model form key of the data to submit.
 	 * @param promise The promise that the submit action will wait to be resolved or rejected
 	 */
@@ -673,7 +673,7 @@ interface Actions {
 	 * Returns an action that, when handled by a formReducer, changes the .valid state of the field model in the form to true or false, based on the validity.
 	 * It will also set the .validity state of the field model to the validity.
 	 * It simultaneously sets the .errors on the field model to the inverse of the validity.
-	 * 
+	 *
 	 * Tips:
 	 * * If you really want to set error messages instead, use actions.setErrors(model, errors).
 	 * * Since arrays are objects, the validity argument can be an array. Only do this if your use case requires it.
@@ -695,7 +695,7 @@ interface Actions {
 	/**
 	 * Returns an action thunk that calculates the validity of the model based on the async function asyncValidator.
 	 * That function dispatches actions.setValidity(model, validity) by calling done(validity).
-	 * 
+	 *
 	 * Tips:
 	 * * This action is useful for general-purpose asynchronous validation using callbacks. If you are using promises, using actions.submit(model, promise) is a cleaner pattern.
 	 *
@@ -707,14 +707,14 @@ interface Actions {
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .valid state of the field model in the form to true or false, based on the errors.
 	 * It will also set the .errors state of the field model to the errors.
-	 * 
+	 *
 	 * It simultaneously sets the .validity on the field model to the inverse of the errors.
 	 *
 	 * Tips:
 	 * * If you aren't hard-coding error messages, use actions.setValidity(model, validity) instead. It's a cleaner pattern.
 	 * * You can set errors to a boolean, object, array, string, etc. Remember: truthy values indicate errors.
-	 * 
-	 * @param model 
+	 *
+	 * @param model
 	 * @param errors A truthy/falsey value, a string error message, or an object indicating which error keys of the field model are invalid via booleans (where true is invalid) or strings (set specific error messages, not advised).
 	 */
 	setErrors: (model: string, errors: boolean | string | ErrorsObject) => FieldAction;
@@ -726,7 +726,7 @@ interface Actions {
 	 *
 	 * Tips:
 	 * * As previously stated, if you aren't using error messages, use actions.validate(model, validators) as a cleaner pattern.
-	 * @param model 
+	 * @param model
 	 * @param errorValidators An error validator or an object whose keys are error keys (such as 'incorrect') and values are error validators.
 	 */
 	validateErrors: (model: string, errorValidators: ValidatorFn | Validators) => ActionThunk;
@@ -737,8 +737,8 @@ interface Actions {
 	 * If all actions are NOT thunks, will return a standard action of type `actionTypes.BATCH` which can then be dispatched.
 	 *
 	 * If some actions ARE thunks, will return a thunk which can then be dispatched.
-	 * 
-	 * @param model 
+	 *
+	 * @param model
 	 * @param actions An array of standard actions or thunk actions to combine into a new standard action or thunk, respectively.
 	 */
 	batch: (model: string, actions: any[]) => ActionThunk | ModelAction | FieldAction;
