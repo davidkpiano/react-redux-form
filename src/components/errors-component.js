@@ -39,7 +39,7 @@ class Errors extends Component {
 
     if (!errors) return null;
 
-    return compact(map(errors, (error, key) => {
+    const mappedErrors = compact(map(errors, (error, key) => {
       const message = messages[key];
 
       if (error) {
@@ -54,6 +54,10 @@ class Errors extends Component {
 
       return false;
     })).reduce((a, b) => a.concat(b), []);
+
+    if (!mappedErrors.length) return null;
+
+    return mappedErrors;
   }
 
   renderError(message, key) {
