@@ -5,6 +5,7 @@ import _get from '../utils/get';
 import mapValues from '../utils/map-values';
 import merge from '../utils/merge';
 import identity from 'lodash/identity';
+import omit from 'lodash/omit';
 
 import actions from '../actions';
 import {
@@ -201,11 +202,13 @@ class Form extends Component {
   }
 
   render() {
-    const { component, children, ...other } = this.props;
+    const { component, children } = this.props;
+
+    const allowedProps = omit(this.props, Object.keys(Form.propTypes));
 
     return React.createElement(component,
       {
-        ...other,
+        ...allowedProps,
         onSubmit: this.handleSubmit,
         onReset: this.handleReset,
         ref: this.attachNode,

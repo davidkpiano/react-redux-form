@@ -6,6 +6,7 @@ import compact from 'lodash/compact';
 import iteratee from 'lodash/_baseIteratee';
 import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
+import omit from 'lodash/omit';
 
 import { getFieldFromState, getForm } from '../utils';
 
@@ -76,9 +77,13 @@ class Errors extends Component {
 
     if (!messageString) return null;
 
+    const allowedProps = typeof component === 'function'
+      ? errorProps
+      : { key };
+
     return React.createElement(
       component,
-      errorProps,
+      allowedProps,
       messageString);
   }
 
@@ -94,6 +99,10 @@ class Errors extends Component {
       wrapper,
     } = this.props;
 
+    const allowedProps = typeof wrapper === 'function'
+      ? this.props
+      : omit(this.props, Object.keys(Errors.propTypes));
+
     if (!showErrors(fieldValue, formValue, show)) {
       return null;
     }
@@ -106,7 +115,7 @@ class Errors extends Component {
 
     return React.createElement(
       wrapper,
-      this.props,
+      allowedProps,
       errorMessages);
   }
 }
@@ -135,6 +144,7 @@ Errors.propTypes = {
     PropTypes.func,
     PropTypes.element,
   ]),
+  dispatch: PropTypes.func,
 };
 
 Errors.defaultProps = {

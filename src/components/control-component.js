@@ -2,6 +2,7 @@ import { Component, createElement, cloneElement, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
 import merge from '../utils/merge';
+import omit from 'lodash/omit';
 
 import { invertValidity, getFieldFromState, getValidity } from '../utils';
 import { sequenceEventActions } from '../utils/sequence';
@@ -125,12 +126,14 @@ class Control extends Component {
       control,
     } = this.props;
 
+    const allowedProps = omit(this.state.mappedProps, Object.keys(Control.propTypes));
+
     // If there is an existing control, clone it
     if (control) {
       return cloneElement(
         control,
         {
-          ...this.state.mappedProps,
+          ...allowedProps,
           onKeyPress: this.handleKeyPress,
         });
     }
@@ -139,7 +142,7 @@ class Control extends Component {
       component,
       {
         ...controlProps,
-        ...this.state.mappedProps,
+        ...allowedProps,
         onKeyPress: this.handleKeyPress,
       },
       controlProps.children);
@@ -164,6 +167,11 @@ Control.propTypes = {
     PropTypes.func,
     PropTypes.object,
   ]),
+  asyncValidateOn: PropTypes.string,
+  asyncValidators: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
   errors: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.object,
@@ -171,6 +179,8 @@ Control.propTypes = {
   controlProps: PropTypes.object,
   component: PropTypes.any,
   dispatch: PropTypes.func,
+  parser: PropTypes.func,
+  componentMap: PropTypes.object,
 };
 
 Control.defaultProps = {

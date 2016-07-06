@@ -192,10 +192,12 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       const { props } = this;
       const component = getFieldWrapper(props);
 
+      const allowedProps = omit(props, Object.keys(Field.propTypes));
+
       if (component) {
         return React.createElement(
           component,
-          props,
+          allowedProps,
           React.Children.map(
             props.children,
             child => createFieldControlComponent(child, props, options))
@@ -236,6 +238,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     modelValue: PropTypes.any,
     mapProps: PropTypes.func,
     componentMap: PropTypes.object,
+    dispatch: PropTypes.func,
   };
 
   Field.defaultProps = {
