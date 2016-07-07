@@ -36,6 +36,14 @@ function isChecked(props) {
   return !!props.modelValue;
 }
 
+function getTextValue(value) {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return `${value}`;
+  }
+
+  return '';
+}
+
 const controlPropsMap = {
   default: (props) => controlPropsMap.text(props),
   checkbox: (props) => ({
@@ -62,7 +70,7 @@ const controlPropsMap = {
     value: props.updateOn === 'change'
       && !props.defaultValue
       && !props.hasOwnProperty('value')
-      ? props.modelValue || ''
+      ? getTextValue(props.modelValue)
       : props.value,
     name: props.name || props.model,
     ...props,
