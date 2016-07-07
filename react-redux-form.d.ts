@@ -5,79 +5,99 @@
 import * as React from 'react';
 
 interface Action {
-	type: any;
+    type: any;
 }
 type Reducer<S> = <A extends Action>(state: S, action: A) => S;
 
 interface AsyncValidatorFn {
-	(val: any, done: Function): boolean;
+    (val: any, done: Function): boolean;
 }
 interface AsyncValidators {
-	[key: string]: AsyncValidatorFn;
+    [key: string]: AsyncValidatorFn;
 }
 
 interface ValidatorFn {
-	(val: any): boolean;
+    (val: any): boolean;
 }
 interface Validators {
-	[key: string]: ValidatorFn;
+    [key: string]: ValidatorFn;
 }
 interface ValidityObject {
-	[key: string]: boolean;
+    [key: string]: boolean;
+}
+
+interface ErrorFn {
+    (val: any): boolean | string;
+}
+
+interface ErrorValidators {
+    [key: string]: ErrorFn;
 }
 
 interface ErrorsObject {
-	[key: string]: boolean | string;
+    [key: string]: boolean | string;
 }
 interface ErrorsMessageSelector {
-	(val: any): string;
+    (val: any): string;
 }
 interface ErrorsComponentMessages {
-	[key: string]: string | ErrorsMessageSelector;
+    [key: string]: string | ErrorsMessageSelector;
 }
 
 interface FormValidators {
-	[key: string]: Validators;
+    [key: string]: Validators;
 }
 interface ValidationErrors {
-	[key: string]: any;
+    [key: string]: any;
 }
+/**
+ * Internal interface
+ */
+interface FieldsObject<T> {
+    [key: string]: T;
+}
+
 /**
  * Used for the <Errors> `show` prop
  */
 interface FieldStatePredicate {
-	(field: FieldState): boolean;
+    (field: FieldState): boolean;
 }
 
 /**
  * A function that, when called with state, will return the first full model string (with the sub-model) that matches the predicate iteratee.
  */
 interface ModelGetterFn {
-	(state: any): string;
+    (state: any): string;
 }
 
 /**
  * Additional props when specifying a SFC Wrapper (ex. in <Errors>)
  */
 interface WrapperProps {
-	modelValue: any;
-	fieldValue: FieldState;
+    modelValue: any;
+    fieldValue: FieldState;
 }
 
 /**
  * Additional props when specifying a SFC Custom Component (ex. in <Errors>)
  */
 interface CustomComponentProps extends WrapperProps {
-	children: any;
+    children: any;
 }
 
 export interface FieldProps {
+    /**
+     * Wrap field into custom component
+     */
+    component?: React.ReactType;
+
 	/**
 	 * The string representing the store model value
 	 * OR
 	 * A function that, when called with state, will return the first full model string (with the sub-model) that matches the predicate iteratee.
 	 */
-	model: string | ModelGetterFn;
+    model: string | ModelGetterFn;
 	/**
 	 * If updateOn is a function, the function given will be called with the change action creator.
 	 * The function given will be called in onChange.
@@ -92,12 +112,12 @@ export interface FieldProps {
 	 *     <input type="text" />
 	 * </Field>
 	 */
-	updateOn?: 'change' | 'blur' | 'focus' | Function;
+    updateOn?: 'change' | 'blur' | 'focus';
 	/**
 	 * A map where the keys are validation keys, and the values are the corresponding functions that determine the validity of each key, given the model's value.
 	 * Validator functions accept the value and return true if the field is valid.
 	 */
-	validators?: Validators;
+    validators?: Validators;
 	/**
 	 * Indicates when to validate the field
 	 *
@@ -107,8 +127,8 @@ export interface FieldProps {
 	 *
 	 * @default change
 	 */
-	validateOn?: 'change' | 'blur' | 'focus';
-	asyncValidators?: AsyncValidators;
+    validateOn?: 'change' | 'blur' | 'focus';
+    asyncValidators?: AsyncValidators;
 	/**
 	 * Indicates when to validate the field asynchronously
 	 *
@@ -118,19 +138,19 @@ export interface FieldProps {
 	 *
 	 * @default change
 	 */
-	asyncValidateOn?: 'change' | 'blur' | 'focus';
+    asyncValidateOn?: 'change' | 'blur' | 'focus';
 	/**
 	 * An error validation object with key-errorValidator pairs.
 	 * The inverse of `validators`.
 	 */
-	errors?: ValidationErrors;
+    errors?: ValidationErrors | ErrorValidators;
 	/**
 	 * A function that parses the view value of the field before it is changed.
 	 * @param value The view value that represents the next model value
 	 * @param previous The current model value before it is changed
 	 * @returns {typeof value} The parsed/processed value
 	 */
-	parser?: (value: any, previous?: any) => any;
+    parser?: (value: any, previous?: any) => any;
 	/**
 	 * An action creator (function) that specifies which action the <Field> component should use when dispatching a change to the model.
 	 *
@@ -146,7 +166,7 @@ export interface FieldProps {
 	 * @param model The model that is being changed
 	 * @param value The value that the model is being changed to
 	 */
-	changeAction?: (model: string, value: any) => void;
+    changeAction?: (model: string, value: any) => void;
 }
 
 export class Field extends React.Component<FieldProps, {}> {
@@ -157,7 +177,7 @@ export interface FormProps {
 	/**
 	 * CSS Class Name(s)
 	 */
-	className?: string;
+    className?: string;
 	/**
 	 * The string representing the model of the form in the store.
 	 * OR
@@ -166,7 +186,7 @@ export interface FormProps {
 	 * Typically, the <Field> components nested inside <Form> would be members of the form model;
 	 * e.g. user.email and user.password are members of the user model.
 	 */
-	model: string | ModelGetterFn;
+    model: string | ModelGetterFn;
 	/**
 	 * An object representing the validators for the fields inside the form, where:
 	 * * The keys are the field model names (e.g. 'email' for user.email)
@@ -181,7 +201,7 @@ export interface FormProps {
 	 * * Specifying validators on the form is usually sufficient - you don't need to put validators on the <Field> for most use cases.
 	 * * If you need validators to run on submit, this is the place to put them.
 	 */
-	validators?: Validators | FormValidators;
+    validators?: Validators | FormValidators;
 	/**
 	 * A string that indicates when validators or errors (for error validators) should run.
 	 * By default, validators will only run whenever a field changes, and
@@ -196,7 +216,7 @@ export interface FormProps {
 	 * * Keep in mind, validation will always run initially, when the form is loaded.
 	 * * If you want better performance, you can use validateOn="submit", depending on your use-case.
 	 */
-	validateOn?: 'change' | 'submit';
+    validateOn?: 'change' | 'submit';
 	/**
 	 * The handler function called when the form is submitted. This works almost exactly like a normal <form onSubmit={...}> handler, with a few differences:
 	 * * The submit event's default action is prevented by default, using event.preventDefault().
@@ -207,13 +227,13 @@ export interface FormProps {
 	 * * You can do anything in onSubmit; including firing off custom actions or handling (async) validation yourself.
 	 * @param formModelData The form's model data
 	 */
-	onSubmit?: (formModelData: any) => void;
+    onSubmit?: (formModelData: any) => void;
 	/**
 	 * The component that the <Form> should be rendered to (default: "form".)
 	 *
 	 * * For React Native, it is important that you specify the component to avoid any rendering errors. For most use cases, component={View} will work.
 	 */
-	component?: React.ComponentClass<any> | string;
+    component?: React.ComponentClass<any> | string;
 }
 export class Form extends React.Component<FormProps, {}> { }
 
@@ -223,7 +243,7 @@ export interface ErrorsProps {
 	 * OR
 	 * A function that, when called with state, will return the first full model string (with the sub-model) that matches the predicate iteratee.
 	 */
-	model: string | ModelGetterFn;
+    model: string | ModelGetterFn;
 
 	/**
 	 * A plain object mapping where:
@@ -236,7 +256,7 @@ export interface ErrorsProps {
 	 * * If a message is not provided for an error key, the message will default to the key value in the field .errors property.
 	 *   * This means if you're using setErrors or the errors prop in <Field> to set error messages, they will automatically be shown in <Errors />.
 	 */
-	messages?: ErrorsComponentMessages;
+    messages?: ErrorsComponentMessages;
 	/**
 	 * The show prop determines when error messages should be shown, based on the model's field state (determined by the form reducer).
 	 * It can be a boolean, or a function, string, or object as a Lodash iteratee (https://lodash.com/docs#iteratee)
@@ -252,7 +272,7 @@ export interface ErrorsProps {
 	 * * Use show as a boolean if you want to calculate when an error should be shown based on external factors, such as form state.
 	 * @see https://lodash.com/docs#iteratee
 	 */
-	show?: FieldState | FieldStatePredicate | boolean | string;
+    show?: FieldState | FieldStatePredicate | boolean | string;
 	/**
 	 * The `wrapper` component, which is the component that wraps all errors, can be configured using this prop. Default: "div".
 	 *
@@ -263,7 +283,7 @@ export interface ErrorsProps {
 	 *   * fieldValue - the current field state of the model
 	 * * wrapper={CustomErrors} will wrap all errors in a <CustomErrors> component, which will receive the same props as above.
 	 */
-	wrapper?: string | React.StatelessComponent<ErrorsProps & WrapperProps> | React.ComponentClass<ErrorsProps & WrapperProps>;
+    wrapper?: string | React.StatelessComponent<ErrorsProps & WrapperProps> | React.ComponentClass<ErrorsProps & WrapperProps>;
 	/**
 	 * The `component`, which is the component for each error message, can be configured using this prop. Default: "span".
 	 *
@@ -275,7 +295,7 @@ export interface ErrorsProps {
 	 *   * children - the error message (text).
 	 * * component={CustomError} will wrap the error in a <CustomError> component, which will receive the same props as above.
 	 */
-	component?: string | React.StatelessComponent<ErrorsProps & CustomComponentProps> | React.ComponentClass<ErrorsProps & CustomComponentProps>;
+    component?: string | React.StatelessComponent<ErrorsProps & CustomComponentProps> | React.ComponentClass<ErrorsProps & CustomComponentProps>;
 }
 
 export class Errors extends React.Component<ErrorsProps, {}> {
@@ -286,7 +306,7 @@ export class Errors extends React.Component<ErrorsProps, {}> {
  * Model state returned by model reducer
  */
 export interface ModelState {
-	[field: string]: any;
+    [field: string]: any;
 }
 
 /**
@@ -296,51 +316,59 @@ interface _FieldState {
 	/**
 	 * @default true
 	 */
-	blur?: boolean,
+    blur: boolean;
 	/**
 	 * @default false
 	 */
-	dirty?: boolean,
+    dirty: boolean;
 	/**
 	 * @default false
 	 */
-	focus?: boolean,
+    focus: boolean;
+    /**
+     * @default any
+     */
+    initialValue: any;
 	/**
 	 * @default false
 	 */
-	pending?: boolean,
+    pending: boolean;
 	/**
 	 * @default true
 	 */
-	pristine?: boolean,
+    pristine: boolean;
+    /**
+     * @default false
+     */
+    retouched: boolean;
 	/**
 	 * @default false
 	 */
-	submitted?: boolean,
+    submitted: boolean;
 	/**
 	 * @default false
 	 */
-	touched?: boolean,
+    touched: boolean;
 	/**
 	 * @default true
 	 */
-	untouched?: boolean,
+    untouched: boolean;
 	/**
 	 * @default true
 	 */
-	valid?: boolean,
+    valid: boolean;
 	/**
 	 * @default false
 	 */
-	validating?: boolean,
+    validating: boolean;
 	/**
 	 * @default null
 	 */
-	viewValue?: boolean,
+    viewValue: boolean;
 	/**
 	 * @default {}
 	 */
-	validity?: any,
+    validity: any;
 }
 
 export interface FieldState extends _FieldState {
@@ -348,12 +376,12 @@ export interface FieldState extends _FieldState {
 	 * Error object containing (key) validator name -> (value) boolean if is error (meaning INVALID is true)
 	 * @default {}
 	 */
-	errors?: any;
+    errors: any;
 }
 
 
 interface FieldStateT<TErrors extends ErrorsObject> extends _FieldState {
-	errors?: TErrors;
+    errors: TErrors;
 }
 
 /**
@@ -363,25 +391,25 @@ export interface FormState {
 	/**
 	 * @deprecated Use the inverse of focus instead
 	 */
-	blur: boolean;
+    blur: boolean;
 	/**
 	 * @deprecated Use the inverse of pristine instead
 	 */
-	dirty: boolean;
-	errors: ErrorsObject;
-	fields: { [name: string]: FieldState };
-	focus: boolean;
-	model: string;
-	pending: boolean;
-	pristine: boolean;
-	retouched: boolean;
-	submitFailed: boolean;
-	submitted: boolean;
-	touched: boolean;
-	valid: boolean;
-	validating: boolean;
-	validity: ValidityObject;
-	viewValue: boolean;
+    dirty: boolean;
+    errors: ErrorsObject;
+    fields: { [name: string]: FieldState };
+    focus: boolean;
+    model: string;
+    pending: boolean;
+    pristine: boolean;
+    retouched: boolean;
+    submitFailed: boolean;
+    submitted: boolean;
+    touched: boolean;
+    valid: boolean;
+    validating: boolean;
+    validity: ValidityObject;
+    viewValue: boolean;
 }
 
 /**
@@ -407,31 +435,32 @@ export function formReducer(model: string, initialState?: any): Reducer<FormStat
 export function getField(formState: FormState, model: string): FieldState;
 
 interface PropMapping {
-	[key: string]: Function;
+    [key: string]: Function;
 }
 
 interface FieldClassPropsMappings<P> {
-	(props: P): PropMapping;
+    (props: P): PropMapping;
 }
 
 interface ComponentFieldClassPropsMappings<P> {
-	[componentDisplayName: string]: FieldClassPropsMappings<P>;
+    [componentDisplayName: string]: FieldClassPropsMappings<P>;
 }
 
 /**
  * Create a custom <{SomeCustomControl}Field> wrapper component, given a dictionary of props mappings, where the key is the custom Component's `displayName` and the value is a props object mapping function.
  * @param propsMapping
+ * @param defaultProps
  */
-export function createFieldClass<P>(propsMapping: ComponentFieldClassPropsMappings<P>): React.ComponentClass<FieldProps>;
+export function createFieldClass<P>(propsMapping: ComponentFieldClassPropsMappings<P>, defaultProps?: any): React.ComponentClass<FieldProps>;
 
 
 interface ControlPropsMap {
-	default: FieldClassPropsMappings<any>;
-	checkbox: FieldClassPropsMappings<any>;
-	radio: FieldClassPropsMappings<any>;
-	select: FieldClassPropsMappings<any>;
-	text: FieldClassPropsMappings<any>;
-	textArea: FieldClassPropsMappings<any>;
+    default: FieldClassPropsMappings<any>;
+    checkbox: FieldClassPropsMappings<any>;
+    radio: FieldClassPropsMappings<any>;
+    select: FieldClassPropsMappings<any>;
+    text: FieldClassPropsMappings<any>;
+    textArea: FieldClassPropsMappings<any>;
 }
 
 export const controls: ControlPropsMap;
@@ -445,23 +474,29 @@ export const controls: ControlPropsMap;
  */
 export function modelReducer(model: string, initialState?: any): Reducer<any>;
 
+/**
+ * Decorates your existing reducer to respond to model actions
+ */
+export function modeled<TState>(reducer: Reducer<TState>, model: string): Reducer<TState>;
+
+
 interface ActionThunk {
-	(dispatch: (action: any) => void, getState: () => any): any;
+    (dispatch: (action: any) => void, getState: () => any): any;
 }
 
 interface BaseFormAction {
-	type: string;
-	model: string;
+    type: string;
+    model: string;
 }
 interface FieldAction extends BaseFormAction {
-	errors?: any;
-	validity?: any;
-	pending?: boolean;
+    errors?: any;
+    validity?: any;
+    pending?: boolean;
 }
 
 interface ModelAction extends BaseFormAction {
-	multi?: boolean;
-	value?: any;
+    multi?: boolean;
+    value?: any;
 }
 
 interface ChangeOptions {
@@ -469,20 +504,20 @@ interface ChangeOptions {
 	 * If true, the CHANGE action will not trigger change-related operations in the form reducer, such as setting .pristine = false.
 	 * @default false
 	 */
-	silent?: boolean;
+    silent?: boolean;
 }
 
 interface ValidityOptions {
 	/**
 	 * If true, the validity will be set for .errors instead of .validity on the field. This is equivalent to actions.setErrors().
 	 */
-	errors?: boolean;
+    errors?: boolean;
 }
 
 interface Actions {
-	/* ------ ------ ------ ------ */
-	/* ------ Model Actions ------ */
-	/* ------ ------ ------ ------ */
+    /* ------ ------ ------ ------ */
+    /* ------ Model Actions ------ */
+    /* ------ ------ ------ ------ */
 
 	/**
 	 * Returns an action that, when handled by a modelReducer, changes the value of the model to the value.
@@ -493,7 +528,7 @@ interface Actions {
 	 * @param model
 	 * @param value
 	 */
-	change: (model: string, value: any, options?: ChangeOptions) => ModelAction;
+    change: (model: string, value: any, options?: ChangeOptions) => ModelAction;
 
 	/**
 	 * Returns an action that, when handled by a modelReducer, changes the value of the model to the value.
@@ -506,7 +541,7 @@ interface Actions {
 	 * @param model
 	 * @param value
 	 */
-	load: (model: string, value: any) => ModelAction;
+    load: (model: string, value: any) => ModelAction;
 
 	/**
 	 * Returns an action that, when handled by a modelReducer, changes the value of the respective model to its initial value.
@@ -514,14 +549,14 @@ interface Actions {
 	 * This action will reset both the model value in the model reducer, and the model field state in the form reducer (if it exists).
 	 * To reset just the field state (in the form reducer), use actions.setInitial(model).
 	 */
-	reset: (model: string) => ModelAction;
+    reset: (model: string) => ModelAction;
 	/**
 	 * Dispatches an actions.change(...) action that merges the values into the value specified by the model.
 	 *
 	 * Use this action to update multiple and/or deep properties into a model, if the model represents an object.
 	 * This uses icepick.merge(modelValue, values) internally.
 	 */
-	merge: (model: string, values: any) => ActionThunk;
+    merge: (model: string, values: any) => ActionThunk;
 	/**
 	 * Dispatches an actions.change(...) action that applies an "xor" operation to the array represented by the model; that is, it "toggles" an item in an array.
 	 * If the model value contains item, it will be removed. If the model value doesn't contain item, it will be added.
@@ -529,34 +564,34 @@ interface Actions {
 	 * This action is most useful for toggling a checkboxes whose values represent items in a model's array.
 	 * @param item the item to be "toggled" in the model value.
 	 */
-	xor: (model: string, item: any) => ActionThunk;
+    xor: (model: string, item: any) => ActionThunk;
 	/**
 	 * Dispatches an actions.change(...) action that "pushes" the item to the array represented by the model.
 	 *
 	 * This action does not mutate the model. It only simulates the mutable .push() method.
 	 */
-	push: (model: string, item: any) => ActionThunk;
+    push: (model: string, item: any) => ActionThunk;
 	/**
 	 * Dispatches an actions.change(...) action that sets the model to true if it is falsey, and false if it is truthy.
 	 *
 	 * This action is most useful for single checkboxes.
 	 */
-	toggle: (model: string) => ActionThunk;
+    toggle: (model: string) => ActionThunk;
 	/**
 	 * Dispatches an actions.change(...) action that filters the array represented by the model through the iteratee function.
 	 * If no iteratee is specified, the identity function is used by default.
 	 * @param iteratee Filter iteratee function that filters the array represented by the model.
 	 */
-	filter: (model: string, iteratee: (value: any) => boolean) => ActionThunk;
+    filter: (model: string, iteratee: (value: any) => boolean) => ActionThunk;
 	/**
 	 * Dispatches an actions.change(...) action that maps the array represented by the model through the iteratee function.
 	 * If no iteratee is specified, the identity function is used by default.
 	 */
-	map: (model: string, iteratee: Function) => ActionThunk;
+    map: (model: string, iteratee: Function) => ActionThunk;
 	/**
 	 * Dispatches an actions.change(...) action that removes the item at the specified index of the array represented by the model.
 	 */
-	remove: (model: string, index: number) => ActionThunk;
+    remove: (model: string, index: number) => ActionThunk;
 	/**
 	 * Dispatches an actions.change(...) action that moves the item at the specified fromIndex of the array to the toIndex of the array represented by the model.
 	 * If `fromIndex` or `toIndex` are out of bounds, an error will be thrown.
@@ -564,17 +599,17 @@ interface Actions {
 	 * @param fromIndex The index of the item that should be moved in the array.
 	 * @param toIndex The index to move the item to in the array.
 	 */
-	move: (model: string, fromIndex: number, toIndex: number) => ActionThunk;
+    move: (model: string, fromIndex: number, toIndex: number) => ActionThunk;
 	/**
 	 * Dispatches an actions.change(...) action with the model value updated to not include any of the omitted props.
 	 * @param model The model to be modified with the omitted props
 	 * @param props The props to omit from the model value
 	 */
-	omit: (model: string, props: string | string[]) => ActionThunk;
+    omit: (model: string, props: string | string[]) => ActionThunk;
 
-	/* ------ ------ ------ ------ */
-	/* ------ Field Actions ------ */
-	/* ------ ------ ------ ------ */
+    /* ------ ------ ------ ------ */
+    /* ------ Field Actions ------ */
+    /* ------ ------ ------ ------ */
 
 
 	/**
@@ -582,14 +617,14 @@ interface Actions {
 	 *
 	 * The "focus" state indicates that the field model is the currently focused field in the form.
 	 */
-	focus: (model: string) => FieldAction;
+    focus: (model: string) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .blur state of the field model in the form to true, as well as the corresponding .focus state to false.
 	 * It also indicates that the field model has been .touched, and will set that state to true and the untouched state to false.
 	 *
 	 * The "blur" state indicates that the field model is not focused.
 	 */
-	blur: (model: string) => FieldAction;
+    blur: (model: string) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .pristine state of the field model in the form to true, as well as the corresponding .dirty state to false.
 	 *
@@ -599,21 +634,21 @@ interface Actions {
 	 * * Pristine if all other fields are pristine
 	 * * Otherwise, dirty.
 	 */
-	setPristine: (model: string) => FieldAction;
+    setPristine: (model: string) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .dirty state of the field model in the form to true, as well as the corresponding .pristine state to false.
 	 * The "dirty" state indicates that the model value has been changed.
 	 *
 	 * Whenever a field is set to dirty, the entire form is set to dirty.
 	 */
-	setDirty: (model: string) => FieldAction;
+    setDirty: (model: string) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .pending state of the field model in the form to true. It simultaneously sets the .submitted state to false.
 	 *
 	 * Tips:
 	 * * This action is useful when asynchronously validating or submitting a model. It represents the state between the initial and final state of a field model's validation/submission.
 	 */
-	setPending: (model: string) => FieldAction;
+    setPending: (model: string, pending?: boolean) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .touched state of the field model in the form to true. It simultaneously sets the .untouched state to false.
 	 *
@@ -623,7 +658,7 @@ interface Actions {
 	 * * Setting a model to touched also sets the entire form to touched.
 	 * * Touched also sets the model to blurred.
 	 */
-	setTouched: (model: string) => FieldAction;
+    setTouched: (model: string) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .untouched state of the field model in the form to true. It simultaneously sets the .touched state to true.
 	 *
@@ -632,7 +667,7 @@ interface Actions {
 	 * Tips:
 	 * * This action is useful for conditionally displaying error messages based on whether the field has been touched.
 	 */
-	setUntouched: (model: string) => FieldAction;
+    setUntouched: (model: string) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .submitted state of the field model in the form to submitted (true or false).
 	 * It simultaneously sets the .pending state to the inverse of submitted.
@@ -642,14 +677,25 @@ interface Actions {
 	 * Tips:
 	 * * Use the setPending() and setSubmitted() actions together to update the state of the field model during some async action.
 	 */
-	setSubmitted: (model: string) => FieldAction;
+    setSubmitted: (model: string, submitted?: boolean) => FieldAction;
+    /**
+     * Returns an action that, when handled by a formReducer, changes the .submitFailed state of the field model in the form to true.
+     * It simultaneously sets the .pending state to false, and the .retouched state to false.
+     * Tips:
+     * * If the form has not been submitted yet, .submitFailed = false
+     * * If submitting (pending), .submitFailed = false
+     * * If submit failed, .submitFailed = true
+     * * If resubmitting, .submitFailed = false again.
+     */
+    setSubmitFailed: (model: string) => FieldAction;
+
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the state of the field model in the form to its initial state.
 	 *
 	 * Tips:
 	 * * This action will reset the field state, but will not reset the model value in the model reducer. To reset both the field and model, use actions.reset(model).
 	 */
-	setInitial: (model: string) => FieldAction;
+    setInitial: (model: string) => FieldAction;
 
 	/**
 	 * Waits for a submission promise to be completed, then, if successful:
@@ -663,11 +709,11 @@ interface Actions {
 	 * @param model The top-level model form key of the data to submit.
 	 * @param promise The promise that the submit action will wait to be resolved or rejected
 	 */
-	submit: (model: string, promise: Promise<any>) => ActionThunk;
+    submit: (model: string, promise: Promise<any>) => ActionThunk;
 
-	/* -------------------------------- */
-	/* ------ Validation Actions ------ */
-	/* -------------------------------- */
+    /* -------------------------------- */
+    /* ------ Validation Actions ------ */
+    /* -------------------------------- */
 
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .valid state of the field model in the form to true or false, based on the validity.
@@ -681,7 +727,7 @@ interface Actions {
 	 * @param model The model whose validity will be set.
 	 * @param validity Boolean value or an object indicating which validation keys of the field model are valid.
 	 */
-	setValidity: (model: string, validity: boolean | ValidityObject, options?: ValidityOptions) => FieldAction;
+    setValidity: (model: string, validity: boolean | string | ValidityObject | ErrorsObject, options?: ValidityOptions) => FieldAction;
 
 	/**
 	 * Returns an action thunk that calculates the validity of the model based on the function/object validators. Then, the thunk dispatches actions.setValidity(model, validity).
@@ -690,7 +736,39 @@ interface Actions {
 	 * @param model The model whose validity will be calculated.
 	 * @param validators A validator function or an object whose keys are validation keys (such as 'required') and values are validators.
 	 */
-	validate: (model: string, validators: Function | Validators) => ActionThunk;
+    validate: (model: string, validators: Function | Validators) => ActionThunk;
+
+    /**
+     * Explicit action created for validating fields of a form.
+     * @param model The model to validate
+     * @param fieldValidators an object where the keys are the field paths (such as "email" for user.email), and the values are validators (either functions or a validation object)
+     * @param options Options
+     */
+    validateFields: (model: string, fieldValidators: FieldsObject<ValidatorFn | Validators>, options?: { onValid?: Function; onInvalid?: Function; errors?: any }) => ActionThunk;
+
+    /**
+     * Runs error validation on each of the error validators for each submodel of model
+     * @param model The model to validate
+     * @param fieldErrorsValidators An object where the keys are the field paths (such as "email" for user.email) and the values are errors
+     * @param options Options
+     */
+    validateFieldsErrors: (model: string, fieldErrorsValidators: FieldsObject<ErrorFn | ErrorsObject>, options?: any) => ActionThunk;
+
+    /**
+     * This action allows you to set the validity for multiple submodels of a model at the same time.
+     * @param model The top level form model
+     * @param fieldsValidity An object where the keys are field paths and the value is validity object
+     */
+    setFieldsValidity: (model: string, fieldsValidity: FieldsObject<ValidityObject | boolean>) => FieldAction;
+
+    /**
+     * This action allows you to set the errors for multiple submodels of a model at the same time. Similar to setFieldsValidity but for errors
+     * @param model The top level form model
+     * @param fieldsErrors An object where the keys are field paths and the value is error object
+     */
+    setFieldsErrors: (model: string, fieldsErrors: FieldsObject<ErrorsObject | boolean | string>) => FieldAction;
+
+
 
 	/**
 	 * Returns an action thunk that calculates the validity of the model based on the async function asyncValidator.
@@ -702,7 +780,7 @@ interface Actions {
 	 * @param model The model whose validity will be set
 	 * @param asyncValidator A function that is given two arguments: value - the value of the model, done - the callback where the calculated validity is passed in as the argument.
 	 */
-	asyncSetValidity: (model: string, asyncValidator: AsyncValidatorFn) => ActionThunk;
+    asyncSetValidity: (model: string, asyncValidator: AsyncValidatorFn) => ActionThunk;
 
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .valid state of the field model in the form to true or false, based on the errors.
@@ -717,7 +795,7 @@ interface Actions {
 	 * @param model
 	 * @param errors A truthy/falsey value, a string error message, or an object indicating which error keys of the field model are invalid via booleans (where true is invalid) or strings (set specific error messages, not advised).
 	 */
-	setErrors: (model: string, errors: boolean | string | ErrorsObject) => FieldAction;
+    setErrors: (model: string, errors: boolean | string | ErrorsObject) => FieldAction;
 
 	/**
 	 * Returns an action thunk that calculates the errors of the model based on the function/object errorValidators. Then, the thunk dispatches actions.setErrors(model, errors).
@@ -729,7 +807,19 @@ interface Actions {
 	 * @param model
 	 * @param errorValidators An error validator or an object whose keys are error keys (such as 'incorrect') and values are error validators.
 	 */
-	validateErrors: (model: string, errorValidators: ValidatorFn | Validators) => ActionThunk;
+    validateErrors: (model: string, errorValidators: ValidatorFn | Validators) => ActionThunk;
+
+    /**
+     * Can be dispatched to reset the validity and errors of any model at any time.
+     * @param model The model
+     */
+    resetValidity: (model: string) => ActionThunk;
+    /**
+     * Can be dispatched to reset the validity and errors of any model at any time.
+     * @param model The model
+     */
+    resetErrors: (model: string) => ActionThunk;
+
 
 	/**
 	 * Process multiple actions, which can be standard ModelAction/FieldAction or ActionThunks.
@@ -741,31 +831,31 @@ interface Actions {
 	 * @param model
 	 * @param actions An array of standard actions or thunk actions to combine into a new standard action or thunk, respectively.
 	 */
-	batch: (model: string, actions: any[]) => ActionThunk | ModelAction | FieldAction;
+    batch: (model: string, actions: any[]) => ActionThunk | ModelAction | FieldAction;
 }
 
 export const actions: Actions;
 
 interface ActionTypes {
-	BLUR: string;
-	CHANGE: string;
-	FOCUS: string;
-	RESET: string;
-	VALIDATE: string;
-	SET_DIRTY: string;
-	SET_ERRORS: string;
-	SET_INITIAL: string;
-	SET_PENDING: string;
-	SET_PRISTINE: string;
-	SET_SUBMITTED: string;
-	SET_SUBMIT_FAILED: string;
-	SET_TOUCHED: string;
-	SET_UNTOUCHED: string;
-	SET_VALIDITY: string;
-	SET_FIELDS_VALIDITY: string;
-	SET_VIEW_VALUE: string;
-	RESET_VALIDITY: string;
-	BATCH: string;
+    BLUR: string;
+    CHANGE: string;
+    FOCUS: string;
+    RESET: string;
+    VALIDATE: string;
+    SET_DIRTY: string;
+    SET_ERRORS: string;
+    SET_INITIAL: string;
+    SET_PENDING: string;
+    SET_PRISTINE: string;
+    SET_SUBMITTED: string;
+    SET_SUBMIT_FAILED: string;
+    SET_TOUCHED: string;
+    SET_UNTOUCHED: string;
+    SET_VALIDITY: string;
+    SET_FIELDS_VALIDITY: string;
+    SET_VIEW_VALUE: string;
+    RESET_VALIDITY: string;
+    BATCH: string;
 }
 
 export var actionTypes: ActionTypes;
