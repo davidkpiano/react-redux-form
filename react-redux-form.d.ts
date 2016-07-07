@@ -26,6 +26,14 @@ interface ValidityObject {
 	[key: string]: boolean;
 }
 
+interface ErrorFn {
+    (val: any): boolean | string;
+}
+
+interface ErrorValidators {
+    [key: string]: ErrorFn;
+}
+
 interface ErrorsObject {
 	[key: string]: boolean | string;
 }
@@ -42,6 +50,13 @@ interface FormValidators {
 interface ValidationErrors {
 	[key: string]: any;
 }
+/**
+ * Internal interface
+ */
+interface FieldsObject<T> {
+   [key: string]: T;
+}
+
 /**
  * Used for the <Errors> `show` prop
  */
@@ -72,6 +87,11 @@ interface CustomComponentProps extends WrapperProps {
 }
 
 export interface FieldProps {
+    /**
+     * Wrap field into custom component
+     */
+    component?: React.ReactType;
+
 	/**
 	 * The string representing the store model value
 	 * OR
@@ -92,7 +112,7 @@ export interface FieldProps {
 	 *     <input type="text" />
 	 * </Field>
 	 */
-	updateOn?: 'change' | 'blur' | 'focus' | Function;
+    updateOn?: 'change' | 'blur' | 'focus';
 	/**
 	 * A map where the keys are validation keys, and the values are the corresponding functions that determine the validity of each key, given the model's value.
 	 * Validator functions accept the value and return true if the field is valid.
@@ -123,7 +143,7 @@ export interface FieldProps {
 	 * An error validation object with key-errorValidator pairs.
 	 * The inverse of `validators`.
 	 */
-	errors?: ValidationErrors;
+	errors?: ValidationErrors | ErrorValidators;
 	/**
 	 * A function that parses the view value of the field before it is changed.
 	 * @param value The view value that represents the next model value
@@ -296,51 +316,59 @@ interface _FieldState {
 	/**
 	 * @default true
 	 */
-	blur?: boolean,
+	blur: boolean;
 	/**
 	 * @default false
 	 */
-	dirty?: boolean,
+	dirty: boolean;
 	/**
 	 * @default false
 	 */
-	focus?: boolean,
+	focus: boolean;
+    /**
+     * @default any
+     */
+    initialValue: any;
 	/**
 	 * @default false
 	 */
-	pending?: boolean,
+	pending: boolean;
 	/**
 	 * @default true
 	 */
-	pristine?: boolean,
+	pristine: boolean;
+    /**
+     * @default false
+     */
+    retouched: boolean;
 	/**
 	 * @default false
 	 */
-	submitted?: boolean,
+	submitted: boolean;
 	/**
 	 * @default false
 	 */
-	touched?: boolean,
+	touched: boolean;
 	/**
 	 * @default true
 	 */
-	untouched?: boolean,
+	untouched: boolean;
 	/**
 	 * @default true
 	 */
-	valid?: boolean,
+	valid: boolean;
 	/**
 	 * @default false
 	 */
-	validating?: boolean,
+	validating: boolean;
 	/**
 	 * @default null
 	 */
-	viewValue?: boolean,
+	viewValue: boolean;
 	/**
 	 * @default {}
 	 */
-	validity?: any,
+	validity: any;
 }
 
 export interface FieldState extends _FieldState {
@@ -348,12 +376,12 @@ export interface FieldState extends _FieldState {
 	 * Error object containing (key) validator name -> (value) boolean if is error (meaning INVALID is true)
 	 * @default {}
 	 */
-	errors?: any;
+	errors: any;
 }
 
 
 interface FieldStateT<TErrors extends ErrorsObject> extends _FieldState {
-	errors?: TErrors;
+	errors: TErrors;
 }
 
 /**
@@ -421,8 +449,9 @@ interface ComponentFieldClassPropsMappings<P> {
 /**
  * Create a custom <{SomeCustomControl}Field> wrapper component, given a dictionary of props mappings, where the key is the custom Component's `displayName` and the value is a props object mapping function.
  * @param propsMapping
+ * @param defaultProps
  */
-export function createFieldClass<P>(propsMapping: ComponentFieldClassPropsMappings<P>): React.ComponentClass<FieldProps>;
+export function createFieldClass<P>(propsMapping: ComponentFieldClassPropsMappings<P>, defaultProps?: any): React.ComponentClass<FieldProps>;
 
 
 interface ControlPropsMap {
@@ -444,6 +473,12 @@ export const controls: ControlPropsMap;
  * @param initialState The initial state of the model
  */
 export function modelReducer(model: string, initialState?: any): Reducer<any>;
+
+/**
+ * Decorates your existing reducer to respond to model actions
+ */
+export function modeled<TState>(reducer: Reducer<TState>, model: string): Reducer<TState>;
+
 
 interface ActionThunk {
 	(dispatch: (action: any) => void, getState: () => any): any;
@@ -613,7 +648,7 @@ interface Actions {
 	 * Tips:
 	 * * This action is useful when asynchronously validating or submitting a model. It represents the state between the initial and final state of a field model's validation/submission.
 	 */
-	setPending: (model: string) => FieldAction;
+	setPending: (model: string, pending?: boolean) => FieldAction;
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the .touched state of the field model in the form to true. It simultaneously sets the .untouched state to false.
 	 *
@@ -642,7 +677,18 @@ interface Actions {
 	 * Tips:
 	 * * Use the setPending() and setSubmitted() actions together to update the state of the field model during some async action.
 	 */
-	setSubmitted: (model: string) => FieldAction;
+	setSubmitted: (model: string, submitted?: boolean) => FieldAction;
+    /**
+     * Returns an action that, when handled by a formReducer, changes the .submitFailed state of the field model in the form to true.
+     * It simultaneously sets the .pending state to false, and the .retouched state to false.
+     * Tips:
+     * * If the form has not been submitted yet, .submitFailed = false
+     * * If submitting (pending), .submitFailed = false
+     * * If submit failed, .submitFailed = true
+     * * If resubmitting, .submitFailed = false again.
+     */
+    setSubmitFailed: (model: string) => FieldAction;
+
 	/**
 	 * Returns an action that, when handled by a formReducer, changes the state of the field model in the form to its initial state.
 	 *
@@ -681,7 +727,7 @@ interface Actions {
 	 * @param model The model whose validity will be set.
 	 * @param validity Boolean value or an object indicating which validation keys of the field model are valid.
 	 */
-	setValidity: (model: string, validity: boolean | ValidityObject, options?: ValidityOptions) => FieldAction;
+	setValidity: (model: string, validity: boolean | string | ValidityObject | ErrorsObject, options?: ValidityOptions) => FieldAction;
 
 	/**
 	 * Returns an action thunk that calculates the validity of the model based on the function/object validators. Then, the thunk dispatches actions.setValidity(model, validity).
@@ -691,6 +737,38 @@ interface Actions {
 	 * @param validators A validator function or an object whose keys are validation keys (such as 'required') and values are validators.
 	 */
 	validate: (model: string, validators: Function | Validators) => ActionThunk;
+
+    /**
+     * Explicit action created for validating fields of a form.
+     * @param model The model to validate
+     * @param fieldValidators an object where the keys are the field paths (such as "email" for user.email), and the values are validators (either functions or a validation object)
+     * @param options Options
+     */
+    validateFields: (model: string, fieldValidators: FieldsObject<ValidatorFn | Validators>, options?: { onValid?: Function; onInvalid?: Function; errors?: any }) => ActionThunk;
+
+    /**
+     * Runs error validation on each of the error validators for each submodel of model
+     * @param model The model to validate
+     * @param fieldErrorsValidators An object where the keys are the field paths (such as "email" for user.email) and the values are errors
+     * @param options Options
+     */
+    validateFieldsErrors: (model: string, fieldErrorsValidators: FieldsObject<ErrorFn|ErrorsObject>, options?: any) => ActionThunk;
+
+    /**
+     * This action allows you to set the validity for multiple submodels of a model at the same time.
+     * @param model The top level form model
+     * @param fieldsValidity An object where the keys are field paths and the value is validity object
+     */
+    setFieldsValidity: (model: string, fieldsValidity: FieldsObject<ValidityObject|boolean>) => FieldAction;
+
+    /**
+     * This action allows you to set the errors for multiple submodels of a model at the same time. Similar to setFieldsValidity but for errors
+     * @param model The top level form model
+     * @param fieldsErrors An object where the keys are field paths and the value is error object
+     */
+    setFieldsErrors: (model: string, fieldsErrors: FieldsObject<ErrorsObject|boolean|string>) => FieldAction;
+
+
 
 	/**
 	 * Returns an action thunk that calculates the validity of the model based on the async function asyncValidator.
@@ -730,6 +808,18 @@ interface Actions {
 	 * @param errorValidators An error validator or an object whose keys are error keys (such as 'incorrect') and values are error validators.
 	 */
 	validateErrors: (model: string, errorValidators: ValidatorFn | Validators) => ActionThunk;
+
+    /**
+     * Can be dispatched to reset the validity and errors of any model at any time.
+     * @param model The model
+     */
+    resetValidity: (model: string) => ActionThunk;
+    /**
+     * Can be dispatched to reset the validity and errors of any model at any time.
+     * @param model The model
+     */
+    resetErrors: (model: string) => ActionThunk;
+
 
 	/**
 	 * Process multiple actions, which can be standard ModelAction/FieldAction or ActionThunks.
