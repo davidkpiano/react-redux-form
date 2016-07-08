@@ -3,6 +3,7 @@ import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
 import merge from '../utils/merge';
 import omit from 'lodash/omit';
+import identity from 'lodash/identity';
 
 import { invertValidity, getFieldFromState, getValidity } from '../utils';
 import { sequenceEventActions } from '../utils/sequence';
@@ -180,12 +181,15 @@ Control.propTypes = {
   component: PropTypes.any,
   dispatch: PropTypes.func,
   parser: PropTypes.func,
-  componentMap: PropTypes.object,
+  formatter: PropTypes.func,
+  componentMap: PropTypes.object, // will be deprecated
 };
 
 Control.defaultProps = {
   changeAction: actions.change,
   updateOn: 'change',
+  parser: identity,
+  formatter: identity,
 };
 
 export default connect(mapStateToProps)(Control);
