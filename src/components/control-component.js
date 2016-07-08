@@ -1,5 +1,6 @@
 import { Component, createElement, cloneElement, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
+import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import merge from '../utils/merge';
 import omit from 'lodash/omit';
@@ -103,10 +104,13 @@ class Control extends Component {
     const {
       model,
       modelValue,
+      fieldValue,
       validators,
       errors: errorValidators,
       dispatch,
     } = this.props;
+
+    if (!validators && !errorValidators) return modelValue;
 
     const fieldValidity = getValidity(validators, modelValue);
     const fieldErrors = getValidity(errorValidators, modelValue);
@@ -115,7 +119,9 @@ class Control extends Component {
       ? merge(invertValidity(fieldValidity), fieldErrors)
       : fieldErrors;
 
-    dispatch(actions.setErrors(model, errors));
+    if (!shallowEqual(errors, fieldValue.errors)) {
+      dispatch(actions.setErrors(model, errors));
+    }
 
     return modelValue;
   }
