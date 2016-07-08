@@ -63,15 +63,15 @@ const controlPropsMap = {
   }),
   select: (props) => ({
     name: props.name || props.model,
-    value: props.formatter(props.modelValue),
+    value: props.modelValue,
     ...props,
   }),
   text: (props) => ({
     value: props.updateOn === 'change'
       && !props.defaultValue
       && !props.hasOwnProperty('value')
-      ? getTextValue(props.formatter(props.modelValue))
-      : props.formatter(props.value),
+      ? getTextValue(props.modelValue)
+      : props.value,
     name: props.name || props.model,
     ...props,
   }),
@@ -226,7 +226,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       PropTypes.string,
     ]),
     parser: PropTypes.func,
-    formatter: PropTypes.func,
     updateOn: PropTypes.oneOf([
       'change',
       'blur',
