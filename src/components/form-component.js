@@ -1,10 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import shallowCompare from 'react/lib/shallowCompare';
 import connect from 'react-redux/lib/components/connect';
+import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import mapValues from '../utils/map-values';
 import merge from '../utils/merge';
 import identity from 'lodash/identity';
+import omit from 'lodash/omit';
 
 import actions from '../actions';
 import {
@@ -82,13 +84,17 @@ class Form extends Component {
         ? _get(modelValue, field)
         : modelValue;
 
+      const currentValidity = getField(formValue, field).validity;
+
       if (!initial && (nextValue === currentValue)) {
-        return getField(formValue, field).validity;
+        return currentValidity;
       }
 
-      validityChanged = true;
-
       const fieldValidity = getValidity(validator, nextValue);
+
+      if (!shallowEqual(fieldValidity, currentValidity)) {
+        validityChanged = true;
+      }
 
       return fieldValidity;
     });
@@ -102,13 +108,17 @@ class Form extends Component {
         ? _get(modelValue, field)
         : modelValue;
 
+      const currentErrors = getField(formValue, field).errors;
+
       if (!initial && (nextValue === currentValue)) {
         return getField(formValue, field).errors;
       }
 
-      validityChanged = true;
-
       const fieldErrors = getValidity(errorValidator, nextValue);
+
+      if (!shallowEqual(fieldErrors, currentErrors)) {
+        validityChanged = true;
+      }
 
       return fieldErrors;
     });
@@ -202,11 +212,13 @@ class Form extends Component {
   }
 
   render() {
-    const { component, children, ...other } = this.props;
+    const { component, children } = this.props;
+
+    const allowedProps = omit(this.props, Object.keys(Form.propTypes));
 
     return React.createElement(component,
       {
-        ...other,
+        ...allowedProps,
         onSubmit: this.handleSubmit,
         onReset: this.handleReset,
         ref: this.attachNode,

@@ -480,7 +480,7 @@ describe('<Errors />', () => {
       function Wrapper(props) {
         assert.property(props, 'className');
 
-        return <div {...props}>{props.children}</div>;
+        return <div className={props.className}>{props.children}</div>;
       }
 
       const props = { className: 'custom-class' };

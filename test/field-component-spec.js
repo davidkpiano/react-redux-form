@@ -1801,4 +1801,24 @@ describe('<Field /> component', () => {
       assert.equal(store.getState().test.foo, '');
     });
   });
+
+  describe('with edge-case values', () => {
+    it('should work with value = 0', () => {
+      const store = createStore(combineReducers({
+        test: modelReducer('test', { foo: 0 }),
+      }), applyMiddleware(thunk));
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field model="test.foo">
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      assert.equal(input.value, '0');
+    });
+  });
 });

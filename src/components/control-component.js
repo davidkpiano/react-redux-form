@@ -2,12 +2,13 @@ import { Component, createElement, cloneElement, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 import compose from 'redux/lib/compose';
 import identity from 'lodash/identity';
+import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import merge from '../utils/merge';
-import shallowEqual from 'react-redux/lib/utils/shallowEqual';
 import mapValues from '../utils/map-values';
 import isPlainObject from 'redux/lib/utils/isPlainObject';
 import icepick from 'icepick';
+import omit from 'lodash/omit';
 
 import { isMulti, invertValidity, getFieldFromState, getValidity, getValue } from '../utils';
 import getModel from '../utils/get-model';
@@ -308,10 +309,13 @@ class Control extends Component {
     const {
       model,
       modelValue,
+      fieldValue,
       validators,
       errors: errorValidators,
       dispatch,
     } = this.props;
+
+    if (!validators && !errorValidators) return modelValue;
 
     const fieldValidity = getValidity(validators, modelValue);
     const fieldErrors = getValidity(errorValidators, modelValue);
@@ -320,7 +324,9 @@ class Control extends Component {
       ? merge(invertValidity(fieldValidity), fieldErrors)
       : fieldErrors;
 
-    dispatch(actions.setErrors(model, errors));
+    if (!shallowEqual(errors, fieldValue.errors)) {
+      dispatch(actions.setErrors(model, errors));
+    }
 
     return modelValue;
   }
@@ -332,12 +338,15 @@ class Control extends Component {
       control,
     } = this.props;
 
+    const allowedProps = omit(this.state.mappedProps, Object.keys(Control.propTypes));
+
     // If there is an existing control, clone it
     if (control) {
       return cloneElement(
         control,
         {
-          ...this.state.mappedProps,
+          ...allowedProps,
+          onKeyPress: this.handleKeyPress,
         });
     }
 
@@ -345,7 +354,8 @@ class Control extends Component {
       component,
       {
         ...controlProps,
-        ...this.state.mappedProps,
+        ...allowedProps,
+        onKeyPress: this.handleKeyPress,
       },
       controlProps.children);
   }
@@ -357,6 +367,7 @@ Control.propTypes = {
     PropTypes.string,
   ]),
   modelValue: PropTypes.any,
+  viewValue: PropTypes.any,
   control: PropTypes.any,
   onLoad: PropTypes.func,
   onSubmit: PropTypes.func,
@@ -374,6 +385,7 @@ Control.propTypes = {
     PropTypes.func,
     PropTypes.object,
   ]),
+  asyncValidateOn: PropTypes.string,
   asyncValidators: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.object,
@@ -385,6 +397,8 @@ Control.propTypes = {
   controlProps: PropTypes.object,
   component: PropTypes.any,
   dispatch: PropTypes.func,
+  parser: PropTypes.func,
+  componentMap: PropTypes.object,
 };
 
 Control.defaultProps = {
