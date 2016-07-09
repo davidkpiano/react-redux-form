@@ -29,7 +29,8 @@ export default function combineForms(forms, formsKey = 'forms') {
     }
   });
 
-  return combineReducers(Object.assign(
-    modelReducers,
-    [formsKey]: formReducer('', initialFormState)));
+  return combineReducers({
+    ...modelReducers,
+    [formsKey]: formReducer('', initialFormState),
+  });
 }

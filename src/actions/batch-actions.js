@@ -12,6 +12,10 @@ function batch(model, actions) {
   if (!dispatchableActions.length) return nullAction;
 
   if (dispatchableActions.length && dispatchableActions.every(isPlainObject)) {
+    if (dispatchableActions.length === 1) {
+      return dispatchableActions[0];
+    }
+
     return {
       type: actionTypes.BATCH,
       model,
@@ -23,12 +27,14 @@ function batch(model, actions) {
     const [plainActions, actionThunks] = partition(dispatchableActions,
       (action) => typeof action !== 'function');
 
-    if (plainActions.length) {
+    if (plainActions.length > 1) {
       dispatch({
         type: actionTypes.BATCH,
         model,
         actions: plainActions,
       });
+    } else if (plainActions.length === 1) {
+      dispatch(plainActions[0]);
     }
 
     actionThunks.forEach(dispatch);

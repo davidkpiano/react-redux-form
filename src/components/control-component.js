@@ -192,7 +192,7 @@ class Control extends Component {
       mapValues(asyncValidators,
         (validator, key) => dispatch(actions.asyncSetValidity(model,
           (_, done) => {
-           const outerDone = (valid) => {
+            const outerDone = (valid) => {
               const validity = icepick.merge(fieldValue.validity, { [key]: valid });
 
               done(validity);
@@ -379,8 +379,6 @@ Control.propTypes = {
   changeAction: PropTypes.func,
   updateOn: PropTypes.string,
   validateOn: PropTypes.string,
-  asyncValidateOn: PropTypes.string,
-  parser: PropTypes.func,
   validators: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.object,
