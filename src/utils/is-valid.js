@@ -1,6 +1,11 @@
 import isPlainObject from 'lodash/isPlainObject';
 
 export default function isValid(formState) {
+  if (!formState) return true;
+
+  // TODO: deprecate
+  if (formState.hasOwnProperty('valid')) return formState.valid;
+
   if (!formState.$form) {
     const { errors } = formState;
 

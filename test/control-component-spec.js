@@ -5,8 +5,9 @@ import TestUtils from 'react-addons-test-utils';
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
+import sinon from 'sinon';
 
-import { controls, formReducer, modelReducer, Control } from '../src';
+import { controls, modelReducer, formReducer, Control } from '../src';
 
 function createTestStore(reducers) {
   return applyMiddleware(thunk)(createStore)(combineReducers(reducers));
@@ -17,7 +18,7 @@ describe('<Control> component', () => {
     assert.ok(Control);
   });
 
-  it('should work as expected with a model (happy path)', () => {
+  describe('basic functionality', () => {
     const store = createTestStore({
       test: modelReducer('test', { foo: 'bar' }),
       testForm: formReducer('test', { foo: 'bar' }),
@@ -31,6 +32,50 @@ describe('<Control> component', () => {
 
     const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
 
-    assert.ok(input);
+    it('should work as expected with a model (happy path)', () => {
+      assert.ok(input);
+      assert.equal(input.value, 'bar');
+    });
+
+    it('should handle changes properly', () => {
+      input.value = 'new';
+
+      TestUtils.Simulate.change(input);
+
+      assert.equal(store.getState().test.foo, 'new');
+    });
+  });
+
+  describe('onLoad prop', () => {
+    const store = createTestStore({
+      test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test', { foo: 'bar' }),
+    });
+
+    const handleLoad = sinon.spy();
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Control
+          model="test.foo"
+          mapProps={controls.text}
+          component="input"
+          onLoad={handleLoad}
+        />
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+    it('should call the onLoad function', () => {
+      assert.ok(handleLoad.calledOnce);
+
+      assert.equal(handleLoad.args[0][0], 'bar');
+      assert.containSubset(handleLoad.args[0][1], {
+        initialValue: 'bar',
+      });
+      assert.instanceOf(handleLoad.args[0][2], window.HTMLInputElement);
+      assert.equal(handleLoad.args[0][2], input);
+    });
   });
 });

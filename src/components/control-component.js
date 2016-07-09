@@ -1,4 +1,5 @@
 import { Component, createElement, cloneElement, PropTypes } from 'react';
+import { findDOMNode } from 'react-dom';
 import connect from 'react-redux/lib/components/connect';
 import compose from 'redux/lib/compose';
 import identity from 'lodash/identity';
@@ -14,6 +15,7 @@ import { isMulti, invertValidity, getFieldFromState, getValidity, getValue } fro
 import getModel from '../utils/get-model';
 import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
+import isValid from '../utils/is-valid';
 
 function mapStateToProps(state, props) {
   const { model, mapProps } = props;
@@ -68,6 +70,7 @@ class Control extends Component {
     this.handleChange = this.createEventHandler('change').bind(this);
     this.handleLoad = this.handleLoad.bind(this);
     this.getMappedProps = this.getMappedProps.bind(this);
+    this.attachNode = this.attachNode.bind(this);
 
     this.state = {
       viewValue: props.modelValue,
@@ -79,6 +82,10 @@ class Control extends Component {
     const { props, props: { mapProps } } = this;
 
     this.setState({ mappedProps: this.getMappedProps(props, mapProps) });
+  }
+
+  componentDidMount() {
+    this.attachNode();
     this.handleLoad();
   }
 
@@ -112,7 +119,7 @@ class Control extends Component {
 
     if (!fieldValue) return;
 
-    if (!fieldValue.valid) {
+    if (!isValid(fieldValue)) {
       dispatch(actions.resetValidity(model));
     }
   }
@@ -214,7 +221,14 @@ class Control extends Component {
   }
 
   handleLoad() {
-    const { model, modelValue, controlProps = {}, dispatch } = this.props;
+    const {
+      model,
+      modelValue,
+      fieldValue,
+      controlProps = {},
+      onLoad,
+      dispatch,
+    } = this.props;
     const loadActions = [];
     let defaultValue = undefined;
 
@@ -232,6 +246,8 @@ class Control extends Component {
     }
 
     dispatch(actions.batch(model, loadActions));
+
+    if (onLoad) onLoad(modelValue, fieldValue, this._node);
   }
 
   handleSubmit(event) {
@@ -303,6 +319,12 @@ class Control extends Component {
         persistEventWithCallback(controlEventHandler || identity)
       )(event);
     };
+  }
+
+  attachNode() {
+    const node = findDOMNode(this);
+
+    if (node) this._node = node;
   }
 
   validate() {
@@ -402,6 +424,8 @@ Control.propTypes = {
 Control.defaultProps = {
   changeAction: actions.change,
   updateOn: 'change',
+  parser: identity,
+  controlProps: {},
 };
 
 export default connect(mapStateToProps)(Control);

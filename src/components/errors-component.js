@@ -10,6 +10,7 @@ import omit from 'lodash/omit';
 
 import { getFieldFromState, getForm } from '../utils';
 import getModel from '../utils/get-model';
+import isValid from '../utils/is-valid';
 
 function showErrors(field, form, show = true) {
   if (typeof show === 'function') {
@@ -95,10 +96,6 @@ class Errors extends Component {
   render() {
     const {
       fieldValue,
-      fieldValue: {
-        valid,
-        errors,
-      },
       formValue,
       show,
       wrapper,
@@ -112,9 +109,9 @@ class Errors extends Component {
       return null;
     }
 
-    const errorMessages = valid
+    const errorMessages = isValid(fieldValue)
       ? null
-      : this.mapErrorMessages(errors);
+      : this.mapErrorMessages(fieldValue.errors);
 
     if (!errorMessages) return null;
 
