@@ -30,6 +30,8 @@ class Form extends Component {
   }
 
   componentDidMount() {
+    if (this.props.validateOn !== 'change') return;
+
     this.validate(this.props, true);
   }
 

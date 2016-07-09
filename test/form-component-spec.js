@@ -116,10 +116,10 @@ describe('<Form> component', () => {
       };
     }
 
-    it('should only have validated once (on load) before submit', () => {
+    it('should not validate before submit', () => {
       const { timesValidated } = fixture();
 
-      assert.equal(timesValidated(), 1);
+      assert.equal(timesValidated(), 0);
     });
 
     it('should not validate on change', () => {
@@ -127,7 +127,7 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.change(fooControl);
 
-      assert.equal(timesValidated(), 1);
+      assert.equal(timesValidated(), 0);
     });
 
     it('should validate all validators on submit', () => {
@@ -138,11 +138,11 @@ describe('<Form> component', () => {
         fooControl,
       } = fixture();
 
-      assert.equal(timesValidated(), 1);
+      assert.equal(timesValidated(), 0);
 
       TestUtils.Simulate.submit(formElement);
 
-      assert.equal(timesValidated(), 2);
+      assert.equal(timesValidated(), 1);
 
       assert.containSubset(
         store.getState().testForm.fields.foo,
@@ -156,12 +156,12 @@ describe('<Form> component', () => {
         store.getState().test.foo,
         'testing foo');
 
-      assert.equal(timesValidated(), 2,
+      assert.equal(timesValidated(), 1,
         'should not have validated again before submit');
 
       TestUtils.Simulate.submit(formElement);
 
-      assert.equal(timesValidated(), 3);
+      assert.equal(timesValidated(), 2);
 
       assert.containSubset(
         store.getState().testForm.fields.foo,
@@ -327,6 +327,94 @@ describe('<Form> component', () => {
           },
           valid: false,
         });
+    });
+  });
+
+  describe('submit validation with blur update fields', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test', {
+        foo: '',
+        bar: '',
+      }),
+      test: modelReducer('test', {
+        foo: '',
+        bar: '',
+      }),
+    }));
+
+    const required = (v) => !!(v && v.length);
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test"
+          validators={{
+            foo: required,
+            bar: required,
+          }}
+          validateOn="submit"
+        >
+          <Field model="test.foo" updateOn="blur">
+            <input type="text" />
+          </Field>
+
+          <Field model="test.bar" updateOn="blur">
+            <input type="text" />
+          </Field>
+        </Form>
+      </Provider>
+    );
+
+    const inputs = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+    const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+    it('fields should not be validated initially', () => {
+      assert.ok(store.getState().testForm.fields.foo.valid);
+      assert.ok(store.getState().testForm.fields.bar.valid);
+    });
+
+    it('fields should not be validated after change', () => {
+      TestUtils.Simulate.change(inputs[0]);
+      TestUtils.Simulate.change(inputs[1]);
+
+      assert.ok(store.getState().testForm.fields.foo.valid);
+      assert.ok(store.getState().testForm.fields.bar.valid);
+    });
+
+    it('fields should be validated after submit', () => {
+      TestUtils.Simulate.submit(formNode);
+
+      assert.isFalse(store.getState().testForm.fields.foo.valid);
+      assert.isFalse(store.getState().testForm.fields.bar.valid);
+    });
+
+    it('fields should be validated with current values after submit', () => {
+      TestUtils.Simulate.submit(formNode);
+
+      // Not valid yet
+      assert.isFalse(store.getState().testForm.fields.foo.valid);
+      assert.isFalse(store.getState().testForm.fields.bar.valid);
+
+      inputs[0].value = 'first';
+      inputs[1].value = 'second';
+
+      TestUtils.Simulate.change(inputs[0]);
+      TestUtils.Simulate.change(inputs[1]);
+
+      TestUtils.Simulate.submit(formNode);
+
+      // Still not valid yet
+      assert.isFalse(store.getState().testForm.fields.foo.valid);
+      assert.isFalse(store.getState().testForm.fields.bar.valid);
+
+      // Change model
+      TestUtils.Simulate.blur(inputs[0]);
+      TestUtils.Simulate.blur(inputs[1]);
+
+      TestUtils.Simulate.submit(formNode);
+
+      // Should be valid
+      assert.ok(store.getState().testForm.fields.foo.valid);
+      assert.ok(store.getState().testForm.fields.bar.valid);
     });
   });
 
