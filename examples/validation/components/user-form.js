@@ -32,7 +32,7 @@ class UserForm extends React.Component {
     return (
       <Form
         model="user"
-        onSubmit={ this.handleSubmit }
+        onSubmit={this.handleSubmit}
       >
         <Field model="user.firstName" validators={{ isRequired }}>
           <label>First name: </label>

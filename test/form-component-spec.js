@@ -78,7 +78,8 @@ describe('<Form> component', () => {
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Form model="test"
+          <Form
+            model="test"
             validators={{
               foo: (val) => {
                 timesValidated += 1;
@@ -225,7 +226,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           errors={{
             foo: (val) => val !== 'valid foo' && 'invalid foo',
             bar: {
@@ -346,7 +348,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: required,
             bar: required,
@@ -429,7 +432,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           errors={{
             foo: (val) => val !== 'valid foo' && 'invalid foo',
             bar: {
@@ -484,7 +488,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: (val) => val && val === 'testing foo',
             bar: {
@@ -560,7 +565,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           errors={{
             foo: (val) => val !== 'valid foo' && 'invalid foo',
             bar: () => {
@@ -632,7 +638,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: required,
             bar: required,
@@ -705,7 +712,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: (val) => val && val === 'valid',
             baz: {
@@ -806,7 +814,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             '': {
               foobar: (val) => val.foo + val.bar === 'foobar',
@@ -887,10 +896,12 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           onSubmit={handleSubmit}
         >
-          <Field model="test.foo"
+          <Field
+            model="test.foo"
             validators={{
               required: (val) => val && val.length > 5,
             }}
@@ -945,7 +956,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: (val) => val && val.length > 5,
           }}
@@ -1002,7 +1014,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           onSubmit={handleSubmit}
         >
           <Field model="test.foo">
@@ -1067,7 +1080,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           onSubmit={handleSubmit}
         >
           <Field model="test.foo">
@@ -1113,7 +1127,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: (val) => val && val.length,
           }}
@@ -1324,9 +1339,7 @@ describe('<Form> component', () => {
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Form model="test">
-            <Field
-              model="test.foo"
-            >
+            <Field model="test.foo">
               <input type="text" />
             </Field>
             <button type="reset" />
@@ -1391,10 +1404,10 @@ describe('<Form> component', () => {
 
     class App extends React.Component {
       attachNode(node) {
-        this._node = findDOMNode(node);
+        this.node = findDOMNode(node);
       }
       handleClick() {
-        this._node.submit();
+        this.node.submit();
       }
       render() {
         return (

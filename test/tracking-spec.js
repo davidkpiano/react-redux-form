@@ -84,7 +84,8 @@ describe('track() with <Errors model="...">', () => {
   const form = TestUtils.renderIntoDocument(
     <Provider store={store}>
       <form>
-        <Field model={tracker}
+        <Field
+          model={tracker}
           errors={{
             foo: () => 'foo error',
             bar: () => 'bar error',

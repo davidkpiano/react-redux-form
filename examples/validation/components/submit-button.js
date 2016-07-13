@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 const SubmitButton = ({ user }) =>
   <button type="submit">
-    Finish registration, { user.firstName } { user.lastName }!
+    Finish registration, {user.firstName} {user.lastName}!
   </button>;
 
 SubmitButton.propTypes = {

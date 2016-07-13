@@ -154,7 +154,7 @@ describe('<Field /> component', () => {
         <Provider store={store}>
           <Field model="test.foo">
             <input />
-            <div>{ false }</div>
+            <div>{false}</div>
           </Field>
         </Provider>
       );
@@ -171,7 +171,7 @@ describe('<Field /> component', () => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Field model="test.foo">
-            { React.createElement(element, { type }) }
+            {React.createElement(element, { type })}
           </Field>
         </Provider>
       );
@@ -230,10 +230,10 @@ describe('<Field /> component', () => {
 
         return (
           <Field model="test.foo">
-            { React.createElement(element, {
+            {React.createElement(element, {
               type,
               value: test.foo,
-            }) }
+            })}
           </Field>
         );
       });
@@ -1067,8 +1067,8 @@ describe('<Field /> component', () => {
             <button onClick={() => this.setState({ options: [1, 2, 3] })} />
             <Field model="test.foo">
               <select>
-                { this.state.options.map((option, i) =>
-                  <option key={i} value={ option } />
+                {this.state.options.map((option, i) =>
+                  <option key={i} value={option} />
                 )}
               </select>
             </Field>
@@ -1119,7 +1119,7 @@ describe('<Field /> component', () => {
     it('should wrap children with specified component (class)', () => {
       class Wrapper extends React.Component {
         render() {
-          return <main className="wrapper">{ this.props.children }</main>;
+          return <main className="wrapper">{this.props.children}</main>;
         }
       }
 
@@ -1188,8 +1188,9 @@ describe('<Field /> component', () => {
       it(`should update the store when updateOn="${onEvent}"`, () => {
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
-            <Field model="test.foo"
-              updateOn={ onEvent }
+            <Field
+              model="test.foo"
+              updateOn={onEvent}
             >
               <input type="text" />
             </Field>
@@ -1454,7 +1455,7 @@ describe('<Field /> component', () => {
             model="test.foo"
           >
             <input type="text" onChange={onChangeFnSpy} />
-            <div>{ false }</div>
+            <div>{false}</div>
           </Field>
         </Provider>
       );
@@ -1575,13 +1576,13 @@ describe('<Field /> component', () => {
       }
 
       handleClick() {
-        assert.isDefined(this._ref,
+        assert.isDefined(this.node,
           'reference should exist');
         done();
       }
 
       assignRef(node) {
-        this._ref = node;
+        this.node = node;
       }
 
       render() {

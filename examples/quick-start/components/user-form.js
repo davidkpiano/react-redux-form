@@ -26,7 +26,7 @@ class UserForm extends React.Component {
     const { user } = this.props;
 
     return (
-      <Form model="user" onSubmit={ this.handleSubmit }>
+      <Form model="user" onSubmit={this.handleSubmit}>
         <Field model="user.firstName">
           <label>First name:</label>
           <input type="text" />
@@ -38,7 +38,7 @@ class UserForm extends React.Component {
         </Field>
 
         <button type="submit">
-          Finish registration, { user.firstName } { user.lastName }!
+          Finish registration, {user.firstName} {user.lastName}!
         </button>
       </Form>
     );

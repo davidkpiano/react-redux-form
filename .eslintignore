@@ -3,3 +3,4 @@ lib/
 umd/
 docs/
 webpack.config.*
+wallaby.config.*

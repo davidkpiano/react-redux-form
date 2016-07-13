@@ -21,6 +21,8 @@
     "no-confusing-arrow": [
       "error",
       {"allowParens": true}
-    ]
+    ],
+    "no-underscore-dangle": 0,
+    "import/no-unresolved": 0
   }
 }
