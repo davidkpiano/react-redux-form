@@ -4,6 +4,7 @@ import identity from 'lodash/identity';
 import icepick from 'icepick';
 
 import actionTypes from '../action-types';
+import { trackable } from '../utils/track';
 
 function isEvent(event) {
   return !!(event && event.stopPropagation && event.preventDefault);
@@ -17,7 +18,7 @@ function isMulti(model) {
   return endsWith(model, '[]');
 }
 
-const change = (model, value, options = {}) => {
+const change = trackable((model, value, options = {}) => {
   // option defaults
   const changeOptions = {
     silent: false,
@@ -31,9 +32,13 @@ const change = (model, value, options = {}) => {
     value: getValue(value),
     ...changeOptions,
   };
-};
+});
 
-const xor = (model, item, iteratee = (value) => value === item) => (dispatch, getState) => {
+const xor = trackable((
+  model,
+  item,
+  iteratee = (value) => value === item
+) => (dispatch, getState) => {
   const state = _get(getState(), model, []);
   const stateWithoutItem = state.filter(stateItem => !iteratee(stateItem));
   const value = (state.length === stateWithoutItem.length) ? [...state, item] : stateWithoutItem;
@@ -43,9 +48,9 @@ const xor = (model, item, iteratee = (value) => value === item) => (dispatch, ge
     model,
     value,
   });
-};
+});
 
-const push = (model, item = null) => (dispatch, getState) => {
+const push = trackable((model, item = null) => (dispatch, getState) => {
   const collection = _get(getState(), model);
   const value = [...(collection || []), item];
 
@@ -54,9 +59,9 @@ const push = (model, item = null) => (dispatch, getState) => {
     model,
     value,
   });
-};
+});
 
-const toggle = (model) => (dispatch, getState) => {
+const toggle = trackable((model) => (dispatch, getState) => {
   const value = !_get(getState(), model);
 
   dispatch({
@@ -64,9 +69,9 @@ const toggle = (model) => (dispatch, getState) => {
     model,
     value,
   });
-};
+});
 
-const filter = (model, iteratee = identity) => (dispatch, getState) => {
+const filter = trackable((model, iteratee = identity) => (dispatch, getState) => {
   const collection = _get(getState(), model);
   const value = collection.filter(iteratee);
 
@@ -75,14 +80,14 @@ const filter = (model, iteratee = identity) => (dispatch, getState) => {
     model,
     value,
   });
-};
-
-const reset = (model) => ({
-  type: actionTypes.RESET,
-  model,
 });
 
-const map = (model, iteratee = identity) => (dispatch, getState) => {
+const reset = trackable((model) => ({
+  type: actionTypes.RESET,
+  model,
+}));
+
+const map = trackable((model, iteratee = identity) => (dispatch, getState) => {
   const collection = _get(getState(), model, []);
   const value = collection.map(iteratee);
 
@@ -91,9 +96,9 @@ const map = (model, iteratee = identity) => (dispatch, getState) => {
     model,
     value,
   });
-};
+});
 
-const remove = (model, index) => (dispatch, getState) => {
+const remove = trackable((model, index) => (dispatch, getState) => {
   const collection = _get(getState(), model, []);
 
   dispatch({
@@ -102,9 +107,9 @@ const remove = (model, index) => (dispatch, getState) => {
     value: icepick.splice(collection, index, 1),
     removeKeys: [index],
   });
-};
+});
 
-const move = (model, indexFrom, indexTo) => (dispatch, getState) => {
+const move = trackable((model, indexFrom, indexTo) => (dispatch, getState) => {
   const collection = _get(getState(), model, []);
 
   if (indexFrom >= collection.length || indexTo >= collection.length) {
@@ -120,9 +125,9 @@ const move = (model, indexFrom, indexTo) => (dispatch, getState) => {
     model,
     value: inserted,
   });
-};
+});
 
-const merge = (model, values) => (dispatch, getState) => {
+const merge = trackable((model, values) => (dispatch, getState) => {
   const value = _get(getState(), model, {});
 
   dispatch({
@@ -130,9 +135,9 @@ const merge = (model, values) => (dispatch, getState) => {
     model,
     value: icepick.merge(value, values),
   });
-};
+});
 
-const omit = (model, props = []) => (dispatch, getState) => {
+const omit = trackable((model, props = []) => (dispatch, getState) => {
   const value = _get(getState(), model, {});
 
   const propsArray = typeof props === 'string'
@@ -149,11 +154,11 @@ const omit = (model, props = []) => (dispatch, getState) => {
     value: newValue,
     removeKeys: propsArray,
   });
-};
-
-const load = (model, values) => change(model, values, {
-  silent: true,
 });
+
+const load = trackable((model, values) => change(model, values, {
+  silent: true,
+}));
 
 export default {
   change,

@@ -17,6 +17,21 @@ function track(model, predicate) {
   };
 }
 
+function trackable(actionCreator) {
+  return (model, ...args) => {
+    if (typeof model === 'function') {
+      return (dispatch, getState) => {
+        const modelPath = model(getState());
+
+        dispatch(actionCreator(modelPath, ...args));
+      };
+    }
+
+    return actionCreator(model, ...args);
+  };
+}
+
 export {
   track,
+  trackable,
 };
