@@ -4,83 +4,84 @@ import mapValues from '../utils/map-values';
 import actionTypes from '../action-types';
 import batchActions from './batch-actions';
 import { getValidity, getForm, isValid, isInvalid } from '../utils';
+import { trackable } from '../utils/track';
 
-const focus = model => ({
+const focus = trackable((model) => ({
   type: actionTypes.FOCUS,
   model,
-});
+}));
 
-const blur = model => ({
+const blur = trackable((model) => ({
   type: actionTypes.BLUR,
   model,
-});
+}));
 
-const setPristine = model => ({
+const setPristine = trackable((model) => ({
   type: actionTypes.SET_PRISTINE,
   model,
-});
+}));
 
-const setDirty = model => ({
+const setDirty = trackable((model) => ({
   type: actionTypes.SET_DIRTY,
   model,
-});
+}));
 
-const setInitial = model => ({
+const setInitial = trackable((model) => ({
   type: actionTypes.SET_INITIAL,
   model,
-});
+}));
 
-const setPending = (model, pending = true) => ({
+const setPending = trackable((model, pending = true) => ({
   type: actionTypes.SET_PENDING,
   model,
   pending,
-});
+}));
 
-const setValidity = (model, validity, options = {}) => ({
+const setValidity = trackable((model, validity, options = {}) => ({
   type: options.errors
     ? actionTypes.SET_ERRORS
     : actionTypes.SET_VALIDITY,
   model,
   [options.errors ? 'errors' : 'validity']: validity,
-});
+}));
 
-const setFieldsValidity = (model, fieldsValidity, options = {}) => ({
+const setFieldsValidity = trackable((model, fieldsValidity, options = {}) => ({
   type: actionTypes.SET_FIELDS_VALIDITY,
   model,
   fieldsValidity,
   options,
-});
+}));
 
-const setErrors = (model, errors, options = {}) =>
+const setErrors = trackable((model, errors, options = {}) =>
   setValidity(model, errors, {
     ...options,
     errors: true,
-  });
+  }));
 
-const setFieldsErrors = (model, fieldsErrors, options) =>
+const setFieldsErrors = trackable((model, fieldsErrors, options) =>
   setFieldsValidity(model, fieldsErrors, {
     ...options,
     errors: true,
-  });
+  }));
 
-const resetValidity = (model) => ({
+const resetValidity = trackable((model) => ({
   type: actionTypes.RESET_VALIDITY,
   model,
-});
+}));
 
 const resetErrors = resetValidity;
 
-const setTouched = model => ({
+const setTouched = trackable((model) => ({
   type: actionTypes.SET_TOUCHED,
   model,
-});
+}));
 
-const setUntouched = model => ({
+const setUntouched = trackable((model) => ({
   type: actionTypes.SET_UNTOUCHED,
   model,
-});
+}));
 
-const asyncSetValidity = (model, validator) => (dispatch, getState) => {
+const asyncSetValidity = trackable((model, validator) => (dispatch, getState) => {
   const value = _get(getState(), model);
 
   dispatch(setPending(model, true));
@@ -97,27 +98,27 @@ const asyncSetValidity = (model, validator) => (dispatch, getState) => {
   if (typeof immediateResult !== 'undefined') {
     done(immediateResult);
   }
-};
+});
 
-const setSubmitted = (model, submitted = true) => ({
+const setSubmitted = trackable((model, submitted = true) => ({
   type: actionTypes.SET_SUBMITTED,
   model,
   submitted,
-});
+}));
 
-const setSubmitFailed = (model) => ({
+const setSubmitFailed = trackable((model) => ({
   type: actionTypes.SET_SUBMIT_FAILED,
   model,
-});
+}));
 
 
-const setViewValue = (model, value) => ({
+const setViewValue = trackable((model, value) => ({
   type: actionTypes.SET_VIEW_VALUE,
   model,
   value,
-});
+}));
 
-const submit = (model, promise, options = {}) => dispatch => {
+const submit = trackable((model, promise, options = {}) => dispatch => {
   dispatch(setPending(model, true));
 
   const errorsAction = options.fields
@@ -137,29 +138,29 @@ const submit = (model, promise, options = {}) => dispatch => {
   });
 
   return promise;
-};
+});
 
-const submitFields = (model, promise, options = {}) =>
+const submitFields = trackable((model, promise, options = {}) =>
   submit(model, promise, {
     ...options,
     fields: true,
-  });
+  }));
 
-const validate = (model, validators) => (dispatch, getState) => {
+const validate = trackable((model, validators) => (dispatch, getState) => {
   const value = _get(getState(), model);
   const validity = getValidity(validators, value);
 
   dispatch(setValidity(model, validity));
-};
+});
 
-const validateErrors = (model, errorValidators) => (dispatch, getState) => {
+const validateErrors = trackable((model, errorValidators) => (dispatch, getState) => {
   const value = _get(getState(), model);
   const errors = getValidity(errorValidators, value);
 
   dispatch(setValidity(model, errors, { errors: true }));
-};
+});
 
-const validateFields = (model, fieldValidators, options = {}) => (dispatch, getState) => {
+const validateFields = trackable((model, fieldValidators, options = {}) => (dispatch, getState) => {
   const value = _get(getState(), model);
 
   const fieldsValidity = mapValues(fieldValidators, (validator, field) => {
@@ -196,13 +197,13 @@ const validateFields = (model, fieldValidators, options = {}) => (dispatch, getS
     : setFieldsValidity;
 
   dispatch(fieldsValiditySetter(model, fieldsValidity));
-};
+});
 
-const validateFieldsErrors = (model, fieldErrorsValidators, options = {}) =>
+const validateFieldsErrors = trackable((model, fieldErrorsValidators, options = {}) =>
   validateFields(model, fieldErrorsValidators, {
     ...options,
     errors: true,
-  });
+  }));
 
 export default {
   asyncSetValidity,
