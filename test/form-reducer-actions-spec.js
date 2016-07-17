@@ -1,9 +1,14 @@
 import { assert } from 'chai';
-import { actions, actionTypes, initialFieldState } from '../src';
+import {
+  actions,
+  actionTypes,
+  initialFieldState,
+  form as formUtils,
+} from '../src';
 import formReducer from '../src/reducers/v1-form-reducer';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
-import get from 'lodash/get';
+import get from '../src/utils/get';
 
 describe('formReducer() (V1)', () => {
   it('should exist as a function', () => {
@@ -113,10 +118,8 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setPending,
         args: [],
-        expectedForm: {
-          pending: true,
-          retouched: false,
-        },
+        expectedForm: (form) => formUtils.isPending(form)
+          && !formUtils.isRetouched(form),
         expectedField: {
           pending: true,
           submitted: false,
@@ -295,7 +298,7 @@ describe('formReducer() (V1)', () => {
     describe(`${actionType} action ${label}`, () => {
       const modelPath = toPath(model);
       const localModelPath = modelPath.slice(1);
-      const localFormPath = localModelPath.slice(0, -1).concat(['$form']);
+      const localFormPath = localModelPath.slice(0, -1);
 
       const reducer = formReducer('user', { name: '' });
       const updatedState = reducer(initialState, action(model, ...args));
@@ -331,10 +334,16 @@ describe('formReducer() (V1)', () => {
       }
 
       if (expectedForm) {
+        const form = get(updatedState, localFormPath);
+
         it('should properly set the form state', () => {
-          assert.containSubset(
-            get(updatedState, localFormPath),
-            expectedForm);
+          if (typeof expectedForm === 'function') {
+            assert.ok(expectedForm(form));
+          } else {
+            assert.containSubset(
+              form.$form,
+              expectedForm);
+          }
         });
       }
     });

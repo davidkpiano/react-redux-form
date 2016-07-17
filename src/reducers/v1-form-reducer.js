@@ -25,6 +25,7 @@ import setPristineActionReducer from './form/set-pristine-action-reducer';
 import setDirtyActionReducer from './form/set-dirty-action-reducer';
 import blurTouchActionReducer from './form/blur-touch-action-reducer';
 import untouchActionReducer from './form/untouch-action-reducer';
+import pendingActionReducer from './form/pending-action-reducer';
 
 export const initialFieldState = {
   focus: false,
@@ -79,18 +80,6 @@ function inverse(value) {
 }
 
 const reactions = {
-  [actionTypes.SET_PENDING]: (_, action) => ({
-    form: () => ({
-      pending: action.pending,
-      retouched: false,
-    }),
-    field: () => ({
-      pending: action.pending,
-      submitted: false,
-      submitFailed: false,
-      retouched: false,
-    }),
-  }),
   [actionTypes.SET_SUBMITTED]: (_, action) => ({
     form: () => ({
       touched: true,
@@ -223,6 +212,7 @@ const defaultPlugins = [
   setDirtyActionReducer,
   changeActionReducer,
   setValidityActionReducer,
+  pendingActionReducer,
 ];
 
 export default function createFormReducer(model, initialState = {}, plugins = []) {

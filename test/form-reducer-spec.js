@@ -4,7 +4,7 @@ import newFormReducer, {
   initialFieldState as newInitialFieldState,
   getField as newGetField,
 } from '../src/reducers/v1-form-reducer';
-import isValid from '../src/utils/is-valid';
+import isValid from '../src/form/is-valid';
 
 describe('formReducer()', () => {
   it('should create a reducer given a model', () => {

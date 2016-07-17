@@ -23,6 +23,7 @@ import {
 } from './utils/track';
 
 import * as utils from './utils';
+import * as form from './form';
 
 export {
   actions,
@@ -44,4 +45,5 @@ export {
   modeled,
   track,
   utils,
+  form,
 };

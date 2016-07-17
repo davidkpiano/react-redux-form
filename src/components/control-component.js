@@ -15,7 +15,7 @@ import { isMulti, invertValidity, getFieldFromState, getValidity, getValue } fro
 import getModel from '../utils/get-model';
 import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
-import isValid from '../utils/is-valid';
+import isValid from '../form/is-valid';
 
 function mapStateToProps(state, props) {
   const { model, mapProps } = props;

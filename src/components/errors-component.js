@@ -10,7 +10,7 @@ import omit from 'lodash/omit';
 
 import { getFieldFromState, getForm } from '../utils';
 import getModel from '../utils/get-model';
-import isValid from '../utils/is-valid';
+import isValid from '../form/is-valid';
 
 function showErrors(field, form, show = true) {
   if (typeof show === 'function') {
