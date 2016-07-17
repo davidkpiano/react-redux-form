@@ -111,7 +111,7 @@ describe('field actions', () => {
   });
 
   describe('focus()', () => {
-    it('should set the focus state of the field to true and the blur state to false', () => {
+    it('should set the focus state of the field to true', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
@@ -119,29 +119,26 @@ describe('field actions', () => {
           .fields.foo,
         {
           focus: true,
-          blur: false,
         });
     });
   });
 
   describe('blur()', () => {
-    it('should set the blur state of the field to true and the focus state to false', () => {
+    it('should set the focus state to false', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.blur('test.foo'))
           .fields.foo,
         {
-          blur: true,
           focus: false,
           touched: true,
-          untouched: false,
         });
     });
   });
 
   describe('setPristine()', () => {
-    it('should set the pristine state of the field to true and the dirty state to false', () => {
+    it('should set the pristine state of the field to true', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
@@ -149,11 +146,10 @@ describe('field actions', () => {
           .fields.foo,
         {
           pristine: true,
-          dirty: false,
         });
     });
 
-    it('should set the pristine state of the form to true and the dirty state to false if every ' +
+    it('should set the pristine state of the form to true if every ' +
       'field is pristine', () => {
       const reducer = formReducer('test');
 
@@ -163,7 +159,6 @@ describe('field actions', () => {
         actualPristine,
         {
           pristine: true,
-          dirty: false,
         });
 
       const actualDirty = reducer(actualPristine, actions.setDirty('test.bar'));
@@ -172,7 +167,6 @@ describe('field actions', () => {
         actualDirty,
         {
           pristine: false,
-          dirty: true,
         });
 
       const actualMultiplePristine = reducer(actualDirty, actions.setPristine('test.bar'));
@@ -181,7 +175,6 @@ describe('field actions', () => {
         actualMultiplePristine,
         {
           pristine: true,
-          dirty: false,
         });
     });
 
@@ -194,7 +187,6 @@ describe('field actions', () => {
         reducer(dirtyFormAndField, actions.setPristine('test')),
         {
           pristine: true,
-          dirty: false,
         });
 
       assert.containSubset(
@@ -202,31 +194,28 @@ describe('field actions', () => {
           .fields.foo,
         {
           pristine: true,
-          dirty: false,
         });
     });
   });
 
   describe('setDirty()', () => {
-    it('should set dirty state of field to true & pristine state to false', () => {
+    it('should set pristine state to false', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setDirty('test.foo'))
           .fields.foo,
         {
-          dirty: true,
           pristine: false,
         });
     });
 
-    it('should set dirty state of form to true & pristine state to false', () => {
+    it('should set pristine state to false', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setDirty('test.foo')),
         {
-          dirty: true,
           pristine: false,
         });
     });
@@ -426,10 +415,8 @@ describe('field actions', () => {
           .fields.foo,
         {
           touched: true,
-          untouched: false,
           retouched: false,
           focus: false,
-          blur: true,
         });
     });
 
@@ -499,14 +486,13 @@ describe('field actions', () => {
   });
 
   describe('setUntouched()', () => {
-    it('should set the untouched state of the field to true and the touched state to false', () => {
+    it('should set the touched state to false', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setUntouched('test.foo'))
           .fields.foo,
         {
-          untouched: true,
           touched: false,
         });
     });

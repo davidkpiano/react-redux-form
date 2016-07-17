@@ -22,15 +22,7 @@ function immutableSet(state, path, value) {
 const modelReducer = createModeler(immutableGet, immutableSet);
 const modelReducerEnhancer = createModelReducerEnhancer(modelReducer);
 
-function createModelReducer(...args) {
-  console.warn('The createModelReducer() function is deprecated (renamed). '
-    + 'Please use modelReducer().');
-
-  return modelReducer(...args);
-}
-
 export {
-  createModelReducer,
   modelReducer,
   modelReducerEnhancer as modeled,
 };

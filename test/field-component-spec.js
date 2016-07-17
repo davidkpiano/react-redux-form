@@ -189,7 +189,7 @@ describe('<Field /> component', () => {
 
         assert.containSubset(
           store.getState().testForm.fields.foo,
-          { focus: true, blur: false });
+          { focus: true });
       });
 
       it('should dispatch a blur event when blurred', () => {
@@ -197,7 +197,7 @@ describe('<Field /> component', () => {
 
         assert.containSubset(
           store.getState().testForm.fields.foo,
-          { focus: false, blur: true });
+          { focus: false });
       });
 
       it('should dispatch a change event when changed', () => {
@@ -784,7 +784,7 @@ describe('<Field /> component', () => {
 
       const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
       const expectedStates = [
-        { blur: true },
+        { focus: false },
         { pending: true, valid: true }, // initially valid
         { pending: false, valid: true }, // true after validating
       ];
@@ -825,7 +825,7 @@ describe('<Field /> component', () => {
 
       const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
       const expectedStates = [
-        { blur: true },
+        { focus: false },
         { pending: true, valid: true }, // initially valid
         { pending: false, valid: false }, // false after validating
       ];

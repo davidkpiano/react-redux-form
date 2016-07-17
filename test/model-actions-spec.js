@@ -25,8 +25,8 @@ describe('model actions', () => {
 
       const actual = reducer({}, actions.load('foo', { bar: 'string' }));
       assert.deepEqual(actual.foo, { bar: 'string' });
-      assert.equal(actual.fooForm.dirty, false);
-      assert.equal(actual.fooForm.untouched, true);
+      assert.equal(actual.fooForm.pristine, true);
+      assert.equal(actual.fooForm.touched, false);
     });
   });
 

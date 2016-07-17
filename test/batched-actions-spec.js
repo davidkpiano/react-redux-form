@@ -54,10 +54,8 @@ describe('batched actions', () => {
     assert.containSubset(
       actual.fields.foo,
       {
-        dirty: true,
         pristine: false,
         focus: true,
-        blur: false,
       });
   });
 

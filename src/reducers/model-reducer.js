@@ -68,15 +68,7 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
 
 const modelReducer = createModeler();
 
-function createModelReducer(...args) {
-  console.warn('The createModelReducer() function is deprecated (renamed). '
-    + 'Please use modelReducer().');
-
-  return modelReducer(...args);
-}
-
 export {
   createModeler,
-  createModelReducer,
 };
 export default modelReducer;

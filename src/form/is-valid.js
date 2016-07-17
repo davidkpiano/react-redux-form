@@ -20,9 +20,5 @@ export default function isValid(formState) {
     });
   }
 
-  return Object.keys(formState).every((key) => {
-    console.log(key, isValid(formState[key]));
-
-    return isValid(formState[key]);
-  });
+  return Object.keys(formState).every((key) => isValid(formState[key]));
 }
