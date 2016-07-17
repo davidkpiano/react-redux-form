@@ -45,10 +45,8 @@ function getTextValue(value) {
 }
 
 const textPropsMap = {
-  value: (props) => (props.updateOn === 'change'
-    && !props.defaultValue
-    && !props.hasOwnProperty('value')
-    ? getTextValue(props.modelValue)
+  value: (props) => ((!props.defaultValue && !props.hasOwnProperty('value'))
+    ? getTextValue(props.viewValue)
     : props.value),
   name: (props) => props.name || props.model,
 };

@@ -67,7 +67,8 @@ class Control extends Component {
     this.createEventHandler = this.createEventHandler.bind(this);
     this.handleFocus = this.createEventHandler('focus').bind(this);
     this.handleBlur = this.createEventHandler('blur').bind(this);
-    this.handleChange = this.createEventHandler('change').bind(this);
+    this.handleUpdate = this.createEventHandler('change').bind(this);
+    this.handleChange = this.handleChange.bind(this);
     this.handleLoad = this.handleLoad.bind(this);
     this.getMappedProps = this.getMappedProps.bind(this);
     this.attachNode = this.attachNode.bind(this);
@@ -98,12 +99,14 @@ class Control extends Component {
     });
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps, prevState) {
     const {
       modelValue,
       fieldValue,
       validateOn,
     } = this.props;
+
+    const { viewValue } = this.state;
 
     if (fieldValue
       && !fieldValue.validated
@@ -111,6 +114,11 @@ class Control extends Component {
       && validateOn === 'change'
     ) {
       this.validate();
+    }
+
+    // Detect view value changes
+    if (prevState.viewValue !== viewValue) {
+      this.updateMappedProps();
     }
   }
 
@@ -212,6 +220,19 @@ class Control extends Component {
 
       return value;
     };
+  }
+
+  updateMappedProps() {
+    const { mapProps } = this.props;
+
+    this.setState({
+      mappedProps: this.getMappedProps(this.props, mapProps),
+    });
+  }
+
+  handleChange(event) {
+    this.setState({ viewValue: getValue(event) });
+    this.handleUpdate(event);
   }
 
   handleKeyPress(event) {
@@ -418,6 +439,7 @@ Control.propTypes = {
   component: PropTypes.any,
   dispatch: PropTypes.func,
   parser: PropTypes.func,
+  formatter: PropTypes.func,
   componentMap: PropTypes.object,
 };
 
@@ -425,6 +447,7 @@ Control.defaultProps = {
   changeAction: actions.change,
   updateOn: 'change',
   parser: identity,
+  formatter: identity,
   controlProps: {},
 };
 

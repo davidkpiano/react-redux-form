@@ -1822,4 +1822,28 @@ describe('<Field /> component', () => {
       assert.equal(input.value, '0');
     });
   });
+
+  describe('external change with updateOn="blur"', () => {
+    it('should update the input value on external change', () => {
+      const store = createStore(combineReducers({
+        test: modelReducer('test', { foo: '' }),
+      }), applyMiddleware(thunk));
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field model="test.foo" updateOn="blur">
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      assert.equal(input.value, '');
+
+      store.dispatch(actions.change('test.foo', 'external'));
+
+      assert.equal(input.value, 'external');
+    });
+  });
 });
