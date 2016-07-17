@@ -248,13 +248,10 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setSubmitted,
         args: [],
-        expectedForm: {
-          touched: true,
-        },
+        expectedForm: (form) => formUtils.isTouched(form),
         expectedField: {
           pending: false,
           submitted: true,
-          submitFailed: false,
           touched: true,
           retouched: false,
         },
@@ -265,17 +262,9 @@ describe('formReducer() (V1)', () => {
         action: actions.setSubmitFailed,
         model: 'user',
         args: [],
-        expectedForm: {
-          touched: true,
-        },
+        expectedForm: (form) => formUtils.isTouched(form),
         expectedField: {
           pending: false,
-          submitted: false,
-          submitFailed: true,
-          touched: true,
-          retouched: false,
-        },
-        expectedSubField: {
           submitted: false,
           submitFailed: true,
           touched: true,

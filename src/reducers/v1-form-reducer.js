@@ -1,22 +1,11 @@
-/* eslint-disable */
 import _get from '../utils/get';
-import every from 'lodash/every';
 import icepick from 'icepick';
-import isBoolean from 'lodash/isBoolean';
 import arraysEqual from '../utils/arrays-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import isArray from 'lodash/isArray';
-import map from 'lodash/map';
 import mapValues from '../utils/map-values';
-import compareKeys from '../utils/compare-keys';
 import toPath from '../utils/to-path';
-import pathStartsWith from '../utils/path-starts-with';
-import compose from 'redux/lib/compose';
 import composeReducers from '../utils/compose-reducers';
-import identity from 'lodash/identity';
-
-import actionTypes from '../action-types';
-import actions from '../actions/field-actions';
 
 import changeActionReducer from './form/change-action-reducer';
 import setValidityActionReducer from './form/set-validity-action-reducer';
@@ -26,6 +15,8 @@ import setDirtyActionReducer from './form/set-dirty-action-reducer';
 import blurTouchActionReducer from './form/blur-touch-action-reducer';
 import untouchActionReducer from './form/untouch-action-reducer';
 import pendingActionReducer from './form/pending-action-reducer';
+import submittedActionReducer from './form/submitted-action-reducer';
+import submitFailedActionReducer from './form/submit-failed-action-reducer';
 
 export const initialFieldState = {
   focus: false,
@@ -46,7 +37,7 @@ export function getField(state, path) {
   if (process.env.NODE_ENV !== 'production') {
     if (!isPlainObject(state)) {
       throw new Error(`Could not retrieve field '${path}' `
-        + `from an invalid/empty form state.`);
+        + 'from an invalid/empty form state.');
     }
   }
 
@@ -56,8 +47,9 @@ export function getField(state, path) {
 function createInitialState(model, state) {
   let initialState;
 
-  if (isArray(state) || isPlainObject(state)) {  
-    initialState = mapValues(state, (state) => createInitialState(model, state));
+  if (isArray(state) || isPlainObject(state)) {
+    initialState = mapValues(state, (subState) =>
+      createInitialState(model, subState));
   } else {
     return icepick.merge(initialFieldState, {
       initialValue: state,
@@ -75,73 +67,6 @@ function createInitialState(model, state) {
   return icepick.set(initialState, '$form', initialForm);
 }
 
-function inverse(value) {
-  return !value;
-}
-
-const reactions = {
-  [actionTypes.SET_SUBMITTED]: (_, action) => ({
-    form: () => ({
-      touched: true,
-    }),
-    field: () => ({
-      pending: false,
-      submitted: !!action.submitted,
-      submitFailed: !action.submitted,
-      touched: true,
-      retouched: false,
-    }),
-  }),
-  [actionTypes.SET_SUBMIT_FAILED]: (_, action) => {
-    return {
-      form: () => ({
-        touched: true,
-      }),
-      field: (field) => ({
-        pending: false,
-        submitted: field.submitted && !action.submitFailed,
-        submitFailed: !!action.submitFailed,
-        touched: true,
-        retouched: false,
-      }),
-      subField: (subField) => ({
-        submitFailed: !!action.submitFailed,
-        submitted: subField.submitted && !action.submitFailed,
-        touched: true,
-        retouched: false,
-      }),
-    }
-  },
-};
-
-function getReaction(state, action) {
-  const reaction = reactions[action.type];
-
-  if (!reaction) return false;
-
-  if (typeof reaction === 'function') {
-    return reaction(state, action);
-  }
-
-  return reaction;
-}
-
-function mapFields(state, iterator) {
-  if (Array.isArray(state)) {
-    return state.map(iterator);
-  }
-
-  const result = mapValues(state, (field, fieldName) => {
-    if (fieldName === '$form') return field;
-
-    return iterator(field, state);
-  });
-
-  delete result.$form;
-
-  return result;
-}
-
 function wrapFormReducer(plugin, modelPath, initialState) {
   return (state = initialState, action) => {
     if (!action.model) return state;
@@ -155,53 +80,7 @@ function wrapFormReducer(plugin, modelPath, initialState) {
     const localPath = path.slice(modelPath.length);
 
     return plugin(state, action, localPath);
-  }
-}
-
-function formActionReducer(state, action, _path) {
-  const reaction = getReaction(state, action);
-
-  const {
-    form: formReaction = identity,
-    field: fieldReaction = identity,
-    subField: subFieldReaction = identity,
-  } = reaction;
-
-  if (!reaction) return state;
-
-  const fieldFormPath = toPath(_path).slice(0, -1).concat(['$form']);
-  const fieldFormState = _get(state, fieldFormPath);
-
-  function recurse(subState = initialFieldState, path) {
-    const [ parentKey = false, ...childPath ] = toPath(path);
-
-    if (!parentKey && !childPath.length) {
-      if (subState.hasOwnProperty('$form')) {
-        return icepick.merge(subState, {
-          $form: icepick.merge(
-            subState.$form,
-            fieldReaction(subState.$form, fieldFormState)),
-          ...mapFields(subState, (subField) => icepick.merge(
-            subField,
-            subFieldReaction(subField, fieldFormState))),
-        });
-      }
-
-      return icepick.merge(subState, fieldReaction(subState, fieldFormState));
-    }
-
-    const subFieldState = icepick.merge(subState, {
-      [parentKey]: recurse(subState[parentKey], childPath),
-    });
-
-    return icepick.merge(subFieldState, {
-      $form: icepick.merge(
-        subFieldState.$form,
-        formReaction(subFieldState.$form, subFieldState)),
-    });
-  }
-
-  return recurse(state, _path);
+  };
 }
 
 const defaultPlugins = [
@@ -213,16 +92,21 @@ const defaultPlugins = [
   changeActionReducer,
   setValidityActionReducer,
   pendingActionReducer,
+  submittedActionReducer,
+  submitFailedActionReducer,
 ];
 
-export default function createFormReducer(model, initialState = {}, plugins = []) {
+export default function createFormReducer(
+  model,
+  initialState = {},
+  plugins = []
+) {
   const modelPath = toPath(model);
   const initialFormState = createInitialState(model, initialState);
 
-  const formReducer = wrapFormReducer(formActionReducer, modelPath, initialFormState);
+  const wrappedPlugins = plugins
+    .concat(defaultPlugins)
+    .map((plugin) => wrapFormReducer(plugin, modelPath, initialFormState));
 
-  const wrappedPlugins = plugins.concat(defaultPlugins).map((plugin) => wrapFormReducer(plugin, modelPath, initialFormState));
-
-  return composeReducers(...wrappedPlugins, formReducer);
+  return composeReducers(...wrappedPlugins);
 }
-/* eslint-enable */

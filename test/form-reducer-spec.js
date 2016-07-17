@@ -264,7 +264,7 @@ describe('formReducer()', () => {
   });
 
   describe('SET_SUBMIT_FAILED action', () => {
-    it('should set all fields to submitFailed = true when form submitFailed = true', () => {
+    it('should set form to submitFailed = true when submitFailed = false', () => {
       const reducer = newFormReducer('test', { foo: '', bar: '' });
 
       const actual = reducer(undefined, actions.setSubmitFailed('test'));
@@ -274,20 +274,10 @@ describe('formReducer()', () => {
           submitFailed: true,
           submitted: false,
         },
-        foo: {
-          submitFailed: true,
-          touched: true,
-          submitted: false,
-        },
-        bar: {
-          submitFailed: true,
-          touched: true,
-          submitted: false,
-        },
       });
     });
 
-    it('should set all fields to submitFailed = false when form submitFailed = false', () => {
+    it('should set form to submitFailed = false when form submitFailed = false', () => {
       const reducer = newFormReducer('test', { foo: '', bar: '' });
 
       const actual = reducer(undefined, actions.setSubmitFailed('test', false));
@@ -295,16 +285,6 @@ describe('formReducer()', () => {
       assert.containSubset(actual, {
         $form: {
           submitFailed: false,
-          submitted: false,
-        },
-        foo: {
-          submitFailed: false,
-          touched: true,
-          submitted: false,
-        },
-        bar: {
-          submitFailed: false,
-          touched: true,
           submitted: false,
         },
       });
