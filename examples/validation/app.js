@@ -9,7 +9,7 @@ import UserForm from './components/user-form.js';
 class App extends React.Component {
   render() {
     return (
-      <Provider store={ store }>
+      <Provider store={store}>
         <UserForm />
       </Provider>
     );

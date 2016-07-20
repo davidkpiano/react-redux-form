@@ -230,6 +230,69 @@ describe('custom <Field /> components with createFieldClass()', () => {
       store.getState().test.foo,
       'testing');
   });
+
+  it('should pass event to asyncValidator', (done) => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: '' }),
+    }));
+
+    class TextInput extends React.Component {
+      render() {
+        return (
+          <div>
+            <input
+              {...this.props}
+              onChange={this.props.onChangeText}
+            />
+          </div>
+        );
+      }
+    }
+
+    TextInput.propTypes = {
+      onChangeText: React.PropTypes.func,
+    };
+
+    const AsyncTestField = createFieldClass({
+      TextInput: (props) => ({
+        defaultValue: props.modelValue,
+        onChangeText: props.onChange,
+        onBlur: props.onBlur,
+        onFocus: props.onFocus,
+      }),
+    }, {
+      componentMap: {
+        TextInput,
+      },
+    });
+
+    const asyncIsUsernameInUse = (val) => new Promise((resolve) => {
+      assert.equal(val, 'testing');
+      resolve(false);
+      done();
+    });
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <AsyncTestField
+          model={'test.foo'}
+          asyncValidateOn="blur"
+          asyncValidators={{
+            usernameAvailable: (val, asyncDone) => asyncIsUsernameInUse(val)
+              .then(inUse => asyncDone(!inUse))
+              .catch(() => asyncDone(true)),
+          }}
+        >
+          <TextInput />
+        </AsyncTestField>
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+    input.value = 'testing';
+    TestUtils.Simulate.blur(input);
+  });
 });
 
 describe('React Native <Field /> components', () => {
