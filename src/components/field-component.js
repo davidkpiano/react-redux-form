@@ -21,7 +21,6 @@ function mapStateToProps(state, { model }) {
 
   return {
     model: modelString,
-    modelValue: _get(state, modelString),
   };
 }
 
@@ -160,7 +159,6 @@ function createFieldControlComponent(control, props, options) {
   return (
     <Control
       {...controlProps}
-      modelValue={props.modelValue}
       control={control}
       controlProps={control.props}
       component={control.type}
@@ -243,7 +241,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       PropTypes.func,
       PropTypes.object,
     ]),
-    modelValue: PropTypes.any,
     mapProps: PropTypes.func,
     componentMap: PropTypes.object,
     dispatch: PropTypes.func,

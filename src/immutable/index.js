@@ -1,5 +1,7 @@
 import { createModeler } from '../reducers/model-reducer';
 import { createModelReducerEnhancer } from '../enhancers/modeled-enhancer';
+import { createFieldClass } from '../components/field-component';
+import toPath from '../utils/to-path';
 
 function immutableGet(state, path, defaultValue) {
   try {
@@ -19,6 +21,24 @@ function immutableSet(state, path, value) {
   }
 }
 
+function immutableGetFromState(state, modelString) {
+  const path = toPath(modelString);
+
+  return path.reduce((subState, subPath) => {
+    // Current subState is immutable
+    if ('get' in subState) {
+      return subState.get(subPath);
+    }
+
+    // Current subState is a plain object/array
+    return subState[subPath];
+  }, state);
+}
+
+const ImmutableField = createFieldClass(undefined, {
+  getter: immutableGetFromState,
+});
+
 const modelReducer = createModeler(immutableGet, immutableSet);
 const modelReducerEnhancer = createModelReducerEnhancer(modelReducer);
 
@@ -33,4 +53,5 @@ export {
   createModelReducer,
   modelReducer,
   modelReducerEnhancer as modeled,
+  ImmutableField as Field,
 };

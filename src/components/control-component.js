@@ -10,7 +10,7 @@ import { sequenceEventActions } from '../utils/sequence';
 import actions from '../actions';
 
 function mapStateToProps(state, props) {
-  const { model, mapProps } = props;
+  const { model, mapProps, getter = _get } = props;
 
   if (!mapProps) return props;
 
@@ -21,7 +21,7 @@ function mapStateToProps(state, props) {
 
   return {
     model,
-    modelValue: _get(state, modelString),
+    modelValue: getter(state, modelString),
     fieldValue,
   };
 }
@@ -186,12 +186,14 @@ Control.propTypes = {
   component: PropTypes.any,
   dispatch: PropTypes.func,
   parser: PropTypes.func,
-  componentMap: PropTypes.object,
+  componentMap: PropTypes.object, // will be deprecated
+  getter: PropTypes.func,
 };
 
 Control.defaultProps = {
   changeAction: actions.change,
   updateOn: 'change',
+  getter: _get,
 };
 
 export default connect(mapStateToProps)(Control);
