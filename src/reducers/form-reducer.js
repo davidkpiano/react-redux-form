@@ -450,16 +450,7 @@ function _createFormReducer(model, initialState) {
   return formReducer;
 }
 
-function createFormReducer(...args) {
-  console.warn('The createFormReducer() function is deprecated (renamed). '
-    + 'Please use formReducer().');
-  /* eslint-disable */
-  return _createformReducer(...args);
-  /* eslint-enable */
-}
-
 export {
-  createFormReducer,
   initialFieldState,
   initialFormState,
   getField,

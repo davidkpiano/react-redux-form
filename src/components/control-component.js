@@ -18,7 +18,7 @@ import actions from '../actions';
 import isValid from '../form/is-valid';
 
 function mapStateToProps(state, props) {
-  const { model, mapProps } = props;
+  const { model, mapProps, getter = _get } = props;
 
   if (!mapProps) return props;
 
@@ -27,7 +27,7 @@ function mapStateToProps(state, props) {
 
   return {
     model,
-    modelValue: _get(state, modelString),
+    modelValue: getter(state, modelString),
     fieldValue,
   };
 }
@@ -440,7 +440,7 @@ Control.propTypes = {
   dispatch: PropTypes.func,
   parser: PropTypes.func,
   formatter: PropTypes.func,
-  componentMap: PropTypes.object,
+  getter: PropTypes.func,
 };
 
 Control.defaultProps = {
@@ -449,6 +449,7 @@ Control.defaultProps = {
   parser: identity,
   formatter: identity,
   controlProps: {},
+  getter: _get,
 };
 
 export default connect(mapStateToProps)(Control);
