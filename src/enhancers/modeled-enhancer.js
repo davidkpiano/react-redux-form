@@ -1,6 +1,5 @@
 import modelReducer from '../reducers/model-reducer';
-
-const NULL_ACTION = { type: null };
+import NULL_ACTION from '../constants/null-action';
 
 function createModelReducerEnhancer(modelReducerCreator = modelReducer) {
   return function modelReducerEnhancer(reducer, model) {

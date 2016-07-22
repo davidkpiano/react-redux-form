@@ -4,6 +4,7 @@ import arraysEqual from '../utils/arrays-equal';
 import toPath from '../utils/to-path';
 
 import actionTypes from '../action-types';
+import createBatchReducer from '../enhancers/batch-enhancer';
 
 function icepickSet(state, path, value) {
   return icepick.setIn(state, path, value);
@@ -27,9 +28,6 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
       const localPath = path.slice(modelPath.length);
 
       switch (action.type) {
-        case actionTypes.BATCH:
-          return action.actions.reduce(modelReducer, state);
-
         case actionTypes.CHANGE:
         case actionTypes.LOAD:
           if (!localPath.length) {
@@ -62,7 +60,7 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
       }
     };
 
-    return modelReducer;
+    return createBatchReducer(modelReducer, initialState);
   };
 }
 

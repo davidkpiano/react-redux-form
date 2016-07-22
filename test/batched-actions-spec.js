@@ -2,7 +2,8 @@ import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import { formReducer, modelReducer, actions, actionTypes } from '../src';
+import { modelReducer, actions, actionTypes } from '../src';
+import formReducer from '../src/reducers/v1-form-reducer';
 
 describe('batched actions', () => {
   const mockStore = configureMockStore([thunk]);
@@ -52,7 +53,7 @@ describe('batched actions', () => {
     const actual = reducer(undefined, testAction);
 
     assert.containSubset(
-      actual.fields.foo,
+      actual.foo,
       {
         pristine: false,
         focus: true,

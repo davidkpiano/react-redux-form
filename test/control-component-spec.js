@@ -7,15 +7,18 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
-import { controls, modelReducer, formReducer, Control } from '../src';
+import { controls, modelReducer, Control } from '../src';
+import formReducer from '../src/reducers/v1-form-reducer';
 
 function createTestStore(reducers) {
   return applyMiddleware(thunk)(createStore)(combineReducers(reducers));
 }
 
 describe('<Control> component', () => {
-  it('should exist', () => {
-    assert.ok(Control);
+  describe('existence check', () => {
+    it('should exist', () => {
+      assert.ok(Control);
+    });
   });
 
   describe('basic functionality', () => {
@@ -48,8 +51,8 @@ describe('<Control> component', () => {
 
   describe('onLoad prop', () => {
     const store = createTestStore({
-      test: modelReducer('test', { foo: 'bar' }),
-      testForm: formReducer('test', { foo: 'bar' }),
+      test: modelReducer('test', { fff: 'bar' }),
+      testForm: formReducer('test', { fff: 'bar' }),
     });
 
     const handleLoad = sinon.spy();
@@ -57,7 +60,7 @@ describe('<Control> component', () => {
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <Control
-          model="test.foo"
+          model="test.fff"
           mapProps={controls.text}
           component="input"
           onLoad={handleLoad}

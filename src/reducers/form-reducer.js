@@ -38,7 +38,7 @@ const initialFormState = {
 
 function getField(state, path) {
   if (!isPlainObject(state) || !state.fields) {
-    throw new Error(`Error when trying to retrieve field '${path}` +
+    throw new Error(`Error when trying to retrieve field '${path}'` +
       ' from an invalid/empty form state. Must pass in a valid form state as the first argument.');
   }
 

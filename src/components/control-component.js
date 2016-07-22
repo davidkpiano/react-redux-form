@@ -11,7 +11,8 @@ import isPlainObject from 'redux/lib/utils/isPlainObject';
 import icepick from 'icepick';
 import omit from 'lodash/omit';
 
-import { isMulti, invertValidity, getFieldFromState, getValidity, getValue } from '../utils';
+import { isMulti, invertValidity, getValidity, getValue } from '../utils';
+import getFieldFromState from '../utils/get-field-from-state';
 import getModel from '../utils/get-model';
 import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
