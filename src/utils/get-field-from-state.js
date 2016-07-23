@@ -20,8 +20,14 @@ export default function getFieldFromState(state, modelString) {
     return _oldGetFieldFromState(state, modelString);
   }
 
+  if (!modelString.length) return form;
+
   const formPath = toPath(form.$form.model);
   const fieldPath = toPath(modelString).slice(formPath.length);
 
-  return get(form, fieldPath);
+  const field = get(form, fieldPath);
+
+  if (field && '$form' in field) return field.$form;
+
+  return field;
 }

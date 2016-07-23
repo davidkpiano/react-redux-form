@@ -187,7 +187,7 @@ class Control extends Component {
         ? merge(invertValidity(fieldValidity), fieldErrors)
         : fieldErrors;
 
-      if (fieldValue && !shallowEqual(mergedErrors, fieldValue.errors)) {
+      if (!fieldValue || !shallowEqual(mergedErrors, fieldValue.errors)) {
         return actions.setErrors(model, mergedErrors);
       }
     }

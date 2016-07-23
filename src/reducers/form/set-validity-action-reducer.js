@@ -1,3 +1,6 @@
+import map from 'lodash/map';
+
+import fieldActions from '../../actions/field-actions';
 import actionTypes from '../../action-types';
 import isPlainObject from 'lodash/isPlainObject';
 import mapValues from '../../utils/map-values';
@@ -5,6 +8,12 @@ import inverse from '../../utils/inverse';
 import updateField from '../../utils/update-field';
 
 export default function setValidityActionReducer(state, action, localPath) {
+  if (action.type === actionTypes.SET_FIELDS_VALIDITY) {
+    return map(action.fieldsValidity, (fieldValidity, field) =>
+        fieldActions.setValidity(localPath, fieldValidity, action.options),
+      ).reduce((state, subAction) => setValidityActionReducer(state, subAction, subAction.model), state);
+  }
+
   if (action.type !== actionTypes.SET_VALIDITY
     && action.type !== actionTypes.SET_ERRORS
   ) {

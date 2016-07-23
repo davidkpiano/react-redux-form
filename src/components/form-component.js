@@ -11,12 +11,13 @@ import omit from 'lodash/omit';
 import actions from '../actions';
 import {
   getValidity,
-  getForm,
   invertValidators,
   invertValidity,
 } from '../utils';
+import getForm from '../utils/get-form';
 import getModel from '../utils/get-model';
-import { getField } from '../reducers/form-reducer';
+import { getField } from '../reducers/v1-form-reducer';
+import isValid from '../form/is-valid';
 
 class Form extends Component {
   constructor(props) {
@@ -68,7 +69,7 @@ class Form extends Component {
     if (!formValue) return;
 
     if (!validators && !errors && (modelValue !== nextProps.modelValue)) {
-      if (!formValue.valid) {
+      if (!isValid(formValue)) {
         dispatch(actions.setValidity(model, true));
       }
 

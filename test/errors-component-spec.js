@@ -6,7 +6,8 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
-import { Form, modelReducer, formReducer, Field, Errors, actions } from '../src';
+import { Form, modelReducer, Field, Errors, actions } from '../src';
+import formReducer from '../src/reducers/v1-form-reducer';
 
 describe('<Errors />', () => {
   it('should exist', () => {
@@ -79,7 +80,7 @@ describe('<Errors />', () => {
 
   describe('displaying errors from field .errors', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('test', {}),
+      testForm: formReducer('test'),
       test: modelReducer('test'),
     }));
 
@@ -115,25 +116,25 @@ describe('<Errors />', () => {
 
   describe('displaying errors from form .errors', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('test', { foo: '' }),
-      test: modelReducer('test', { foo: '' }),
+      testForm: formReducer('teste', { foo: '' }),
+      teste: modelReducer('teste', { foo: '' }),
     }));
 
     let formValid = false;
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form model="teste"
           validators={{
             '': { foo: ({ foo }) => foo && foo.length },
           }}
         >
-          <Errors model="test" 
+          <Errors model="teste" 
             messages={{
               foo: 'This form is invalid',
             }}
           />
-          <Field model="test.foo">
+          <Field model="teste.foo">
             <input type="text" />
           </Field>
         </Form>

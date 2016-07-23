@@ -10,7 +10,8 @@ import {
   Field as NativeField,
   Form as NativeForm,
 } from '../src/native';
-import { controls, createFieldClass, formReducer, modelReducer, Field } from '../src';
+import { controls, createFieldClass, modelReducer, Field } from '../src';
+import formReducer from '../src/reducers/v1-form-reducer';
 
 describe('controls props mapping', () => {
   it('should exist', () => {
@@ -43,7 +44,6 @@ describe('custom <Field /> components with createFieldClass()', () => {
   }
 
   CustomText.propTypes = { customOnChange: PropTypes.function };
-
 
   class FamiliarText extends Component {
     render() {

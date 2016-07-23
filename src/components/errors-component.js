@@ -8,7 +8,8 @@ import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
 import omit from 'lodash/omit';
 
-import { getFieldFromState, getForm } from '../utils';
+import getForm from '../utils/get-form';
+import getFieldFromState from '../utils/get-field-from-state';
 import getModel from '../utils/get-model';
 import isValid from '../form/is-valid';
 
@@ -159,8 +160,8 @@ Errors.defaultProps = {
 function mapStateToProps(state, { model }) {
   const modelString = getModel(model, state);
 
-  const formValue = getForm(state, modelString);
-  const fieldValue = getFieldFromState(state, modelString);
+  const formValue = getForm(state, modelString).$form;
+  let fieldValue = getFieldFromState(state, modelString);
 
   return {
     model: modelString,

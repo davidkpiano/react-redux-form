@@ -35,11 +35,16 @@ export const initialFieldState = {
 };
 
 export function getField(state, path) {
+  console.log('getfield', path, 'yeah', !path.length && state.$form?'true':'false')
   if (process.env.NODE_ENV !== 'production') {
     if (!isPlainObject(state)) {
       throw new Error(`Could not retrieve field '${path}' `
         + 'from an invalid/empty form state.');
     }
+  }
+
+  if (!path.length && state.$form) {
+    return state.$form
   }
 
   return _get(state, path, initialFieldState);
@@ -77,7 +82,7 @@ function wrapFormReducer(plugin, modelPath, initialState) {
     if (modelPath.length && !arraysEqual(path.slice(0, modelPath.length), modelPath)) {
       return state;
     }
-
+    
     const localPath = path.slice(modelPath.length);
 
     return plugin(state, action, localPath);
