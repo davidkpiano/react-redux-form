@@ -10,6 +10,7 @@ import createBatchReducer from '../enhancers/batch-enhancer';
 
 import changeActionReducer from './form/change-action-reducer';
 import setValidityActionReducer from './form/set-validity-action-reducer';
+import resetValidityActionReducer from './form/reset-validity-action-reducer';
 import focusActionReducer from './form/focus-action-reducer';
 import setPristineActionReducer from './form/set-pristine-action-reducer';
 import setDirtyActionReducer from './form/set-dirty-action-reducer';
@@ -35,7 +36,6 @@ export const initialFieldState = {
 };
 
 export function getField(state, path) {
-  console.log('getfield', path, 'yeah', !path.length && state.$form?'true':'false')
   if (process.env.NODE_ENV !== 'production') {
     if (!isPlainObject(state)) {
       throw new Error(`Could not retrieve field '${path}' `
@@ -97,6 +97,7 @@ const defaultPlugins = [
   setDirtyActionReducer,
   changeActionReducer,
   setValidityActionReducer,
+  resetValidityActionReducer,
   pendingActionReducer,
   submittedActionReducer,
   submitFailedActionReducer,

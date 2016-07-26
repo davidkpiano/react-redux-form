@@ -16,7 +16,7 @@ function updateFieldValue(field, value) {
   } else if (isPlainObject(value)) {
     method = (val, iter) => mapValues(val, iter);
   } else {
-    return icepick.merge(initialFieldState, {
+    return icepick.merge(field, {
       value,
       pristine: false,
       validated: false,
@@ -55,7 +55,7 @@ function updateFieldValue(field, value) {
     icepick.set(dirtyFormState, 'value', value));
 }
 
-export default function changeFormReducer(state, action, localPath) {
+export default function changeActionReducer(state, action, localPath) {
   if (action.type !== actionTypes.CHANGE) return state;
 
   const field = get(state, localPath, initialFieldState);

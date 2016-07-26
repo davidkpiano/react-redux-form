@@ -10,7 +10,9 @@ import capitalize from 'lodash/capitalize';
 import sinon from 'sinon';
 import createTestStore from 'redux-test-store';
 
-import { Field, actions, actionTypes, formReducer, modelReducer, controls } from '../src';
+import { Field, actions, actionTypes, modelReducer, controls } from '../src';
+import formReducer from '../src/reducers/v1-form-reducer';
+import isValid from '../src/form/is-valid';
 
 describe('<Field /> component', () => {
   const textFieldElements = [
@@ -188,7 +190,7 @@ describe('<Field /> component', () => {
         TestUtils.Simulate.focus(node);
 
         assert.containSubset(
-          store.getState().testForm.fields.foo,
+          store.getState().testForm.foo,
           { focus: true });
       });
 
@@ -196,7 +198,7 @@ describe('<Field /> component', () => {
         TestUtils.Simulate.blur(node);
 
         assert.containSubset(
-          store.getState().testForm.fields.foo,
+          store.getState().testForm.foo,
           { focus: false });
       });
 
@@ -615,7 +617,7 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields.foo.errors,
+        store.getState().testForm.foo.errors,
         {
           good: false,
           bad: true,
@@ -627,7 +629,7 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields.foo.errors,
+        store.getState().testForm.foo.errors,
         {
           good: false,
           bad: true,
@@ -675,7 +677,7 @@ describe('<Field /> component', () => {
         'validation should be called upon blur');
 
       assert.deepEqual(
-        store.getState().testForm.fields.blur.errors,
+        store.getState().testForm.blur.errors,
         {
           good: false,
           bad: true,
@@ -705,11 +707,11 @@ describe('<Field /> component', () => {
       assert.equal(timesValidationCalled, 1,
         'validation called on load');
 
-      assert.isFalse(store.getState().testForm.fields.external.valid);
+      assert.isFalse(isValid(store.getState().testForm.external));
 
       store.dispatch(actions.change('test.external', 'valid'));
 
-      assert.isTrue(store.getState().testForm.fields.external.valid);
+      assert.isTrue(isValid(store.getState().testForm.external));
 
       assert.equal(timesValidationCalled, 2,
         'validation called because of external change');
@@ -733,30 +735,30 @@ describe('<Field /> component', () => {
 
       const checkboxes = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
 
-      assert.isFalse(store.getState().testForm.fields.items.valid);
+      assert.isFalse(isValid(store.getState().testForm.items));
 
       TestUtils.Simulate.change(checkboxes[0]);
 
-      assert.isTrue(store.getState().testForm.fields.items.valid);
+      assert.isTrue(isValid(store.getState().testForm.items));
       assert.isTrue(
-        store.getState().testForm.fields.items.validity.required);
+        store.getState().testForm.items.$form.validity.required);
 
       TestUtils.Simulate.change(checkboxes[1]);
       assert.isTrue(
-        store.getState().testForm.fields.items.validity.required);
+        store.getState().testForm.items.$form.validity.required);
       assert.isTrue(
-        store.getState().testForm.fields.items.validity.values);
+        store.getState().testForm.items.$form.validity.values);
 
       TestUtils.Simulate.change(checkboxes[0]);
       assert.isTrue(
-        store.getState().testForm.fields.items.validity.required);
+        store.getState().testForm.items.$form.validity.required);
       assert.isTrue(
-        store.getState().testForm.fields.items.validity.values);
+        store.getState().testForm.items.$form.validity.values);
 
       TestUtils.Simulate.change(checkboxes[1]);
       assert.isFalse(
-        store.getState().testForm.fields.items.validity.required);
-      assert.isFalse(store.getState().testForm.fields.items.valid);
+        store.getState().testForm.items.$form.validity.required);
+      assert.isFalse(isValid(store.getState().testForm.items));
     });
   });
 
@@ -783,10 +785,15 @@ describe('<Field /> component', () => {
       );
 
       const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
       const expectedStates = [
-        { focus: false },
-        { pending: true, valid: true }, // initially valid
-        { pending: false, valid: true }, // true after validating
+        (state) => state.focus === false,
+
+        // initially valid
+        (state) => state.pending === true && isValid(state),
+
+        // true after validating
+        (state) => state.pending === false && isValid(state),
       ];
 
       const actualStates = [];
@@ -794,11 +801,11 @@ describe('<Field /> component', () => {
       store.subscribe(() => {
         const state = store.getState();
 
-        actualStates.push(state.testForm.fields.foo);
+        actualStates.push(state.testForm.foo);
 
         if (actualStates.length === expectedStates.length) {
-          expectedStates.map((expected, i) =>
-            assert.containSubset(actualStates[i], expected, `${i}`)
+          expectedStates.map((expectedFn, i) =>
+            assert.ok(expectedFn(actualStates[i]), `${i}`)
           );
 
           done();
@@ -824,10 +831,15 @@ describe('<Field /> component', () => {
       );
 
       const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
       const expectedStates = [
-        { focus: false },
-        { pending: true, valid: true }, // initially valid
-        { pending: false, valid: false }, // false after validating
+        (state) => state.focus === false,
+
+        // initially valid
+        (state) => state.pending === true && isValid(state),
+
+        // false after validating
+        (state) => state.pending === false && !isValid(state),
       ];
 
       const actualStates = [];
@@ -835,11 +847,11 @@ describe('<Field /> component', () => {
       store.subscribe(() => {
         const state = store.getState();
 
-        actualStates.push(state.testForm.fields.foo);
+        actualStates.push(state.testForm.foo);
 
         if (actualStates.length === expectedStates.length) {
-          expectedStates.map((expected, i) =>
-            assert.containSubset(actualStates[i], expected, `${i}`)
+          expectedStates.map((expectedFn, i) =>
+            assert.ok(expectedFn(actualStates[i]), `${i}`)
           );
 
           done();
@@ -881,7 +893,7 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.blur(input);
 
       assert.deepEqual(
-        store.getState().testForm.fields.foo.validity,
+        store.getState().testForm.foo.validity,
         {
           required: false,
           asyncValid: false,
@@ -921,7 +933,7 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields.foo.errors,
+        store.getState().testForm.foo.errors,
         {
           length: false,
           valid: false,
@@ -932,7 +944,7 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields.foo.errors,
+        store.getState().testForm.foo.errors,
         {
           length: 'too long',
           valid: 'not valid',
@@ -985,7 +997,7 @@ describe('<Field /> component', () => {
         'validation should be called again on blur');
 
       assert.deepEqual(
-        store.getState().testForm.fields.foo.errors,
+        store.getState().testForm.foo.errors,
         {
           length: false,
           valid: false,
@@ -993,10 +1005,11 @@ describe('<Field /> component', () => {
 
       control.value = 'invalid string';
 
+
       TestUtils.Simulate.change(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields.foo.errors,
+        store.getState().testForm.foo.errors,
         {
           length: false,
           valid: false,
@@ -1005,7 +1018,7 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.blur(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields.foo.errors,
+        store.getState().testForm.foo.errors,
         {
           length: 'too long',
           valid: 'not valid',
@@ -1034,7 +1047,7 @@ describe('<Field /> component', () => {
       const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
       assert.equal(
-        store.getState().testForm.fields.foo.errors,
+        store.getState().testForm.foo.errors,
         'Required');
 
       control.value = 'valid';
@@ -1042,7 +1055,7 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(control);
 
       assert.deepEqual(
-        store.getState().testForm.fields.foo.errors,
+        store.getState().testForm.foo.errors,
         false);
     });
   });
@@ -1105,7 +1118,7 @@ describe('<Field /> component', () => {
     it('should wrap children with specified component (string)', () => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Field component="div">
+          <Field model="test.foo" component="div">
             <input type="text" />
           </Field>
         </Provider>
@@ -1127,7 +1140,7 @@ describe('<Field /> component', () => {
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Field component={Wrapper}>
+          <Field model="test.foo" component={Wrapper}>
             <input type="text" />
           </Field>
         </Provider>
@@ -1147,7 +1160,7 @@ describe('<Field /> component', () => {
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Field component={Wrapper}>
+          <Field model="test.foo" component={Wrapper}>
             <input type="text" />
           </Field>
         </Provider>
@@ -1161,7 +1174,7 @@ describe('<Field /> component', () => {
     it('should wrap children with a <div> when provided with className', () => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Field className="wrapper">
+          <Field model="test.foo" className="wrapper">
             <input type="text" />
           </Field>
         </Provider>
@@ -1239,9 +1252,8 @@ describe('<Field /> component', () => {
       );
 
       assert.containSubset(
-        store.getState().testForm.fields.foo,
+        store.getState().testForm.foo,
         {
-          valid: false,
           validity: {
             initial: false,
           },
@@ -1249,6 +1261,8 @@ describe('<Field /> component', () => {
             initial: true,
           },
         });
+
+      assert.isFalse(isValid(store.getState().testForm.foo));
     });
   });
 
@@ -1350,6 +1364,7 @@ describe('<Field /> component', () => {
     const reducer = modelReducer('test', { foo: '', bar: '' });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
+      testForm: formReducer('test'),
     }));
 
     it('should execute the custom change action', () => {
@@ -1477,7 +1492,14 @@ describe('<Field /> component', () => {
       const eventHandler = `on${capitalize(event)}`;
 
       it(`should execute the custom ${event} action`, () => {
-        const onEvent = (val) => val;
+        let targetValue;
+
+        const onEvent = (e) => {
+          targetValue = e.target.value;
+
+          return e;
+        }
+
         const onEventSpy = sinon.spy(onEvent);
 
         const prop = { [eventHandler]: onEventSpy };
@@ -1503,9 +1525,8 @@ describe('<Field /> component', () => {
         assert.equal(
           onEventSpy.returnValues[0].constructor.name,
           'SyntheticEvent');
-        assert.equal(
-          onEventSpy.returnValues[0].target.value,
-          `testing ${event}`);
+
+        assert.equal(targetValue, `testing ${event}`);
       });
     });
   });
@@ -1755,11 +1776,11 @@ describe('<Field /> component', () => {
       const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
       store.dispatch(actions.setValidity('test.foo', false));
-      assert.isFalse(store.getState().testForm.fields.foo.valid);
+      assert.isFalse(isValid(store.getState().testForm.foo));
 
       ReactDOM.unmountComponentAtNode(container);
 
-      assert.isTrue(store.getState().testForm.fields.foo.valid);
+      assert.isTrue(isValid(store.getState().testForm.foo));
     });
   });
 

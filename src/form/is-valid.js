@@ -10,7 +10,7 @@ export default function isValid(formState) {
     const { errors } = formState;
 
     if (!Array.isArray(errors) && !isPlainObject(errors)) {
-      return !!errors;
+      return !errors;
     }
 
     return Object.keys(formState.errors).every((errorKey) => {

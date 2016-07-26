@@ -3,8 +3,10 @@ import mapValues from '../utils/map-values';
 
 import actionTypes from '../action-types';
 import batchActions from './batch-actions';
-import { getValidity, getForm, isValidityValid, isValidityInvalid } from '../utils';
+import { getValidity, isValidityValid, isValidityInvalid } from '../utils';
 import { trackable } from '../utils/track';
+import getForm from '../utils/get-form';
+import isValid from '../form/is-valid';
 
 const focus = trackable((model) => ({
   type: actionTypes.FOCUS,
@@ -179,7 +181,7 @@ const validateFields = trackable((model, fieldValidators, options = {}) => (disp
   if (validCB || invalidCB) {
     const form = getForm(getState(), model);
     const formValid = (form && !fieldsValidity.hasOwnProperty(''))
-      ? form.valid
+      ? isValid(form)
       : true;
     const fieldsValid = options.errors
       ? !isValidityInvalid(fieldsValidity)

@@ -211,6 +211,14 @@ describe('formReducer() (V1)', () => {
         },
       },
       {
+        label: 'single string error message',
+        action: actions.setErrors,
+        args: ['single error message'],
+        expectedField: {
+          errors: 'single error message',
+        },
+      },
+      {
         label: 'validating the form (invalid)',
         action: actions.setErrors,
         model: 'user',
@@ -242,6 +250,16 @@ describe('formReducer() (V1)', () => {
           errors: { foo: false, bar: false },
           validated: true,
         },
+      },
+    ],
+    [actionTypes.SET_FIELDS_VALIDITY]: [
+      {
+        action: actions.setFieldsValidity,
+        model: 'user',
+        args: [{foo: true, bar: true}, { errors: true }],
+        expectedForm: (form) =>
+          form.foo.errors === true
+          && form.bar.errors === true,
       },
     ],
     [actionTypes.SET_SUBMITTED]: [

@@ -2,18 +2,11 @@ import get from './get';
 import toPath from './to-path';
 import { getFieldFromState as _oldGetFieldFromState } from './index';
 import pathStartsWith from '../utils/path-starts-with';
+import { initialFieldState } from '../reducers/v1-form-reducer';
+import getForm from './get-form';
 
 export default function getFieldFromState(state, modelString) {
-  const form = Object.keys(state)
-    .map((key) => state[key])
-    .filter((sub) => {
-      if (sub.$form
-        && pathStartsWith(modelString, sub.$form.model)) {
-        return true;
-      }
-
-      return false;
-    })[0];
+  const form = getForm(state, modelString);
 
   // TODO: deprecate
   if (!form) {
@@ -25,9 +18,11 @@ export default function getFieldFromState(state, modelString) {
   const formPath = toPath(form.$form.model);
   const fieldPath = toPath(modelString).slice(formPath.length);
 
-  const field = get(form, fieldPath);
+  const field = get(form, fieldPath, initialFieldState);
 
   if (field && '$form' in field) return field.$form;
+
+  if (!field) return initialFieldState;
 
   return field;
 }

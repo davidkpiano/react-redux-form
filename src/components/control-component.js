@@ -126,6 +126,8 @@ class Control extends Component {
   componentWillUnmount() {
     const { model, fieldValue, dispatch } = this.props;
 
+    console.log(fieldValue);
+
     if (!fieldValue) return;
 
     if (!isValid(fieldValue)) {

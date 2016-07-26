@@ -224,9 +224,9 @@ describe('<Errors />', () => {
 
       const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
 
-      assert.property(store.getState().testForm.fields.foo.errors, 'doNotShow');
+      assert.property(store.getState().testForm.foo.errors, 'doNotShow');
 
-      assert.isTrue(store.getState().testForm.fields.foo.errors.doNotShow);
+      assert.isTrue(store.getState().testForm.foo.errors.doNotShow);
 
       assert.lengthOf(errors, 1);
     });
@@ -638,6 +638,7 @@ describe('<Errors />', () => {
       );
 
       store.dispatch(actions.setErrors('test', 'this is a single error message'));
+
 
       let error;
 
