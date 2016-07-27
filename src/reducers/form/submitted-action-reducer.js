@@ -6,11 +6,23 @@ export default function submittedActionReducer(state, action, localPath) {
     return state;
   }
 
-  return updateField(state, localPath, (fieldState) => ({
-    pending: false,
-    submitted: !!action.submitted,
-    submitFailed: action.submitted || fieldState.submitFailed,
-    touched: true,
-    retouched: false,
-  }));
+  const submitted = !!action.submitted;
+
+  return updateField(state, localPath,
+    (fieldState) => ({
+      pending: false,
+      submitted,
+      submitFailed: submitted
+        ? false
+        : fieldState.submitFailed,
+      touched: true,
+      retouched: false,
+    }),
+    (subFieldState, updatedFieldState) => ({
+      submitted,
+      submitFailed: submitted
+        ? false
+        : updatedFieldState.submitFailed,
+      retouched: false,
+    }));
 }

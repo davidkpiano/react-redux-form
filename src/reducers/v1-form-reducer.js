@@ -19,6 +19,7 @@ import untouchActionReducer from './form/untouch-action-reducer';
 import pendingActionReducer from './form/pending-action-reducer';
 import submittedActionReducer from './form/submitted-action-reducer';
 import submitFailedActionReducer from './form/submit-failed-action-reducer';
+import resetActionReducer from './form/reset-action-reducer';
 
 export const initialFieldState = {
   focus: false,
@@ -30,7 +31,6 @@ export const initialFieldState = {
   touched: false,
   validating: false,
   validated: false,
-  viewValue: null,
   validity: {},
   errors: {},
 };
@@ -101,6 +101,7 @@ const defaultPlugins = [
   pendingActionReducer,
   submittedActionReducer,
   submitFailedActionReducer,
+  resetActionReducer,
 ];
 
 export default function createFormReducer(

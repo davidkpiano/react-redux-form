@@ -20,6 +20,9 @@ function updateFieldValue(field, value) {
       value,
       pristine: false,
       validated: false,
+      retouched: field.submitted
+        ? true
+        : field.retouched,
     });
   }
 
@@ -39,6 +42,9 @@ function updateFieldValue(field, value) {
         value: subValue,
         pristine: false,
         validated: false,
+        retouched: field.submitted
+          ? true
+          : subField.retouched,
       });
     }
 
@@ -49,6 +55,9 @@ function updateFieldValue(field, value) {
   const dirtyFormState = icepick.merge(field.$form || initialFieldState, {
     pristine: false,
     validated: false,
+    retouched: field.submitted
+      ? true
+      : (field.$form || initialFieldState).retouched,
   });
 
   return icepick.set(updatedField, '$form',
@@ -61,6 +70,8 @@ export default function changeActionReducer(state, action, localPath) {
   const field = get(state, localPath, initialFieldState);
 
   const updatedField = updateFieldValue(field, action.value);
+
+  if (!localPath.length) return updatedField;
 
   return icepick.setIn(state, localPath, updatedField);
 }

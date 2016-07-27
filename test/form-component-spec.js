@@ -1164,11 +1164,8 @@ describe('<Form> component', () => {
     });
 
     it('should set validity on form changes after submit failed', () => {
-      console.log('-----')
       inputElement.value = 'valid';
       TestUtils.Simulate.change(inputElement);
-
-      console.log(store.getState().testForm);
 
       assert.isTrue(isValid(store.getState().testForm));
     });
@@ -1259,91 +1256,91 @@ describe('<Form> component', () => {
     });
   });
 
-  // describe('form reducer name isolation', () => {
-  //   const store = applyMiddleware(thunk)(createStore)(combineReducers({
-  //     user: modelReducer('user'),
-  //     userForm: formReducer('user'),
-  //     userEx: modelReducer('userEx'),
-  //     userExForm: formReducer('userEx'),
-  //   }));
+  describe('form reducer name isolation', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      user: modelReducer('user'),
+      userForm: formReducer('user'),
+      userEx: modelReducer('userEx'),
+      userExForm: formReducer('userEx'),
+    }));
 
-  //   const isRequired = (val) => val && val.length;
+    const isRequired = (val) => val && val.length;
 
-  //   class UserForm extends React.Component {
-  //     componentDidMount() {
-  //       store.dispatch(actions.change('userEx', { username: '', email: '' }));
-  //     }
-  //     render() {
-  //       return (
-  //         <Form
-  //           model="userEx"
-  //           validators={{
-  //             username: isRequired,
-  //             email: isRequired,
-  //           }}
-  //         >
-  //           <Field model="userEx.username">
-  //             <input type="text" />
-  //           </Field>
+    class UserForm extends React.Component {
+      componentDidMount() {
+        store.dispatch(actions.change('userEx', { username: '', email: '' }));
+      }
+      render() {
+        return (
+          <Form
+            model="userEx"
+            validators={{
+              username: isRequired,
+              email: isRequired,
+            }}
+          >
+            <Field model="userEx.username">
+              <input type="text" />
+            </Field>
 
-  //           <Field model="userEx.email">
-  //             <input type="text" />
-  //           </Field>
-  //         </Form>
-  //       );
-  //     }
-  //   }
+            <Field model="userEx.email">
+              <input type="text" />
+            </Field>
+          </Form>
+        );
+      }
+    }
 
-  //   TestUtils.renderIntoDocument(
-  //     <Provider store={store}>
-  //       <UserForm />
-  //     </Provider>
-  //   );
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <UserForm />
+      </Provider>
+    );
 
-  //   it('the similarly-named userEx form should not be valid in presence of'
-  //     + 'valid user form', () => {
-  //     assert.isFalse(store.getState().userExForm.valid);
-  //   });
-  // });
+    it('the similarly-named userEx form should not be valid in presence of'
+      + 'valid user form', () => {
+      assert.isFalse(isValid(store.getState().userExForm));
+    });
+  });
 
-  // describe('field validation and external changes', () => {
-  //   const store = applyMiddleware(thunk)(createStore)(combineReducers({
-  //     test: modelReducer('test', { foo: '', bar: '' }),
-  //     testForm: formReducer('test', { foo: '', bar: '' }),
-  //   }));
+  describe('field validation and external changes', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      test: modelReducer('test', { foo: '', bar: '' }),
+      testForm: formReducer('test', { foo: '', bar: '' }),
+    }));
 
-  //   it('should validate form on external (async) change', () => {
-  //     const required = (val) => val && val.length;
+    it('should validate form on external (async) change', () => {
+      const required = (val) => val && val.length;
 
-  //     TestUtils.renderIntoDocument(
-  //       <Provider store={store}>
-  //         <Form model="user">
-  //           <Field
-  //             model="test.foo"
-  //             validators={{ required }}
-  //           >
-  //             <input type="text" />
-  //           </Field>
-  //           <Field
-  //             model="test.bar"
-  //             validators={{ required }}
-  //           >
-  //             <input type="text" />
-  //           </Field>
-  //         </Form>
-  //       </Provider>
-  //     );
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form model="user">
+            <Field
+              model="test.foo"
+              validators={{ required }}
+            >
+              <input type="text" />
+            </Field>
+            <Field
+              model="test.bar"
+              validators={{ required }}
+            >
+              <input type="text" />
+            </Field>
+          </Form>
+        </Provider>
+      );
 
-  //     assert.isFalse(isValid(store.getState().testForm));
+      assert.isFalse(isValid(store.getState().testForm));
 
-  //     store.dispatch(actions.merge('test', {
-  //       foo: 'foo valid',
-  //       bar: 'bar valid',
-  //     }));
+      store.dispatch(actions.merge('test', {
+        foo: 'foo valid',
+        bar: 'bar valid',
+      }));
 
-  //     assert.isTrue(isValid(store.getState().testForm));
-  //   });
-  // });
+      assert.isTrue(isValid(store.getState().testForm));
+    });
+  });
 
   xdescribe('reset event on form', () => {
     it('should reset the model on the onReset event', () => {

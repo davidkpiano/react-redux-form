@@ -114,12 +114,6 @@ const setSubmitFailed = trackable((model, submitFailed = true) => ({
   submitFailed,
 }));
 
-const setViewValue = trackable((model, value) => ({
-  type: actionTypes.SET_VIEW_VALUE,
-  model,
-  value,
-}));
-
 const submit = trackable((model, promise, options = {}) => dispatch => {
   dispatch(setPending(model, true));
 
@@ -227,7 +221,6 @@ export default {
   setFieldsErrors,
   resetValidity,
   resetErrors,
-  setViewValue,
   validate,
   validateErrors,
   validateFields,

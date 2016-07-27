@@ -8,5 +8,7 @@ export default function setValidityActionReducer(state, action, localPath) {
 
   return updateField(state, localPath, {
     pristine: true,
+  }, {
+    pristine: true,
   });
 }

@@ -132,14 +132,10 @@ class Form extends Component {
       fieldsErrorsValidity
     );
 
-    console.log(formValue);
-
     // Compute form-level validity
     if (!fieldsValidity.hasOwnProperty('') && !fieldsErrorsValidity.hasOwnProperty('')) {
       fieldsErrors[''] = false;
     }
-
-    console.log(actions.setFieldsErrors(model, fieldsErrors))
 
     if (validityChanged) {
       dispatch(actions.setFieldsErrors(model, fieldsErrors));
