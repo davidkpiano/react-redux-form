@@ -4,7 +4,8 @@ import TestUtils from 'react-addons-test-utils';
 import { combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-import { modelReducer, formReducer, Field } from '../src';
+import { modelReducer, Field } from '../src';
+import formReducer from '../src/reducers/v1-form-reducer';
 
 describe('<Field parser={...} />', () => {
   const store = createStore(combineReducers({
@@ -49,13 +50,15 @@ describe('<Field parser={...} />', () => {
   it('should parse before validation', () => {
     input.value = 'parse test';
 
+    console.log(store.getState())
+
     assert.isFalse(
-      store.getState().testForm.fields.foo.validity.isParsed,
+      store.getState().testForm.foo.$form.validity.isParsed,
       'should not be valid yet');
 
     TestUtils.Simulate.change(input);
 
     assert.isTrue(
-      store.getState().testForm.fields.foo.validity.isParsed);
+      store.getState().testForm.foo.$form.validity.isParsed);
   });
 });
