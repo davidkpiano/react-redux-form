@@ -1,6 +1,6 @@
 import { assert } from 'chai';
-import { actions, formReducer } from '../src';
-import newFormReducer, {
+import { actions } from '../src';
+import formReducer, {
   initialFieldState as newInitialFieldState,
   getField as newGetField,
 } from '../src/reducers/v1-form-reducer';
@@ -8,20 +8,20 @@ import isValid from '../src/form/is-valid';
 
 describe('formReducer()', () => {
   it('should create a reducer given a model', () => {
-    const reducer = newFormReducer('test');
+    const reducer = formReducer('test');
 
     assert.isFunction(reducer);
   });
 
   it('should work with non-form actions', () => {
-    const reducer = newFormReducer('test');
+    const reducer = formReducer('test');
 
     assert.doesNotThrow(() => reducer(undefined, { type: 'ANY' }));
   });
 
   describe('getField() function', () => {
     it('should return an initialFieldState given an uninitialized model', () => {
-      const reducer = newFormReducer('test');
+      const reducer = formReducer('test');
 
       const actual = reducer(undefined, { type: 'ANY' });
 
@@ -33,7 +33,7 @@ describe('formReducer()', () => {
     });
 
     it('should maintain the full fieldState of an updated model', () => {
-      const reducer = newFormReducer('test');
+      const reducer = formReducer('test');
 
       const actual = reducer(undefined, actions.focus('test.foo'));
 
@@ -54,7 +54,7 @@ describe('formReducer()', () => {
 
   describe('deep paths', () => {
     it('should be able to handle model at deep state path', () => {
-      const reducer = newFormReducer('forms.test');
+      const reducer = formReducer('forms.test');
       const actual = reducer(undefined, actions.focus('forms.test.foo'));
       assert.deepEqual(actual.foo, {
         ...newInitialFieldState,
@@ -63,7 +63,7 @@ describe('formReducer()', () => {
     });
 
     it('should initialize fields given an initial state', () => {
-      const reducer = newFormReducer('test', {
+      const reducer = formReducer('test', {
         foo: 'bar',
         deep: {
           one: 'one',
@@ -89,7 +89,7 @@ describe('formReducer()', () => {
     });
 
     it('should become valid when an invalid field is removed', (done) => {
-      const reducer = newFormReducer('test', {
+      const reducer = formReducer('test', {
         items: [1, 2],
       });
 
@@ -124,13 +124,13 @@ describe('formReducer()', () => {
       const validItem = reducer(undefined, actions.setValidity('test.items[0].name', true));
       const invalidItem = reducer(validItem, actions.setValidity('test.items[1].name', false));
 
-      assert.isFalse(invalidItem.valid, 'form should be invalid');
+      assert.isFalse(isValid(invalidItem), 'form should be invalid');
 
       let removedState;
 
       const dispatch = (action) => {
         removedState = reducer(invalidItem, action);
-        assert.isTrue(removedState.valid);
+        assert.isTrue(isValid(removedState));
         done();
       };
 
@@ -140,11 +140,12 @@ describe('formReducer()', () => {
     });
 
     it('should clean after itself when a field is removed', (done) => {
+      const items = [
+        { name: 'item1' },
+        { name: 'item2' },
+      ];
       const reducer = formReducer('test', {
-        items: [
-          { name: 'item1' },
-          { name: 'item2' },
-        ],
+        items,
       });
 
       const validItem = reducer(
@@ -154,23 +155,24 @@ describe('formReducer()', () => {
         validItem,
         actions.setValidity('test.items[1].name', false));
 
-      assert.isFalse(invalidItem.valid, 'form should be invalid');
+      assert.isFalse(isValid(invalidItem), 'form should be invalid');
 
       let removedState;
 
-      const dispatch = action => {
+      const dispatch = (action) => {
         removedState = reducer(invalidItem, action);
-        assert.isFalse(removedState.valid);
-        assert.isUndefined(removedState.fields['items.1.name']);
+
+        assert.isFalse(isValid(removedState));
+        assert.isUndefined(removedState.items[1]);
       };
 
-      const getState = () => invalidItem;
+      const getState = () => ({ test: { items } });
 
       actions.remove('test.items', 0)(dispatch, getState);
 
-      const dispatch2 = action => {
+      const dispatch2 = (action) => {
         const removedState2 = reducer(removedState, action);
-        assert.isTrue(removedState2.valid);
+        assert.isTrue(isValid(removedState2));
         done();
       };
 
@@ -190,15 +192,15 @@ describe('formReducer()', () => {
         bar: false,
       }));
 
-      assert.isFalse(bothInvalidState.valid);
+      assert.isFalse(isValid(bothInvalidState));
 
       const oneInvalidState = reducer(bothInvalidState, actions.setValidity('test.foo', true));
 
-      assert.isFalse(oneInvalidState.valid);
+      assert.isFalse(isValid(oneInvalidState));
 
       const validState = reducer(oneInvalidState, actions.setValidity('test.bar', true));
 
-      assert.isTrue(validState.valid);
+      assert.isTrue(isValid(validState));
     });
 
     it('should clean after itself when a valid field (scenario with 3 items)', (done) => {
@@ -220,13 +222,13 @@ describe('formReducer()', () => {
         state2,
         actions.setValidity('test.items[2].name', true));
 
-      assert.isFalse(state3.valid, 'form should be invalid');
+      assert.isFalse(isValid(state3), 'form should be invalid');
 
       let removedState;
 
       const dispatch = action => {
         removedState = reducer(state3, action);
-        assert.isFalse(removedState.valid, 'form should still be invalid');
+        assert.isFalse(isValid(removedState), 'form should still be invalid');
         done();
       };
 
@@ -252,8 +254,7 @@ describe('formReducer()', () => {
 
       const dispatch = action => {
         removedState = reducer(invalidItem, action);
-        assert.isUndefined(removedState.fields['items.1.name']);
-        assert.isUndefined(removedState.fields['items.1.dummy']); // <-- this field is leftover
+        assert.isUndefined(removedState.items[1]);
         done();
       };
 
@@ -265,7 +266,7 @@ describe('formReducer()', () => {
 
   describe('SET_SUBMIT_FAILED action', () => {
     it('should set form to submitFailed = true when submitFailed = false', () => {
-      const reducer = newFormReducer('test', { foo: '', bar: '' });
+      const reducer = formReducer('test', { foo: '', bar: '' });
 
       const actual = reducer(undefined, actions.setSubmitFailed('test'));
 
@@ -278,7 +279,7 @@ describe('formReducer()', () => {
     });
 
     it('should set form to submitFailed = false when form submitFailed = false', () => {
-      const reducer = newFormReducer('test', { foo: '', bar: '' });
+      const reducer = formReducer('test', { foo: '', bar: '' });
 
       const actual = reducer(undefined, actions.setSubmitFailed('test', false));
 

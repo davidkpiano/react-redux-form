@@ -3,13 +3,27 @@ import icepick from 'icepick';
 import get from '../../utils/get';
 import shallowEqual from 'fbjs/lib/shallowEqual';
 import isPlainObject from 'lodash/isPlainObject';
+import compact from 'lodash/compact';
 import mapValues from '../../utils/map-values';
 import { initialFieldState } from '../v1-form-reducer';
 
-function updateFieldValue(field, value) {
+function updateFieldValue(field, action) {
   let method;
+  const { value, removeKeys } = action;
 
   if (shallowEqual(field.value, value)) return field;
+
+  if (removeKeys) {
+    const result = [];
+
+    Object.keys(field).forEach((key) => {
+      if (!!~removeKeys.indexOf(+key) || key === '$form') return;
+
+      result[key] = field[key];
+    });
+
+    return {...compact(result), $form: field.$form};
+  }
 
   if (Array.isArray(value)) {
     method = (val, iter) => Array.prototype.map.call(val, iter).filter(a => !!a);
@@ -69,7 +83,7 @@ export default function changeActionReducer(state, action, localPath) {
 
   const field = get(state, localPath, initialFieldState);
 
-  const updatedField = updateFieldValue(field, action.value);
+  const updatedField = updateFieldValue(field, action);
 
   if (!localPath.length) return updatedField;
 

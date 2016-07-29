@@ -3,6 +3,7 @@ import isPlainObject from 'lodash/isPlainObject';
 export default function isValid(formState) {
   if (!formState) return true;
 
+
   // TODO: deprecate
   if (formState.hasOwnProperty('valid')) return formState.valid;
 
@@ -20,5 +21,6 @@ export default function isValid(formState) {
     });
   }
 
-  return Object.keys(formState).every((key) => isValid(formState[key]));
+  return Object.keys(formState)
+    .every((key) => isValid(formState[key]));
 }
