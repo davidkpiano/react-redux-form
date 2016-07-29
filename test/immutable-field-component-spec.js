@@ -6,11 +6,12 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
-import { formReducer, actions } from '../src';
+import { actions } from '../src';
 import {
   modelReducer as immutableModelReducer,
   Field as ImmutableField,
 } from '../src/immutable';
+import formReducer from '../src/reducers/v1-form-reducer';
 
 describe('<Field> with Immutable.js', () => {
   const reducer = immutableModelReducer('test',

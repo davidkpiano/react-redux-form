@@ -49,6 +49,7 @@ describe('<Field /> component', () => {
   it('should not wrap child components in a <div> if only one', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test'),
     }));
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -68,6 +69,7 @@ describe('<Field /> component', () => {
   it('should recursively handle nested control components', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test'),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -101,6 +103,7 @@ describe('<Field /> component', () => {
   it('should handle nested control components created with React.Children.only', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test'),
     }));
 
     class ChildOnlyComp extends React.Component {
@@ -150,6 +153,7 @@ describe('<Field /> component', () => {
     assert.doesNotThrow(() => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         test: modelReducer('test', { foo: 'bar' }),
+        testForm: formReducer('test'),
       }));
 
       TestUtils.renderIntoDocument(
@@ -1113,6 +1117,7 @@ describe('<Field /> component', () => {
   describe('wrapper components with component property', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', {}),
+      testForm: formReducer('test'),
     }));
 
     it('should wrap children with specified component (string)', () => {
@@ -1196,6 +1201,7 @@ describe('<Field /> component', () => {
     onEvents.forEach((onEvent) => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         test: modelReducer('test', { foo: 'initial' }),
+        testForm: formReducer('test'),
       }));
 
       it(`should update the store when updateOn="${onEvent}"`, () => {
@@ -1270,6 +1276,7 @@ describe('<Field /> component', () => {
     const reducer = modelReducer('test', { foo: '' });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
+      testForm: formReducer('test'),
     }));
 
     it('should change the model to the defaultValue on load', () => {
@@ -1293,6 +1300,7 @@ describe('<Field /> component', () => {
     const reducer = modelReducer('test');
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
+      testForm: formReducer('test'),
     }));
 
     it('should change the model upon pressing Enter', () => {
@@ -1327,6 +1335,7 @@ describe('<Field /> component', () => {
     const reducer = modelReducer('test', { foo: '' });
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: reducer,
+      testForm: formReducer('test'),
     }));
 
     it('should execute the custom change action', () => {
@@ -1586,6 +1595,7 @@ describe('<Field /> component', () => {
   it('should maintain child references', (done) => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', { foo: '' }),
+      testForm: formReducer('test'),
     }));
 
     class TestContainer extends React.Component {
@@ -1631,6 +1641,7 @@ describe('<Field /> component', () => {
   it('should not override custom value prop', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', { foo: '' }),
+      testForm: formReducer('test'),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -1656,6 +1667,7 @@ describe('<Field /> component', () => {
   it('should allow an input to remain uncontrolled with value={undefined}', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', { foo: '' }),
+      testForm: formReducer('test'),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -1678,6 +1690,7 @@ describe('<Field /> component', () => {
   it('should render a Component with an idempotent mapStateToProps', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', { foo: '' }),
+      testForm: formReducer('test'),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -1704,6 +1717,7 @@ describe('<Field /> component', () => {
   it('should not override the name prop', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', { foo: '' }),
+      testForm: formReducer('test'),
     }));
 
     const field = TestUtils.renderIntoDocument(
@@ -1722,6 +1736,7 @@ describe('<Field /> component', () => {
   it('should allow a custom mapProps() prop for use in Control', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', { foo: 'initial' }),
+      testForm: formReducer('test'),
     }));
 
     const CustomInput = (props) => (
@@ -1828,6 +1843,7 @@ describe('<Field /> component', () => {
     it('should work with value = 0', () => {
       const store = createStore(combineReducers({
         test: modelReducer('test', { foo: 0 }),
+        testForm: formReducer('test'),
       }), applyMiddleware(thunk));
 
       const field = TestUtils.renderIntoDocument(
@@ -1848,6 +1864,7 @@ describe('<Field /> component', () => {
     it('should update the input value on external change', () => {
       const store = createStore(combineReducers({
         test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test'),
       }), applyMiddleware(thunk));
 
       const field = TestUtils.renderIntoDocument(
