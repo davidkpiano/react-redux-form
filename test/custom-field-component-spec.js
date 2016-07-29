@@ -42,7 +42,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
     }
   }
 
-  CustomText.propTypes = { customOnChange: PropTypes.function };
+  CustomText.propTypes = { customOnChange: PropTypes.func };
 
   class FamiliarText extends Component {
     render() {
@@ -57,6 +57,20 @@ describe('custom <Field /> components with createFieldClass()', () => {
   }
 
   FamiliarText.propTypes = { onChange: PropTypes.function };
+
+  class CustomCheckbox extends Component {
+    render() {
+      const { onChange, value } = this.props;
+
+      return (
+        <span onClick={() => onChange(value)} />
+      );
+    }
+  }
+
+  CustomCheckbox.propTypes = {
+    onChange: PropTypes.func,
+  };
 
   const MinifiedText = class MT extends Component {
     render() {
@@ -227,6 +241,70 @@ describe('custom <Field /> components with createFieldClass()', () => {
     assert.equal(
       store.getState().test.foo,
       'testing');
+  });
+
+  it('should work with custom checkboxes', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: true }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <CustomField model="test.foo">
+          <CustomCheckbox />
+        </CustomField>
+      </Provider>
+    );
+
+    const control = TestUtils.findRenderedDOMComponentWithTag(field, 'span');
+
+    TestUtils.Simulate.click(control);
+
+    assert.equal(
+      store.getState().test.foo,
+      false);
+  });
+
+  it('should work with custom checkboxes (multi)', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { items: [1, 2, 3] }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <CustomField model="test.items[]">
+          <CustomCheckbox value={1} />
+          <CustomCheckbox value={2} />
+          <CustomCheckbox value={3} />
+        </CustomField>
+      </Provider>
+    );
+
+    const controls = TestUtils.scryRenderedDOMComponentsWithTag(field, 'span');
+
+    assert.deepEqual(
+      store.getState().test.items,
+      [1, 2, 3]);
+
+    TestUtils.Simulate.click(controls[0]);
+
+    assert.sameMembers(
+      store.getState().test.items,
+      [2, 3]);
+
+    TestUtils.Simulate.click(controls[1]);
+
+    assert.sameMembers(
+      store.getState().test.items,
+      [3]);
+
+    TestUtils.Simulate.click(controls[0]);
+
+    assert.sameMembers(
+      store.getState().test.items,
+      [1, 3]);
   });
 
   it('should pass event to asyncValidator', (done) => {

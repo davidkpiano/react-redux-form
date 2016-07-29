@@ -37,26 +37,6 @@ function isReadOnlyValue(controlProps) {
   return ~['radio', 'checkbox'].indexOf(controlProps.type);
 }
 
-const modelValueUpdaterMap = {
-  checkbox: (props, eventValue) => {
-    const { model, modelValue } = props;
-
-    if (isMulti(model)) {
-      const valueWithItem = modelValue || [];
-      const valueWithoutItem = (valueWithItem || [])
-        .filter(item => item !== eventValue);
-      const value = (valueWithoutItem.length === valueWithItem.length)
-        ? icepick.push(valueWithItem, eventValue)
-        : valueWithoutItem;
-
-      return value;
-    }
-
-    return !modelValue;
-  },
-  default: (props, eventValue) => eventValue,
-};
-
 class Control extends Component {
   constructor(props) {
     super(props);
@@ -161,14 +141,13 @@ class Control extends Component {
   }
 
   getChangeAction(event) {
-    const { changeAction, model, controlProps } = this.props;
-    const modelValueUpdater = modelValueUpdaterMap[controlProps.type]
-        || modelValueUpdaterMap.default;
+    const { model, controlProps } = this.props;
+    const { changeAction = actions.change } = this.state.mappedProps;
     const value = isReadOnlyValue(controlProps)
-      ? modelValueUpdater(this.props, controlProps.value)
+      ? controlProps.value
       : event;
 
-    return changeAction(model, value);
+    return changeAction(model, getValue(value));
   }
 
   getValidateAction(value) {
