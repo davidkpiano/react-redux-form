@@ -13,7 +13,7 @@ function updateFieldValue(field, action) {
 
   if (shallowEqual(field.value, value)) return field;
 
-  if (silent) return icepick.setIn(field, ['value'], value);
+  if (silent) return icepick.set(field, 'value', value);
 
   if (removeKeys) {
     const result = [];

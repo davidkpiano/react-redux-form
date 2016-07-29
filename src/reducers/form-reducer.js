@@ -50,17 +50,18 @@ export function getField(state, path) {
   return _get(state, path, initialFieldState);
 }
 
-function createInitialState(model, state) {
+function createInitialState(model, state, customInitialFieldState = {}) {
   let initialState;
 
   if (isArray(state) || isPlainObject(state)) {
     initialState = mapValues(state, (subState) =>
-      createInitialState(model, subState));
+      createInitialState(model, subState, customInitialFieldState));
   } else {
     return icepick.merge(initialFieldState, {
       initialValue: state,
       value: state,
       model,
+      ...customInitialFieldState,
     });
   }
 
@@ -68,6 +69,7 @@ function createInitialState(model, state) {
     initialValue: state,
     value: state,
     model,
+    ...customInitialFieldState,
   });
 
   return icepick.set(initialState, '$form', initialForm);
@@ -107,10 +109,14 @@ const defaultPlugins = [
 export default function createFormReducer(
   model,
   initialState = {},
-  plugins = []
+  options = {},
 ) {
+  const {
+    plugins = [],
+    initialFieldState: customInitialFieldState,
+  } = options;
   const modelPath = toPath(model);
-  const initialFormState = createInitialState(model, initialState);
+  const initialFormState = createInitialState(model, initialState, customInitialFieldState);
 
   const wrappedPlugins = plugins
     .concat(defaultPlugins)

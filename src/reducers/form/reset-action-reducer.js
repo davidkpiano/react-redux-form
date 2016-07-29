@@ -8,5 +8,5 @@ export default function resetActionReducer(state, action, localPath) {
     return state;
   }
 
-  return updateField(state, action, initialFieldState, initialFieldState);
+  return updateField(state, localPath, initialFieldState, initialFieldState);
 }
