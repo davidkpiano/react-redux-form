@@ -6,8 +6,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
-import { Form, modelReducer, Field, Errors, actions } from '../src';
-import formReducer from '../src/reducers/v1-form-reducer';
+import { Form, modelReducer, formReducer, Field, Errors, actions } from '../src';
 
 describe('<Errors />', () => {
   it('should exist', () => {

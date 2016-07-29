@@ -7,8 +7,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
-import { controls, modelReducer, Control } from '../src';
-import formReducer from '../src/reducers/v1-form-reducer';
+import { controls, modelReducer, formReducer, Control } from '../src';
 
 function createTestStore(reducers) {
   return applyMiddleware(thunk)(createStore)(combineReducers(reducers));

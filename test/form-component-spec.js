@@ -9,8 +9,7 @@ import thunk from 'redux-thunk';
 import createTestStore from 'redux-test-store';
 import sinon from 'sinon';
 
-import { Form, modelReducer, Field, actions, actionTypes } from '../src';
-import formReducer from '../src/reducers/v1-form-reducer';
+import { Form, modelReducer, formReducer, Field, actions, actionTypes } from '../src';
 import isValid from '../src/form/is-valid';
 
 describe('<Form> component', () => {

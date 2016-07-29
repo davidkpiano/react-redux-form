@@ -1,9 +1,5 @@
 import { assert } from 'chai';
-import { actions } from '../src';
-import formReducer, {
-  initialFieldState as newInitialFieldState,
-  getField as newGetField,
-} from '../src/reducers/v1-form-reducer';
+import { actions, formReducer, initialFieldState, getField } from '../src';
 import isValid from '../src/form/is-valid';
 
 describe('formReducer()', () => {
@@ -25,11 +21,11 @@ describe('formReducer()', () => {
 
       const actual = reducer(undefined, { type: 'ANY' });
 
-      assert.isFunction(newGetField);
+      assert.isFunction(getField);
 
-      assert.deepEqual(newGetField(actual, 'any'), newInitialFieldState);
+      assert.deepEqual(getField(actual, 'any'), initialFieldState);
 
-      assert.isObject(newGetField(actual, 'foo').errors);
+      assert.isObject(getField(actual, 'foo').errors);
     });
 
     it('should maintain the full fieldState of an updated model', () => {
@@ -37,18 +33,18 @@ describe('formReducer()', () => {
 
       const actual = reducer(undefined, actions.focus('test.foo'));
 
-      assert.deepEqual(newGetField(actual, 'foo'), {
-        ...newInitialFieldState,
+      assert.deepEqual(getField(actual, 'foo'), {
+        ...initialFieldState,
         focus: true,
       });
 
-      assert.isObject(newGetField(actual, 'foo').errors);
+      assert.isObject(getField(actual, 'foo').errors);
     });
 
     it('should throw an error when given an invalid argument for form state', () => {
-      assert.throws(() => newGetField(true, 'foo'));
-      assert.throws(() => newGetField(undefined, 'foo'));
-      assert.throws(() => newGetField(null, 'foo'));
+      assert.throws(() => getField(true, 'foo'));
+      assert.throws(() => getField(undefined, 'foo'));
+      assert.throws(() => getField(null, 'foo'));
     });
   });
 
@@ -57,7 +53,7 @@ describe('formReducer()', () => {
       const reducer = formReducer('forms.test');
       const actual = reducer(undefined, actions.focus('forms.test.foo'));
       assert.deepEqual(actual.foo, {
-        ...newInitialFieldState,
+        ...initialFieldState,
         focus: true,
       });
     });

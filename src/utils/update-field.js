@@ -1,7 +1,7 @@
 import icepick from 'icepick';
 import get from './get';
 import mapValues from './map-values';
-import { initialFieldState } from '../reducers/v1-form-reducer';
+import { initialFieldState } from '../reducers/form-reducer';
 
 export default function updateField(state, path, newState, newSubState) {
   const field = path.length

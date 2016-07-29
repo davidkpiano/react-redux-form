@@ -1,7 +1,6 @@
 import { assert } from 'chai';
 import { combineReducers } from 'redux';
-import { actions, modelReducer, track } from '../src';
-import formReducer from '../src/reducers/v1-form-reducer';
+import { actions, modelReducer, formReducer, track } from '../src';
 
 describe('model actions', () => {
   const testItems = [

@@ -6,7 +6,7 @@ import isPlainObject from 'lodash/isPlainObject';
 import mapValues from '../../utils/map-values';
 import inverse from '../../utils/inverse';
 import updateField from '../../utils/update-field';
-import { initialFieldState } from '../v1-form-reducer';
+import { initialFieldState } from '../form-reducer';
 
 export default function resetValidityActionReducer(state, action, localPath) {
   if (action.type !== actionTypes.RESET_VALIDITY) {

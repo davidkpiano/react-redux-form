@@ -16,7 +16,7 @@ import {
 } from '../utils';
 import getForm from '../utils/get-form';
 import getModel from '../utils/get-model';
-import { getField } from '../reducers/v1-form-reducer';
+import { getField } from '../reducers/form-reducer';
 import isValid from '../form/is-valid';
 
 class Form extends Component {

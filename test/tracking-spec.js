@@ -5,8 +5,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
-import { Field, Errors, modelReducer, track } from '../src';
-import formReducer from '../src/reducers/v1-form-reducer';
+import { Field, Errors, modelReducer, formReducer, track } from '../src';
 
 const state = {
   deep: {

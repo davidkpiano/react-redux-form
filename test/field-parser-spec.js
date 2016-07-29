@@ -4,8 +4,7 @@ import TestUtils from 'react-addons-test-utils';
 import { combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 
-import { modelReducer, Field } from '../src';
-import formReducer from '../src/reducers/v1-form-reducer';
+import { modelReducer, Field, formReducer } from '../src';
 
 describe('<Field parser={...} />', () => {
   const store = createStore(combineReducers({

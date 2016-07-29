@@ -3,8 +3,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
-import { actions, actionTypes } from '../src';
-import formReducer, { initialFieldState } from '../src/reducers/v1-form-reducer';
+import { actions, actionTypes, formReducer, initialFieldState } from '../src';
 import isValid from '../src/form/is-valid';
 import isPristine from '../src/form/is-pristine';
 import isRetouched from '../src/form/is-retouched';

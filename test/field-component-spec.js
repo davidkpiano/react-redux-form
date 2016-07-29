@@ -10,8 +10,7 @@ import capitalize from 'lodash/capitalize';
 import sinon from 'sinon';
 import createTestStore from 'redux-test-store';
 
-import { Field, actions, actionTypes, modelReducer, controls } from '../src';
-import formReducer from '../src/reducers/v1-form-reducer';
+import { Field, actions, actionTypes, modelReducer, formReducer, controls } from '../src';
 import isValid from '../src/form/is-valid';
 
 describe('<Field /> component', () => {

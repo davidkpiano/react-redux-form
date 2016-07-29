@@ -2,8 +2,7 @@ import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 
-import { modelReducer, actions, actionTypes } from '../src';
-import formReducer from '../src/reducers/v1-form-reducer';
+import { modelReducer, formReducer, actions, actionTypes } from '../src';
 
 describe('batched actions', () => {
   const mockStore = configureMockStore([thunk]);

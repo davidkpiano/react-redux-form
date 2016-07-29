@@ -4,6 +4,7 @@ import {
   isValidityInvalid,
   getFormStateKey,
 } from '../src/utils/index';
+import getFieldFromState from '../src/utils/get-field-from-state';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import mapValues from 'lodash/mapValues';
@@ -80,7 +81,7 @@ describe('utils', () => {
 
   describe('getFieldFromState()', () => {
     it('should exist', () => {
-      assert.isFunction(utils.getFieldFromState);
+      assert.isFunction(getFieldFromState);
     });
 
     context('standard form', () => {
@@ -88,8 +89,8 @@ describe('utils', () => {
         const reducer = formReducer('person');
         const personForm = reducer(undefined, actions.change('person.name', 'john'));
 
-        const field = utils.getFieldFromState({ personForm }, 'person.name');
-        assert.strictEqual(personForm.fields.name, field);
+        const field = getFieldFromState({ personForm }, 'person.name');
+        assert.strictEqual(personForm.name, field);
       });
     });
 
@@ -98,8 +99,8 @@ describe('utils', () => {
         const reducer = formReducer('app.car');
         const carForm = reducer(undefined, actions.change('app.car.make', 'mazda'));
 
-        const field = utils.getFieldFromState({ carForm }, 'app.car.make');
-        assert.strictEqual(carForm.fields.make, field);
+        const field = getFieldFromState({ carForm }, 'app.car.make');
+        assert.strictEqual(carForm.make, field);
       });
     });
 
@@ -108,8 +109,8 @@ describe('utils', () => {
         const reducer = formReducer('district.library');
         const libraryForm = reducer(undefined, actions.change('district.library.hours.open', 8));
 
-        const field = utils.getFieldFromState({ libraryForm }, 'district.library.hours.open');
-        assert.strictEqual(libraryForm.fields['hours.open'], field);
+        const field = getFieldFromState({ libraryForm }, 'district.library.hours.open');
+        assert.strictEqual(libraryForm.hours.open, field);
       });
     });
   });

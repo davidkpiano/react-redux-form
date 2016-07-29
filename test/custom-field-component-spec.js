@@ -10,8 +10,7 @@ import {
   Field as NativeField,
   Form as NativeForm,
 } from '../src/native';
-import { controls, createFieldClass, modelReducer, Field } from '../src';
-import formReducer from '../src/reducers/v1-form-reducer';
+import { controls, createFieldClass, modelReducer, formReducer, Field } from '../src';
 
 describe('controls props mapping', () => {
   it('should exist', () => {

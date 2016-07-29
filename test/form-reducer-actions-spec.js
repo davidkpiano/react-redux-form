@@ -4,8 +4,8 @@ import {
   actionTypes,
   initialFieldState,
   form as formUtils,
+  formReducer,
 } from '../src';
-import formReducer from '../src/reducers/v1-form-reducer';
 import mapValues from 'lodash/mapValues';
 import toPath from 'lodash/toPath';
 import get from '../src/utils/get';

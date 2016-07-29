@@ -5,7 +5,7 @@ import shallowEqual from 'fbjs/lib/shallowEqual';
 import isPlainObject from 'lodash/isPlainObject';
 import compact from 'lodash/compact';
 import mapValues from '../../utils/map-values';
-import { initialFieldState } from '../v1-form-reducer';
+import { initialFieldState } from '../form-reducer';
 
 function updateFieldValue(field, action) {
   let method;

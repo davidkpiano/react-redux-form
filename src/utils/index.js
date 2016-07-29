@@ -64,8 +64,8 @@ function getFormStateKey(state, model, currentPath = '') {
   Object.keys(state).some((key) => {
     const subState = state[key];
 
-    if (subState && subState.model) {
-      if (pathStartsWith(model, subState.model)) {
+    if ('$form' in subState && subState.$form.model) {
+      if (pathStartsWith(model, subState.$form.model)) {
         result = currentPath
           ? [currentPath, key].join('.')
           : key;
