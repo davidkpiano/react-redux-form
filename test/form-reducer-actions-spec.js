@@ -48,6 +48,30 @@ describe('formReducer() (V1)', () => {
           },
         },
       },
+      {
+        action: actions.change,
+        args: ['string', { silent: true }],
+        expectedField: {
+          pristine: true,
+          value: 'string',
+        },
+      },
+      {
+        action: actions.change,
+        args: [42, { silent: true }],
+        expectedField: {
+          pristine: true,
+          value: 42,
+        },
+      },
+      {
+        action: actions.change,
+        args: [{ foo: 'bar' }, { silent: true }],
+        expectedField: {
+          pristine: true,
+          value: { foo: 'bar' },
+        },
+      },
     ],
     [actionTypes.FOCUS]: [
       {
