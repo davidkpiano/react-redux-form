@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import { combineReducers } from 'redux';
-import { actions, modelReducer, formReducer, track } from '../src';
+import { actions, modelReducer, track } from '../src';
+import formReducer from '../src/reducers/v1-form-reducer';
 
 describe('model actions', () => {
   const testItems = [
@@ -25,8 +26,8 @@ describe('model actions', () => {
 
       const actual = reducer({}, actions.load('foo', { bar: 'string' }));
       assert.deepEqual(actual.foo, { bar: 'string' });
-      assert.equal(actual.fooForm.pristine, true);
-      assert.equal(actual.fooForm.touched, false);
+      assert.equal(actual.fooForm.$form.pristine, true);
+      assert.equal(actual.fooForm.$form.touched, false);
     });
   });
 

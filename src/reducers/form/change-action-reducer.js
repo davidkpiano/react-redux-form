@@ -9,9 +9,11 @@ import { initialFieldState } from '../v1-form-reducer';
 
 function updateFieldValue(field, action) {
   let method;
-  const { value, removeKeys } = action;
+  const { value, removeKeys, silent } = action;
 
   if (shallowEqual(field.value, value)) return field;
+
+  if (silent) return icepick.setIn(field, 'value', value);
 
   if (removeKeys) {
     const result = [];

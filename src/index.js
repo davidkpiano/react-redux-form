@@ -16,8 +16,6 @@ import formReducer, {
 
 import modelReducer, { createModelReducer } from './reducers/model-reducer';
 
-import modelFormReducer, { modelForm } from './reducers/model-form-reducer';
-
 import {
   track,
 } from './utils/track';
@@ -34,8 +32,6 @@ export {
   createFormReducer,
   modelReducer,
   createModelReducer,
-  modelFormReducer,
-  modelForm,
   Field,
   Control,
   Form,
