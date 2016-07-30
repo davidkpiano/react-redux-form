@@ -170,10 +170,13 @@ function _createFormReducer(model, initialState) {
           const persistKeys = [];
 
           const removeKeys = Object.keys(state.fields).filter((fieldKey) => {
-            for (const removeKey of action.removeKeys) {
+            const isKeyToRemove = action.removeKeys.some((removeKey) => {
               const removeKeyPath = localPath.concat(removeKey);
-              if (pathStartsWith(fieldKey, removeKeyPath)) return true;
-            }
+
+              return pathStartsWith(fieldKey, removeKeyPath);
+            });
+
+            if (isKeyToRemove) return true;
 
             if (pathStartsWith(fieldKey, localPath)) {
               persistKeys.push(fieldKey);
