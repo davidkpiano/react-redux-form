@@ -24,7 +24,12 @@ import isValid from '../form/is-valid';
 import controlPropsMap from '../constants/control-props-map';
 
 function mapStateToProps(state, props) {
-  const { model, mapProps, getter = _get } = props;
+  const {
+    model,
+    mapProps,
+    getter = _get,
+    controlProps = omit(props, Object.keys(Control.propTypes)),
+  } = props;
 
   if (!mapProps) return props;
 
@@ -35,6 +40,7 @@ function mapStateToProps(state, props) {
     model,
     modelValue: getter(state, modelString),
     fieldValue,
+    controlProps,
   };
 }
 
@@ -460,6 +466,21 @@ BaseControl.checkbox.defaultProps = {
   component: 'input',
   type: 'checkbox',
   mapProps: controlPropsMap.checkbox,
+};
+
+BaseControl.file = class extends BaseControl {};
+BaseControl.file.defaultProps = {
+  ...BaseControl.defaultProps,
+  component: 'input',
+  type: 'file',
+  mapProps: controlPropsMap.file,
+};
+
+BaseControl.select = class extends BaseControl {};
+BaseControl.select.defaultProps = {
+  ...BaseControl.defaultProps,
+  component: 'select',
+  mapProps: controlPropsMap.select,
 };
 
 export default BaseControl;

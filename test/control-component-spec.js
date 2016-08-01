@@ -297,7 +297,6 @@ describe('Extended Control components', () => {
     });
 
     it('should dispatch a change event when changed', () => {
-      console.log('---------')
       TestUtils.Simulate.change(checkboxes[0]);
 
       assert.sameMembers(
@@ -327,7 +326,6 @@ describe('Extended Control components', () => {
       assert.sameMembers(
         store.getState().test.foo,
         [2, 3], 'one unchecked');
-      console.log('============')
     });
 
     it('should check the appropriate checkboxes when model is externally changed', () => {
@@ -336,6 +334,126 @@ describe('Extended Control components', () => {
       assert.isTrue(checkboxes[0].checked);
       assert.isTrue(checkboxes[1].checked);
       assert.isFalse(checkboxes[2].checked);
+    });
+  });
+
+  describe('with <Control.checkbox /> (custom onChange)', () => {
+    const store = createTestStore({
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
+        foo: true,
+      }),
+    });
+
+    const handleOnChange = sinon.spy((e) => e);
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Control.checkbox model="test.foo" onChange={handleOnChange} />
+      </Provider>
+    );
+
+    const checkbox = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    TestUtils.Simulate.change(checkbox);
+
+    it('should call the custom onChange event handler', () => {
+      assert.ok(handleOnChange.calledOnce);
+    });
+
+    it('should update the state as expected', () => {
+      assert.isFalse(store.getState().test.foo);
+    });
+  });
+
+  describe('with <Control.file />', () => {
+    it('should update with an array of files', () => {
+      const store = createTestStore({
+        testForm: formReducer('test'),
+        test: modelReducer('test', { foo: [] }),
+      });
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.file model="test.foo" />
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      TestUtils.Simulate.change(input, {
+        target: {
+          type: 'file',
+          files: [
+            { name: 'first.jpg' },
+            { name: 'second.jpg' },
+          ],
+        },
+      });
+
+      assert.deepEqual(
+        store.getState().test.foo,
+        [
+          { name: 'first.jpg' },
+          { name: 'second.jpg' },
+        ]);
+    });
+  });
+
+  describe('with <Control.select />', () => {
+    const store = createTestStore({
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
+        foo: 'one',
+      }),
+    });
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Control.select model="test.foo">
+          <option value="one" />
+          <option value="two" />
+          <option value="three" />
+          <optgroup>
+            <option value="four" />
+            <option value="five" />
+            <option value="six" />
+          </optgroup>
+        </Control.select>
+      </Provider>
+    );
+
+    const select = TestUtils.findRenderedDOMComponentWithTag(field, 'select');
+    const options = TestUtils.scryRenderedDOMComponentsWithTag(field, 'option');
+
+    it('should select the option that matches the initial state of the model', () => {
+      assert.isTrue(options[0].selected);
+      assert.isFalse(options[1].selected);
+      assert.equal(select.value, 'one');
+    });
+
+    it('should dispatch a change event when changed', () => {
+      TestUtils.Simulate.change(options[1]);
+
+      assert.equal(
+        store.getState().test.foo,
+        'two');
+    });
+
+    it('should select the appropriate <option> when model is externally changed', () => {
+      store.dispatch(actions.change('test.foo', 'three'));
+
+      assert.isTrue(options[2].selected);
+      assert.equal(select.value, 'three');
+    });
+
+    it('should work with <optgroup>', () => {
+      TestUtils.Simulate.change(options[3]);
+
+      assert.isTrue(options[3].selected);
+      assert.equal(
+        store.getState().test.foo,
+        'four');
     });
   });
 });
