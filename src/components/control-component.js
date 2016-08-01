@@ -23,12 +23,51 @@ import actions from '../actions';
 import isValid from '../form/is-valid';
 import controlPropsMap from '../constants/control-props-map';
 
+const propTypes = {
+  model: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.string,
+  ]),
+  modelValue: PropTypes.any,
+  viewValue: PropTypes.any,
+  control: PropTypes.any,
+  onLoad: PropTypes.func,
+  onSubmit: PropTypes.func,
+  fieldValue: PropTypes.object,
+  mapProps: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
+  changeAction: PropTypes.func,
+  updateOn: PropTypes.string,
+  validateOn: PropTypes.string,
+  validators: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
+  asyncValidateOn: PropTypes.string,
+  asyncValidators: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
+  errors: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
+  controlProps: PropTypes.object,
+  component: PropTypes.any,
+  dispatch: PropTypes.func,
+  parser: PropTypes.func,
+  formatter: PropTypes.func,
+  getter: PropTypes.func,
+};
+
 function mapStateToProps(state, props) {
   const {
     model,
     mapProps,
     getter = _get,
-    controlProps = omit(props, Object.keys(Control.propTypes)),
+    controlProps = omit(props, Object.keys(propTypes)),
   } = props;
 
   if (!mapProps) return props;
@@ -372,7 +411,7 @@ class Control extends Component {
       control,
     } = this.props;
 
-    const allowedProps = omit(this.state.mappedProps, Object.keys(Control.propTypes));
+    const allowedProps = omit(this.state.mappedProps, Object.keys(propTypes));
 
     // If there is an existing control, clone it
     if (control) {
@@ -395,44 +434,7 @@ class Control extends Component {
   }
 }
 
-Control.propTypes = {
-  model: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.string,
-  ]),
-  modelValue: PropTypes.any,
-  viewValue: PropTypes.any,
-  control: PropTypes.any,
-  onLoad: PropTypes.func,
-  onSubmit: PropTypes.func,
-  fieldValue: PropTypes.object,
-  mapProps: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.object,
-  ]),
-  changeAction: PropTypes.func,
-  updateOn: PropTypes.string,
-  validateOn: PropTypes.string,
-  validators: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.object,
-  ]),
-  asyncValidateOn: PropTypes.string,
-  asyncValidators: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.object,
-  ]),
-  errors: PropTypes.oneOfType([
-    PropTypes.func,
-    PropTypes.object,
-  ]),
-  controlProps: PropTypes.object,
-  component: PropTypes.any,
-  dispatch: PropTypes.func,
-  parser: PropTypes.func,
-  formatter: PropTypes.func,
-  getter: PropTypes.func,
-};
+Control.propTypes = propTypes;
 
 Control.defaultProps = {
   changeAction: actions.change,

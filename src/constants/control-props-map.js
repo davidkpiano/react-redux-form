@@ -35,7 +35,7 @@ const controlPropsMap = {
     checked: (props) => (props.defaultChecked
       ? props.checked
       : isChecked(props)),
-    changeAction: (props) => (model, eventValue) => {
+    changeAction: (props) => (model) => {
       const { modelValue, value } = props;
 
       if (isMulti(model)) {

@@ -276,7 +276,7 @@ describe('Extended Control components', () => {
 
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <div>          
+        <div>
           <Control.checkbox model="test.foo[]" value={1} />
           <Control.checkbox model="test.foo[]" value={2} />
           <Control.checkbox model="test.foo[]" value={3} />
