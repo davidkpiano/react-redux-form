@@ -116,7 +116,7 @@ function getFieldWrapper(props) {
   if (props.component) {
     return props.component;
   }
-  
+
   return 'div';
 }
 
