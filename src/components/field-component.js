@@ -5,7 +5,7 @@ import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
 import identity from 'lodash/identity';
 import omit from 'lodash/omit';
-import isPlainObject from 'redux/lib/utils/isPlainObject';
+import isPlainObject from 'lodash/isPlainObject';
 
 import actions from '../actions';
 import Control from './control-component';

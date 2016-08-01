@@ -7,7 +7,7 @@ import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import merge from '../utils/merge';
 import mapValues from '../utils/map-values';
-import isPlainObject from 'redux/lib/utils/isPlainObject';
+import isPlainObject from 'lodash/isPlainObject';
 import icepick from 'icepick';
 import omit from 'lodash/omit';
 
