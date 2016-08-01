@@ -82,33 +82,69 @@ describe('<Control> component', () => {
   });
 });
 
-['text'].forEach((type) => {
-  describe(`<Control.${type}> component`, () => {
-    describe('basic functionality', () => {
+
+describe('Extended Control components', () => {
+  const inputControlElements = [
+    '', // input with no type
+    'text',
+    'password',
+    'number',
+    'color',
+  ];
+
+  inputControlElements.forEach((type) => {
+    describe(`with <Control.text> ${type ? `and type="${type}"` : ''}`, () => {
       const store = createTestStore({
+        testForm: formReducer('test'),
         test: modelReducer('test', { foo: 'bar' }),
-        testForm: formReducer('test', { foo: 'bar' }),
       });
 
-      const form = TestUtils.renderIntoDocument(
+      const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Control.text model="test.foo" />
+          <Control.text model="test.foo" type={type} />
         </Provider>
       );
 
-      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+      const node = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
-      it('should work as expected with a model (happy path)', () => {
-        assert.ok(input);
-        assert.equal(input.value, 'bar');
+      it('should have an initial value from the model\'s initialState', () => {
+        assert.equal(
+          node.value,
+          'bar');
       });
 
-      it('should handle changes properly', () => {
-        input.value = 'new';
+      it('should dispatch a focus event when focused', () => {
+        TestUtils.Simulate.focus(node);
 
-        TestUtils.Simulate.change(input);
+        assert.containSubset(
+          store.getState().testForm.foo,
+          { focus: true });
+      });
 
-        assert.equal(store.getState().test.foo, 'new');
+      it('should dispatch a blur event when blurred', () => {
+        TestUtils.Simulate.blur(node);
+
+        assert.containSubset(
+          store.getState().testForm.foo,
+          { focus: false });
+      });
+
+      it('should dispatch a change event when changed', () => {
+        node.value = 'testing';
+
+        TestUtils.Simulate.change(node);
+
+        assert.equal(
+          store.getState().test.foo,
+          'testing');
+
+        node.value = 'testing again';
+
+        TestUtils.Simulate.change(node);
+
+        assert.equal(
+          store.getState().test.foo,
+          'testing again');
       });
     });
   });

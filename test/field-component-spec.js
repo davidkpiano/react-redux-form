@@ -166,7 +166,7 @@ describe('<Field /> component', () => {
     });
   });
 
-  textFieldElements.map(([element, type]) => { // eslint-disable-line array-callback-return
+  textFieldElements.forEach(([element, type]) => {
     describe(`with <${element} ${type ? `type="${type}"` : ''}/>`, () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         testForm: formReducer('test'),
