@@ -1,9 +1,6 @@
 export default function isPending(formState) {
   if (!formState) return false;
 
-  // TODO: deprecate
-  if (formState.hasOwnProperty('pending')) return formState.pending;
-
   // Field is pending
   if (!formState.$form) {
     return formState.pending;

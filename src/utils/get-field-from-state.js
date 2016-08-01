@@ -1,16 +1,10 @@
 import get from './get';
 import toPath from './to-path';
-import { getFieldFromState as _oldGetFieldFromState } from './index';
 import { initialFieldState } from '../reducers/form-reducer';
 import getForm from './get-form';
 
 export default function getFieldFromState(state, modelString) {
   const form = getForm(state, modelString);
-
-  // TODO: deprecate
-  if (!form) {
-    return _oldGetFieldFromState(state, modelString);
-  }
 
   if (!modelString.length) return form;
 
