@@ -45,7 +45,7 @@ describe('<Field /> component', () => {
       2);
   });
 
-  it('should not wrap child components in a <div> if only one', () => {
+  it('should wrap child components in a <div> even if only one child', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       test: modelReducer('test', { foo: 'bar' }),
       testForm: formReducer('test'),
@@ -58,9 +58,7 @@ describe('<Field /> component', () => {
       </Provider>
     );
 
-    assert.throws(() => {
-      TestUtils.findRenderedDOMComponentWithTag(field, 'div');
-    });
+    assert.ok(TestUtils.findRenderedDOMComponentWithTag(field, 'div'));
 
     assert.ok(TestUtils.findRenderedDOMComponentWithTag(field, 'input'));
   });

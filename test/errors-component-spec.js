@@ -251,6 +251,7 @@ describe('<Errors />', () => {
               validators={{
                 required: (v) => v && v.length,
               }}
+              component="section"
             >
               <input type="text" />
             </Field>
@@ -297,6 +298,7 @@ describe('<Errors />', () => {
               validators={{
                 required: (v) => v && v.length,
               }}
+              component="section"
             >
               <input type="text" />
             </Field>
@@ -409,6 +411,7 @@ describe('<Errors />', () => {
                 foo: () => false,
                 bar: () => false,
               }}
+              component="main"
             >
               <input type="text" />
             </Field>

@@ -116,12 +116,8 @@ function getFieldWrapper(props) {
   if (props.component) {
     return props.component;
   }
-
-  if (props.className || (props.children && props.children.length > 1)) {
-    return 'div';
-  }
-
-  return null;
+  
+  return 'div';
 }
 
 function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
