@@ -81,3 +81,35 @@ describe('<Control> component', () => {
     });
   });
 });
+
+['text'].forEach((type) => {
+  describe(`<Control.${type}> component`, () => {
+    describe('basic functionality', () => {
+      const store = createTestStore({
+        test: modelReducer('test', { foo: 'bar' }),
+        testForm: formReducer('test', { foo: 'bar' }),
+      });
+
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text model="test.foo" />
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+      it('should work as expected with a model (happy path)', () => {
+        assert.ok(input);
+        assert.equal(input.value, 'bar');
+      });
+
+      it('should handle changes properly', () => {
+        input.value = 'new';
+
+        TestUtils.Simulate.change(input);
+
+        assert.equal(store.getState().test.foo, 'new');
+      });
+    });
+  });
+});

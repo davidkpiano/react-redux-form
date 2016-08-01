@@ -21,6 +21,7 @@ import getModel from '../utils/get-model';
 import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
 import isValid from '../form/is-valid';
+import controlPropsMap from '../constants/control-props-map';
 
 function mapStateToProps(state, props) {
   const { model, mapProps, getter = _get } = props;
@@ -436,4 +437,13 @@ Control.defaultProps = {
   getter: _get,
 };
 
-export default connect(mapStateToProps)(Control);
+const BaseControl = connect(mapStateToProps)(Control);
+
+BaseControl.text = class extends BaseControl {};
+BaseControl.text.defaultProps = {
+  ...BaseControl.defaultProps,
+  component: 'input',
+  mapProps: controlPropsMap.text,
+};
+
+export default BaseControl;
