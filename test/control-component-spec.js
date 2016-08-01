@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
-import { controls, modelReducer, formReducer, Control } from '../src';
+import { controls, modelReducer, formReducer, Control, actions } from '../src';
 
 function createTestStore(reducers) {
   return applyMiddleware(thunk)(createStore)(combineReducers(reducers));
@@ -208,6 +208,134 @@ describe('Extended Control components', () => {
 
       assert.equal(radioOne.checked, false);
       assert.equal(radioTwo.checked, false);
+    });
+  });
+
+  describe('with <Control.checkbox /> (single toggle)', () => {
+    const store = createTestStore({
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
+        single: true,
+      }),
+    });
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Control.checkbox model="test.single" />
+      </Provider>
+    );
+
+    const checkbox = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    it('should initially set the checkbox to checked if the model is truthy', () => {
+      assert.equal(checkbox.checked, true);
+    });
+
+    it('should give each radio input a name attribute of the model', () => {
+      assert.equal(checkbox.name, 'test.single');
+    });
+
+    it('should dispatch a change event when changed', () => {
+      TestUtils.Simulate.change(checkbox);
+
+      assert.equal(
+        store.getState().test.single,
+        false, 'false');
+
+      TestUtils.Simulate.change(checkbox);
+
+      assert.equal(
+        store.getState().test.single,
+        true, 'true');
+    });
+
+    it('should check/uncheck the checkbox when model is externally changed', () => {
+      store.dispatch(actions.change('test.single', true));
+
+      assert.equal(checkbox.checked, true);
+
+      store.dispatch(actions.change('test.single', false));
+
+      assert.equal(checkbox.checked, false);
+    });
+
+    it('should uncheck the checkbox for any falsey value', () => {
+      store.dispatch(actions.change('test.single', ''));
+
+      assert.equal(checkbox.checked, false);
+    });
+  });
+
+  describe('with <Control.checkbox /> (multi toggle)', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
+        foo: [1],
+      }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <div>          
+          <Control.checkbox model="test.foo[]" value={1} />
+          <Control.checkbox model="test.foo[]" value={2} />
+          <Control.checkbox model="test.foo[]" value={3} />
+        </div>
+      </Provider>
+    );
+
+    const checkboxes = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+    it('should initially set the checkbox to checked if the model is truthy', () => {
+      assert.equal(checkboxes[0].checked, true);
+    });
+
+    it('should give each checkbox a name attribute of the model', () => {
+      checkboxes.forEach(checkbox => {
+        assert.equal(checkbox.name, 'test.foo[]');
+      });
+    });
+
+    it('should dispatch a change event when changed', () => {
+      console.log('---------')
+      TestUtils.Simulate.change(checkboxes[0]);
+
+      assert.sameMembers(
+        store.getState().test.foo,
+        [], 'all unchecked');
+
+      TestUtils.Simulate.change(checkboxes[1]);
+
+      assert.sameMembers(
+        store.getState().test.foo,
+        [2], 'one checked');
+
+      TestUtils.Simulate.change(checkboxes[0]);
+
+      assert.sameMembers(
+        store.getState().test.foo,
+        [1, 2], 'two checked');
+
+      TestUtils.Simulate.change(checkboxes[2]);
+
+      assert.sameMembers(
+        store.getState().test.foo,
+        [1, 2, 3], 'all checked');
+
+      TestUtils.Simulate.change(checkboxes[0]);
+
+      assert.sameMembers(
+        store.getState().test.foo,
+        [2, 3], 'one unchecked');
+      console.log('============')
+    });
+
+    it('should check the appropriate checkboxes when model is externally changed', () => {
+      store.dispatch(actions.change('test.foo', [1, 2]));
+
+      assert.isTrue(checkboxes[0].checked);
+      assert.isTrue(checkboxes[1].checked);
+      assert.isFalse(checkboxes[2].checked);
     });
   });
 });

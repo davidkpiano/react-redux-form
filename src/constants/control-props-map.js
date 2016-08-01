@@ -36,17 +36,17 @@ const controlPropsMap = {
       ? props.checked
       : isChecked(props)),
     changeAction: (props) => (model, eventValue) => {
-      const { modelValue } = props;
+      const { modelValue, value } = props;
 
       if (isMulti(model)) {
         const valueWithItem = modelValue || [];
         const valueWithoutItem = (valueWithItem || [])
-          .filter(item => item !== eventValue);
-        const value = (valueWithoutItem.length === valueWithItem.length)
-          ? icepick.push(valueWithItem, eventValue)
+          .filter(item => item !== value);
+        const multiValue = (valueWithoutItem.length === valueWithItem.length)
+          ? icepick.push(valueWithItem, value)
           : valueWithoutItem;
 
-        return actions.change(model, value);
+        return actions.change(model, multiValue);
       }
 
       return actions.change(model, !modelValue);

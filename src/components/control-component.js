@@ -446,4 +446,20 @@ BaseControl.text.defaultProps = {
   mapProps: controlPropsMap.text,
 };
 
+BaseControl.radio = class extends BaseControl {};
+BaseControl.radio.defaultProps = {
+  ...BaseControl.defaultProps,
+  component: 'input',
+  type: 'radio',
+  mapProps: controlPropsMap.radio,
+};
+
+BaseControl.checkbox = class extends BaseControl {};
+BaseControl.checkbox.defaultProps = {
+  ...BaseControl.defaultProps,
+  component: 'input',
+  type: 'checkbox',
+  mapProps: controlPropsMap.checkbox,
+};
+
 export default BaseControl;
