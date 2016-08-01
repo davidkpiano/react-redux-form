@@ -11,7 +11,7 @@ import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
 import { assert } from 'chai';
 
-import { actions, formReducer, utils } from '../src';
+import { actions, formReducer } from '../src';
 
 describe('utils', () => {
   describe('invertValidators()', () => {

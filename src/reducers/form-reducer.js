@@ -44,7 +44,7 @@ export function getField(state, path) {
   }
 
   if (!path.length && state.$form) {
-    return state.$form
+    return state.$form;
   }
 
   return _get(state, path, initialFieldState);
@@ -84,7 +84,7 @@ function wrapFormReducer(plugin, modelPath, initialState) {
     if (modelPath.length && !arraysEqual(path.slice(0, modelPath.length), modelPath)) {
       return state;
     }
-    
+
     const localPath = path.slice(modelPath.length);
 
     return plugin(state, action, localPath);

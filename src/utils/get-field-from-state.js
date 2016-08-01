@@ -1,7 +1,6 @@
 import get from './get';
 import toPath from './to-path';
 import { getFieldFromState as _oldGetFieldFromState } from './index';
-import pathStartsWith from '../utils/path-starts-with';
 import { initialFieldState } from '../reducers/form-reducer';
 import getForm from './get-form';
 

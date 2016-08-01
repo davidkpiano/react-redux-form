@@ -70,6 +70,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
 
   CustomCheckbox.propTypes = {
     onChange: PropTypes.func,
+    value: PropTypes.any,
   };
 
   const MinifiedText = class MT extends Component {
@@ -92,6 +93,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
     }),
     FamiliarText: controls.text,
     CustomCheckbox: controls.checkbox,
+    MyCheckbox: controls.checkbox,
     MinifiedText: {
       ...controls.text,
       component: MinifiedText,
@@ -183,7 +185,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
       test: modelReducer('test', { foo: 'bar' }),
     }));
 
-    class CustomCheckbox extends React.Component {
+    class MyCheckbox extends React.Component {
       render() {
         return <div><input {...this.props} /></div>;
       }
@@ -192,7 +194,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <CustomField model="test.foo">
-          <CustomCheckbox type="checkbox" />
+          <MyCheckbox type="checkbox" />
         </CustomField>
       </Provider>
     );
@@ -282,25 +284,25 @@ describe('custom <Field /> components with createFieldClass()', () => {
       </Provider>
     );
 
-    const controls = TestUtils.scryRenderedDOMComponentsWithTag(field, 'span');
+    const fieldControls = TestUtils.scryRenderedDOMComponentsWithTag(field, 'span');
 
     assert.deepEqual(
       store.getState().test.items,
       [1, 2, 3]);
 
-    TestUtils.Simulate.click(controls[0]);
+    TestUtils.Simulate.click(fieldControls[0]);
 
     assert.sameMembers(
       store.getState().test.items,
       [2, 3]);
 
-    TestUtils.Simulate.click(controls[1]);
+    TestUtils.Simulate.click(fieldControls[1]);
 
     assert.sameMembers(
       store.getState().test.items,
       [3]);
 
-    TestUtils.Simulate.click(controls[0]);
+    TestUtils.Simulate.click(fieldControls[0]);
 
     assert.sameMembers(
       store.getState().test.items,

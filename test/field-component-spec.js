@@ -1506,7 +1506,7 @@ describe('<Field /> component', () => {
           targetValue = e.target.value;
 
           return e;
-        }
+        };
 
         const onEventSpy = sinon.spy(onEvent);
 

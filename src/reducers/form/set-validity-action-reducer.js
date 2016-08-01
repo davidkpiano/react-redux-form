@@ -12,8 +12,8 @@ export default function setValidityActionReducer(state, action, localPath) {
   if (action.type === actionTypes.SET_FIELDS_VALIDITY) {
     return map(action.fieldsValidity, (fieldValidity, field) =>
         fieldActions.setValidity(field, fieldValidity, action.options)
-      ).reduce((state, subAction) => setValidityActionReducer(
-        state,
+      ).reduce((accState, subAction) => setValidityActionReducer(
+        accState,
         subAction,
         toPath(subAction.model)), state);
   }

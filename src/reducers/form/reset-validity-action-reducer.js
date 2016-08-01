@@ -1,10 +1,4 @@
-import map from 'lodash/map';
-
-import fieldActions from '../../actions/field-actions';
 import actionTypes from '../../action-types';
-import isPlainObject from 'lodash/isPlainObject';
-import mapValues from '../../utils/map-values';
-import inverse from '../../utils/inverse';
 import updateField from '../../utils/update-field';
 import { initialFieldState } from '../form-reducer';
 

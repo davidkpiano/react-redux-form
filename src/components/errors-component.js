@@ -161,7 +161,7 @@ function mapStateToProps(state, { model }) {
   const modelString = getModel(model, state);
 
   const formValue = getForm(state, modelString).$form;
-  let fieldValue = getFieldFromState(state, modelString);
+  const fieldValue = getFieldFromState(state, modelString);
 
   return {
     model: modelString,

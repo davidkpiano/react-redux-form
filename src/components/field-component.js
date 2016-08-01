@@ -73,7 +73,7 @@ const controlPropsMap = {
       }
 
       return actions.change(model, !modelValue);
-    }
+    },
   },
   radio: {
     name: (props) => props.name || props.model,

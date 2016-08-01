@@ -18,7 +18,7 @@ export default function formSelector(formState) {
     get retouched() {
       return isRetouched(formState);
     },
-  }
+  };
 }
 
 export {

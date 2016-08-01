@@ -3,18 +3,18 @@ import { actions, formReducer } from '../src';
 import updateField from '../src/utils/update-field';
 
 describe('formReducer plugins', () => {
-  describe('customizing initialFieldState', () => {  
+  describe('customizing initialFieldState', () => {
     const plugin = (state, action, localPath) => {
       if (action.type === 'CHANGE_STATUS') {
         return updateField(state, localPath, { status: action.status });
       }
 
       return state;
-    }
+    };
 
     const reducer = formReducer('test', { foo: 'bar' }, {
       plugins: [plugin],
-      initialFieldState: { status: 'disabled' }
+      initialFieldState: { status: 'disabled' },
     });
 
     it('should be able to "extend" the initialFieldState', () => {
@@ -36,7 +36,7 @@ describe('formReducer plugins', () => {
       const action = {
         type: 'CHANGE_STATUS',
         model: 'test.foo',
-        status: 'enabled'
+        status: 'enabled',
       };
       const actual = reducer(undefined, action);
 

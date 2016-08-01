@@ -280,7 +280,7 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setFieldsValidity,
         model: 'user',
-        args: [{foo: true, bar: true}, { errors: true }],
+        args: [{ foo: true, bar: true }, { errors: true }],
         expectedForm: (form) =>
           form.foo.errors === true
           && form.bar.errors === true,

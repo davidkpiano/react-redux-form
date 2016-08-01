@@ -24,7 +24,7 @@ function updateFieldValue(field, action) {
       result[key] = field[key];
     });
 
-    return {...compact(result), $form: field.$form};
+    return { ...compact(result), $form: field.$form };
   }
 
   if (Array.isArray(value)) {
