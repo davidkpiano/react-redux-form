@@ -11,7 +11,27 @@ function getFormStateKey(state, model, currentPath = '') {
     const subState = state[key];
 
     if (subState && subState.$form) {
-      if (pathStartsWith(subState.$form.model, subState.model)) {
+      if (subState.$form.model === '') {
+        return Object.keys(subState).some((formKey) => {
+          const formState = subState[formKey];
+
+          if (formKey === '$form') return false;
+
+          if (!formState.$form) return false;
+
+          if (pathStartsWith(model, formState.$form.model)) {
+            result = currentPath
+              ? [currentPath, key, formKey].join('.')
+              : [key, formKey].join('.');
+
+            return true;
+          }
+
+          return false;
+        });
+      }
+
+      if (pathStartsWith(model, subState.$form.model)) {
         result = currentPath
           ? [currentPath, key].join('.')
           : key;

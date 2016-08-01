@@ -50,12 +50,18 @@ export function getField(state, path) {
   return _get(state, path, initialFieldState);
 }
 
+function getSubModelString(model, subModel) {
+  if (!model) return subModel;
+
+  return `${model}.${subModel}`;
+}
+
 function createInitialState(model, state, customInitialFieldState = {}) {
   let initialState;
 
   if (isArray(state) || isPlainObject(state)) {
-    initialState = mapValues(state, (subState) =>
-      createInitialState(model, subState, customInitialFieldState));
+    initialState = mapValues(state, (subState, subModel) =>
+      createInitialState(getSubModelString(model, subModel), subState, customInitialFieldState));
   } else {
     return icepick.merge(initialFieldState, {
       initialValue: state,
