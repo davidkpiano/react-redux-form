@@ -13,7 +13,7 @@
     "test:watch": "NODE_ENV=test mocha -w --require babel-register --require ./test/spec-setup.js",
     "build": "npm run build:umd && npm run build:lib",
     "build:watch": "babel -w src --out-dir lib",
-    "build:umd": "webpack -p src/index.js umd/ReactReduxForm.js --config webpack.config.prod.js",
+    "build:umd": "webpack -p src/index.js umd/ReactReduxForm.min.js --config webpack.config.prod.js",
     "build:lib": "babel src --out-dir lib",
     "analyze": "webpack src/index.js dist/index.js --config webpack.config.prod.js --json > stats.json",
     "preversion": "npm run test && npm run lint",
