@@ -1,6 +1,6 @@
 import isValid from './is-valid';
 import isPending from './is-pending';
-import isTouched from './is-Touched';
+import isTouched from './is-touched';
 import isRetouched from './is-retouched';
 
 export default function formSelector(formState) {
