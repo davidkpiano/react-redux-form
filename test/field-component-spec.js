@@ -9,6 +9,7 @@ import TestUtils from 'react-addons-test-utils';
 import capitalize from 'lodash/capitalize';
 import sinon from 'sinon';
 import createTestStore from 'redux-test-store';
+import { testCreateStore, testRender } from './utils';
 
 import { Field, actions, actionTypes, modelReducer, formReducer, controls } from '../src';
 import isValid from '../src/form/is-valid';
@@ -1879,6 +1880,32 @@ describe('<Field /> component', () => {
       store.dispatch(actions.change('test.foo', 'external'));
 
       assert.equal(input.value, 'external');
+    });
+  });
+
+  describe('with <label>', () => {
+    const store = testCreateStore({
+      test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test'),
+    });
+
+    const field = testRender(
+      <Field model="test.foo">
+        <label />
+        <label htmlFor="named" />
+      </Field>, store);
+
+    const [
+      unnamedLabel,
+      namedLabel
+    ] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'label');
+
+    it('should set the "for" attribute of the label to the model', () => {
+      assert.equal(unnamedLabel.getAttribute('for'), 'test.foo');
+    });
+
+    it('should not overwrite existing "for" attribute of label', () => {
+      assert.equal(namedLabel.getAttribute('for'), 'named');
     });
   });
 });

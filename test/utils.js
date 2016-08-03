@@ -9,11 +9,11 @@ import sinon from 'sinon';
 
 import { controls, modelReducer, formReducer, Control, actions } from '../src';
 
-export function createTestStore(reducers) {
+export function testCreateStore(reducers) {
   return applyMiddleware(thunk)(createStore)(combineReducers(reducers));
 }
 
-export function renderWithStore(component, store) {
+export function testRender(component, store) {
   return TestUtils.renderIntoDocument(
     <Provider store={store}>
     { component }

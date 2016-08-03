@@ -12,10 +12,10 @@ function getTextValue(value) {
 
 function isChecked(props) {
   if (isMulti(props.model)) {
-    return (props.modelValue || [])
-      .filter((item) =>
-        item === props.value)
-      .length;
+    if (!props.modelValue) return false;
+
+    return props.modelValue.some((item) =>
+      item === props.value);
   }
 
   return !!props.modelValue;
@@ -73,6 +73,9 @@ const controlPropsMap = {
       event.preventDefault();
       props.dispatch(actions.reset(props.model));
     },
+  },
+  label: {
+    htmlFor: (props) => (props.htmlFor || props.model),
   },
 };
 
