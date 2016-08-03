@@ -20,6 +20,10 @@ import { getField } from '../reducers/form-reducer';
 import isValid from '../form/is-valid';
 
 class Form extends Component {
+  getChildContext() {
+    return { model: this.props.model };
+  }
+
   constructor(props) {
     super(props);
 
@@ -249,6 +253,10 @@ Form.propTypes = {
 Form.defaultProps = {
   validateOn: 'change',
   component: 'form',
+};
+
+Form.childContextTypes = {
+  model: PropTypes.string.isRequired,
 };
 
 function mapStateToProps(state, { model }) {

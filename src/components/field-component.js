@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import shallowCompare from 'react/lib/shallowCompare';
-import connect from 'react-redux/lib/components/connect';
 
 import _get from '../utils/get';
 import identity from 'lodash/identity';
@@ -15,14 +14,6 @@ import controlPropsMap from '../constants/control-props-map';
 const {
   change,
 } = actions;
-
-function mapStateToProps(state, { model }) {
-  const modelString = getModel(model, state);
-
-  return {
-    model: modelString,
-  };
-}
 
 function getControlType(control, props, options) {
   const { controlPropsMap: _controlPropsMap } = options;
@@ -129,6 +120,12 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
   };
 
   class Field extends Component {
+    constructor(props, context) {
+      super(props, context);
+
+      console.log(context);
+    }
+
     shouldComponentUpdate(nextProps, nextState) {
       return shallowCompare(this, nextProps, nextState);
     }
@@ -182,7 +179,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     ]),
     mapProps: PropTypes.func,
     componentMap: PropTypes.object,
-    dispatch: PropTypes.func,
   };
 
   Field.defaultProps = {
@@ -194,7 +190,11 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     ...defaultProps,
   };
 
-  return connect(mapStateToProps)(Field);
+  Field.contextTypes = {
+    model: PropTypes.string,
+  };
+
+  return Field;
 }
 
 export {
