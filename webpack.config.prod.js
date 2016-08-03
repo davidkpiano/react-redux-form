@@ -10,12 +10,6 @@ const config = Object.create(baseConfig);
 
 Object.assign(config, {
   entry: path.join(__dirname, 'src/index.js'),
-
-  output: {
-      path: path.resolve('./dist/'),
-      // publicPath: path.resolve('./build'),
-      filename: "build.js",
-  },
 });
 
 config.plugins = config.plugins.concat([
