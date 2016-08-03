@@ -4,7 +4,7 @@ import arraysEqual from '../utils/arrays-equal';
 import toPath from '../utils/to-path';
 
 import actionTypes from '../action-types';
-import createBatchReducer from '../enhancers/batch-enhancer';
+import createBatchReducer from '../enhancers/batched-enhancer';
 
 function icepickSet(state, path, value) {
   return icepick.setIn(state, path, value);

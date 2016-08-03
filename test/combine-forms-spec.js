@@ -1,7 +1,6 @@
 import { assert } from 'chai';
-import combineForms from '../src/reducers/forms-reducer';
 import getForm from '../src/utils/get-form';
-import { modelReducer } from '../src';
+import { modelReducer, combineForms } from '../src';
 
 describe('combineForms()', () => {
   const reducer = combineForms({

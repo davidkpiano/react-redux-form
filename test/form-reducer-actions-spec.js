@@ -3,7 +3,7 @@ import {
   actions,
   actionTypes,
   initialFieldState,
-  form as formUtils,
+  form as selectForm,
   formReducer,
 } from '../src';
 import mapValues from 'lodash/mapValues';
@@ -142,8 +142,8 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setPending,
         args: [],
-        expectedForm: (form) => formUtils.isPending(form)
-          && !formUtils.isRetouched(form),
+        expectedForm: (form) => selectForm(form).pending
+          && !selectForm(form).retouched,
         expectedField: {
           pending: true,
           submitted: false,
@@ -290,7 +290,7 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setSubmitted,
         args: [],
-        expectedForm: (form) => formUtils.isTouched(form),
+        expectedForm: (form) => selectForm(form).touched,
         expectedField: {
           pending: false,
           submitted: true,
@@ -304,7 +304,7 @@ describe('formReducer() (V1)', () => {
         action: actions.setSubmitFailed,
         model: 'user',
         args: [],
-        expectedForm: (form) => formUtils.isTouched(form),
+        expectedForm: (form) => selectForm(form).touched,
         expectedField: {
           pending: false,
           submitted: false,

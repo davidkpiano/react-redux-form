@@ -6,7 +6,7 @@ import isArray from 'lodash/isArray';
 import mapValues from '../utils/map-values';
 import toPath from '../utils/to-path';
 import composeReducers from '../utils/compose-reducers';
-import createBatchReducer from '../enhancers/batch-enhancer';
+import createBatchReducer from '../enhancers/batched-enhancer';
 
 import changeActionReducer from './form/change-action-reducer';
 import setValidityActionReducer from './form/set-validity-action-reducer';

@@ -1,6 +1,5 @@
 import { assert } from 'chai';
-import { formReducer, actions } from '../src';
-import form from '../src/form';
+import { formReducer, actions, form } from '../src';
 
 describe('selectors', () => {
   describe('form() selector', () => {
