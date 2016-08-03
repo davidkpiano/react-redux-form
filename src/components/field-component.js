@@ -120,12 +120,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
   };
 
   class Field extends Component {
-    constructor(props, context) {
-      super(props, context);
-
-      console.log(context);
-    }
-
     shouldComponentUpdate(nextProps, nextState) {
       return shallowCompare(this, nextProps, nextState);
     }
@@ -188,10 +182,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     parser: identity,
     changeAction: change,
     ...defaultProps,
-  };
-
-  Field.contextTypes = {
-    model: PropTypes.string,
   };
 
   return Field;
