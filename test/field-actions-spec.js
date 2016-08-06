@@ -1047,7 +1047,7 @@ describe('field actions', () => {
     it('should asynchronously call setValidity() action', (testDone) => {
       const reducer = formReducer('test');
       const dispatch = action => {
-        if (action.type === actionTypes.BATCH) {
+        if (action.type === actionTypes.SET_VALIDITY) {
           const actual = reducer(undefined, action);
 
           assert.isFalse(isValid(actual));
@@ -1080,7 +1080,7 @@ describe('field actions', () => {
     it('should work with forms to asynchronously call setValidity() action', testDone => {
       const reducer = formReducer('test');
       const dispatch = action => {
-        if (action.type === actionTypes.BATCH) {
+        if (action.type === actionTypes.SET_VALIDITY) {
           const actual = reducer(undefined, action);
 
           assert.containSubset(
@@ -1110,9 +1110,9 @@ describe('field actions', () => {
       actions.asyncSetValidity('test', validator)(dispatch, getState);
     });
 
-    it('should set pending to true for a field when validating, and false when done validating',
+    it('should set validating to true for a field when validating, and false when done validating',
       testDone => {
-        const pendingStates = [];
+        const validatingStates = [];
         const executedActions = [];
 
         const reducer = formReducer('test');
@@ -1120,15 +1120,15 @@ describe('field actions', () => {
           executedActions.push(action);
           const state = reducer(undefined, action);
 
-          if (action.type === actionTypes.SET_PENDING) {
-            pendingStates.push(action.pending);
+          if (action.type === actionTypes.SET_VALIDATING) {
+            validatingStates.push(action.validating);
 
-            assert.equal(state.foo.pending, action.pending);
-          } else if (action.type === actionTypes.BATCH) {
-            pendingStates.push(state.foo.pending);
+            assert.equal(state.foo.validating, action.validating);
+          } else if (action.type === actionTypes.SET_VALIDITY) {
+            validatingStates.push(state.foo.validating);
 
             testDone(assert.deepEqual(
-              pendingStates,
+              validatingStates,
               [true, false]));
           }
         };
@@ -1140,9 +1140,9 @@ describe('field actions', () => {
         actions.asyncSetValidity('test.foo', validator)(dispatch, getState);
       });
 
-    it('should set pending to true for a form when validating, and false when done validating',
+    it('should set validating to true for a form when validating, and false when done validating',
       testDone => {
-        const pendingStates = [];
+        const validatingStates = [];
         const executedActions = [];
 
         const reducer = formReducer('test');
@@ -1150,15 +1150,15 @@ describe('field actions', () => {
           executedActions.push(action);
           const state = reducer(undefined, action);
 
-          if (action.type === actionTypes.SET_PENDING) {
-            pendingStates.push(action.pending);
+          if (action.type === actionTypes.SET_VALIDATING) {
+            validatingStates.push(action.validating);
 
-            assert.equal(state.$form.pending, action.pending);
-          } else if (action.type === actionTypes.BATCH) {
-            pendingStates.push(state.$form.pending);
+            assert.equal(state.$form.validating, action.validating);
+          } else if (action.type === actionTypes.SET_VALIDITY) {
+            validatingStates.push(state.$form.validating);
 
             testDone(assert.deepEqual(
-              pendingStates,
+              validatingStates,
               [true, false]));
           }
         };

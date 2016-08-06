@@ -792,10 +792,10 @@ describe('<Field /> component', () => {
         (state) => state.focus === false,
 
         // initially valid
-        (state) => state.pending === true && isValid(state),
+        (state) => state.validating === true && isValid(state),
 
         // true after validating
-        (state) => state.pending === false && isValid(state),
+        (state) => state.validating === false && isValid(state),
       ];
 
       const actualStates = [];
@@ -818,6 +818,7 @@ describe('<Field /> component', () => {
     });
 
     it('should set the proper field state for an invalid async validation', done => {
+      console.log('------')
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Field
@@ -838,10 +839,10 @@ describe('<Field /> component', () => {
         (state) => state.focus === false,
 
         // initially valid
-        (state) => state.pending === true && isValid(state),
+        (state) => state.validating === true && isValid(state),
 
         // false after validating
-        (state) => state.pending === false && !isValid(state),
+        (state) => state.validating === false && !isValid(state),
       ];
 
       const actualStates = [];
@@ -851,7 +852,10 @@ describe('<Field /> component', () => {
 
         actualStates.push(state.testForm.foo);
 
+        console.log(state.testForm.foo)
+
         if (actualStates.length === expectedStates.length) {
+          console.log(actualStates);
           expectedStates.map((expectedFn, i) =>
             assert.ok(expectedFn(actualStates[i]), `${i}`)
           );

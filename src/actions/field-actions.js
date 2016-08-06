@@ -3,10 +3,17 @@ import mapValues from '../utils/map-values';
 
 import actionTypes from '../action-types';
 import batchActions from './batch-actions';
-import { getValidity, isValidityValid, isValidityInvalid } from '../utils';
+import {
+  getValue,
+  getValidity,
+  isValidityValid,
+  isValidityInvalid,
+} from '../utils';
 import { trackable } from '../utils/track';
 import getForm from '../utils/get-form';
+import getFieldFromState from '../utils/get-field-from-state';
 import isValid from '../form/is-valid';
+import icepick from 'icepick';
 
 const focus = trackable((model) => ({
   type: actionTypes.FOCUS,
@@ -37,6 +44,12 @@ const setPending = trackable((model, pending = true) => ({
   type: actionTypes.SET_PENDING,
   model,
   pending,
+}));
+
+const setValidating = trackable((model, validating = true) => ({
+  type: actionTypes.SET_VALIDATING,
+  model,
+  validating,
 }));
 
 const setValidity = trackable((model, validity, options = {}) => ({
@@ -86,13 +99,10 @@ const setUntouched = trackable((model) => ({
 const asyncSetValidity = trackable((model, validator) => (dispatch, getState) => {
   const value = _get(getState(), model);
 
-  dispatch(setPending(model, true));
+  dispatch(setValidating(model, true));
 
   const done = (validity) => {
-    dispatch(batchActions.batch(model, [
-      setValidity(model, validity),
-      setPending(model, false),
-    ]));
+    dispatch(setValidity(model, validity));
   };
 
   const immediateResult = validator(value, done);
@@ -202,7 +212,6 @@ const validateFieldsErrors = trackable((model, fieldErrorsValidators, options = 
   }));
 
 export default {
-  asyncSetValidity,
   blur,
   focus,
   submit,
@@ -211,6 +220,7 @@ export default {
   setErrors,
   setInitial,
   setPending,
+  setValidating,
   setPristine,
   setSubmitted,
   setSubmitFailed,
@@ -225,4 +235,5 @@ export default {
   validateErrors,
   validateFields,
   validateFieldsErrors,
+  asyncSetValidity,
 };

@@ -18,6 +18,12 @@ export default function setValidityActionReducer(state, action, localPath) {
         toPath(subAction.model)), state);
   }
 
+  if (action.type === actionTypes.SET_VALIDATING) {
+    return updateField(state, localPath, {
+      validating: true,
+    });
+  }
+
   if (action.type !== actionTypes.SET_VALIDITY
     && action.type !== actionTypes.SET_ERRORS
   ) {
@@ -31,9 +37,12 @@ export default function setValidityActionReducer(state, action, localPath) {
     ? mapValues(validity, inverse)
     : !validity;
 
+  console.log('setting va', validity)
+
   return updateField(state, localPath, {
     [isErrors ? 'errors' : 'validity']: validity,
     [isErrors ? 'validity' : 'errors']: inverseValidity,
+    validating: false,
     validated: true,
   });
 }
