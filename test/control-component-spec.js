@@ -486,4 +486,34 @@ describe('Extended Control components', () => {
         'blur event should be ignored');
     });
   });
+
+  describe('manual focus/blur', () => {
+    const store = testCreateStore({
+      test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test', { foo: 'bar' }),
+    });
+
+    const control = testRender(
+      <Control.text
+        model="test.foo"
+      />, store);
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(control, 'input');
+
+    it('should manually focus the control', () => {
+      store.dispatch(actions.focus('test.foo'));
+
+      assert.equal(document.activeElement, input);
+    });
+
+    it('should manually blur the control', () => {
+      store.dispatch(actions.focus('test.foo'));
+
+      assert.equal(document.activeElement, input);
+
+      store.dispatch(actions.blur('test.foo'));
+
+      assert.notEqual(document.activeElement, input);
+    });
+  });
 });

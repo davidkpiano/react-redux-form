@@ -21,6 +21,7 @@ import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
 import isValid from '../form/is-valid';
 import controlPropsMap from '../constants/control-props-map';
+import validityKeys from '../constants/validity-keys';
 
 const propTypes = {
   model: PropTypes.oneOfType([
@@ -151,6 +152,21 @@ class Control extends Component {
       this.validate();
     }
 
+    // Manually focus/blur node
+    if (fieldValue.focus) {
+      if (document
+        && document.activeElement !== this.node
+        && this.node.focus
+      ) {
+        this.node.focus();
+      }
+    } else if (document
+      && document.activeElement === this.node
+      && this.node.blur
+    ) {
+      this.node.blur();
+    }
+
     // Detect view value changes
     if (prevState.viewValue !== viewValue) {
       this.updateMappedProps();
@@ -212,9 +228,13 @@ class Control extends Component {
       fieldValue,
     } = this.props;
 
+    const nodeErrors = this.getNodeErrors();
+
     if (validators || errors) {
       const fieldValidity = getValidity(validators, value);
-      const fieldErrors = getValidity(errors, value);
+      const fieldErrors = merge(
+        getValidity(errors, value),
+        nodeErrors);
 
       const mergedErrors = validators
         ? merge(invertValidity(fieldValidity), fieldErrors)
@@ -223,6 +243,8 @@ class Control extends Component {
       if (!fieldValue || !shallowEqual(mergedErrors, fieldValue.errors)) {
         return actions.setErrors(model, mergedErrors);
       }
+    } else if (nodeErrors) {
+      return actions.setErrors(model, nodeErrors);
     }
 
     return false;
@@ -254,6 +276,22 @@ class Control extends Component {
 
       return value;
     };
+  }
+
+  getNodeErrors() {
+    const { node } = this;
+
+    if (!node || !node.willValidate) {
+      return null;
+    }
+
+    const errors = {};
+
+    validityKeys.forEach((key) => {
+      errors[key] = node.validity[key];
+    });
+
+    return errors;
   }
 
   updateMappedProps() {
@@ -302,7 +340,7 @@ class Control extends Component {
 
     dispatch(actions.batch(model, loadActions));
 
-    if (onLoad) onLoad(modelValue, fieldValue, this._node);
+    if (onLoad) onLoad(modelValue, fieldValue, this.node);
   }
 
   handleSubmit(event) {
@@ -348,7 +386,8 @@ class Control extends Component {
           : [];
 
         if (validateOn === eventName) {
-          eventActions.push(this.getValidateAction(persistedEvent));
+          eventActions.push(
+            this.getValidateAction(persistedEvent));
         }
 
         if (asyncValidateOn === eventName) {
@@ -387,7 +426,7 @@ class Control extends Component {
   attachNode() {
     const node = findDOMNode(this);
 
-    if (node) this._node = node;
+    if (node) this.node = node;
   }
 
   validate() {
