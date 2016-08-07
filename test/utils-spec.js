@@ -1,9 +1,7 @@
-import {
-  invertValidators,
-  getValidity,
-  isValidityInvalid,
-  getFormStateKey,
-} from '../src/utils/index';
+import invertValidators from '../src/utils/invert-validators';
+import getValidity from '../src/utils/get-validity';
+import isValidityInvalid from '../src/utils/is-validity-invalid';
+import { getFormStateKey } from '../src/utils/get-form';
 import getFieldFromState from '../src/utils/get-field-from-state';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';

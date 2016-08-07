@@ -1,4 +1,4 @@
-import { isMulti } from '../utils';
+import isMulti from '../utils/is-multi';
 import icepick from 'icepick';
 import actions from '../actions';
 

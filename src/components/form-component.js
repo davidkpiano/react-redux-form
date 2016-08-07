@@ -9,11 +9,9 @@ import identity from 'lodash/identity';
 import omit from 'lodash/omit';
 
 import actions from '../actions';
-import {
-  getValidity,
-  invertValidators,
-  invertValidity,
-} from '../utils';
+import getValidity from '../utils/get-validity';
+import invertValidity from '../utils/invert-validity';
+import invertValidators from '../utils/invert-validators';
 import getForm from '../utils/get-form';
 import getModel from '../utils/get-model';
 import { getField } from '../reducers/form-reducer';

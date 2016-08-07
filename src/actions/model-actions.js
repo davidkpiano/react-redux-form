@@ -3,20 +3,10 @@ import endsWith from 'lodash/endsWith';
 import identity from 'lodash/identity';
 import icepick from 'icepick';
 
+import getValue from '../utils/get-value';
+import isMulti from '../utils/is-multi';
 import actionTypes from '../action-types';
 import { trackable } from '../utils/track';
-
-function isEvent(event) {
-  return !!(event && event.stopPropagation && event.preventDefault);
-}
-
-function getValue(event) {
-  return isEvent(event) ? event.target.value : event;
-}
-
-function isMulti(model) {
-  return endsWith(model, '[]');
-}
 
 const change = trackable((model, value, options = {}) => {
   // option defaults

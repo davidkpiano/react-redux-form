@@ -3,11 +3,9 @@ import mapValues from '../utils/map-values';
 
 import actionTypes from '../action-types';
 import batchActions from './batch-actions';
-import {
-  getValidity,
-  isValidityValid,
-  isValidityInvalid,
-} from '../utils';
+import getValidity from '../utils/get-validity';
+import isValidityValid from '../utils/is-validity-valid';
+import isValidityInvalid from '../utils/is-validity-invalid';
 import { trackable } from '../utils/track';
 import getForm from '../utils/get-form';
 import isValid from '../form/is-valid';

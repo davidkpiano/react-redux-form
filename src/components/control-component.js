@@ -11,11 +11,9 @@ import isPlainObject from 'lodash/isPlainObject';
 import icepick from 'icepick';
 import omit from 'lodash/omit';
 
-import {
-  invertValidity,
-  getValidity,
-  getValue,
-} from '../utils';
+import getValue from '../utils/get-value';
+import getValidity from '../utils/get-validity';
+import invertValidity from '../utils/invert-validity';
 import getFieldFromState from '../utils/get-field-from-state';
 import getModel from '../utils/get-model';
 import persistEventWithCallback from '../utils/persist-event-with-callback';

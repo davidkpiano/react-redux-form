@@ -3,7 +3,7 @@ import isPlainObject from 'lodash/isPlainObject';
 import pathStartsWith from '../utils/path-starts-with';
 import { getForm as _oldGetForm } from '../utils/index';
 
-function getFormStateKey(state, model, currentPath = '') {
+export function getFormStateKey(state, model, currentPath = '') {
   const deepCandidateKeys = [];
   let result = null;
 
