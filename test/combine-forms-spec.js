@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import getForm from '../src/utils/get-form';
-import { modelReducer, combineForms } from '../src';
+import { modelReducer, combineForms, actions } from '../src';
 
 describe('combineForms()', () => {
   const reducer = combineForms({
@@ -38,6 +38,23 @@ describe('combineForms()', () => {
       const barForm = getForm(state, 'bar');
 
       assert.equal(barForm, state.forms.bar);
+    });
+  });
+
+  describe('implicit model reducer creation with initial state', () => {
+    const implicitReducer = combineForms({
+      foo: { one: 'two' },
+      bar: { three: 'four' },
+    });
+
+    it('should respond to change actions', () => {
+      let state = implicitReducer(undefined, actions.change('foo.one', 'changed'));
+
+      assert.equal(state.foo.one, 'changed');
+
+      state = implicitReducer(state, actions.change('bar.three', 'changed again'));
+
+      assert.equal(state.bar.three, 'changed again');
     });
   });
 });

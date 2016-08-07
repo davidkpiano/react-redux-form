@@ -5,7 +5,7 @@ import combineReducers from 'redux';
 
 const NULL_ACTION = { type: null };
 
-export default function combineForms(forms, formsKey = 'forms') {
+export default function combineForms(forms, formReducerKey = 'forms') {
   const formKeys = Object.keys(forms);
   const modelReducers = {};
   const initialFormState = {};
@@ -31,6 +31,6 @@ export default function combineForms(forms, formsKey = 'forms') {
 
   return combineReducers({
     ...modelReducers,
-    [formsKey]: formReducer('', initialFormState),
+    [formReducerKey]: formReducer('', initialFormState),
   });
 }

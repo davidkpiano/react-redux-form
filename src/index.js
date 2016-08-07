@@ -29,8 +29,8 @@ import form from './form';
 export {
   // Reducers
   formReducer,
-  combineForms,
   modelReducer,
+  combineForms,
 
   // Constants
   initialFieldState,
@@ -58,5 +58,4 @@ export {
   utils,
   getField,
   track,
-  form,
 };
