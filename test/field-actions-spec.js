@@ -287,7 +287,7 @@ describe('field actions', () => {
         });
 
       const actualNotValidating = reducer(
-        actualValidating, 
+        actualValidating,
         actions.setValidating('test.foo', false));
 
       assert.containSubset(

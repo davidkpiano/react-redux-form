@@ -332,7 +332,6 @@ class Control extends Component {
       }[eventName];
 
       if (~ignore.indexOf(eventName)) {
-        console.log(eventName)
         return controlEventHandler
           ? controlEventHandler(event)
           : event;

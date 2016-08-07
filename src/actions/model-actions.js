@@ -1,11 +1,11 @@
 import _get from '../utils/get';
-import endsWith from 'lodash/endsWith';
 import identity from 'lodash/identity';
 import icepick from 'icepick';
 
 import getValue from '../utils/get-value';
 import isMulti from '../utils/is-multi';
 import actionTypes from '../action-types';
+import mapValues from '../utils/map-values';
 import { trackable } from '../utils/track';
 
 const defaultStrategies = {
@@ -17,7 +17,7 @@ const defaultStrategies = {
 };
 
 function createModelActions(s = defaultStrategies) {
-  const change = trackable((model, value, options = {}) => {
+  const change = (model, value, options = {}) => {
     // option defaults
     const changeOptions = {
       silent: false,
@@ -31,9 +31,9 @@ function createModelActions(s = defaultStrategies) {
       value: s.getValue(value),
       ...changeOptions,
     };
-  });
+  };
 
-  const xor = trackable((
+  const xor = (
     model,
     item,
     iteratee = (value) => value === item
@@ -47,9 +47,9 @@ function createModelActions(s = defaultStrategies) {
       model,
       value,
     });
-  });
+  };
 
-  const push = trackable((model, item = null) => (dispatch, getState) => {
+  const push = (model, item = null) => (dispatch, getState) => {
     const collection = s.get(getState(), model);
     const value = [...(collection || []), item];
 
@@ -58,9 +58,9 @@ function createModelActions(s = defaultStrategies) {
       model,
       value,
     });
-  });
+  };
 
-  const toggle = trackable((model) => (dispatch, getState) => {
+  const toggle = (model) => (dispatch, getState) => {
     const value = !s.get(getState(), model);
 
     dispatch({
@@ -68,9 +68,9 @@ function createModelActions(s = defaultStrategies) {
       model,
       value,
     });
-  });
+  };
 
-  const filter = trackable((model, iteratee = identity) => (dispatch, getState) => {
+  const filter = (model, iteratee = identity) => (dispatch, getState) => {
     const collection = s.get(getState(), model);
     const value = collection.filter(iteratee);
 
@@ -79,14 +79,14 @@ function createModelActions(s = defaultStrategies) {
       model,
       value,
     });
-  });
+  };
 
-  const reset = trackable((model) => ({
+  const reset = (model) => ({
     type: actionTypes.RESET,
     model,
-  }));
+  });
 
-  const map = trackable((model, iteratee = identity) => (dispatch, getState) => {
+  const map = (model, iteratee = identity) => (dispatch, getState) => {
     const collection = s.get(getState(), model, []);
     const value = collection.map(iteratee);
 
@@ -95,9 +95,9 @@ function createModelActions(s = defaultStrategies) {
       model,
       value,
     });
-  });
+  };
 
-  const remove = trackable((model, index) => (dispatch, getState) => {
+  const remove = (model, index) => (dispatch, getState) => {
     const collection = s.get(getState(), model, []);
 
     dispatch({
@@ -106,9 +106,9 @@ function createModelActions(s = defaultStrategies) {
       value: s.splice(collection, index, 1),
       removeKeys: [index],
     });
-  });
+  };
 
-  const move = trackable((model, indexFrom, indexTo) => (dispatch, getState) => {
+  const move = (model, indexFrom, indexTo) => (dispatch, getState) => {
     const collection = s.get(getState(), model, []);
 
     if (indexFrom >= collection.length || indexTo >= collection.length) {
@@ -124,9 +124,9 @@ function createModelActions(s = defaultStrategies) {
       model,
       value: inserted,
     });
-  });
+  };
 
-  const merge = trackable((model, values) => (dispatch, getState) => {
+  const merge = (model, values) => (dispatch, getState) => {
     const value = s.get(getState(), model, {});
 
     dispatch({
@@ -134,9 +134,9 @@ function createModelActions(s = defaultStrategies) {
       model,
       value: s.merge(value, values),
     });
-  });
+  };
 
-  const omit = trackable((model, props = []) => (dispatch, getState) => {
+  const omit = (model, props = []) => (dispatch, getState) => {
     const value = s.get(getState(), model, {});
 
     const propsArray = typeof props === 'string'
@@ -153,13 +153,13 @@ function createModelActions(s = defaultStrategies) {
       value: newValue,
       removeKeys: propsArray,
     });
+  };
+
+  const load = (model, values) => change(model, values, {
+    silent: true,
   });
 
-  const load = trackable((model, values) => change(model, values, {
-    silent: true,
-  }));
-
-  return {
+  return mapValues({
     change,
     filter,
     map,
@@ -172,7 +172,7 @@ function createModelActions(s = defaultStrategies) {
     xor,
     load,
     omit,
-  };
+  }, trackable);
 }
 
 export default createModelActions();
