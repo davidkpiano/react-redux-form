@@ -8,6 +8,7 @@ import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
 import { controls, modelReducer, formReducer, Control, actions } from '../src';
+import { testCreateStore, testRender } from './utils';
 
 function createTestStore(reducers) {
   return applyMiddleware(thunk)(createStore)(combineReducers(reducers));
@@ -454,6 +455,35 @@ describe('Extended Control components', () => {
       assert.equal(
         store.getState().test.foo,
         'four');
+    });
+  });
+
+  describe('ignoring events with ignore prop', () => {
+    const store = testCreateStore({
+      test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test', { foo: 'bar' }),
+    });
+
+    const control = testRender(
+      <Control.text
+        model="test.foo"
+        ignore={['focus', 'blur']}
+      />, store);
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(control, 'input');
+
+    it('ignores the events specified in the ignore prop', () => {
+      assert.isFalse(store.getState().testForm.foo.focus);
+
+      TestUtils.Simulate.focus(input);
+
+      assert.isFalse(store.getState().testForm.foo.focus,
+        'focus event should be ignored');
+
+      TestUtils.Simulate.blur(input);
+
+      assert.isFalse(store.getState().testForm.foo.touched,
+        'blur event should be ignored');
     });
   });
 });

@@ -58,6 +58,7 @@ const propTypes = {
   parser: PropTypes.func,
   formatter: PropTypes.func,
   getter: PropTypes.func,
+  ignore: PropTypes.arrayOf(PropTypes.string),
 };
 
 function mapStateToProps(state, props) {
@@ -315,7 +316,9 @@ class Control extends Component {
         asyncValidateOn,
         controlProps = {},
         parser,
+        ignore,
       } = this.props;
+
 
       const eventAction = {
         focus: actions.focus,
@@ -327,6 +330,13 @@ class Control extends Component {
         blur: controlProps.onBlur,
         change: controlProps.onChange,
       }[eventName];
+
+      if (~ignore.indexOf(eventName)) {
+        console.log(eventName)
+        return controlEventHandler
+          ? controlEventHandler(event)
+          : event;
+      }
 
       const dispatchBatchActions = (persistedEvent) => {
         const eventActions = eventAction
@@ -441,6 +451,7 @@ Control.defaultProps = {
   formatter: identity,
   controlProps: {},
   getter: _get,
+  ignore: [],
 };
 
 const BaseControl = connect(mapStateToProps)(Control);
