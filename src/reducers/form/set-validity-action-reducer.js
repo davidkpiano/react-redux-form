@@ -20,7 +20,8 @@ export default function setValidityActionReducer(state, action, localPath) {
 
   if (action.type === actionTypes.SET_VALIDATING) {
     return updateField(state, localPath, {
-      validating: true,
+      validating: action.validating,
+      validated: !action.validating,
     });
   }
 

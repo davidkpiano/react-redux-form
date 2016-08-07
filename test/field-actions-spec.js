@@ -258,6 +258,69 @@ describe('field actions', () => {
     });
   });
 
+  describe('setValidating()', () => {
+    it('should set the validating state of the field to true', () => {
+      const reducer = formReducer('test');
+
+      assert.containSubset(
+        reducer(undefined, actions.setValidating('test.foo'))
+          .foo,
+        {
+          validating: true,
+          validated: false,
+        });
+    });
+
+    it('should set the validating state of the field to the specified state', () => {
+      const reducer = formReducer('test');
+
+      const actualValidating = reducer(
+        undefined,
+        actions.setValidating('test.foo', true));
+
+      assert.containSubset(
+        actualValidating
+          .foo,
+        {
+          validating: true,
+          validated: false,
+        });
+
+      const actualNotValidating = reducer(
+        actualValidating, 
+        actions.setValidating('test.foo', false));
+
+      assert.containSubset(
+        actualNotValidating
+          .foo,
+        {
+          validating: false,
+          validated: true,
+        });
+    });
+
+    it('should work with forms', () => {
+      const reducer = formReducer('test');
+
+      const actualValidating = reducer(undefined, actions.setValidating('test'));
+
+      assert.containSubset(
+        actualValidating.$form,
+        {
+          validating: true,
+          validated: false,
+        });
+
+      assert.containSubset(
+        reducer(actualValidating, actions.setValidating('test', false))
+          .$form,
+        {
+          validating: false,
+          validated: true,
+        });
+    });
+  });
+
   describe('setSubmitted()', () => {
     it('should set the submitted state of the field to true and the pending state to false', () => {
       const reducer = formReducer('test');
