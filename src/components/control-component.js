@@ -10,6 +10,7 @@ import mapValues from '../utils/map-values';
 import isPlainObject from 'lodash/isPlainObject';
 import icepick from 'icepick';
 import omit from 'lodash/omit';
+import shallowCompare from 'react/lib/shallowCompare';
 
 import getValue from '../utils/get-value';
 import getValidity from '../utils/get-validity';
@@ -127,6 +128,10 @@ class Control extends Component {
       viewValue: modelValue,
       mappedProps: this.getMappedProps(nextProps, mapProps),
     });
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
   }
 
   componentDidUpdate(prevProps, prevState) {
