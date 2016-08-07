@@ -8,7 +8,6 @@ import isPlainObject from 'lodash/isPlainObject';
 
 import actions from '../actions';
 import Control from './control-component';
-import getModel from '../utils/get-model';
 import controlPropsMap from '../constants/control-props-map';
 
 const {

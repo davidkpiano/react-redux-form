@@ -9,7 +9,7 @@ import Errors from './components/errors-component';
 import controlPropsMap from './constants/control-props-map';
 
 import modeled from './enhancers/modeled-enhancer';
-import batched from './enhancers/batched-enhancer'
+import batched from './enhancers/batched-enhancer';
 
 import formReducer, {
   initialFieldState,
@@ -17,7 +17,7 @@ import formReducer, {
 } from './reducers/form-reducer';
 import combineForms from './reducers/forms-reducer';
 
-import modelReducer, { createModelReducer } from './reducers/model-reducer';
+import modelReducer from './reducers/model-reducer';
 
 import {
   track,

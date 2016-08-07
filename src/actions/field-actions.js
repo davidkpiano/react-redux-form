@@ -4,16 +4,13 @@ import mapValues from '../utils/map-values';
 import actionTypes from '../action-types';
 import batchActions from './batch-actions';
 import {
-  getValue,
   getValidity,
   isValidityValid,
   isValidityInvalid,
 } from '../utils';
 import { trackable } from '../utils/track';
 import getForm from '../utils/get-form';
-import getFieldFromState from '../utils/get-field-from-state';
 import isValid from '../form/is-valid';
-import icepick from 'icepick';
 
 const focus = trackable((model) => ({
   type: actionTypes.FOCUS,

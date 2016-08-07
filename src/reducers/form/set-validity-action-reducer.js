@@ -37,8 +37,6 @@ export default function setValidityActionReducer(state, action, localPath) {
     ? mapValues(validity, inverse)
     : !validity;
 
-  console.log('setting va', validity)
-
   return updateField(state, localPath, {
     [isErrors ? 'errors' : 'validity']: validity,
     [isErrors ? 'validity' : 'errors']: inverseValidity,
