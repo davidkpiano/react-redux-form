@@ -140,11 +140,14 @@ class Control extends Component {
       modelValue,
       fieldValue,
       validateOn,
+      validators,
+      errors,
     } = this.props;
 
     const { viewValue } = this.state;
 
-    if (fieldValue
+    if ((validators || errors)
+      && fieldValue
       && !fieldValue.validated
       && modelValue !== prevProps.modelValue
       && validateOn === 'change'
