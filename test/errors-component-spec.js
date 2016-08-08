@@ -194,7 +194,7 @@ describe('<Errors />', () => {
           />
           <Field model="test.foo"
             validators={{
-              length: (v) => v && v.length && v.length > 5,
+              length: (v) => v && v.length && v.length > 5 ? {length: 5} : false,
               doNotShow: () => false,
             }}
           >
@@ -230,6 +230,50 @@ describe('<Errors />', () => {
       assert.lengthOf(errors, 1);
     });
   });
+
+  describe('displaying custom error messages', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test', { foo: '' }),
+      test: modelReducer('test', { foo: '' }),
+    }));
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <form>
+          <Errors model="test.foo"
+                  messages={{
+                    length: (val, {length}) => `${val && val.length} chars is too short (must be at least ${length} chars)`,
+                    doNotShow: () => false,
+                  }}
+          />
+          <Field model="test.foo"
+                 errors={{
+                   length: (v) => v && v.length && v.length > 5 ? false : {length: 5},
+                   doNotShow: () => false,
+                 }}
+          >
+            <input type="text" />
+          </Field>
+        </form>
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+    it('should return messages from functions called with the model value', () => {
+      input.value = 'four';
+
+      TestUtils.Simulate.change(input);
+
+      const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
+
+      assert.lengthOf(errors, 1);
+
+      assert.equal(errors[0].innerHTML, '4 chars is too short (must be at least 5 chars)');
+    });
+  });
+
+
 
   describe('the "show" prop', () => {
     function renderErrorsWithShow(show) {

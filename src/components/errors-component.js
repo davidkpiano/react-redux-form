@@ -66,6 +66,7 @@ class Errors extends Component {
       model,
       modelValue,
       fieldValue,
+      fieldValue: { errors },
     } = this.props;
 
     const errorProps = {
@@ -76,7 +77,7 @@ class Errors extends Component {
     };
 
     const messageString = typeof message === 'function'
-      ? message(modelValue)
+      ? message(modelValue, errors[key])
       : message;
 
     if (!messageString) return null;
