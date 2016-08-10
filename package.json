@@ -20,7 +20,12 @@
     "prepublish": "npm test && npm run lint && npm run build && npm run tsdef",
     "postversion": "git push && git push --tags",
     "publish:beta": "npm publish --tag beta",
-    "tsdef": "cp -f immutable.d.ts lib/"
+    "tsdef": "cp -f immutable.d.ts lib/",
+    "docs:clean": "rimraf _book",
+    "docs:prepare": "gitbook install",
+    "docs:build": "npm run docs:prepare && gitbook build",
+    "docs:watch": "npm run docs:prepare && gitbook serve",
+    "docs:publish": "npm run docs:clean && npm run docs:build"
   },
   "repository": {
     "type": "git",
