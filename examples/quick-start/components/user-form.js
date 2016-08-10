@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, Form, actions } from 'react-redux-form';
+import { Field, Form, actions, Control } from 'react-redux-form';
 
 class UserForm extends React.Component {
   constructor(props) {
@@ -27,15 +27,28 @@ class UserForm extends React.Component {
 
     return (
       <Form model="user" onSubmit={this.handleSubmit}>
-        <Field model="user.firstName">
-          <label>First name:</label>
-          <input type="text" />
-        </Field>
+        {Array(500).fill(null).map((_, i) =>
+          <Field model={`user.firstName${i}`} key={i}>
+            <label>First name:</label>
+            <input type="text" />
+          </Field>
+        )}
 
         <Field model="user.lastName">
           <label>Last name:</label>
           <input type="text" />
         </Field>
+
+        <Control.select model="user.foo">
+          <option value="one">one</option>
+          <option value="two">two</option>
+          <option value="three">three</option>
+          <optgroup>
+            <option value="four">this four</option>
+            <option value="five">this five</option>
+            <option value="six">this six</option>
+          </optgroup>
+        </Control.select>
 
         <button type="submit">
           Finish registration, {user.firstName} {user.lastName}!

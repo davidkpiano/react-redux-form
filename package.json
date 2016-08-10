@@ -6,7 +6,7 @@
   "typings": "react-redux-form.d.ts",
   "scripts": {
     "start": "npm run build",
-    "examples": "node examples/server.js",
+    "examples": "NODE_ENV=development node examples/server.js",
     "lint": "eslint --ext .js,.jsx .",
     "lint:fix": "eslint --fix --ext .js,.jsx .",
     "test": "NODE_ENV=test mocha --require babel-register --require ./test/spec-setup.js",
@@ -76,7 +76,8 @@
     "style-loader": "^0.13.1",
     "webpack": "^1.12.14",
     "webpack-bundle-size-analyzer": "^2.0.1",
-    "webpack-dev-middleware": "^1.6.1"
+    "webpack-dev-middleware": "^1.6.1",
+    "why-did-you-update": "0.0.8"
   },
   "dependencies": {
     "icepick": "^1.1.0",

@@ -61,6 +61,7 @@ const propTypes = {
   formatter: PropTypes.func,
   getter: PropTypes.func,
   ignore: PropTypes.arrayOf(PropTypes.string),
+  dynamic: PropTypes.bool,
 };
 
 function mapStateToProps(state, props) {
@@ -353,62 +354,62 @@ class Control extends Component {
   }
 
   createEventHandler(eventName) {
+    const {
+      dispatch,
+      model,
+      updateOn,
+      validateOn,
+      asyncValidateOn,
+      controlProps = {},
+      parser,
+      ignore,
+    } = this.props;
+
+    const eventAction = {
+      focus: actions.focus,
+      blur: actions.blur,
+    }[eventName];
+
+    const controlEventHandler = {
+      focus: controlProps.onFocus,
+      blur: controlProps.onBlur,
+      change: controlProps.onChange,
+    }[eventName];
+
+    const dispatchBatchActions = (persistedEvent) => {
+      const eventActions = eventAction
+        ? [eventAction(model)]
+        : [];
+
+      if (validateOn === eventName) {
+        eventActions.push(
+          this.getValidateAction(persistedEvent));
+      }
+
+      if (asyncValidateOn === eventName) {
+        eventActions.push(this.getAsyncValidateAction(persistedEvent));
+      }
+
+      if (updateOn === eventName) {
+        eventActions.push(this.getChangeAction(persistedEvent));
+      }
+
+      const dispatchableEventActions = eventActions.filter((action) => !!action);
+
+      if (dispatchableEventActions.length) {
+        dispatch(actions.batch(model, dispatchableEventActions));
+      }
+
+      return persistedEvent;
+    };
+
     return (event) => {
-      const {
-        dispatch,
-        model,
-        updateOn,
-        validateOn,
-        asyncValidateOn,
-        controlProps = {},
-        parser,
-        ignore,
-      } = this.props;
-
-
-      const eventAction = {
-        focus: actions.focus,
-        blur: actions.blur,
-      }[eventName];
-
-      const controlEventHandler = {
-        focus: controlProps.onFocus,
-        blur: controlProps.onBlur,
-        change: controlProps.onChange,
-      }[eventName];
-
       if (~ignore.indexOf(eventName)) {
         return controlEventHandler
           ? controlEventHandler(event)
           : event;
       }
 
-      const dispatchBatchActions = (persistedEvent) => {
-        const eventActions = eventAction
-          ? [eventAction(model)]
-          : [];
-
-        if (validateOn === eventName) {
-          eventActions.push(
-            this.getValidateAction(persistedEvent));
-        }
-
-        if (asyncValidateOn === eventName) {
-          eventActions.push(this.getAsyncValidateAction(persistedEvent));
-        }
-
-        if (updateOn === eventName) {
-          eventActions.push(this.getChangeAction(persistedEvent));
-        }
-
-        const dispatchableEventActions = eventActions.filter((action) => !!action);
-
-        if (dispatchableEventActions.length) {
-          dispatch(actions.batch(model, dispatchableEventActions));
-        }
-
-        return persistedEvent;
-      };
 
       if (isReadOnlyValue(controlProps)) {
         return compose(
@@ -498,6 +499,7 @@ Control.defaultProps = {
   controlProps: {},
   getter: _get,
   ignore: [],
+  dynamic: false,
 };
 
 const BaseControl = connect(mapStateToProps)(Control);

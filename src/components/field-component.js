@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import shallowCompare from 'react/lib/shallowCompare';
 
 import _get from '../utils/get';
 import identity from 'lodash/identity';
@@ -9,6 +8,13 @@ import isPlainObject from 'lodash/isPlainObject';
 import actions from '../actions';
 import Control from './control-component';
 import controlPropsMap from '../constants/control-props-map';
+import deepCompareChildren from '../utils/deep-compare-children';
+import shallowCompareWithoutChildren from '../utils/shallow-compare-without-children';
+
+if (process.env.NODE_ENV === 'develdopment') {
+  const { whyDidYouUpdate } = require('why-did-you-update');
+  whyDidYouUpdate(React);
+}
 
 const {
   change,
@@ -119,8 +125,14 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
   };
 
   class Field extends Component {
-    shouldComponentUpdate(nextProps, nextState) {
-      return shallowCompare(this, nextProps, nextState);
+    shouldComponentUpdate(nextProps) {
+      const { dynamic } = this.props;
+
+      if (dynamic) {
+        return deepCompareChildren(this, nextProps);
+      }
+
+      return shallowCompareWithoutChildren(this, nextProps);
     }
 
     render() {
@@ -172,6 +184,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     ]),
     mapProps: PropTypes.func,
     componentMap: PropTypes.object,
+    dynamic: PropTypes.bool,
   };
 
   Field.defaultProps = {
@@ -180,6 +193,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     asyncValidateOn: 'blur',
     parser: identity,
     changeAction: change,
+    dynamic: false,
     ...defaultProps,
   };
 

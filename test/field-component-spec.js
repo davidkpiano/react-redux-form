@@ -233,7 +233,7 @@ describe('<Field /> component', () => {
         const { test } = props;
 
         return (
-          <Field model="test.foo">
+          <Field model="test.foo" dynamic>
             {React.createElement(element, {
               type,
               value: test.foo,
@@ -1080,7 +1080,7 @@ describe('<Field /> component', () => {
         return (
           <div>
             <button onClick={() => this.setState({ options: [1, 2, 3] })} />
-            <Field model="test.foo">
+            <Field model="test.foo" dynamic>
               <select>
                 {this.state.options.map((option, i) =>
                   <option key={i} value={option} />

@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import shallowCompare from 'react/lib/shallowCompare';
 import connect from 'react-redux/lib/components/connect';
 import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
@@ -16,6 +15,7 @@ import getForm from '../utils/get-form';
 import getModel from '../utils/get-model';
 import { getField } from '../reducers/form-reducer';
 import isValid from '../form/is-valid';
+import deepCompareChildren from '../utils/deep-compare-children';
 
 class Form extends Component {
   constructor(props) {
@@ -42,8 +42,8 @@ class Form extends Component {
     this.validate(nextProps);
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
+  shouldComponentUpdate(nextProps) {
+    return deepCompareChildren(this, nextProps);
   }
 
   attachNode(node) {
