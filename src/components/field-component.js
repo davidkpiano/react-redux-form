@@ -5,6 +5,7 @@ import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
 import identity from 'lodash/identity';
 import omit from 'lodash/omit';
+import pick from 'lodash/pick';
 
 import actions from '../actions';
 import Control from './control-component';
@@ -42,6 +43,36 @@ function getTextValue(value) {
 
   return '';
 }
+
+const fieldPropTypes = {
+  model: PropTypes.string.isRequired,
+  component: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.string,
+  ]),
+  parser: PropTypes.func,
+  updateOn: PropTypes.oneOf([
+    'change',
+    'blur',
+    'focus',
+  ]),
+  changeAction: PropTypes.func,
+  validators: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
+  asyncValidators: PropTypes.object,
+  validateOn: PropTypes.string,
+  asyncValidateOn: PropTypes.string,
+  errors: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
+  mapProps: PropTypes.func,
+  componentMap: PropTypes.object,
+  dispatch: PropTypes.func,
+  getter: PropTypes.func,
+};
 
 const controlPropsMap = {
   default: (props) => controlPropsMap.text(props),
@@ -146,7 +177,8 @@ function createFieldControlComponent(control, props, options) {
     mapProps = options.controlPropsMap[getControlType(control, props, options)],
   } = props;
 
-  const controlProps = omit(props, ['children', 'className']);
+  // const controlProps = omit(props, ['children', 'className']);
+  const controlProps = pick(props, Object.keys(fieldPropTypes));
 
   if (!mapProps) {
     return React.cloneElement(
@@ -198,7 +230,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       const { props } = this;
       const component = getFieldWrapper(props);
 
-      const allowedProps = omit(props, Object.keys(Field.propTypes));
+      const allowedProps = omit(props, Object.keys(fieldPropTypes));
 
       if (component) {
         return React.createElement(
@@ -217,34 +249,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     }
   }
 
-  Field.propTypes = {
-    model: PropTypes.string.isRequired,
-    component: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.string,
-    ]),
-    parser: PropTypes.func,
-    updateOn: PropTypes.oneOf([
-      'change',
-      'blur',
-      'focus',
-    ]),
-    changeAction: PropTypes.func,
-    validators: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.object,
-    ]),
-    asyncValidators: PropTypes.object,
-    validateOn: PropTypes.string,
-    asyncValidateOn: PropTypes.string,
-    errors: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.object,
-    ]),
-    mapProps: PropTypes.func,
-    componentMap: PropTypes.object,
-    dispatch: PropTypes.func,
-  };
+  Field.propTypes = fieldPropTypes;
 
   Field.defaultProps = {
     updateOn: 'change',
