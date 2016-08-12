@@ -13,7 +13,7 @@
 
 **Creating the store - version 0.x:**
 _Note:_ This way will still work in v1.0!
-```
+```js
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
 import thunk from 'redux-thunk';
@@ -32,7 +32,7 @@ export default store;
 ```
 
 **:new: Creating the store - version 1.x:**
-```
+```js
 import { createStore, applyMiddleware } from 'redux';
 import { combineForms } from 'react-redux-form';
 
@@ -51,7 +51,7 @@ export default store;
 **Setting up the form - v0.x:**
 _Note:_ This way will still work in v1.0!
 
-```
+```js
 import { Field } from 'react-redux-form';
 // ...
 
@@ -62,7 +62,7 @@ import { Field } from 'react-redux-form';
 ```
 
 **Setting up the form - v1.x:**
-```
+```js
 import { Control } from 'react-redux-form';
 // ...
 
