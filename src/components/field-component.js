@@ -20,6 +20,35 @@ const {
   change,
 } = actions;
 
+const fieldPropTypes = {
+  model: PropTypes.string.isRequired,
+  component: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.string,
+  ]),
+  parser: PropTypes.func,
+  updateOn: PropTypes.oneOf([
+    'change',
+    'blur',
+    'focus',
+  ]),
+  changeAction: PropTypes.func,
+  validators: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
+  asyncValidators: PropTypes.object,
+  validateOn: PropTypes.string,
+  asyncValidateOn: PropTypes.string,
+  errors: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
+  mapProps: PropTypes.func,
+  componentMap: PropTypes.object,
+  dynamic: PropTypes.bool,
+};
+
 function getControlType(control, props, options) {
   const { controlPropsMap: _controlPropsMap } = options;
 
@@ -158,34 +187,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     }
   }
 
-  Field.propTypes = {
-    model: PropTypes.string.isRequired,
-    component: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.string,
-    ]),
-    parser: PropTypes.func,
-    updateOn: PropTypes.oneOf([
-      'change',
-      'blur',
-      'focus',
-    ]),
-    changeAction: PropTypes.func,
-    validators: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.object,
-    ]),
-    asyncValidators: PropTypes.object,
-    validateOn: PropTypes.string,
-    asyncValidateOn: PropTypes.string,
-    errors: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.object,
-    ]),
-    mapProps: PropTypes.func,
-    componentMap: PropTypes.object,
-    dynamic: PropTypes.bool,
-  };
+  Field.propTypes = fieldPropTypes;
 
   Field.defaultProps = {
     updateOn: 'change',
