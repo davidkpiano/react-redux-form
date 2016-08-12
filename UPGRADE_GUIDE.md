@@ -9,6 +9,69 @@
 - **Flexibility**
 - **Features**
 
+### Quick Start - v0.x to v1
+
+**Creating the store - version 0.x:**
+_Note:_ This way will still work in v1.0!
+```js
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { modelReducer, formReducer } from 'react-redux-form';
+import thunk from 'redux-thunk';
+
+const initialUserState = {
+  firstName: '',
+  lastName: ''
+};
+
+const store = applyMiddleware(thunk)(createStore)(combineReducers({
+  user: modelReducer('user', initialUserState),
+  userForm: formReducer('user', initialUserState)
+}));
+
+export default store;
+```
+
+**:new: Creating the store - version 1.x:**
+```js
+import { createStore, applyMiddleware } from 'redux';
+import { combineForms } from 'react-redux-form';
+
+const initialUserState = {
+  firstName: '',
+  lastName: ''
+};
+
+const store = createStore(combineForms({
+  user: initialUserState,
+}), applyMiddleware(thunk));
+
+export default store;
+```
+
+**Setting up the form - v0.x:**
+_Note:_ This way will still work in v1.0!
+
+```js
+import { Field } from 'react-redux-form';
+// ...
+
+<Field model="user.firstName">
+  <label>First name:</label>
+  <input type="text" />
+</Field>
+```
+
+**Setting up the form - v1.x:**
+```js
+import { Control } from 'react-redux-form';
+// ...
+
+<div>
+  <label>First name:</label>
+  <Control.text model="user.firstName" />
+</div>
+```
+
 ### Breaking Changes
 
 - For simplicity and performance, the form state structure has changed:

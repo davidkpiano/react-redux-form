@@ -1908,4 +1908,30 @@ describe('<Field /> component', () => {
       assert.equal(namedLabel.getAttribute('for'), 'named');
     });
   });
+
+  describe('whitelisting props', () => {
+    it('should not pass extraneous props to child components', () => {
+      const store = createStore(combineReducers({
+        test: modelReducer('test', { foo: 0 }),
+        testform: formReducer('test'),
+      }), applyMiddleware(thunk));
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+            className="test-class"
+            style={{ color: 'red' }}
+          >
+            <input type="text" />
+          </Field>
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      assert.isNull(input.getAttribute('class'));
+      assert.isNull(input.getAttribute('style'));
+    });
+  });
 });

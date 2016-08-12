@@ -4,6 +4,7 @@ import _get from '../utils/get';
 import identity from 'lodash/identity';
 import omit from 'lodash/omit';
 import isPlainObject from 'lodash/isPlainObject';
+import pick from 'lodash/pick';
 
 import actions from '../actions';
 import Control from './control-component';
@@ -19,6 +20,7 @@ if (process.env.NODE_ENV === 'develdopment') {
 const {
   change,
 } = actions;
+
 
 const fieldPropTypes = {
   model: PropTypes.string.isRequired,
@@ -47,6 +49,8 @@ const fieldPropTypes = {
   mapProps: PropTypes.func,
   componentMap: PropTypes.object,
   dynamic: PropTypes.bool,
+  dispatch: PropTypes.func,
+  getter: PropTypes.func,
 };
 
 function getControlType(control, props, options) {
@@ -114,7 +118,7 @@ function createFieldControlComponent(control, props, options) {
     mapProps = options.controlPropsMap[getControlType(control, props, options)],
   } = props;
 
-  const controlProps = omit(props, ['children', 'className']);
+  const controlProps = pick(props, Object.keys(fieldPropTypes));
 
   if (!mapProps) {
     return React.cloneElement(
@@ -168,7 +172,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       const { props } = this;
       const component = getFieldWrapper(props);
 
-      const allowedProps = omit(props, Object.keys(Field.propTypes));
+      const allowedProps = omit(props, Object.keys(fieldPropTypes));
 
       if (component) {
         return React.createElement(
