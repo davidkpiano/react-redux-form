@@ -1357,4 +1357,35 @@ describe('<Form> component', () => {
 
     assert.isTrue(handleSubmit.calledOnce);
   });
+
+  describe('contextual models', () => {
+    it('should contextually prepend model to incomplete child models', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      }));
+
+      const app = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form
+            model="test"
+          >
+            <Field
+              model=".foo"
+            >
+              <input type="text" />
+            </Field>
+          </Form>
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(app, 'input');
+
+      input.value = 'test';
+
+      TestUtils.Simulate.change(input);
+
+      assert.equal(store.getState().test.foo, 'test');
+    });
+  });
 });

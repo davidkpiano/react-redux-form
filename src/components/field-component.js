@@ -85,70 +85,6 @@ function getControlType(control, props, options) {
   }
 }
 
-/* eslint-disable no-use-before-define */
-function mapFieldChildrenToControl(children, props, options) {
-  if (React.Children.count(children) > 1) {
-    return React.Children.map(
-      children,
-      (child) => createFieldControlComponent(
-        child,
-        {
-          ...props,
-          ...(child && child.props
-            ? child.props
-            : {}),
-        },
-        options
-      )
-    );
-  }
-
-  return createFieldControlComponent(children, props, options);
-}
-
-function createFieldControlComponent(control, props, options) {
-  if (!control
-    || !control.props
-    || control instanceof Control) {
-    return control;
-  }
-
-  /* eslint-disable react/prop-types */
-  const {
-    mapProps = options.controlPropsMap[getControlType(control, props, options)],
-  } = props;
-
-  const controlProps = pick(props, Object.keys(fieldPropTypes));
-
-  if (!mapProps) {
-    return React.cloneElement(
-      control,
-      null,
-      mapFieldChildrenToControl(control.props.children, props, options)
-    );
-  }
-
-  return (
-    <Control
-      {...controlProps}
-      control={control}
-      controlProps={control.props}
-      component={control.type}
-      mapProps={mapProps}
-    />
-  );
-  /* eslint-enable react/prop-types */
-}
-/* eslint-enable no-use-before-define */
-
-function getFieldWrapper(props) {
-  if (props.component) {
-    return props.component;
-  }
-
-  return 'div';
-}
-
 function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
   const options = {
     controlPropsMap: {
@@ -158,6 +94,13 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
   };
 
   class Field extends Component {
+    constructor(props, context) {
+      super(props, context);
+
+      if (context.model) {
+        this.parentModel = context.model;
+      }
+    }
     shouldComponentUpdate(nextProps) {
       const { dynamic } = this.props;
 
@@ -168,26 +111,70 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       return shallowCompareWithoutChildren(this, nextProps);
     }
 
-    render() {
+    createControlComponent(control) {
       const { props } = this;
-      const component = getFieldWrapper(props);
 
-      const allowedProps = omit(props, Object.keys(fieldPropTypes));
+      if (!control
+        || !control.props
+        || control instanceof Control) {
+        return control;
+      }
 
-      if (component) {
-        return React.createElement(
-          component,
-          allowedProps,
-          React.Children.map(
-            props.children,
-            child => createFieldControlComponent(child, props, options))
+      const controlType = getControlType(control, props, options);
+      const {
+        mapProps = options.controlPropsMap[controlType],
+      } = props;
+
+      const controlProps = pick(props, Object.keys(fieldPropTypes));
+
+      if (this.parentModel && props.model[0] === '.') {
+        controlProps.model = `${this.parentModel}${props.model}`;
+      }
+
+      if (!mapProps) {
+        return React.cloneElement(
+          control,
+          null,
+          this.mapChildrenToControl(control.props.children)
         );
       }
 
-      return createFieldControlComponent(
-        React.Children.only(props.children),
-        props,
-        options);
+      return (
+        <Control
+          {...controlProps}
+          control={control}
+          controlProps={control.props}
+          component={control.type}
+          mapProps={mapProps}
+        />
+      );
+    }
+
+    mapChildrenToControl(children) {
+      if (React.Children.count(children) > 1) {
+        return React.Children.map(
+          children,
+          (child) => this.createControlComponent(child));
+      }
+
+      return this.createControlComponent(children);
+    }
+
+    render() {
+      const { props } = this;
+      const {
+        component,
+        children, // eslint-disable-line react/prop-types
+      } = props;
+
+      const allowedProps = omit(props, Object.keys(fieldPropTypes));
+
+      return React.createElement(
+        component,
+        allowedProps,
+        React.Children.map(
+          children,
+          (child) => this.createControlComponent(child)));
     }
   }
 
@@ -200,7 +187,12 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     parser: identity,
     changeAction: change,
     dynamic: false,
+    component: 'div',
     ...defaultProps,
+  };
+
+  Field.contextTypes = {
+    model: PropTypes.string,
   };
 
   return Field;

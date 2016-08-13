@@ -28,6 +28,12 @@ class Form extends Component {
     this.attachNode = this.attachNode.bind(this);
   }
 
+  getChildContext() {
+    const { model } = this.props;
+
+    return { model };
+  }
+
   componentDidMount() {
     if (this.props.validateOn !== 'change') return;
 
@@ -247,6 +253,10 @@ Form.propTypes = {
 Form.defaultProps = {
   validateOn: 'change',
   component: 'form',
+};
+
+Form.childContextTypes = {
+  model: PropTypes.string,
 };
 
 function mapStateToProps(state, { model }) {
