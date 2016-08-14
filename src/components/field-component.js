@@ -94,13 +94,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
   };
 
   class Field extends Component {
-    constructor(props, context) {
-      super(props, context);
-
-      if (context.model) {
-        this.parentModel = context.model;
-      }
-    }
     shouldComponentUpdate(nextProps) {
       const { dynamic } = this.props;
 
@@ -126,10 +119,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       } = props;
 
       const controlProps = pick(props, Object.keys(fieldPropTypes));
-
-      if (this.parentModel && props.model[0] === '.') {
-        controlProps.model = `${this.parentModel}${props.model}`;
-      }
 
       if (!mapProps) {
         return React.cloneElement(
@@ -189,10 +178,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     dynamic: false,
     component: 'div',
     ...defaultProps,
-  };
-
-  Field.contextTypes = {
-    model: PropTypes.string,
   };
 
   return Field;
