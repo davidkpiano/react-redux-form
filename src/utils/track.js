@@ -1,19 +1,27 @@
 import findKey from 'lodash/findKey';
 import _get from '../utils/get';
 
-function track(model, predicate) {
+function track(model, ...predicates) {
   return (state) => {
     const [
       parentModelPath,
-      childModelPath = '',
+      ...childModelPaths
     ] = model.split(/\[\]\.?/);
-    const parentValue = _get(state, parentModelPath);
 
-    return [
-      parentModelPath,
-      findKey(parentValue, predicate),
-      childModelPath,
-    ].filter((path) => !!path).join('.');
+    let fullPath = parentModelPath;
+    let subState = _get(state, fullPath);
+
+    predicates.forEach((predicate, i) => {
+      const childModelPath = childModelPaths[i];
+      const subPath = childModelPath
+        ? `${findKey(subState, predicate)}.${childModelPath}`
+        : `${findKey(subState, predicate)}`;
+
+      subState = _get(subState, subPath);
+      fullPath += `.${subPath}`;
+    });
+
+    return fullPath;
   };
 }
 
