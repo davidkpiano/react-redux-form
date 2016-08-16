@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
-import map from 'lodash/map';
+import map from '../utils/map';
 import compact from 'lodash/compact';
-import iteratee from 'lodash/_baseIteratee';
+import iteratee from '../utils/iteratee';
 import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
 import omit from 'lodash/omit';

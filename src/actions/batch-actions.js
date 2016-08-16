@@ -1,5 +1,5 @@
 import actionTypes from '../action-types';
-import partition from 'lodash/partition';
+import partition from '../utils/partition';
 import isPlainObject from 'lodash/isPlainObject';
 
 const nullAction = {

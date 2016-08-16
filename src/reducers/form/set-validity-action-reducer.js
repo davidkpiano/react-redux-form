@@ -1,4 +1,4 @@
-import map from 'lodash/map';
+import map from '../../utils/map';
 
 import fieldActions from '../../actions/field-actions';
 import actionTypes from '../../action-types';

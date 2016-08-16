@@ -1,7 +1,7 @@
 import { Component, createElement, cloneElement, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 import connect from 'react-redux/lib/components/connect';
-import compose from 'redux/lib/compose';
+import { compose } from 'redux';
 import identity from 'lodash/identity';
 import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
