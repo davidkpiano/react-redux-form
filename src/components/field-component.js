@@ -5,25 +5,21 @@ import identity from 'lodash/identity';
 import omit from 'lodash/omit';
 import isPlainObject from 'lodash/isPlainObject';
 import pick from 'lodash/pick';
+import connect from 'react-redux/lib/components/connect';
 
 import actions from '../actions';
 import Control from './control-component';
 import controlPropsMap from '../constants/control-props-map';
 import deepCompareChildren from '../utils/deep-compare-children';
 import shallowCompareWithoutChildren from '../utils/shallow-compare-without-children';
-
-if (process.env.NODE_ENV === 'develdopment') {
-  const { whyDidYouUpdate } = require('why-did-you-update');
-  whyDidYouUpdate(React);
-}
-
-const {
-  change,
-} = actions;
-
+import getModel from '../utils/get-model';
+import getFieldFromState from '../utils/get-field-from-state';
 
 const fieldPropTypes = {
-  model: PropTypes.string.isRequired,
+  model: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.string,
+  ]).isRequired,
   component: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.string,
@@ -51,7 +47,24 @@ const fieldPropTypes = {
   dynamic: PropTypes.bool,
   dispatch: PropTypes.func,
   getter: PropTypes.func,
+
+  // Calculated props
+  fieldValue: PropTypes.object,
 };
+
+function mapStateToProps(state, props) {
+  const {
+    model,
+  } = props;
+
+  const modelString = getModel(model, state);
+  const fieldValue = getFieldFromState(state, modelString);
+
+  return {
+    model,
+    fieldValue,
+  };
+}
 
 function getControlType(control, props, options) {
   const { controlPropsMap: _controlPropsMap } = options;
@@ -154,15 +167,19 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
       const {
         component,
         children, // eslint-disable-line react/prop-types
+        fieldValue,
       } = props;
 
       const allowedProps = omit(props, Object.keys(fieldPropTypes));
+      const renderableChildren = typeof children === 'function'
+        ? children(fieldValue)
+        : children;
 
       return React.createElement(
         component,
         allowedProps,
         React.Children.map(
-          children,
+          renderableChildren,
           (child) => this.createControlComponent(child)));
     }
   }
@@ -174,13 +191,13 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     validateOn: 'change',
     asyncValidateOn: 'blur',
     parser: identity,
-    changeAction: change,
+    changeAction: actions.change,
     dynamic: false,
     component: 'div',
     ...defaultProps,
   };
 
-  return Field;
+  return connect(mapStateToProps)(Field);
 }
 
 export {

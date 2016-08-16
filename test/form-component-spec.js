@@ -11,6 +11,7 @@ import sinon from 'sinon';
 
 import { Form, modelReducer, formReducer, Field, actions, actionTypes } from '../src';
 import isValid from '../src/form/is-valid';
+import { testCreateStore, testRender } from './utils';
 
 describe('<Form> component', () => {
   describe('wraps component if specified', () => {
@@ -1356,5 +1357,42 @@ describe('<Form> component', () => {
     TestUtils.Simulate.click(button);
 
     assert.isTrue(handleSubmit.calledOnce);
+  });
+
+  describe('function as children', () => {
+    const store = testCreateStore({
+      test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test', { foo: 'bar' }),
+    });
+    const form = testRender(
+      <Form model="test">
+      {(formValue) =>
+        <Field model={`${formValue.$form.model}.foo`}>
+          <input className={formValue.foo.focus ? 'focused' : ''} />
+        </Field>
+      }
+      </Form>, store);
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+    it('treats the return value as expected with normal children', () => {
+      assert.equal(input.value, 'bar');
+
+      input.value = 'testing';
+      TestUtils.Simulate.change(input);
+
+      assert.equal(input.value, 'testing');
+      assert.equal(store.getState().test.foo, 'testing');
+    });
+
+    it('rerenders the function when the form value changes', () => {
+      assert.throws(() => TestUtils.findRenderedDOMComponentWithClass(form, 'focused'));
+
+      TestUtils.Simulate.focus(input);
+
+      assert.isTrue(store.getState().testForm.foo.focus);
+
+      assert.ok(TestUtils.findRenderedDOMComponentWithClass(form, 'focused'));
+    });
   });
 });

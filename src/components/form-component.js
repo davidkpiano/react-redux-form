@@ -214,9 +214,16 @@ class Form extends Component {
   }
 
   render() {
-    const { component, children } = this.props;
+    const {
+      component,
+      children,
+      formValue,
+    } = this.props;
 
     const allowedProps = omit(this.props, Object.keys(Form.propTypes));
+    const renderableChildren = typeof children === 'function'
+      ? children(formValue)
+      : children;
 
     return React.createElement(component,
       {
@@ -224,7 +231,7 @@ class Form extends Component {
         onSubmit: this.handleSubmit,
         onReset: this.handleReset,
         ref: this.attachNode,
-      }, children);
+      }, renderableChildren);
   }
 }
 

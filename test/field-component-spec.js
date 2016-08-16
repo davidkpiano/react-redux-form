@@ -233,7 +233,7 @@ describe('<Field /> component', () => {
         const { test } = props;
 
         return (
-          <Field model="test.foo" dynamic>
+          <Field model="test.foo">
             {React.createElement(element, {
               type,
               value: test.foo,
@@ -1932,6 +1932,44 @@ describe('<Field /> component', () => {
 
       assert.isNull(input.getAttribute('class'));
       assert.isNull(input.getAttribute('style'));
+    });
+  });
+
+  describe('function as children', () => {
+    const store = testCreateStore({
+      test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test'),
+    });
+    const field = testRender(
+      <Field model="test.foo">
+      {(fieldValue) => <input
+        className={fieldValue.focus
+          ? 'focused'
+          : ''
+        }
+      />}
+      </Field>, store);
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    it('treats the return value as expected with normal children', () => {
+      assert.equal(input.value, 'bar');
+
+      input.value = 'testing';
+      TestUtils.Simulate.change(input);
+
+      assert.equal(input.value, 'testing');
+      assert.equal(store.getState().test.foo, 'testing');
+    });
+
+    it('rerenders the function when the field value changes', () => {
+      assert.throws(() => TestUtils.findRenderedDOMComponentWithClass(field, 'focused'));
+
+      TestUtils.Simulate.focus(input);
+
+      assert.isTrue(store.getState().testForm.foo.focus);
+
+      assert.ok(TestUtils.findRenderedDOMComponentWithClass(field, 'focused'));
     });
   });
 });
