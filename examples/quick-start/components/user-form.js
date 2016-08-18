@@ -27,12 +27,10 @@ class UserForm extends React.Component {
 
     return (
       <Form model="user" onSubmit={this.handleSubmit}>
-        {Array(500).fill(null).map((_, i) =>
-          <Field model={`user.firstName${i}`} key={i}>
-            <label>First name:</label>
-            <input type="text" />
-          </Field>
-        )}
+        <Field model="user.firstName">
+          <label>First name:</label>
+          <input type="text" />
+        </Field>
 
         <Field model="user.lastName">
           <label>Last name:</label>
