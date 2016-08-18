@@ -1,6 +1,6 @@
 # Guides
 
-- Quick Start
+- [Quick Start](quickstart.md)
 - Models
 - Forms
 - Validation
