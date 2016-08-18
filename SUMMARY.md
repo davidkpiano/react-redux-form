@@ -1,5 +1,5 @@
 # Summary
 
 * [Guides](docs/guides/README.md)
-* [API](docs/api/README.md)
-* [Recipes](docs/recipes/README.md)
+* [API Reference](docs/api/README.md)
+* [Recipes and Examples](docs/recipes/README.md)
