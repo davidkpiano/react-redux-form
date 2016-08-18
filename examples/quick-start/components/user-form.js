@@ -1,6 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { Field, Form, actions, Control } from 'react-redux-form';
+import { Form, actions, Control } from 'react-redux-form';
 
 class UserForm extends React.Component {
   constructor(props) {
@@ -51,9 +50,4 @@ UserForm.propTypes = {
   }).isRequired,
 };
 
-function mapStateToProps(state) {
-  return { user: state.user };
-}
-
-export default UserForm
-// export default connect(mapStateToProps)(UserForm);
+export default UserForm;
