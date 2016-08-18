@@ -23,33 +23,20 @@ class UserForm extends React.Component {
     dispatch(actions.submit('user', somePromise));
   }
   render() {
-    const { user } = this.props;
-
     return (
-      <Form model="user" onSubmit={this.handleSubmit}>
-        <Field model="user.firstName">
+      <Form model="user" onSubmit={v => console.log(v)}>
+        <div>
           <label>First name:</label>
-          <input type="text" />
-        </Field>
+          <Control.text model="user.firstName" />
+        </div>
 
-        <Field model="user.lastName">
+        <div>
           <label>Last name:</label>
-          <input type="text" />
-        </Field>
-
-        <Control.select model="user.foo">
-          <option value="one">one</option>
-          <option value="two">two</option>
-          <option value="three">three</option>
-          <optgroup>
-            <option value="four">this four</option>
-            <option value="five">this five</option>
-            <option value="six">this six</option>
-          </optgroup>
-        </Control.select>
+          <Control.text model="user.lastName" />
+        </div>
 
         <button type="submit">
-          Finish registration, {user.firstName} {user.lastName}!
+          Finish registration!
         </button>
       </Form>
     );
@@ -68,4 +55,5 @@ function mapStateToProps(state) {
   return { user: state.user };
 }
 
-export default connect(mapStateToProps)(UserForm);
+export default UserForm
+// export default connect(mapStateToProps)(UserForm);

@@ -1,12 +1,10 @@
 // ./store.js
 import {
-  createStore,
-  combineReducers,
   applyMiddleware,
+  createStore,
 } from 'redux';
 import {
-  modelReducer,
-  formReducer,
+  combineForms,
 } from 'react-redux-form';
 import thunk from 'redux-thunk';
 
@@ -15,9 +13,8 @@ const initialUserState = {
   lastName: '',
 };
 
-const store = applyMiddleware(thunk)(createStore)(combineReducers({
-  user: modelReducer('user', initialUserState),
-  userForm: formReducer('user', initialUserState),
-}));
+const store = createStore(combineForms({
+  user: initialUserState,
+}), applyMiddleware(thunk));
 
 export default store;

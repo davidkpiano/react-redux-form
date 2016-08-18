@@ -9,14 +9,8 @@ module.exports = {
       commonjs: 'react',
       amd: 'react',
     },
-    'react-addons-shallow-compare': {
-      root: 'react-addons-shallow-compare',
-      commonjs2: 'react-addons-shallow-compare',
-      commonjs: 'react-addons-shallow-compare',
-      amd: 'react-addons-shallow-compare',
-    },
     'react-dom': {
-      root: 'react-dom',
+      root: 'ReactDOM',
       commonjs2: 'react-dom',
       commonjs: 'react-dom',
       amd: 'react-dom',
@@ -32,13 +26,7 @@ module.exports = {
       commonjs2: 'redux',
       commonjs: 'redux',
       amd: 'redux',
-    },
-    'redux-thunk': {
-      root: 'redux-thunk',
-      commonjs2: 'redux-thunk',
-      commonjs: 'redux-thunk',
-      amd: 'redux-thunk',
-    },
+    }
   },
   module: {
     loaders: [
