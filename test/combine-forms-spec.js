@@ -1,8 +1,12 @@
 import { assert } from 'chai';
 import getForm from '../src/utils/get-form';
+import { combineReducers } from 'redux';
 import { modelReducer, combineForms, actions } from '../src';
+import { getFormStateKey } from '../src/utils/get-form';
 
 describe('combineForms()', () => {
+  beforeEach(() => getForm.clearCache());
+  
   context('standard combined reducer', () => {
     const reducer = combineForms({
       foo: modelReducer('foo', { one: 'two' }),
@@ -75,6 +79,20 @@ describe('combineForms()', () => {
       const fooForm = getForm(initialState, 'foo');
 
       assert.equal(fooForm, initialState.myForms.foo);
+    });
+  });
+
+  describe('deep forms', () => {
+    const reducer = combineReducers({
+      deep: combineForms({
+        foo: { bar: 'baz' },
+      }),
+    });
+
+    it('should be able to find the deep form', () => {
+      const state = reducer(undefined, { type: null });
+
+      assert.ok(getForm(state, 'deep.foo'));
     });
   });
 });

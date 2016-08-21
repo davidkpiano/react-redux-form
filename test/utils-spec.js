@@ -118,6 +118,9 @@ describe('utils', () => {
       firstForm: formReducer('first'),
       deep: combineReducers({
         secondForm: formReducer('second'),
+        deeper: combineReducers({
+          thirdForm: formReducer('third'),
+        }),
       }),
     }));
 
@@ -143,6 +146,18 @@ describe('utils', () => {
       assert.equal(
         getFormStateKey(store.getState(), 'second.anything'),
         'deep.secondForm');
+    });
+
+    it('should find a deeper form reducer state key', () => {
+      assert.equal(
+        getFormStateKey(store.getState(), 'third'),
+        'deep.deeper.thirdForm');
+    });
+
+    it('should find a deeper form reducer state key with deep model', () => {
+      assert.equal(
+        getFormStateKey(store.getState(), 'third.anything'),
+        'deep.deeper.thirdForm');
     });
   });
 });

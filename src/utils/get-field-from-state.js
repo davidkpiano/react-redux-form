@@ -6,6 +6,8 @@ import getForm from './get-form';
 export default function getFieldFromState(state, modelString) {
   const form = getForm(state, modelString);
 
+  if (!form) return null;
+
   if (!modelString.length) return form;
 
   const formPath = toPath(form.$form.model);

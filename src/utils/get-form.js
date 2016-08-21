@@ -1,7 +1,12 @@
 import get from '../utils/get';
 import isPlainObject from 'lodash/isPlainObject';
 import pathStartsWith from '../utils/path-starts-with';
-import { getForm as _oldGetForm } from '../utils/index';
+
+function joinPaths(firstPath, secondPath) {
+  if (!firstPath || !firstPath.length) return secondPath;
+
+  return `${firstPath}.${secondPath}`;
+}
 
 export function getFormStateKey(state, model, currentPath = '') {
   const deepCandidateKeys = [];
@@ -19,7 +24,7 @@ export function getFormStateKey(state, model, currentPath = '') {
 
           if (!formState.$form) return false;
 
-          if (pathStartsWith(model, formState.$form.model)) {
+          if (pathStartsWith(model, joinPaths(currentPath, formState.$form.model))) {
             result = currentPath
               ? [currentPath, key, formKey].join('.')
               : [key, formKey].join('.');
@@ -63,8 +68,22 @@ export function getFormStateKey(state, model, currentPath = '') {
   return null;
 }
 
-export default function getForm(state, modelString) {
-  const formStateKey = getFormStateKey(state, modelString);
+let formStateKeyCache = {};
+
+const getFormStateKeyCached = (() => {
+  return (state, modelString) => {
+    if (formStateKeyCache[modelString]) return formStateKeyCache[modelString];
+
+    const result = getFormStateKey(state, modelString);
+
+    formStateKeyCache[modelString] = result;
+
+    return result;
+  }
+})();
+
+function getForm(state, modelString) {
+  const formStateKey = getFormStateKeyCached(state, modelString);
 
   if (!formStateKey) {
     return null;
@@ -72,3 +91,7 @@ export default function getForm(state, modelString) {
 
   return get(state, formStateKey);
 }
+
+getForm.clearCache = () => formStateKeyCache = {};
+
+export default getForm;
