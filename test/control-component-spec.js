@@ -615,6 +615,102 @@ describe('Extended Control components', () => {
     });
   });
 
+  describe('asyncValidators and asyncValidateOn property', () => {
+    const reducer = formReducer('test');
+    const store = createTestStore({
+      testForm: reducer,
+      test: modelReducer('test', {}),
+    });
+
+    it('should set the proper field state for a valid async validation', done => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            asyncValidators={{
+              testValid: (val, _done) => setTimeout(() => _done(true), 10),
+            }}
+            asyncValidateOn="blur"
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      const expectedStates = [
+        (state) => state.focus === false,
+
+        // initially valid
+        (state) => state.validating === true && state.valid,
+
+        // true after validating
+        (state) => state.validating === false && state.valid,
+      ];
+
+      const actualStates = [];
+
+      store.subscribe(() => {
+        const state = store.getState();
+
+        actualStates.push(state.testForm.foo);
+
+        if (actualStates.length === expectedStates.length) {
+          expectedStates.map((expectedFn, i) =>
+            assert.ok(expectedFn(actualStates[i]), `${i}`)
+          );
+
+          done();
+        }
+      });
+
+      TestUtils.Simulate.blur(control);
+    });
+
+    it('should set the proper field state for an invalid async validation', done => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            asyncValidators={{
+              testValid: (val, _done) => setTimeout(() => _done(false), 10),
+            }}
+            asyncValidateOn="blur"
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      const expectedStates = [
+        (state) => state.focus === false,
+
+        // initially valid
+        (state) => state.validating === true && state.valid,
+
+        // false after validating
+        (state) => state.validating === false && !state.valid,
+      ];
+
+      const actualStates = [];
+
+      store.subscribe(() => {
+        const state = store.getState();
+
+        actualStates.push(state.testForm.foo);
+
+        if (actualStates.length === expectedStates.length) {
+          expectedStates.map((expectedFn, i) =>
+            assert.ok(expectedFn(actualStates[i]), `${i}`)
+          );
+
+          done();
+        }
+      });
+
+      TestUtils.Simulate.blur(control);
+    });
+  });
+
   describe('manual focus/blur', () => {
     const store = testCreateStore({
       test: modelReducer('test', { foo: 'bar' }),

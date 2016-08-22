@@ -29,6 +29,7 @@ export const initialFieldState = {
   submitFailed: false,
   retouched: false,
   touched: false,
+  valid: true,
   validating: false,
   validated: false,
   validity: {},
