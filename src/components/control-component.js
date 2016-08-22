@@ -494,6 +494,8 @@ Control.propTypes = propTypes;
 Control.defaultProps = {
   changeAction: actions.change,
   updateOn: 'change',
+  validateOn: 'change',
+  asyncValidateOn: 'blur',
   parser: identity,
   formatter: identity,
   controlProps: {},
