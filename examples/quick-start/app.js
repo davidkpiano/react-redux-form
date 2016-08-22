@@ -1,22 +1,54 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { Provider, connect } from 'react-redux';
+import thunk from 'redux-thunk';
+import createLogger from 'redux-logger';
+import {
+  Field,
+  Form,
+  Control,
+  actions,
+  combineForms,
+} from 'react-redux-form';
 
-import { Provider } from 'react-redux';
+const initialState = {
+  to: '',
+  message: '',
+};
 
-// We'll create this in Step 5.
-import store from './store.js';
+const unclaimed = combineForms({
+  inviteManager: initialState,
+}, 'shared.unclaimed');
 
-// We'll create this in Step 6.
-import UserForm from './components/user-form.js';
+const store = createStore(combineReducers({
+  shared: combineReducers({
+    unclaimed,
+  }),
+}), applyMiddleware(createLogger(), thunk));
 
-class App extends React.Component {
+class App extends Component {
+  handleSubmit(values) {
+    alert(JSON.stringify(values));
+  }
   render() {
     return (
-      <Provider store={store}>
-        <UserForm />
-      </Provider>
+      <Form model="shared.unclaimed.inviteManager" onSubmit={this.handleSubmit}>
+        <Field model="shared.unclaimed.inviteManager.to"
+          validateOn="blur"
+          validators={{
+            required: (val) => val && val.length,
+          }}
+        >
+          <label>Email Or Mobile Number</label>
+          <input type="text" />
+        </Field>
+        <button>Submit</button>
+      </Form>
     );
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('app'));
+ReactDOM.render(<Provider store={store}>
+  <App />
+</Provider>, document.getElementById('app'));

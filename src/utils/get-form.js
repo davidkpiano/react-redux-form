@@ -70,16 +70,14 @@ export function getFormStateKey(state, model, currentPath = '') {
 
 let formStateKeyCache = {};
 
-const getFormStateKeyCached = (() => {
-  return (state, modelString) => {
-    if (formStateKeyCache[modelString]) return formStateKeyCache[modelString];
+const getFormStateKeyCached = (() => (state, modelString) => {
+  if (formStateKeyCache[modelString]) return formStateKeyCache[modelString];
 
-    const result = getFormStateKey(state, modelString);
+  const result = getFormStateKey(state, modelString);
 
-    formStateKeyCache[modelString] = result;
+  formStateKeyCache[modelString] = result; // eslint-disable-line no-return-assign
 
-    return result;
-  }
+  return result;
 })();
 
 function getForm(state, modelString) {

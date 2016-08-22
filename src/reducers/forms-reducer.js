@@ -10,7 +10,13 @@ const defaults = {
   plugins: [],
 };
 
-export default function combineForms(forms, options = {}) {
+function getSubModelString(model, subModel) {
+  if (!model) return subModel;
+
+  return `${model}.${subModel}`;
+}
+
+export default function combineForms(forms, model = '', options = {}) {
   const formKeys = Object.keys(forms);
   const modelReducers = {};
   const initialFormState = {};
@@ -25,6 +31,7 @@ export default function combineForms(forms, options = {}) {
 
   formKeys.forEach((formKey) => {
     const formValue = forms[formKey];
+    const subModel = getSubModelString(model, formKey);
 
     if (typeof formValue === 'function') {
       let initialState;
@@ -34,16 +41,16 @@ export default function combineForms(forms, options = {}) {
         initialState = null;
       }
 
-      modelReducers[formKey] = modeled(formValue, formKey);
+      modelReducers[formKey] = modeled(formValue, subModel);
       initialFormState[formKey] = initialState;
     } else {
-      modelReducers[formKey] = modelReducer(formKey, formValue);
+      modelReducers[formKey] = modelReducer(subModel, formValue);
       initialFormState[formKey] = formValue;
     }
   });
 
   return combineReducers({
     ...modelReducers,
-    [key]: formReducer('', initialFormState, { plugins }),
+    [key]: formReducer(model, initialFormState, { plugins }),
   });
 }
