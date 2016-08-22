@@ -7,6 +7,7 @@ import {
   combineForms,
 } from 'react-redux-form';
 import thunk from 'redux-thunk';
+import createLogger from 'redux-logger';
 
 const initialUserState = {
   firstName: '',
@@ -15,6 +16,6 @@ const initialUserState = {
 
 const store = createStore(combineForms({
   user: initialUserState,
-}), applyMiddleware(thunk));
+}), applyMiddleware(createLogger(), thunk));
 
 export default store;

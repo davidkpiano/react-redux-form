@@ -90,6 +90,6 @@ function getForm(state, modelString) {
   return get(state, formStateKey);
 }
 
-getForm.clearCache = () => formStateKeyCache = {};
+getForm.clearCache = () => formStateKeyCache = {}; // eslint-disable-line no-return-assign
 
 export default getForm;

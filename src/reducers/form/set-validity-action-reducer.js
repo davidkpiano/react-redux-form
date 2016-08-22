@@ -7,6 +7,11 @@ import mapValues from '../../utils/map-values';
 import inverse from '../../utils/inverse';
 import updateField from '../../utils/update-field';
 import toPath from '../../utils/to-path';
+import isValid from '../../form/is-valid';
+import isValidityValid from '../../utils/is-validity-valid';
+import isValidityInvalid from '../../utils/is-validity-invalid';
+
+import icepick from 'icepick';
 
 export default function setValidityActionReducer(state, action, localPath) {
   if (action.type === actionTypes.SET_FIELDS_VALIDITY) {
@@ -43,5 +48,14 @@ export default function setValidityActionReducer(state, action, localPath) {
     [isErrors ? 'validity' : 'errors']: inverseValidity,
     validating: false,
     validated: true,
+    valid: isErrors
+      ? !isValidityInvalid(validity)
+      : isValidityValid(validity),
+  }, null, (node) => {
+    if (node.$form) {
+      return icepick.setIn(node, ['$form', 'valid'], isValid(node));
+    }
+
+    return icepick.set(node, 'valid', isValid(node));
   });
 }

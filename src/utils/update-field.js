@@ -3,7 +3,19 @@ import get from './get';
 import mapValues from './map-values';
 import { initialFieldState } from '../reducers/form-reducer';
 
-export default function updateField(state, path, newState, newSubState) {
+function assocIn(state, path, value, fn) {
+  if (!fn) return icepick.assocIn(state, path, value);
+
+  const key0 = path[0];
+
+  if (path.length === 1) {
+    return fn(icepick.assoc(state, key0, value));
+  }
+
+  return fn(icepick.assoc(state, key0, assocIn(state[key0] || {}, path.slice(1), value, fn)));
+}
+
+export default function updateField(state, path, newState, newSubState, updater) {
   const field = path.length
     ? get(state, path, initialFieldState)
     : state;
@@ -35,10 +47,10 @@ export default function updateField(state, path, newState, newSubState) {
 
     if (!path.length) return formState;
 
-    return icepick.setIn(state, path, formState);
+    return assocIn(state, path, formState, updater);
   }
 
-  return icepick.setIn(state, fieldPath, icepick.assign(
+  return assocIn(state, fieldPath, icepick.assign(
     fieldState,
-    updatedFieldState));
+    updatedFieldState), updater);
 }

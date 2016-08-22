@@ -487,6 +487,134 @@ describe('Extended Control components', () => {
     });
   });
 
+  describe('validators and validateOn property', () => {
+    const store = testCreateStore({
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
+        foo: '',
+        blur: '',
+        external: '',
+      }),
+    });
+
+    it('should set the proper field state for validation', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            validators={{
+              good: () => true,
+              bad: () => false,
+              custom: val => val !== 'invalid',
+            }}
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'valid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.foo.errors,
+        {
+          good: false,
+          bad: true,
+          custom: false,
+        });
+
+      control.value = 'invalid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.foo.errors,
+        {
+          good: false,
+          bad: true,
+          custom: true,
+        });
+    });
+
+    it('should validate on blur when validateOn prop is "blur"', () => {
+      let timesValidationCalled = 0;
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.blur"
+            validators={{
+              good: () => true,
+              bad: () => false,
+              custom: (val) => {
+                timesValidationCalled += 1;
+                return val !== 'invalid';
+              },
+            }}
+            validateOn="blur"
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'valid';
+
+      assert.equal(timesValidationCalled, 1,
+        'validation should only be called once upon load');
+
+      TestUtils.Simulate.change(control);
+
+      assert.equal(timesValidationCalled, 1,
+        'validation should not be called upon change');
+
+      TestUtils.Simulate.blur(control);
+
+      assert.equal(timesValidationCalled, 2,
+        'validation should be called upon blur');
+
+      assert.deepEqual(
+        store.getState().testForm.blur.errors,
+        {
+          good: false,
+          bad: true,
+          custom: false,
+        }, 'should only validate upon blur');
+    });
+
+    it('should validate on external change', () => {
+      let timesValidationCalled = 0;
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.external"
+            validators={{
+              required: (val) => {
+                timesValidationCalled += 1;
+                return val && val.length;
+              },
+            }}
+          />
+        </Provider>
+      );
+
+      assert.equal(timesValidationCalled, 1,
+        'validation called on load');
+
+      assert.isFalse(store.getState().testForm.external.valid);
+
+      store.dispatch(actions.change('test.external', 'valid'));
+
+      assert.isTrue(store.getState().testForm.external.valid);
+
+      assert.equal(timesValidationCalled, 2,
+        'validation called because of external change');
+    });
+  });
+
   describe('manual focus/blur', () => {
     const store = testCreateStore({
       test: modelReducer('test', { foo: 'bar' }),
