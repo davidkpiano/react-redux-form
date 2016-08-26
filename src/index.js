@@ -23,7 +23,6 @@ import {
   track,
 } from './utils/track';
 
-import * as utils from './utils';
 import form from './form';
 
 export {
@@ -55,7 +54,6 @@ export {
   form,
 
   // Utilities
-  utils,
   getField,
   track,
 };
