@@ -56,13 +56,16 @@ class Form extends Component {
 
   validate(nextProps, initial = false) {
     const {
-      validators,
-      errors,
       model,
       dispatch,
       formValue,
       modelValue,
     } = this.props;
+
+    const {
+      validators,
+      errors,
+    } = nextProps;
 
     if (!formValue) return;
 
@@ -73,6 +76,8 @@ class Form extends Component {
 
       return;
     }
+
+    const validatorsChanged = validators !== this.props.validators || errors !== this.props.errors;
 
     let validityChanged = false;
 
@@ -87,7 +92,7 @@ class Form extends Component {
 
       const currentValidity = getField(formValue, field).validity;
 
-      if (!initial && (nextValue === currentValue)) {
+      if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
         return currentValidity;
       }
 
@@ -111,7 +116,7 @@ class Form extends Component {
 
       const currentErrors = getField(formValue, field).errors;
 
-      if (!initial && (nextValue === currentValue)) {
+      if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
         return getField(formValue, field).errors;
       }
 
