@@ -7,6 +7,7 @@ import { Provider, connect } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 import capitalize from 'lodash/capitalize';
+import mapValues from 'lodash/mapValues';
 import sinon from 'sinon';
 import createTestStore from 'redux-test-store';
 import { testCreateStore, testRender } from './utils';
@@ -268,65 +269,82 @@ describe('<Field /> component', () => {
     });
   });
 
+
   describe('with <input type="radio" />', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('test'),
-      test: modelReducer('test', { foo: 'two' }),
-    }));
-
-    const field = TestUtils.renderIntoDocument(
-      <Provider store={store}>
-        <Field model="test.foo">
+    const fields = {
+      deep: <Field model="test.foo">
+        <label>
           <input type="radio" value="one" />
+        </label>
+        <label>
           <input type="radio" value="two" />
-        </Field>
-      </Provider>
-    );
+        </label>
+      </Field>,
+      shallow: <Field model="test.foo">
+        <input type="radio" value="one" />
+        <input type="radio" value="two" />
+      </Field>,
+    };
 
-    const [radioOne, radioTwo] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+    mapValues(fields, (fieldChild, key) => {
+      describe(`type: ${key}`, () => {
+        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+          testForm: formReducer('test'),
+          test: modelReducer('test', { foo: 'two' }),
+        }));
 
-    it('should initially set the radio button matching the initial state to checked', () => {
-      assert.equal(radioTwo.checked, true);
-      assert.equal(radioOne.checked, false);
-    });
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            {fieldChild}
+          </Provider>
+        );
 
-    it('should give each radio input a name attribute of the model', () => {
-      assert.equal(radioOne.name, 'test.foo');
-      assert.equal(radioTwo.name, 'test.foo');
-    });
+        const [radioOne, radioTwo] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+        it('should initially set the radio button matching the initial state to checked', () => {
+          assert.equal(radioTwo.checked, true);
+          assert.equal(radioOne.checked, false);
+        });
+
+        it('should give each radio input a name attribute of the model', () => {
+          assert.equal(radioOne.name, 'test.foo');
+          assert.equal(radioTwo.name, 'test.foo');
+        });
 
 
-    it('should dispatch a change event when changed', () => {
-      TestUtils.Simulate.change(radioOne);
+        it('should dispatch a change event when changed', () => {
+          TestUtils.Simulate.change(radioOne);
 
-      assert.equal(
-        store.getState().test.foo,
-        'one');
+          assert.equal(
+            store.getState().test.foo,
+            'one');
 
-      TestUtils.Simulate.change(radioTwo);
+          TestUtils.Simulate.change(radioTwo);
 
-      assert.equal(
-        store.getState().test.foo,
-        'two');
-    });
+          assert.equal(
+            store.getState().test.foo,
+            'two');
+        });
 
-    it('should check the appropriate radio button when model is externally changed', () => {
-      store.dispatch(actions.change('test.foo', 'one'));
+        it('should check the appropriate radio button when model is externally changed', () => {
+          store.dispatch(actions.change('test.foo', 'one'));
 
-      assert.equal(radioOne.checked, true);
-      assert.equal(radioTwo.checked, false);
+          assert.equal(radioOne.checked, true);
+          assert.equal(radioTwo.checked, false);
 
-      store.dispatch(actions.change('test.foo', 'two'));
+          store.dispatch(actions.change('test.foo', 'two'));
 
-      assert.equal(radioTwo.checked, true);
-      assert.equal(radioOne.checked, false);
-    });
+          assert.equal(radioTwo.checked, true);
+          assert.equal(radioOne.checked, false);
+        });
 
-    it('should uncheck all radio buttons that are not equal to the value', () => {
-      store.dispatch(actions.change('test.foo', 'three'));
+        it('should uncheck all radio buttons that are not equal to the value', () => {
+          store.dispatch(actions.change('test.foo', 'three'));
 
-      assert.equal(radioOne.checked, false);
-      assert.equal(radioTwo.checked, false);
+          assert.equal(radioOne.checked, false);
+          assert.equal(radioTwo.checked, false);
+        });
+      });
     });
   });
 
@@ -1880,32 +1898,6 @@ describe('<Field /> component', () => {
       store.dispatch(actions.change('test.foo', 'external'));
 
       assert.equal(input.value, 'external');
-    });
-  });
-
-  describe('with <label>', () => {
-    const store = testCreateStore({
-      test: modelReducer('test', { foo: 'bar' }),
-      testForm: formReducer('test'),
-    });
-
-    const field = testRender(
-      <Field model="test.foo">
-        <label />
-        <label htmlFor="named" />
-      </Field>, store);
-
-    const [
-      unnamedLabel,
-      namedLabel,
-    ] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'label');
-
-    it('should set the "for" attribute of the label to the model', () => {
-      assert.equal(unnamedLabel.getAttribute('for'), 'test.foo');
-    });
-
-    it('should not overwrite existing "for" attribute of label', () => {
-      assert.equal(namedLabel.getAttribute('for'), 'named');
     });
   });
 

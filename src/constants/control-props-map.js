@@ -74,9 +74,6 @@ const controlPropsMap = {
       props.dispatch(actions.reset(props.model));
     },
   },
-  label: {
-    htmlFor: (props) => (props.htmlFor || props.model),
-  },
 };
 
 export default controlPropsMap;

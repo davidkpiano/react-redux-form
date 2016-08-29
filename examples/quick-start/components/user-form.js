@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, actions, Control } from 'react-redux-form';
+import { Form, actions, Control, Field } from 'react-redux-form';
 
 class UserForm extends React.Component {
   constructor(props) {
@@ -33,6 +33,17 @@ class UserForm extends React.Component {
           <label>Last name:</label>
           <Control.text updateOn="blur" model="user.lastName" />
         </div>
+
+        <Field model="user.bag">
+          <label>
+            <input type="radio" value="paper" />
+            <span>Paper</span>
+          </label>
+          <label>
+            <input type="radio" value="plastic" />
+            <span>Plastic</span>
+          </label>
+        </Field>
         <button type="submit">
           Finish registration!
         </button>

@@ -12,6 +12,7 @@ import createLogger from 'redux-logger';
 const initialUserState = {
   firstName: '',
   lastName: '',
+  bag: 'paper',
 };
 
 const store = createStore(combineForms({

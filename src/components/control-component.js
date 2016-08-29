@@ -11,6 +11,7 @@ import isPlainObject from 'lodash/isPlainObject';
 import icepick from 'icepick';
 import omit from 'lodash/omit';
 import shallowCompare from 'react/lib/shallowCompare';
+import handleFocus from '../utils/handle-focus';
 
 import getValue from '../utils/get-value';
 import getValidity from '../utils/get-validity';
@@ -129,10 +130,7 @@ class Control extends Component {
     const { mapProps, modelValue } = nextProps;
 
     if (modelValue !== this.props.modelValue) {
-      this.setState({
-        viewValue: modelValue,
-        mappedProps: this.getMappedProps(nextProps, mapProps, modelValue),
-      });
+      this.setViewValue(modelValue, nextProps);
     } else if (shallowCompare(this.props, nextProps)) {
       this.setState({
         mappedProps: this.getMappedProps(nextProps, mapProps),
@@ -170,19 +168,7 @@ class Control extends Component {
     }
 
     // Manually focus/blur node
-    if (fieldValue.focus) {
-      if (document
-        && document.activeElement !== this.node
-        && this.node.focus
-      ) {
-        this.node.focus();
-      }
-    } else if (document
-      && document.activeElement === this.node
-      && this.node.blur
-    ) {
-      this.node.blur();
-    }
+    handleFocus(fieldValue, this.node);
 
     // Detect view value changes
     if (prevState.viewValue !== viewValue) {
@@ -320,6 +306,19 @@ class Control extends Component {
     return nodeErrors;
   }
 
+  setViewValue(viewValue, props = this.props) {
+    if (!isReadOnlyValue(props.controlProps)) {
+      this.setState({
+        viewValue,
+        mappedProps: this.getMappedProps(props, props.mapProps, viewValue),
+      });
+    } else {
+      this.setState({
+        mappedProps: this.getMappedProps(props, props.mapProps, viewValue),
+      });
+    }
+  }
+
   updateMappedProps() {
     const { mapProps } = this.props;
 
@@ -329,10 +328,7 @@ class Control extends Component {
   }
 
   handleChange(event) {
-    this.setState({
-      viewValue: getValue(event),
-      mappedProps: this.getMappedProps(this.props, this.props.mapProps, getValue(event)),
-    });
+    this.setViewValue(getValue(event));
     this.handleUpdate(event);
   }
 
