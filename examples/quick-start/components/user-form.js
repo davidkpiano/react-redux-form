@@ -33,17 +33,6 @@ class UserForm extends React.Component {
           <label>Last name:</label>
           <Control.text updateOn="blur" model="user.lastName" />
         </div>
-
-        <Field model="user.foo">
-          {(fieldValue) => {
-            console.log(fieldValue.focus)
-            return <input
-            className={fieldValue.focus
-              ? 'focused'
-              : ''
-            }
-          />}}
-</Field>
         <button type="submit">
           Finish registration!
         </button>

@@ -126,7 +126,7 @@ class Control extends Component {
   componentWillReceiveProps(nextProps) {
     const { mapProps, modelValue } = nextProps;
 
-    if (modelValue !== this.props.modelValue) {    
+    if (modelValue !== this.props.modelValue) {
       this.setState({
         viewValue: modelValue,
         mappedProps: this.getMappedProps(nextProps, mapProps, modelValue),
@@ -195,7 +195,6 @@ class Control extends Component {
   }
 
   getMappedProps(props, mapProps, viewValue = this.state.viewValue) {
-
     const originalProps = {
       ...props,
       ...props.controlProps,
