@@ -26,7 +26,7 @@ class UserForm extends React.Component {
       <Form model="user" onSubmit={v => console.log(v)}>
         <div>
           <label>First name:</label>
-          <Control.text model="user.firstName" />
+          <Control.text model="user.firstName" required />
         </div>
 
         <div>

@@ -294,19 +294,30 @@ class Control extends Component {
   }
 
   getNodeErrors() {
-    const { node } = this;
+    const {
+      node,
+      props: { fieldValue },
+    } = this;
 
     if (!node || !node.willValidate) {
       return null;
     }
 
-    const errors = {};
+    const nodeErrors = {};
 
     validityKeys.forEach((key) => {
-      errors[key] = node.validity[key];
+      const errorValidity = node.validity[key];
+
+      // If the key is invalid or they key was
+      // previously invalid and is now valid,
+      // set its validity
+      if (errorValidity
+        || (fieldValue && fieldValue.errors[key])) {
+        nodeErrors[key] = errorValidity;
+      }
     });
 
-    return errors;
+    return nodeErrors;
   }
 
   updateMappedProps() {
