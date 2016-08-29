@@ -5,5 +5,7 @@
   * [Quick Start](docs/guides/quickstart.md)
   * [Models](docs/guides/models.md)
 * [API Reference](docs/api/README.md)
+  * [modelReducer](docs/api/modelReducer.md)
+  * [combineForms](docs/api/combineForms.md)
 * [Recipes and Examples](docs/recipes/README.md)
   * [Quick Start](docs/recipes/quickstart.md)

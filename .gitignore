@@ -27,7 +27,6 @@ build/Release
 node_modules
 
 # Docs
-docs/
 _book/
 
 # Distributed files
