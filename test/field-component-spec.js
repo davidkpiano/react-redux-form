@@ -1942,12 +1942,14 @@ describe('<Field /> component', () => {
     });
     const field = testRender(
       <Field model="test.foo">
-      {(fieldValue) => <input
+      {(fieldValue) => {
+        console.log(fieldValue.focus)
+        return <input
         className={fieldValue.focus
           ? 'focused'
           : ''
         }
-      />}
+      />}}
       </Field>, store);
 
     const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');

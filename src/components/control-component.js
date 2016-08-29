@@ -126,10 +126,16 @@ class Control extends Component {
   componentWillReceiveProps(nextProps) {
     const { mapProps, modelValue } = nextProps;
 
-    this.setState({
-      viewValue: modelValue,
-      mappedProps: this.getMappedProps(nextProps, mapProps),
-    });
+    if (modelValue !== this.props.modelValue) {    
+      this.setState({
+        viewValue: modelValue,
+        mappedProps: this.getMappedProps(nextProps, mapProps, modelValue),
+      });
+    } else if (shallowCompare(this.props, nextProps)) {
+      this.setState({
+        mappedProps: this.getMappedProps(nextProps, mapProps),
+      });
+    }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -140,7 +146,8 @@ class Control extends Component {
     const {
       modelValue,
       fieldValue,
-      validateOn,
+      updateOn,
+      validateOn = updateOn,
       validators,
       errors,
     } = this.props;
@@ -187,8 +194,7 @@ class Control extends Component {
     }
   }
 
-  getMappedProps(props, mapProps) {
-    const { viewValue } = this.state;
+  getMappedProps(props, mapProps, viewValue = this.state.viewValue) {
 
     const originalProps = {
       ...props,
@@ -307,7 +313,10 @@ class Control extends Component {
   }
 
   handleChange(event) {
-    this.setState({ viewValue: getValue(event) });
+    this.setState({
+      viewValue: getValue(event),
+      mappedProps: this.getMappedProps(this.props, this.props.mapProps, getValue(event)),
+    });
     this.handleUpdate(event);
   }
 
@@ -358,7 +367,7 @@ class Control extends Component {
       dispatch,
       model,
       updateOn,
-      validateOn,
+      validateOn = updateOn,
       asyncValidateOn,
       controlProps = {},
       parser,
@@ -475,7 +484,8 @@ class Control extends Component {
         {
           ...allowedProps,
           onKeyPress: this.handleKeyPress,
-        });
+        },
+        controlProps.children);
     }
 
     return createElement(
@@ -494,7 +504,6 @@ Control.propTypes = propTypes;
 Control.defaultProps = {
   changeAction: actions.change,
   updateOn: 'change',
-  validateOn: 'change',
   asyncValidateOn: 'blur',
   parser: identity,
   formatter: identity,

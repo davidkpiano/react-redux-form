@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, actions, Control } from 'react-redux-form';
+import { Form, actions, Control, Field } from 'react-redux-form';
 
 class UserForm extends React.Component {
   constructor(props) {
@@ -31,9 +31,19 @@ class UserForm extends React.Component {
 
         <div>
           <label>Last name:</label>
-          <Control.text model="user.lastName" />
+          <Control.text updateOn="blur" model="user.lastName" />
         </div>
 
+        <Field model="user.foo">
+          {(fieldValue) => {
+            console.log(fieldValue.focus)
+            return <input
+            className={fieldValue.focus
+              ? 'focused'
+              : ''
+            }
+          />}}
+</Field>
         <button type="submit">
           Finish registration!
         </button>

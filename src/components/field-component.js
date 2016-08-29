@@ -170,6 +170,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
         fieldValue,
       } = props;
 
+
       const allowedProps = omit(props, Object.keys(fieldPropTypes));
       const renderableChildren = typeof children === 'function'
         ? children(fieldValue)
