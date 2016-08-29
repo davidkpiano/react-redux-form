@@ -89,6 +89,8 @@ function isReadOnlyValue(controlProps) {
   return ~['radio', 'checkbox'].indexOf(controlProps.type);
 }
 
+const emptyControlProps = {};
+
 class Control extends Component {
   constructor(props) {
     super(props);
@@ -139,7 +141,11 @@ class Control extends Component {
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
+    const result =
+      !shallowEqual(this.props, nextProps, ['controlProps'])
+      || !shallowEqual(this.props.controlProps, nextProps.controlProps)
+      || !shallowEqual(this.state, nextState, ['mappedProps']);
+    return result;
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -330,7 +336,7 @@ class Control extends Component {
       model,
       modelValue,
       fieldValue,
-      controlProps = {},
+      controlProps = emptyControlProps,
       onLoad,
       dispatch,
     } = this.props;
@@ -368,7 +374,7 @@ class Control extends Component {
       updateOn,
       validateOn = updateOn,
       asyncValidateOn,
-      controlProps = {},
+      controlProps = emptyControlProps,
       parser,
       ignore,
     } = this.props;
@@ -469,7 +475,7 @@ class Control extends Component {
 
   render() {
     const {
-      controlProps = {},
+      controlProps = emptyControlProps,
       component,
       control,
     } = this.props;
@@ -506,7 +512,7 @@ Control.defaultProps = {
   asyncValidateOn: 'blur',
   parser: identity,
   formatter: identity,
-  controlProps: {},
+  controlProps: emptyControlProps,
   getter: _get,
   ignore: [],
   dynamic: false,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, actions, Control, Field } from 'react-redux-form';
+import { Form, actions, Control } from 'react-redux-form';
 
 class UserForm extends React.Component {
   constructor(props) {
