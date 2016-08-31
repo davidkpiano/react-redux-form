@@ -45,11 +45,24 @@ class Control extends Component {
   }
 
   componentWillMount() {
-    const { modelValue } = this.props;
+    const {
+      model,
+      modelValue,
+      parser,
+      dispatch,
+    } = this.props;
     const { onLoad } = this.state.mappedProps;
 
     if (onLoad) {
       onLoad(modelValue);
+    }
+
+    if (parser) {
+      const parsedValue = parser(modelValue);
+
+      if (parsedValue !== modelValue) {
+        dispatch(actions.change(model, parsedValue));
+      }
     }
   }
 
