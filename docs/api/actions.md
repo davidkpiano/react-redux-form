@@ -1,7 +1,42 @@
+# Action Creators
+
+- [Model Action Creators](#model-action-creators)
+  - [`actions.change()`](#actions-change)
+  - [`actions.reset()`](#actions-reset)
+  - [`actions.merge()`](#actions-merge)
+  - [`actions.xor()`](#actions-xor)
+  - [`actions.toggle()`](#actions-toggle)
+  - [`actions.filter()`](#actions-filter)
+  - [`actions.map()`](#actions-map)
+  - [`actions.remove()`](#actions-remove)
+  - [`actions.move()`](#actions-move)
+  - [`actions.load()`](#actions-load)
+  - [`actions.load()`](#actions-omit)
+- [Field Action Creators](#field-action-creators)
+  - [`actions.focus()`](#actions-focus)
+  - [`actions.blur()`](#actions-blur)
+  - [`actions.setPristine()`](#actions-setPristine)
+  - [`actions.setDirty()`](#actions-setDirty)
+  - [`actions.setPending()`](#actions-setPending)
+  - [`actions.setTouched()`](#actions-setTouched)
+  - [`actions.setUntouched()`](#actions-setUntouched)
+  - [`actions.setSubmitted()`](#actions-setSubmitted)
+  - [`actions.setSubmitFailed()`](#actions-setSubmitFailed)
+  - [`actions.setInitial()`](#actions-setInitial)
+- [Validation Action Creators](#validation-action-creators)
+  - [`actions.setValidity()`](#actions-setValidity)
+  - [`actions.validate()`](#actions-validate)
+  - [`actions.asyncSetValidity()`](#actions-asyncSetValidity)
+  - [`actions.setErrors()`](#actions-setErrors)
+  - [`actions.validateErrors()`](#actions-validateErrors)
+  - [`actions.submit()`](#actions-submit)
+
+
 # Model Action Creators
 
 All model and field action creators can be imported via `import { actions } from 'react-redux-form'`. The action thunk creators require [redux-thunk-middleware](https://github.com/gaearon/redux-thunk) to work, as they use thunks to determine the current model state. 
 
+<h2 id="actions-change"></h2>
 ## `actions.change(model, value, [options])`
 
 Returns an action that, when handled by a `modelReducer`, changes the value of the `model` to the `value`.
@@ -34,6 +69,7 @@ userReducer(initialState, actions.change('user.name', 'Billy'));
 ### Notes
 - The `model` path can be as deep as you want. E.g. `actions.change('user.phones[0].type', 'home')`
 
+<h2 id="actions-reset"></h2>
 ## `actions.reset(model)`
 Returns an action that, when handled by a `modelReducer`, changes the value of the respective model to its initial value.
 
@@ -64,6 +100,7 @@ let resetState = counterReducer(nextState,
 - This action will reset both the model value in the model reducer, _and_ the model field state in the form reducer (if it exists).
 - To reset just the field state (in the form reducer), use `actions.setInitial(model)`.
 
+<h2 id="actions-merge"></h2>
 ## `actions.merge(model, values)`
 Dispatches an `actions.change(...)` action that merges the `values` into the value specified by the `model`.
 
@@ -75,7 +112,7 @@ Dispatches an `actions.change(...)` action that merges the `values` into the val
 - Use this action to update multiple and/or deep properties into a model, if the model represents an object.
 - This uses `icepick.merge(modelValue, values)` internally.
 
-
+<h2 id="actions-xor"></h2>
 ## `actions.xor(model, item)`
 Dispatches an `actions.change(...)` action that applies an "xor" operation to the array represented by the `model`; that is, it "toggles" an item in an array.
 
@@ -112,7 +149,7 @@ Dispatches an `actions.change(...)` action that "pushes" the `item` to the array
 ### Notes
 - This action does not mutate the model. It only simulates the mutable `.push()` method.
 
-
+<h2 id="actions-toggle"></h2>
 ## `actions.toggle(model)`
 Dispatches an `actions.change(...)` action that sets the `model` to true if it is falsey, and false if it is truthy.
 
@@ -122,7 +159,7 @@ Dispatches an `actions.change(...)` action that sets the `model` to true if it i
 ### Notes
 - This action is most useful for single checkboxes.
 
-
+<h2 id="actions-filter"></h2>
 ## `actions.filter(model, iteratee)`
 Dispatches an `actions.change(...)` action that filters the array represented by the `model` through the `iteratee` function.
 
@@ -133,7 +170,7 @@ If no `iteratee` is specified, the identity function is used by default.
 - `iteratee` _(Function)_: the filter iteratee function that filters the array represented by the model.
   - default: `identity` (`a => a`)
 
-
+<h2 id="actions-map"></h2>
 ## `actions.map(model, iteratee)`
 Dispatches an `actions.change(...)` action that maps the array represented by the `model` through the `iteratee` function.
 
@@ -143,7 +180,7 @@ If no `iteratee` is specified, the identity function is used by default.
 - `model` _(String)_: the array model to be mapped.
 - `iteratee` _(Function)_: the map iteratee function that maps the array represented by the model.
 
-
+<h2 id="actions-remove"></h2>
 ## `actions.remove(model, index)`
 Dispatches an `actions.change(...)` action that removes the item at the specified `index` of the array represented by the `model`.
 
@@ -151,7 +188,7 @@ Dispatches an `actions.change(...)` action that removes the item at the specifie
 - `model` _(String)_: the array model to be updated.
 - `index` _(Number)_: the index that should be removed from the array.
 
-
+<h2 id="actions-move"></h2>
 ## `actions.move(model, fromIndex, toIndex)`
 Dispatches an `actions.change(...)` action that moves the item at the specified `fromIndex` of the array to the `toIndex` of the array represented by the `model`.
 
@@ -176,6 +213,7 @@ dispatch(actions.move('foo.bar', 2, 0));
 // => [3, 1, 2, 4]
 ```
 
+<h2 id="actions-load"></h2>
 ## `actions.load(model, value)`
 Dispatches an `actions.change(...)` action that loads (updates) the `model` with `value` silently. It does not trigger any effects of a `CHANGE` action in the form reducer.
 
@@ -188,6 +226,7 @@ Dispatches an `actions.change(...)` action that loads (updates) the `model` with
 - If the initial model value is available at runtime, prefer setting it as part of the `initialState` of the `modelReducer` instead.
 - This is equivalent to calling `actions.change(model, value, { silent: true })`.
 
+<h2 id="actions-omit"></h2>
 ## `actions.omit(model, props)`
 Dispatches an `actions.change(...)` action with the `model` value updated to not include any of the omitted `props`.
 
@@ -214,3 +253,391 @@ dispatch(actions.omit('test', ['foo', 'baz']);
 // the new test state:
 // => { test: { bar: 2 } }
 ```
+
+# Field Action Creators
+
+All model and field actions can be imported via `import { actions } from 'react-redux-form'`.
+
+<h2 id="actions-focus"></h2>
+## `actions.focus(model)`
+Returns an action that, when handled by a `formReducer`, changes the `.focus` state of the field model in the form to `true`.
+
+The "focus" state indicates that the field model is the currently focused field in the form.
+
+### Arguments
+- `model` _(String)_: the model indicated as focused
+
+```js
+import { actions } from 'react-redux-form';
+
+// in a connect()-ed component:
+const Newsletter = (props) => {
+  let { newsletterForm, dispatch } = props;
+  
+  return <form>
+    <input type="email"
+      onFocus={() => dispatch(actions.focus('newsletter.email'))} />
+    { newsletterForm.fields.email.focus &&
+      <div>Sweet, you're signing up!</div>
+    }
+  </form>;
+}
+```
+
+<h2 id="actions-blur"></h2>
+## `actions.blur(model)`
+Returns an action that, when handled by a `formReducer`, changes the `.focus` state to `false`. It also indicates that the field model has been `.touched`, and will set that state to `true`.
+
+A "blurred" field indicates that the field model control is not currently focused.
+
+### Arugments
+- `model` _(String)_: the model indicated as blurred (not focused)
+
+<h2 id="actions-setPristine"></h2>
+## `actions.setPristine(model)`
+Returns an action that, when handled by a `formReducer`, changes the `.pristine` state of the field model in the form to `true`.
+
+The "pristine" state indicates that the user has not interacted with this field model yet.
+
+### Arguments
+- `model` _(String)_: the model indicated as pristine
+
+### Notes
+- Whenever a field is set to pristine, the entire form is set to:
+  - pristine _if_ all other fields are pristine
+  - otherwise, dirty.
+
+<h2 id="actions-setDirty"></h2>
+## `actions.setDirty(model)`
+Returns an action that, when handled by a `formReducer`, changes the `.pristine` state to `false`.
+
+A "dirty" field indicates that the model value has been changed, and is no longer pristine.
+
+### Arguments
+- `model` _(String)_: the model indicated as not pristine (dirty)
+
+### Notes
+- Whenever a field is set to not pristine (dirty), the entire form is set to not pristine (dirty).
+
+<h2 id="actions-setPending"></h2>
+## `actions.setPending(model, [pending])`
+Returns an action that, when handled by a `formReducer`, changes the `.pending` state of the field model in the form to `true`. It simultaneously sets the `.submitted` state to `false`.
+
+### Arguments
+- `model` _(String)_: the model indicated as pending
+- `pending` _(Boolean)_: whether the model is pending (`true`) or not (`false`).
+  - default: `true`
+
+### Notes
+- This action is useful when asynchronously validating or submitting a model. It represents the state between the initial and final state of a field model's validation/submission.
+
+<h2 id="actions-setTouched"></h2>
+## `actions.setTouched(model)`
+Returns an action that, when handled by a `formReducer`, changes the `.touched` state of the field model in the form to `true`. It simultaneously sets the `.untouched` state to `false`.
+
+The "touched" state indicates that this model has been interacted with.
+
+### Arguments
+- `model`: (String) the model indicated as touched
+
+### Notes
+- Setting a `model` to touched also sets the entire form to touched.
+- Touched also sets the `model` to not focused (blurred).
+
+<h2 id="actions-setUntouched"></h2>
+## `actions.setUntouched(model)`
+Returns an action that, when handled by a `formReducer`, changes the `.touched` state to `true`.
+
+An "untouched" field indicates that this model has not been interacted with yet.
+
+### Arguments
+- `model` _(String)_: the model indicated as not touched (untouched)
+
+### Notes
+- This action is useful for conditionally displaying error messages based on whether the field has been touched.
+
+<h2 id="actions-setSubmitted"></h2>
+## `actions.setSubmitted(model, [submitted])`
+Returns an action that, when handled by a `formReducer`, changes the `.submitted` state of the field model in the form to `submitted` (`true` or `false`). It simultaneously sets the `.pending` state to the inverse of `submitted`.
+
+The "submitted" state indicates that this model has been "sent off," or an action has been completed for the model.
+
+### Arguments
+- `model` _(String)_: the model indicated as submitted
+- `submitted` _(Boolean)_: whether the model has been submitted (`true`) or not (`false`).
+  - default: `true`
+
+### Example
+```js
+import { actions } from 'react-redux-form';
+
+// action thunk creator
+export default function submitUser(data) {
+  return (dispatch) => {
+    dispatch(actions.setPending('user', true));
+    
+    fetch('...', { body: data })
+      .then((response) => {
+        // handle the response, then...
+        dispatch(actions.setSubmitted('user', true));
+      });
+  }
+}
+```
+
+### Notes
+- Use the `setPending()` and `setSubmitted()` actions together to update the state of the field model during some async action.
+
+<h2 id="actions-setSubmitFailed"></h2>
+## `actions.setSubmitFailed(model)`
+Returns an action that, when handled by a `formReducer`, changes the `.submitFailed` state of the field model in the form to `true`. It simultaneously sets the `.pending` state to `false`, and the `.retouched` state to `false`.
+
+### Arguments
+- `model` _(String)_: the model indicated as having failed a submit
+
+### Notes
+
+- If the form has not been submitted yet, `.submitFailed = false`
+- If submitting (pending), `.submitFailed = false`
+- If submit failed, `.submitFailed = true`
+- If resubmitting, `.submitFailed = false` again.
+
+<h2 id="actions-setInitial"></h2>
+## `actions.setInitial(model)`
+Returns an action that, when handled by a `formReducer`, changes the state of the field model in the form to its initial state.
+
+Here is the default initial field state:
+
+```js
+const initialFieldState = {
+  focus: false,
+  pending: false,
+  pristine: true,
+  submitted: false,
+  touched: false,
+  valid: true,
+  validating: false,
+  viewValue: null,
+  validity: {},
+  errors: {},
+};
+```
+
+### Arguments
+- `model` _(String)_: the model to be reset to its initial state
+
+### Notes
+- This action will reset the field state, but will _not_ reset the `model` value in the model reducer. To reset both the field and model, use `actions.reset(model)`.
+
+# Validation Action Creators
+
+<h2 id="actions-setValidity"></h2>
+## `actions.setValidity(model, validity, [options])`
+Returns an action that, when handled by a `formReducer`, changes the `.valid` state of the field model in the form to `true` or `false`, based on the `validity` (see below). It will also set the `.validity` state of the field model to the `validity`.
+
+It simultaneously sets the `.errors` on the field model to the inverse of the `validity`.
+
+### Arguments
+- `model` _(String)_: the model whose validity will be set
+- `validity` _(Boolean | Object)_: a boolean value or an object indicating which validation keys of the field model are valid.
+- _`options`_ _(Object)_: an object containing options for the action creator:
+
+### Options
+- `.errors` _(Boolean)_: if `true`, the validity will be set for `.errors` instead of `.validity` on the field. This is equivalent to `actions.setErrors()`.
+
+### Example
+```js
+import { actions } from 'react-redux-form';
+
+// somewhere with dispatch():
+dispatch(actions.setValidity('user.email', true));
+
+// email field:
+// {
+//   valid: true,
+//   validity: true,
+//   errors: false
+// }
+
+let val = 'testing123';
+
+dispatch(actions.setValidity('user.password', {
+  required: val && val.length,
+  correct: val === 'hunter2'
+}));
+
+// password field:
+// {
+//   valid: false,
+//   validity: { required: true, correct: false },
+//   errors: { required: false, correct: true }
+// }
+```
+
+### Notes
+- If you _really_ want to set error messages instead, use `actions.setValidity(model, errors, { errors: true })`.
+- Since arrays are objects, the `validity` argument _can_ be an array. Only do this if your use case requires it.
+
+<h2 id="actions-validate"></h2>
+## `actions.validate(model, validators)`
+Returns an action thunk that calculates the `validity` of the `model` based on the function/object `validators`. Then, the thunk dispatches `actions.setValidity(model, validity)`.
+
+A **validator** is a function that returns `true` if valid, and `false` if invalid.
+
+### Arguments
+- `model` _(String)_: the model whose validity will be calculated
+- `validators` _(Function | Object)_: a validator function _or_ an object whose keys are validation keys (such as `'required'`) and values are validators.
+
+### Example
+```js
+import { actions } from 'react-redux-form';
+import { isEmail } from 'validator';
+
+// assume user.email = "foo@gmail"
+
+// somewhere with dispatch():
+dispatch(actions.validate('user.email', isEmail));
+// will dispatch actions.setValidity('user.email', false)
+
+dispatch(actions.validate('user.email', {
+  isEmail,
+  available: (email) => email !== 'foo@gmail.com'
+});
+// will dispatch actions.setValidity('user.email', {
+//  isEmail: false,
+//  available: true
+// });
+```
+
+<h2 id="actions-asyncSetValidity"></h2>
+## `actions.asyncSetValidity(model, asyncValidator)`
+Returns an action thunk that calculates the `validity` of the `model` based on the async function `asyncValidator`. That function dispatches `actions.setValidity(model, validity)` by calling `done(validity)`.
+
+### Arguments
+- `model` _(String)_: the model whose validity will asynchronously be set
+- `asyncValidator(value, done)` _(Function)_: a function that is given two arguments:
+  - `value` - the value of the `model`
+  - `done` - the callback where the calculated `validity` is passed in as the argument.
+
+### Example
+```js
+import { actions } from 'react-redux-form';
+
+// async function
+function isEmailAvailable(email, done) {
+  fetch('...', { body: email })
+    .then((response) => {
+      done(response); // true or false
+    });
+}
+
+// somewhere with dispatch():
+dispatch(actions.asyncSetValidity('user.email', isEmailAvailable));
+// => 1. will set .pending to true, then eventually...
+// => 2. will set .validity to response and .pending to false
+```
+
+### Notes
+- This action is useful for general-purpose asynchronous validation using callbacks.  If you are using _promises_, using `actions.submit(model, promise)` is a cleaner pattern.
+
+<h2 id="actions-setErrors"></h2>
+## `actions.setErrors(model, errors)`
+Returns an action that, when handled by a `formReducer`, changes the `.valid` state of the field model in the form to `true` or `false`, based on the `errors` (see below). It will also set the `.errors` state of the field model to the `errors`.
+
+It simultaneously sets the `.validity` on the field model to the inverse of the `errors`.
+
+### Arguments
+- `model` _(String)_: the model whose validity will be set
+- `errors` _(Boolean | Object | String)_: a truthy/falsey value or an object indicating which error keys of the field model are invalid.
+
+### Example
+```js
+import { actions } from 'react-redux-form';
+
+// somewhere with dispatch():
+dispatch(actions.setErrors('user.email', true));
+
+// email field:
+// {
+//   valid: false,
+//   validity: false,
+//   errors: true
+// }
+
+dispatch(actions.setErrors('user.email', 'So many errors!'));
+
+// email field:
+// {
+//   valid: false,
+//   validity: false,
+//   errors: 'So many errors!'
+// }
+
+let val = 'testing123';
+
+dispatch(actions.setErrors('user.password', {
+  empty: !(val && val.length) && 'Password is required!',
+  incorrect: val !== 'hunter2' && 'The password is wrong'
+}));
+
+// password field:
+// {
+//   valid: false,
+//   errors: { empty: false, incorrect: 'The password is wrong' }
+// }
+```
+
+### Notes
+- If you aren't hard-coding error messages, use `actions.setValidity(model, validity)` instead. It's a cleaner pattern.
+- You can set `errors` to a boolean, object, array, string, etc. Remember: truthy values indicate errors in `errors`.
+
+<h2 id="actions-validateErrors"></h2>
+## `actions.validateErrors(model, errorValidators)`
+Returns an action thunk that calculates the `errors` of the `model` based on the function/object `errorValidators`. Then, the thunk dispatches `actions.setErrors(model, errors)`.
+
+An **error validator** is a function that returns `true` or a truthy value (such as a string) if invalid, and `false` if valid.
+
+### Arguments
+- `model` _(String)_: the model whose validity will be calculated
+- `errorValidators` _(Function | Object)_: an error validator _or_ an object whose keys are error keys (such as `'incorrect'`) and values are error validators.
+
+### Example
+```js
+import { actions } from 'react-redux-form';
+import { isEmail } from 'validator';
+
+// assume user.email = "foo@gmail"
+
+// somewhere with dispatch():
+dispatch(actions.validateErrors('user.email', (val) => {
+  return !isEmail(val) && 'Not an email!'
+}));
+// will dispatch actions.setErrors('user.email', 'Not an email!')
+
+dispatch(actions.validateErrors('user.email', {
+  notAnEmail: (val) => !isEmail(val) && 'Not an email!',
+  unavailable: (email) => email == 'foo@gmail.com' && 'Use a different email'
+});
+// will dispatch actions.setErrors('user.email', {
+//  notAnEmail: 'Not an email!',
+//  unavailable: false
+// });
+```
+
+### Notes
+- As previously stated, if you aren't using error messages, use `actions.validate(model, validators)` as a cleaner pattern.
+
+<h2 id="actions-submit"></h2>
+## `actions.submit(model, promise)`
+
+Waits for a submission `promise` to be completed, then, if successful:
+- Sets `.submitted` property of form for `model` to `true`
+- Sets `.validity` property of form for `model` to the response (or `true` if the response is `undefined`).
+
+If the promise fails, the action will:
+- set `.submitFailed` property of form for `model` to `true`
+- set `.errors` property of form for `model` to the response
+
+### Arguments
+- `model` _(String)_: the model to be submitted
+- `promise` _(Promise)_: the promise that the submit action will wait to be resolved or rejected
