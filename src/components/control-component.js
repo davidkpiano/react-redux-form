@@ -10,7 +10,6 @@ import mapValues from '../utils/map-values';
 import isPlainObject from 'lodash/isPlainObject';
 import icepick from 'icepick';
 import omit from 'lodash/omit';
-import shallowCompare from 'react/lib/shallowCompare';
 import handleFocus from '../utils/handle-focus';
 
 import getValue from '../utils/get-value';
@@ -120,15 +119,10 @@ class Control extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { mapProps, modelValue } = nextProps;
-    const { viewValue } = this.state;
+    const { modelValue } = nextProps;
 
     if (modelValue !== this.props.modelValue) {
       this.setViewValue(modelValue, nextProps);
-    } else if (shallowCompare(this.props, nextProps)) {
-      this.setState({
-        mappedProps: this.getMappedProps(nextProps, mapProps, viewValue),
-      });
     }
   }
 
@@ -136,7 +130,7 @@ class Control extends Component {
     const result =
       !shallowEqual(this.props, nextProps, ['controlProps'])
       || !shallowEqual(this.props.controlProps, nextProps.controlProps)
-      || !shallowEqual(this.state, nextState, ['mappedProps']);
+      || !shallowEqual(this.state.viewValue, nextState.viewValue);
 
     return result;
   }
@@ -174,7 +168,10 @@ class Control extends Component {
     }
   }
 
-  getMappedProps(props, mapProps, viewValue = this.state.viewValue) {
+  getMappedProps() {
+    const props = this.props;
+    const { mapProps } = props;
+    const { viewValue } = this.state;
     const originalProps = {
       ...props,
       ...props.controlProps,
@@ -201,7 +198,7 @@ class Control extends Component {
 
   getChangeAction(event) {
     const { model, controlProps } = this.props;
-    const { changeAction = actions.change } = this.getMappedProps(this.props, this.props.mapProps);
+    const { changeAction = actions.change } = this.getMappedProps();
     const value = isReadOnlyValue(controlProps)
       ? controlProps.value
       : event;
@@ -458,10 +455,9 @@ class Control extends Component {
       controlProps = emptyControlProps,
       component,
       control,
-      mapProps,
     } = this.props;
 
-    const mappedProps = this.getMappedProps(this.props, mapProps);
+    const mappedProps = this.getMappedProps();
 
     const allowedProps = omit(mappedProps, Object.keys(propTypes));
 
