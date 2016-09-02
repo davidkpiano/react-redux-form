@@ -33,8 +33,7 @@ describe('formReducer()', () => {
 
       const actual = reducer(undefined, actions.focus('test.foo'));
 
-      assert.deepEqual(getField(actual, 'foo'), {
-        ...initialFieldState,
+      assert.containSubset(getField(actual, 'foo'), {
         focus: true,
       });
 
@@ -52,8 +51,7 @@ describe('formReducer()', () => {
     it('should be able to handle model at deep state path', () => {
       const reducer = formReducer('forms.test');
       const actual = reducer(undefined, actions.focus('forms.test.foo'));
-      assert.deepEqual(actual.foo, {
-        ...initialFieldState,
+      assert.containSubset(actual.foo, {
         focus: true,
       });
     });

@@ -1,7 +1,7 @@
 
 let currentFocusedModel = '';
 
-export default function handleFocus(fieldValue, node) {
+function handleFocus(fieldValue, node) {
   if (fieldValue.focus && (currentFocusedModel !== fieldValue.model)) {
     if (document
       && document.activeElement !== node
@@ -17,3 +17,7 @@ export default function handleFocus(fieldValue, node) {
     node.blur();
   }
 }
+
+handleFocus.clearCache = () => currentFocusedModel = ''; // eslint-disable-line no-return-assign
+
+export default handleFocus;

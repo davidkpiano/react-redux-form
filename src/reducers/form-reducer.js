@@ -20,6 +20,7 @@ import pendingActionReducer from './form/pending-action-reducer';
 import submittedActionReducer from './form/submitted-action-reducer';
 import submitFailedActionReducer from './form/submit-failed-action-reducer';
 import resetActionReducer from './form/reset-action-reducer';
+import initializeReducer from './form/initialize-reducer';
 
 export const initialFieldState = {
   focus: false,
@@ -57,7 +58,7 @@ function getSubModelString(model, subModel) {
   return `${model}.${subModel}`;
 }
 
-function createInitialState(model, state, customInitialFieldState = {}) {
+export function createInitialState(model, state, customInitialFieldState = {}) {
   let initialState;
 
   if (isArray(state) || isPlainObject(state)) {
@@ -111,6 +112,7 @@ const defaultPlugins = [
   submittedActionReducer,
   submitFailedActionReducer,
   resetActionReducer,
+  initializeReducer,
 ];
 
 export default function createFormReducer(

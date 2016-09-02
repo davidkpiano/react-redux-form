@@ -1,5 +1,15 @@
 import { assert } from 'chai';
-import { actions, formReducer } from '../src';
+import {
+  actions,
+  formReducer,
+  modelReducer,
+} from '../src';
+import {
+  applyMiddleware,
+  createStore,
+  combineReducers,
+} from 'redux';
+import thunk from 'redux-thunk';
 import updateField from '../src/utils/update-field';
 
 describe('formReducer plugins', () => {
@@ -42,6 +52,47 @@ describe('formReducer plugins', () => {
 
       assert.equal(actual.$form.status, 'disabled');
       assert.equal(actual.foo.status, 'enabled');
+    });
+  });
+
+  describe('initialize plugin', () => {
+    const store = createStore(combineReducers({
+      user: modelReducer('user', {}),
+      userForm: formReducer('user', {}),
+    }, { user: { firstName: 'G', friends: [{ id: 1, name: 'George' }] } }), applyMiddleware(thunk));
+
+    it('should initialize missing fields', () => {
+      store.dispatch(actions.focus('user.firstName'));
+
+      assert.containSubset(
+        store.getState().userForm.firstName,
+        {
+          focus: true,
+          model: 'user.firstName',
+        });
+    });
+
+    it('should initialize missing parent fields', () => {
+      store.dispatch(actions.focus('user.friends[0].name'));
+
+      assert.containSubset(
+        store.getState().userForm.friends[0].name,
+        {
+          focus: true,
+          model: 'user.friends.0.name',
+        });
+
+      assert.containSubset(
+        store.getState().userForm.friends[0].$form,
+        { model: 'user.friends.0' });
+
+      assert.containSubset(
+        store.getState().userForm.friends.$form,
+        { model: 'user.friends' });
+
+      assert.containSubset(
+        store.getState().userForm.$form,
+        { model: 'user' });
     });
   });
 });
