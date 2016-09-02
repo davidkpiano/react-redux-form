@@ -159,12 +159,21 @@ class Control extends Component {
   }
 
   componentWillUnmount() {
-    const { model, fieldValue, dispatch } = this.props;
+    const {
+      model,
+      fieldValue,
+      dispatch,
+      validators = {},
+      errors = {},
+    } = this.props;
 
     if (!fieldValue) return;
 
     if (!isValid(fieldValue)) {
-      dispatch(actions.resetValidity(model));
+      const keys = Object.keys(validators)
+        .concat(Object.keys(errors));
+
+      dispatch(actions.setValidity(model, omit(fieldValue.validity, keys)));
     }
   }
 

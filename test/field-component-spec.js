@@ -1813,6 +1813,50 @@ describe('<Field /> component', () => {
 
       assert.isTrue(isValid(store.getState().testForm.foo));
     });
+
+    it('should only reset the validity of field-specific validators', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      }));
+
+      const container = document.createElement('div');
+
+      const field = ReactDOM.render(
+        <Provider store={store}>
+          <Field
+            model="test.foo"
+            validators={{
+              internal: () => false,
+            }}
+          >
+            <input />
+          </Field>
+        </Provider>,
+      container);
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      assert.isFalse(store.getState().testForm.foo.valid);
+
+      store.dispatch(actions.setValidity('test.foo', {
+        ...store.getState().testForm.foo.validity,
+        external: false,
+      }));
+
+      assert.isFalse(store.getState().testForm.foo.valid);
+
+      ReactDOM.unmountComponentAtNode(container);
+
+      assert.isFalse(store.getState().testForm.foo.valid);
+
+      store.dispatch(actions.setValidity('test.foo', {
+        ...store.getState().testForm.foo.validity,
+        external: true,
+      }));
+
+      assert.isTrue(store.getState().testForm.foo.valid);
+    });
   });
 
   describe('with input type="reset"', () => {
