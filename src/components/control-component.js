@@ -111,14 +111,7 @@ class Control extends Component {
 
     this.state = {
       viewValue: props.modelValue,
-      mappedProps: {},
     };
-  }
-
-  componentWillMount() {
-    const { props, props: { mapProps } } = this;
-
-    this.setState({ mappedProps: this.getMappedProps(props, mapProps) });
   }
 
   componentDidMount() {
@@ -128,12 +121,13 @@ class Control extends Component {
 
   componentWillReceiveProps(nextProps) {
     const { mapProps, modelValue } = nextProps;
+    const { viewValue } = this.state;
 
     if (modelValue !== this.props.modelValue) {
       this.setViewValue(modelValue, nextProps);
     } else if (shallowCompare(this.props, nextProps)) {
       this.setState({
-        mappedProps: this.getMappedProps(nextProps, mapProps),
+        mappedProps: this.getMappedProps(nextProps, mapProps, viewValue),
       });
     }
   }
@@ -143,10 +137,11 @@ class Control extends Component {
       !shallowEqual(this.props, nextProps, ['controlProps'])
       || !shallowEqual(this.props.controlProps, nextProps.controlProps)
       || !shallowEqual(this.state, nextState, ['mappedProps']);
+
     return result;
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps) {
     const {
       modelValue,
       fieldValue,
@@ -155,8 +150,6 @@ class Control extends Component {
       validators,
       errors,
     } = this.props;
-
-    const { viewValue } = this.state;
 
     if ((validators || errors)
       && fieldValue
@@ -169,11 +162,6 @@ class Control extends Component {
 
     // Manually focus/blur node
     handleFocus(fieldValue, this.node);
-
-    // Detect view value changes
-    if (prevState.viewValue !== viewValue) {
-      this.updateMappedProps();
-    }
   }
 
   componentWillUnmount() {
@@ -213,7 +201,7 @@ class Control extends Component {
 
   getChangeAction(event) {
     const { model, controlProps } = this.props;
-    const { changeAction = actions.change } = this.state.mappedProps;
+    const { changeAction = actions.change } = this.getMappedProps(this.props, this.props.mapProps);
     const value = isReadOnlyValue(controlProps)
       ? controlProps.value
       : event;
@@ -308,23 +296,8 @@ class Control extends Component {
 
   setViewValue(viewValue, props = this.props) {
     if (!isReadOnlyValue(props.controlProps)) {
-      this.setState({
-        viewValue,
-        mappedProps: this.getMappedProps(props, props.mapProps, viewValue),
-      });
-    } else {
-      this.setState({
-        mappedProps: this.getMappedProps(props, props.mapProps, viewValue),
-      });
+      this.setState({ viewValue });
     }
-  }
-
-  updateMappedProps() {
-    const { mapProps } = this.props;
-
-    this.setState({
-      mappedProps: this.getMappedProps(this.props, mapProps),
-    });
   }
 
   handleChange(event) {
@@ -485,9 +458,12 @@ class Control extends Component {
       controlProps = emptyControlProps,
       component,
       control,
+      mapProps,
     } = this.props;
 
-    const allowedProps = omit(this.state.mappedProps, Object.keys(propTypes));
+    const mappedProps = this.getMappedProps(this.props, mapProps);
+
+    const allowedProps = omit(mappedProps, Object.keys(propTypes));
 
     // If there is an existing control, clone it
     if (control) {

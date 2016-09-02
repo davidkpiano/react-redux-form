@@ -189,7 +189,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
 
   Field.defaultProps = {
     updateOn: 'change',
-    validateOn: 'change',
     asyncValidateOn: 'blur',
     parser: identity,
     changeAction: actions.change,

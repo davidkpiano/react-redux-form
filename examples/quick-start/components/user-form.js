@@ -31,7 +31,9 @@ class UserForm extends React.Component {
 
         <div>
           <label>Last name:</label>
-          <Control.text updateOn="blur" model="user.lastName" />
+          <Field model="user.lastName" updateOn="blur">
+            <input type="text" />
+          </Field>
         </div>
 
         <Field model="user.bag">
