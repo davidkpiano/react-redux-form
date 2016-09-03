@@ -147,7 +147,7 @@ describe('<Form> component', () => {
 
       assert.equal(timesValidated(), 1);
 
-      assert.isFalse(isValid(store.getState().testForm.foo));
+      assert.isFalse(store.getState().testForm.foo.valid);
 
       fooControl.value = 'testing foo';
 
@@ -164,7 +164,7 @@ describe('<Form> component', () => {
 
       assert.equal(timesValidated(), 2);
 
-      assert.isTrue(isValid(store.getState().testForm.foo));
+      assert.isTrue(store.getState().testForm.foo.valid);
     });
 
     it('should allow for keywise validation', () => {
@@ -178,7 +178,7 @@ describe('<Form> component', () => {
           errors: { one: true, two: true },
         });
 
-      assert.isFalse(isValid(store.getState().testForm.bar));
+      assert.isFalse(store.getState().testForm.bar.valid);
 
       barControl.value = '1';
       TestUtils.Simulate.change(barControl);
@@ -195,7 +195,7 @@ describe('<Form> component', () => {
           errors: { one: false, two: true },
         });
 
-      assert.isFalse(isValid(store.getState().testForm.bar));
+      assert.isFalse(store.getState().testForm.bar.valid);
 
       barControl.value = '12';
       TestUtils.Simulate.change(barControl);
@@ -212,7 +212,7 @@ describe('<Form> component', () => {
           errors: { one: false, two: false },
         });
 
-      assert.isTrue(isValid(store.getState().testForm.bar));
+      assert.isTrue(store.getState().testForm.bar.valid);
     });
   });
 
@@ -261,7 +261,7 @@ describe('<Form> component', () => {
           errors: 'invalid foo',
         });
 
-      assert.isFalse(isValid(store.getState().testForm.foo));
+      assert.isFalse(store.getState().testForm.foo.valid);
 
       fooControl.value = 'valid foo';
 
@@ -275,7 +275,7 @@ describe('<Form> component', () => {
           errors: false,
         });
 
-      assert.isTrue(isValid(store.getState().testForm.foo));
+      assert.isTrue(store.getState().testForm.foo.valid);
     });
 
     it('should allow for keywise validation', () => {
@@ -290,7 +290,7 @@ describe('<Form> component', () => {
           },
         });
 
-      assert.isFalse(isValid(store.getState().testForm.bar));
+      assert.isFalse(store.getState().testForm.bar.valid);
 
       barControl.value = '1';
       TestUtils.Simulate.change(barControl);
@@ -305,7 +305,7 @@ describe('<Form> component', () => {
           },
         });
 
-      assert.isTrue(isValid(store.getState().testForm.bar));
+      assert.isTrue(store.getState().testForm.bar.valid);
 
       barControl.value = '12';
       TestUtils.Simulate.change(barControl);
@@ -320,7 +320,7 @@ describe('<Form> component', () => {
           },
         });
 
-      assert.isTrue(isValid(store.getState().testForm.bar));
+      assert.isTrue(store.getState().testForm.bar.valid);
 
       barControl.value = '123';
       TestUtils.Simulate.change(barControl);
@@ -335,7 +335,7 @@ describe('<Form> component', () => {
           },
         });
 
-      assert.isFalse(isValid(store.getState().testForm.bar));
+      assert.isFalse(store.getState().testForm.bar.valid);
     });
   });
 
@@ -378,31 +378,31 @@ describe('<Form> component', () => {
     const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
 
     it('fields should not be validated initially', () => {
-      assert.ok(isValid(store.getState().testForm.foo));
-      assert.ok(isValid(store.getState().testForm.bar));
+      assert.ok(store.getState().testForm.foo.valid);
+      assert.ok(store.getState().testForm.bar.valid);
     });
 
     it('fields should not be validated after change', () => {
       TestUtils.Simulate.change(inputs[0]);
       TestUtils.Simulate.change(inputs[1]);
 
-      assert.ok(isValid(store.getState().testForm.foo));
-      assert.ok(isValid(store.getState().testForm.bar));
+      assert.ok(store.getState().testForm.foo.valid);
+      assert.ok(store.getState().testForm.bar.valid);
     });
 
     it('fields should be validated after submit', () => {
       TestUtils.Simulate.submit(formNode);
 
-      assert.isFalse(isValid(store.getState().testForm.foo));
-      assert.isFalse(isValid(store.getState().testForm.bar));
+      assert.isFalse(store.getState().testForm.foo.valid);
+      assert.isFalse(store.getState().testForm.bar.valid);
     });
 
     it('fields should be validated with current values after submit', () => {
       TestUtils.Simulate.submit(formNode);
 
       // Not valid yet
-      assert.isFalse(isValid(store.getState().testForm.foo));
-      assert.isFalse(isValid(store.getState().testForm.bar));
+      assert.isFalse(store.getState().testForm.foo.valid);
+      assert.isFalse(store.getState().testForm.bar.valid);
 
       inputs[0].value = 'first';
       inputs[1].value = 'second';
@@ -413,8 +413,8 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formNode);
 
       // Still not valid yet
-      assert.isFalse(isValid(store.getState().testForm.foo));
-      assert.isFalse(isValid(store.getState().testForm.bar));
+      assert.isFalse(store.getState().testForm.foo.valid);
+      assert.isFalse(store.getState().testForm.bar.valid);
 
       // Change model
       TestUtils.Simulate.blur(inputs[0]);
@@ -423,8 +423,8 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formNode);
 
       // Should be valid
-      assert.ok(isValid(store.getState().testForm.foo));
-      assert.ok(isValid(store.getState().testForm.bar));
+      assert.ok(store.getState().testForm.foo.valid);
+      assert.ok(store.getState().testForm.bar.valid);
     });
   });
 
@@ -537,7 +537,7 @@ describe('<Form> component', () => {
           errors: true,
         });
 
-      assert.isFalse(isValid(store.getState().testForm.foo));
+      assert.isFalse(store.getState().testForm.foo.valid);
 
       fooControl.value = 'testing foo';
 
@@ -549,7 +549,7 @@ describe('<Form> component', () => {
           errors: false,
         });
 
-      assert.isTrue(isValid(store.getState().testForm.foo));
+      assert.isTrue(store.getState().testForm.foo.valid);
     });
 
     it('should NOT run validation for fields that have not changed', () => {
@@ -613,7 +613,7 @@ describe('<Form> component', () => {
           errors: 'invalid foo',
         });
 
-      assert.isFalse(isValid(store.getState().testForm.foo));
+      assert.isFalse(store.getState().testForm.foo.valid);
 
       fooControl.value = 'valid foo';
 
@@ -625,7 +625,7 @@ describe('<Form> component', () => {
           errors: false,
         });
 
-      assert.isTrue(isValid(store.getState().testForm.foo));
+      assert.isTrue(store.getState().testForm.foo.valid);
     });
 
     it('should NOT run validation for fields that have not changed', () => {
@@ -671,7 +671,7 @@ describe('<Form> component', () => {
     const [fooControl, barControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
 
     it('should initially be invalid', () => {
-      assert.isFalse(isValid(store.getState().testForm));
+      assert.isFalse(store.getState().testForm.$form.valid);
     });
 
     it('should still be invalid if fields are still invalid', () => {
@@ -679,14 +679,14 @@ describe('<Form> component', () => {
       TestUtils.Simulate.change(fooControl);
 
       assert.isTrue(
-        isValid(store.getState().testForm.foo),
+        store.getState().testForm.foo.valid,
         'foo should be valid');
       assert.isFalse(
-        isValid(store.getState().testForm.bar),
+        store.getState().testForm.bar.valid,
         'bar should be invalid');
 
       assert.isFalse(
-        isValid(store.getState().testForm),
+        store.getState().testForm.$form.valid,
         'form should be invalid');
     });
 
@@ -697,14 +697,14 @@ describe('<Form> component', () => {
       TestUtils.Simulate.change(barControl);
 
       assert.isTrue(
-        isValid(store.getState().testForm.foo),
+        store.getState().testForm.foo.valid,
         'foo should be valid');
       assert.isTrue(
-        isValid(store.getState().testForm.bar),
+        store.getState().testForm.bar.valid,
         'bar should be valid');
 
       assert.isTrue(
-        isValid(store.getState().testForm),
+        store.getState().testForm.$form.valid,
         'form should be valid');
     });
   });
@@ -769,7 +769,7 @@ describe('<Form> component', () => {
       TestUtils.Simulate.change(fooControl);
 
       assert.isTrue(
-        isValid(store.getState().testForm.foo));
+        store.getState().testForm.foo.valid);
 
       assert.isNull(submitValue);
     });
@@ -855,7 +855,7 @@ describe('<Form> component', () => {
     it('should be able to set keyed validation to the form model', () => {
       TestUtils.Simulate.submit(formElement);
 
-      assert.isFalse(isValid(store.getState().testForm));
+      assert.isFalse(store.getState().testForm.$form.valid);
 
       fooControl.value = 'foo';
       TestUtils.Simulate.change(fooControl);
@@ -865,7 +865,7 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.submit(formElement);
 
-      assert.isTrue(isValid(store.getState().testForm));
+      assert.isTrue(store.getState().testForm.$form.valid);
     });
 
     it('should be able to set keyed errors to the form model', () => {
@@ -883,7 +883,7 @@ describe('<Form> component', () => {
           },
         });
 
-      assert.isFalse(isValid(store.getState().testForm));
+      assert.isFalse(store.getState().testForm.$form.valid);
     });
   });
 
@@ -1021,7 +1021,7 @@ describe('<Form> component', () => {
       inputElement.value = 'valid';
       TestUtils.Simulate.change(inputElement);
 
-      assert.isTrue(isValid(store.getState().testForm));
+      assert.isTrue(store.getState().testForm.$form.valid);
     });
   });
 
@@ -1058,7 +1058,7 @@ describe('<Form> component', () => {
     const inputElement = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
 
     it('should set errors from rejected submit handler on valid submit', () => {
-      assert.isTrue(isValid(store.getState().testForm));
+      assert.isTrue(store.getState().testForm.$form.valid);
 
       TestUtils.Simulate.submit(formElement);
 
@@ -1071,7 +1071,7 @@ describe('<Form> component', () => {
       inputElement.value = 'valid';
       TestUtils.Simulate.change(inputElement);
 
-      assert.isTrue(isValid(store.getState().testForm));
+      assert.isTrue(store.getState().testForm.$form.valid);
     });
   });
 
@@ -1114,7 +1114,7 @@ describe('<Form> component', () => {
     it('should fail to submit with an invalid form', () => {
       TestUtils.Simulate.submit(formElement);
 
-      assert.isFalse(isValid(store.getState().testForm));
+      assert.isFalse(store.getState().testForm.$form.valid);
       assert.containSubset(
         store.getState().testForm.$form,
         {
@@ -1136,7 +1136,7 @@ describe('<Form> component', () => {
           submitFailed: true,
         });
 
-      assert.isFalse(isValid(store.getState().testForm));
+      assert.isFalse(store.getState().testForm.$form.valid);
     });
 
     it('should submit with a valid form', () => {
@@ -1146,7 +1146,7 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.submit(formElement);
 
-      assert.isTrue(isValid(store.getState().testForm));
+      assert.isTrue(store.getState().testForm.$form.valid);
 
       assert.isTrue(handleSubmit.calledOnce);
 
@@ -1156,7 +1156,7 @@ describe('<Form> component', () => {
           submitFailed: false,
         });
 
-      assert.ok(isValid(store.getState().testForm));
+      assert.ok(store.getState().testForm.$form.valid);
     });
   });
 
@@ -1203,7 +1203,7 @@ describe('<Form> component', () => {
 
     it('the similarly-named userEx form should not be valid in presence of'
       + 'valid user form', () => {
-      assert.isFalse(isValid(store.getState().userExForm));
+      assert.isFalse(store.getState().userExForm.$form.valid);
     });
   });
 
@@ -1235,14 +1235,14 @@ describe('<Form> component', () => {
         </Provider>
       );
 
-      assert.isFalse(isValid(store.getState().testForm));
+      assert.isFalse(store.getState().testForm.$form.valid);
 
       store.dispatch(actions.merge('test', {
         foo: 'foo valid',
         bar: 'bar valid',
       }));
 
-      assert.isTrue(isValid(store.getState().testForm));
+      assert.isTrue(store.getState().testForm.$form.valid);
     });
   });
 

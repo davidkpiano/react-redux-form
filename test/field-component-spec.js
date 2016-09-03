@@ -727,11 +727,11 @@ describe('<Field /> component', () => {
       assert.equal(timesValidationCalled, 1,
         'validation called on load');
 
-      assert.isFalse(isValid(store.getState().testForm.external));
+      assert.isFalse(store.getState().testForm.external.valid);
 
       store.dispatch(actions.change('test.external', 'valid'));
 
-      assert.isTrue(isValid(store.getState().testForm.external));
+      assert.isTrue(store.getState().testForm.external.valid);
 
       assert.equal(timesValidationCalled, 2,
         'validation called because of external change');
@@ -755,11 +755,11 @@ describe('<Field /> component', () => {
 
       const checkboxes = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
 
-      assert.isFalse(isValid(store.getState().testForm.items));
+      assert.isFalse(store.getState().testForm.items.valid);
 
       TestUtils.Simulate.change(checkboxes[0]);
 
-      assert.isTrue(isValid(store.getState().testForm.items));
+      assert.isTrue(store.getState().testForm.items.$form.valid);
       assert.isTrue(
         store.getState().testForm.items.$form.validity.required);
 
@@ -778,7 +778,7 @@ describe('<Field /> component', () => {
       TestUtils.Simulate.change(checkboxes[1]);
       assert.isFalse(
         store.getState().testForm.items.$form.validity.required);
-      assert.isFalse(isValid(store.getState().testForm.items));
+      assert.isFalse(store.getState().testForm.items.$form.valid);
     });
   });
 
@@ -1284,7 +1284,7 @@ describe('<Field /> component', () => {
           },
         });
 
-      assert.isFalse(isValid(store.getState().testForm.foo));
+      assert.isFalse(store.getState().testForm.foo.valid);
     });
   });
 
@@ -1807,11 +1807,11 @@ describe('<Field /> component', () => {
       const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
       store.dispatch(actions.setValidity('test.foo', false));
-      assert.isFalse(isValid(store.getState().testForm.foo));
+      assert.isFalse(store.getState().testForm.foo.valid);
 
       ReactDOM.unmountComponentAtNode(container);
 
-      assert.isTrue(isValid(store.getState().testForm.foo));
+      assert.isTrue(store.getState().testForm.foo.valid);
     });
 
     it('should only reset the validity of field-specific validators', () => {
