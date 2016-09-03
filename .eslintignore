@@ -5,3 +5,4 @@ docs/
 _book/
 webpack.config.*
 wallaby.config.*
+examples/

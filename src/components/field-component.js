@@ -190,7 +190,9 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     }
   }
 
-  Field.propTypes = fieldPropTypes;
+  if (process.env.NODE_ENV !== 'production') {
+    Field.propTypes = fieldPropTypes;
+  }
 
   Field.defaultProps = {
     updateOn: 'change',

@@ -508,7 +508,9 @@ class Control extends Component {
   }
 }
 
-Control.propTypes = propTypes;
+if (process.env.NODE_ENV !== 'production') {
+  Control.propTypes = propTypes;
+}
 
 Control.defaultProps = {
   changeAction: actions.change,

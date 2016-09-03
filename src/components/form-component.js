@@ -17,6 +17,22 @@ import { getField } from '../reducers/form-reducer';
 import isValid from '../form/is-valid';
 import deepCompareChildren from '../utils/deep-compare-children';
 
+const propTypes = {
+  component: PropTypes.any,
+  validators: PropTypes.object,
+  errors: PropTypes.object,
+  validateOn: PropTypes.oneOf([
+    'change',
+    'submit',
+  ]),
+  model: PropTypes.string.isRequired,
+  modelValue: PropTypes.any,
+  formValue: PropTypes.object,
+  onSubmit: PropTypes.func,
+  dispatch: PropTypes.func,
+  children: PropTypes.node,
+};
+
 class Form extends Component {
   constructor(props) {
     super(props);
@@ -220,7 +236,7 @@ class Form extends Component {
       formValue,
     } = this.props;
 
-    const allowedProps = omit(this.props, Object.keys(Form.propTypes));
+    const allowedProps = omit(this.props, Object.keys(propTypes));
     const renderableChildren = typeof children === 'function'
       ? children(formValue)
       : children;
@@ -235,21 +251,9 @@ class Form extends Component {
   }
 }
 
-Form.propTypes = {
-  component: PropTypes.any,
-  validators: PropTypes.object,
-  errors: PropTypes.object,
-  validateOn: PropTypes.oneOf([
-    'change',
-    'submit',
-  ]),
-  model: PropTypes.string.isRequired,
-  modelValue: PropTypes.any,
-  formValue: PropTypes.object,
-  onSubmit: PropTypes.func,
-  dispatch: PropTypes.func,
-  children: PropTypes.node,
-};
+if (process.env.NODE_ENV !== 'production') {
+  Form.propTypes = propTypes;
+}
 
 Form.defaultProps = {
   validateOn: 'change',
