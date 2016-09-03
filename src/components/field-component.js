@@ -25,10 +25,9 @@ const fieldPropTypes = {
     PropTypes.string,
   ]),
   parser: PropTypes.func,
-  updateOn: PropTypes.oneOf([
-    'change',
-    'blur',
-    'focus',
+  updateOn: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
   ]),
   changeAction: PropTypes.func,
   validators: PropTypes.oneOfType([
@@ -36,8 +35,14 @@ const fieldPropTypes = {
     PropTypes.object,
   ]),
   asyncValidators: PropTypes.object,
-  validateOn: PropTypes.string,
-  asyncValidateOn: PropTypes.string,
+  validateOn: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
+  ]),
+  asyncValidateOn: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
+  ]),
   errors: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.object,

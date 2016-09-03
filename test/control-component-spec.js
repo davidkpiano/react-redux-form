@@ -6,14 +6,11 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
+import capitalize from 'lodash/capitalize';
 
 import { controls, modelReducer, formReducer, Control, actions } from '../src';
 import { testCreateStore, testRender } from './utils';
 import handleFocus from '../src/utils/handle-focus';
-
-function createTestStore(reducers) {
-  return applyMiddleware(thunk)(createStore)(combineReducers(reducers));
-}
 
 describe('<Control> component', () => {
   describe('existence check', () => {
@@ -23,7 +20,7 @@ describe('<Control> component', () => {
   });
 
   describe('basic functionality', () => {
-    const store = createTestStore({
+    const store = testCreateStore({
       test: modelReducer('test', { foo: 'bar' }),
       testForm: formReducer('test', { foo: 'bar' }),
     });
@@ -51,7 +48,7 @@ describe('<Control> component', () => {
   });
 
   describe('onLoad prop', () => {
-    const store = createTestStore({
+    const store = testCreateStore({
       test: modelReducer('test', { fff: 'bar' }),
       testForm: formReducer('test', { fff: 'bar' }),
     });
@@ -96,7 +93,7 @@ describe('Extended Control components', () => {
 
   inputControlElements.forEach((type) => {
     describe(`with <Control.text> ${type ? `and type="${type}"` : ''}`, () => {
-      const store = createTestStore({
+      const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', { foo: 'bar' }),
       });
@@ -152,7 +149,7 @@ describe('Extended Control components', () => {
   });
 
   describe('with <Control.radio />', () => {
-    const store = createTestStore({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', { foo: 'two' }),
     });
@@ -214,7 +211,7 @@ describe('Extended Control components', () => {
   });
 
   describe('with <Control.checkbox /> (single toggle)', () => {
-    const store = createTestStore({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', {
         single: true,
@@ -340,7 +337,7 @@ describe('Extended Control components', () => {
   });
 
   describe('with <Control.checkbox /> (custom onChange)', () => {
-    const store = createTestStore({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', {
         foo: true,
@@ -370,7 +367,7 @@ describe('Extended Control components', () => {
 
   describe('with <Control.file />', () => {
     it('should update with an array of files', () => {
-      const store = createTestStore({
+      const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', { foo: [] }),
       });
@@ -403,7 +400,7 @@ describe('Extended Control components', () => {
   });
 
   describe('with <Control.select />', () => {
-    const store = createTestStore({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', {
         foo: 'one',
@@ -618,7 +615,7 @@ describe('Extended Control components', () => {
 
   describe('asyncValidators and asyncValidateOn property', () => {
     const reducer = formReducer('test');
-    const store = createTestStore({
+    const store = testCreateStore({
       testForm: reducer,
       test: modelReducer('test', {}),
     });
@@ -712,6 +709,576 @@ describe('Extended Control components', () => {
     });
   });
 
+  describe('sync and async validators', () => {
+    const reducer = formReducer('test');
+    const store = testCreateStore({
+      testForm: reducer,
+      test: modelReducer('test', {}),
+    });
+
+    it('async validation should not override sync validity', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            validators={{
+              required: (val) => val && val.length,
+            }}
+            asyncValidators={{
+              asyncValid: (_, asyncDone) => asyncDone(false),
+            }}
+          />
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      input.value = '';
+      TestUtils.Simulate.change(input);
+      TestUtils.Simulate.blur(input);
+
+      assert.deepEqual(
+        store.getState().testForm.foo.validity,
+        {
+          required: false,
+          asyncValid: false,
+        });
+    });
+  });
+
+  describe('errors property', () => {
+    const reducer = formReducer('test');
+
+    it('should set the proper field state for errors', () => {
+      const store = testCreateStore({
+        testForm: reducer,
+        test: modelReducer('test', {
+          foo: '',
+        }),
+      });
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            errors={{
+              length: (val) => val.length > 8 && 'too long',
+              valid: (val) => val !== 'valid' && 'not valid',
+            }}
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'valid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.foo.errors,
+        {
+          length: false,
+          valid: false,
+        });
+
+      control.value = 'invalid string';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.foo.errors,
+        {
+          length: 'too long',
+          valid: 'not valid',
+        });
+    });
+
+    it('should only validate errors on blur if validateOn="blur"', () => {
+      const store = testCreateStore({
+        testForm: reducer,
+        test: modelReducer('test', {
+          foo: '',
+        }),
+      });
+
+      let timesValidationCalled = 0;
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            errors={{
+              length: (val) => val.length > 8 && 'too long',
+              valid: (val) => {
+                timesValidationCalled += 1;
+                return val !== 'valid' && 'not valid';
+              },
+            }}
+            validateOn="blur"
+            required
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      assert.equal(timesValidationCalled, 1,
+        'validation should be called on load');
+
+      control.value = 'valid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.equal(timesValidationCalled, 1,
+        'validation should not be called again on change');
+
+      TestUtils.Simulate.blur(control);
+
+      assert.equal(timesValidationCalled, 2,
+        'validation should be called again on blur');
+
+      assert.deepEqual(
+        store.getState().testForm.foo.errors,
+        {
+          length: false,
+          valid: false,
+        });
+
+      control.value = 'invalid string';
+
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.foo.errors,
+        {
+          length: false,
+          valid: false,
+        });
+
+      TestUtils.Simulate.blur(control);
+
+      assert.deepEqual(
+        store.getState().testForm.foo.errors,
+        {
+          length: 'too long',
+          valid: 'not valid',
+        });
+    });
+
+    it('should handle a validator function for errors', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: reducer,
+        test: modelReducer('test', {
+          foo: '',
+        }),
+      }));
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            errors={(val) => !val && !val.length && 'Required'}
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      assert.equal(
+        store.getState().testForm.foo.errors,
+        'Required');
+
+      control.value = 'valid';
+
+      TestUtils.Simulate.change(control);
+
+      assert.deepEqual(
+        store.getState().testForm.foo.errors,
+        false);
+    });
+  });
+
+  describe('dynamic components', () => {
+    const reducer = formReducer('test');
+    const store = testCreateStore({
+      testForm: reducer,
+      test: modelReducer('test', {}),
+    });
+
+    class DynamicSelectForm extends React.Component {
+      constructor() {
+        super();
+
+        this.state = { options: [1, 2] };
+      }
+
+      render() {
+        return (
+          <div>
+            <button onClick={() => this.setState({ options: [1, 2, 3] })} />
+            <Control.select model="test.foo" dynamic>
+              {this.state.options.map((option, i) =>
+                <option key={i} value={option} />
+              )}
+            </Control.select>
+          </div>
+        );
+      }
+    }
+
+    it('should properly update dynamic components inside <Field>', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <DynamicSelectForm />
+        </Provider>
+      );
+
+      let options = TestUtils.scryRenderedDOMComponentsWithTag(field, 'option');
+      const button = TestUtils.findRenderedDOMComponentWithTag(field, 'button');
+
+      assert.equal(options.length, 2);
+
+      TestUtils.Simulate.click(button);
+
+      options = TestUtils.scryRenderedDOMComponentsWithTag(field, 'option');
+
+      assert.equal(options.length, 3);
+    });
+  });
+
+  describe('updateOn prop', () => {
+    const onEvents = [
+      'change',
+      'focus',
+      'blur',
+    ];
+
+    onEvents.forEach((onEvent) => {
+      const store = testCreateStore({
+        test: modelReducer('test', { foo: 'initial' }),
+        testForm: formReducer('test'),
+      });
+
+      it(`should update the store when updateOn="${onEvent}"`, () => {
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.text
+              model="test.foo"
+              updateOn={onEvent}
+            />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        assert.equal(store.getState().test.foo, 'initial');
+
+        const testValue = `${onEvent} test`;
+
+        control.value = testValue;
+
+        assert.equal(store.getState().test.foo, 'initial',
+          'Model value should not change yet');
+
+        TestUtils.Simulate[onEvent](control);
+
+        assert.equal(store.getState().test.foo, testValue);
+      });
+    });
+  });
+
+  describe('validation on load', () => {
+    const reducer = formReducer('test');
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: reducer,
+      test: modelReducer('test', {
+        foo: 'invalid',
+      }),
+    }));
+
+    it('should always validate the model initially', () => {
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            validators={{
+              initial: (val) => val !== 'invalid',
+            }}
+          />
+        </Provider>
+      );
+
+      assert.containSubset(
+        store.getState().testForm.foo,
+        {
+          validity: {
+            initial: false,
+          },
+          errors: {
+            initial: true,
+          },
+        });
+
+      assert.isFalse(store.getState().testForm.foo.valid);
+    });
+  });
+
+  describe('syncing control defaultValue on load', () => {
+    const reducer = modelReducer('test', { foo: '' });
+    const store = testCreateStore({
+      test: reducer,
+      testForm: formReducer('test'),
+    });
+
+    it('should change the model to the defaultValue on load', () => {
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            defaultValue="testing"
+          />
+        </Provider>
+      );
+
+      assert.equal(
+        store.getState().test.foo,
+        'testing');
+    });
+  });
+
+  describe('change on enter', () => {
+    const reducer = modelReducer('test');
+    const store = testCreateStore({
+      test: reducer,
+      testForm: formReducer('test'),
+    });
+
+    it('should change the model upon pressing Enter', () => {
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            updateOn="blur"
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'testing';
+
+      TestUtils.Simulate.keyPress(control, {
+        key: 'Enter',
+        keyCode: 13,
+        which: 13,
+      });
+
+      assert.equal(
+        store.getState().test.foo,
+        'testing');
+    });
+  });
+
+  describe('changeAction prop', () => {
+    const reducer = modelReducer('test', { foo: '' });
+    const store = testCreateStore({
+      test: reducer,
+      testForm: formReducer('test'),
+    });
+
+    it('should execute the custom change action', () => {
+      let customChanged = false;
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            changeAction={(model, value) => {
+              customChanged = true;
+              return actions.change(model, value);
+            }}
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'testing';
+
+      TestUtils.Simulate.change(control);
+
+      assert.isTrue(customChanged);
+
+      assert.equal(
+        store.getState().test.foo,
+        'testing');
+    });
+  });
+
+  describe('event handlers on control', () => {
+    const reducer = modelReducer('test', { foo: '', bar: '' });
+    const store = testCreateStore({
+      test: reducer,
+      testForm: formReducer('test'),
+    });
+
+    it('should execute the custom change action', () => {
+      const onChangeFn = (val) => val;
+      const onChangeFnSpy = sinon.spy(onChangeFn);
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            onChange={onChangeFnSpy}
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'testing';
+
+      TestUtils.Simulate.change(control);
+
+      assert.isTrue(onChangeFnSpy.calledOnce);
+      assert.isObject(onChangeFnSpy.returnValues[0]);
+      assert.equal(
+        onChangeFnSpy.returnValues[0].constructor.name,
+        'SyntheticEvent');
+      assert.equal(
+        onChangeFnSpy.returnValues[0].target.value,
+        'testing');
+    });
+
+    it('should not execute custom onChange functions of unchanged controls', () => {
+      const onChangeFn = (val) => val;
+      const onChangeFnSpy = sinon.spy(onChangeFn);
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <div>
+            <Control.text
+              model="test.foo"
+              onChange={onChangeFnSpy}
+            />
+            <Control.text
+              model="test.bar"
+            />
+          </div>
+        </Provider>
+      );
+
+      const [_, controlBar] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+      controlBar.value = 'testing';
+
+      TestUtils.Simulate.change(controlBar);
+
+      assert.isFalse(onChangeFnSpy.called);
+    });
+
+    it('should only execute custom onChange function pertaining to the changed input', () => {
+      const onChangeFnFoo = (val) => val;
+      const onChangeFnBar = (val) => val;
+      const onChangeFnFooSpy = sinon.spy(onChangeFnFoo);
+      const onChangeFnBarSpy = sinon.spy(onChangeFnBar);
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <div>
+            <Control.text
+              model="test.foo"
+              onChange={onChangeFnFooSpy}
+            />
+            <Control.text
+              model="test.bar"
+              onChange={onChangeFnBarSpy}
+            />
+          </div>
+        </Provider>
+      );
+
+      const [_, controlBar] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
+
+      controlBar.value = 'testing';
+
+      TestUtils.Simulate.change(controlBar);
+
+      assert.isFalse(onChangeFnFooSpy.called);
+      assert.isTrue(onChangeFnBarSpy.called);
+    });
+
+    it('should persist and return the event even when not returned', () => {
+      const onChangeFn = () => {};
+      const onChangeFnSpy = sinon.spy(onChangeFn);
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+            onChange={onChangeFnSpy}
+          />
+        </Provider>
+      );
+
+      const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      control.value = 'testing 2';
+
+      TestUtils.Simulate.change(control);
+
+      assert.isTrue(onChangeFnSpy.calledOnce);
+      assert.isUndefined(onChangeFnSpy.returnValues[0]);
+      assert.equal(
+        store.getState().test.foo,
+        'testing 2');
+    });
+
+    ['focus', 'blur'].forEach((event) => {
+      const eventHandler = `on${capitalize(event)}`;
+
+      it(`should execute the custom ${event} action`, () => {
+        let targetValue;
+
+        const onEvent = (e) => {
+          targetValue = e.target.value;
+
+          return e;
+        };
+
+        const onEventSpy = sinon.spy(onEvent);
+
+        const prop = { [eventHandler]: onEventSpy };
+
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.text
+              model="test.foo"
+              {...prop}
+            />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        control.value = `testing ${event}`;
+
+        TestUtils.Simulate[event](control);
+
+        assert.isTrue(onEventSpy.calledOnce);
+        assert.isObject(onEventSpy.returnValues[0]);
+        assert.equal(
+          onEventSpy.returnValues[0].constructor.name,
+          'SyntheticEvent');
+
+        assert.equal(targetValue, `testing ${event}`);
+      });
+    });
+  });
+
   describe('manual focus/blur', () => {
     beforeEach(() => {
       handleFocus.clearCache();
@@ -743,6 +1310,37 @@ describe('Extended Control components', () => {
       store.dispatch(actions.blur('test.foo'));
 
       assert.notEqual(document.activeElement, input);
+    });
+  });
+
+  describe('handling on multiple events', () => {
+    const store = testCreateStore({
+      test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test', { foo: 'bar' }),
+    });
+
+    const control = testRender(
+      <Control.text
+        model="test.foo"
+        updateOn={['change', 'blur']}
+      />, store);
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(control, 'input');
+
+    it('should update on change', () => {
+      input.value = 'update on change';
+
+      TestUtils.Simulate.change(input);
+
+      assert.equal(store.getState().test.foo, 'update on change');
+    });
+
+    it('should update on blur', () => {
+      input.value = 'update on blur';
+
+      TestUtils.Simulate.blur(input);
+
+      assert.equal(store.getState().test.foo, 'update on blur');
     });
   });
 });

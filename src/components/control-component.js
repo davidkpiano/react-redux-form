@@ -19,9 +19,16 @@ import getFieldFromState from '../utils/get-field-from-state';
 import getModel from '../utils/get-model';
 import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
-import isValid from '../form/is-valid';
 import controlPropsMap from '../constants/control-props-map';
 import validityKeys from '../constants/validity-keys';
+
+function containsEvent(events, event) {
+  if (typeof events === 'string') {
+    return events === event;
+  }
+
+  return !!~events.indexOf(event);
+}
 
 const propTypes = {
   model: PropTypes.oneOfType([
@@ -39,13 +46,22 @@ const propTypes = {
     PropTypes.object,
   ]),
   changeAction: PropTypes.func,
-  updateOn: PropTypes.string,
-  validateOn: PropTypes.string,
+  updateOn: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
+  ]),
+  validateOn: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
+  ]),
   validators: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.object,
   ]),
-  asyncValidateOn: PropTypes.string,
+  asyncValidateOn: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
+  ]),
   asyncValidators: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.object,
@@ -169,7 +185,7 @@ class Control extends Component {
 
     if (!fieldValue) return;
 
-    if (!isValid(fieldValue)) {
+    if (!fieldValue.valid) {
       const keys = Object.keys(validators)
         .concat(Object.keys(errors));
 
@@ -381,16 +397,16 @@ class Control extends Component {
         ? [eventAction(model)]
         : [];
 
-      if (validateOn === eventName) {
+      if (containsEvent(validateOn, eventName)) {
         eventActions.push(
           this.getValidateAction(persistedEvent));
       }
 
-      if (asyncValidateOn === eventName) {
+      if (containsEvent(asyncValidateOn, eventName)) {
         eventActions.push(this.getAsyncValidateAction(persistedEvent));
       }
 
-      if (updateOn === eventName) {
+      if (containsEvent(updateOn, eventName)) {
         eventActions.push(this.getChangeAction(persistedEvent));
       }
 
@@ -404,7 +420,7 @@ class Control extends Component {
     };
 
     return (event) => {
-      if (~ignore.indexOf(eventName)) {
+      if (containsEvent(ignore, eventName)) {
         return controlEventHandler
           ? controlEventHandler(event)
           : event;
@@ -507,6 +523,13 @@ Control.defaultProps = {
 };
 
 const BaseControl = connect(mapStateToProps)(Control);
+
+BaseControl.input = class extends BaseControl {};
+BaseControl.input.defaultProps = {
+  ...BaseControl.defaultProps,
+  component: 'input',
+  mapProps: controlPropsMap.default,
+};
 
 BaseControl.text = class extends BaseControl {};
 BaseControl.text.defaultProps = {
