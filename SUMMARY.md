@@ -6,6 +6,7 @@
   * [Models](docs/guides/models.md)
   * [Validation](docs/guides/validation.md)
   * [Tracking Collections](docs/guides/tracking.md)
+  * [Custom Controls](docs/guides/custom-controls.md)
 * [API Reference](docs/api/README.md)
   * [modelReducer](docs/api/modelReducer.md)
   * [combineForms](docs/api/combineForms.md)
