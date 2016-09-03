@@ -8,5 +8,11 @@ export default function setValidityActionReducer(state, action, localPath) {
 
   return updateField(state, localPath, {
     focus: true,
+  }, null, (node) => {
+    if (node.$form) {
+      return icepick.setIn(node, ['$form', 'focus'], true);
+    }
+
+    return icepick.set(node, 'focus', true);
   });
 }
