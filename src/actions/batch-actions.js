@@ -1,15 +1,14 @@
 import actionTypes from '../action-types';
 import partition from '../utils/partition';
 import isPlainObject from 'lodash/isPlainObject';
+import { trackable } from '../utils/track';
 
-const nullAction = {
-  type: actionTypes.NULL,
-};
+import NULL_ACTION from '../constants/null-action';
 
-function batch(model, actions) {
+const batch =  trackable((model, actions) => {
   const dispatchableActions = actions.filter((action) => !!action);
 
-  if (!dispatchableActions.length) return nullAction;
+  if (!dispatchableActions.length) return NULL_ACTION;
 
   if (dispatchableActions.length && dispatchableActions.every(isPlainObject)) {
     if (dispatchableActions.length === 1) {
@@ -39,8 +38,19 @@ function batch(model, actions) {
 
     actionThunks.forEach(dispatch);
   };
+});
+
+function dispatchBatchIfNeeded(model, actions, dispatch) {
+  if (!actions.length) return void 0;
+
+  const dispatchableActions = actions.filter((action) => !!action);
+
+  if (!dispatchableActions.length) return void 0;
+
+  return dispatch(batch(model, dispatchableActions));
 }
 
-export default {
-  batch,
+export default batch;
+export {
+  dispatchBatchIfNeeded,
 };

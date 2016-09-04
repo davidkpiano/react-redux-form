@@ -66,7 +66,7 @@ function mapStateToProps(state, props) {
   const fieldValue = getFieldFromState(state, modelString);
 
   return {
-    model,
+    model: modelString,
     fieldValue,
   };
 }
@@ -199,7 +199,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     asyncValidateOn: 'blur',
     parser: identity,
     changeAction: actions.change,
-    dynamic: false,
+    dynamic: true,
     component: 'div',
     ...defaultProps,
   };

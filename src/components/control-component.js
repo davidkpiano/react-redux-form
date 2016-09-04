@@ -21,6 +21,7 @@ import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
 import controlPropsMap from '../constants/control-props-map';
 import validityKeys from '../constants/validity-keys';
+import { dispatchBatchIfNeeded } from '../actions/batch-actions';
 
 function containsEvent(events, event) {
   if (typeof events === 'string') {
@@ -88,13 +89,14 @@ function mapStateToProps(state, props) {
     controlProps = omit(props, Object.keys(propTypes)),
   } = props;
 
+
   if (!mapProps) return props;
 
   const modelString = getModel(model, state);
   const fieldValue = getFieldFromState(state, modelString);
 
   return {
-    model,
+    model: modelString,
     modelValue: getter(state, modelString),
     fieldValue,
     controlProps,
@@ -316,7 +318,7 @@ class Control extends Component {
       if (!fieldValue || !shallowEqual(mergedErrors, fieldValue.errors)) {
         return actions.setErrors(model, mergedErrors);
       }
-    } else if (nodeErrors) {
+    } else if (nodeErrors && Object.keys(nodeErrors).length) {
       return actions.setErrors(model, nodeErrors);
     }
 
@@ -420,7 +422,7 @@ class Control extends Component {
       loadActions.push(this.getValidateAction(modelValue));
     }
 
-    dispatch(actions.batch(model, loadActions));
+    dispatchBatchIfNeeded(model, loadActions, dispatch);
 
     if (onLoad) onLoad(modelValue, fieldValue, this.node);
   }
@@ -472,11 +474,7 @@ class Control extends Component {
         eventActions.push(this.getChangeAction(persistedEvent));
       }
 
-      const dispatchableEventActions = eventActions.filter((action) => !!action);
-
-      if (dispatchableEventActions.length) {
-        dispatch(actions.batch(model, dispatchableEventActions));
-      }
+      dispatchBatchIfNeeded(model, eventActions, dispatch);
 
       return persistedEvent;
     };

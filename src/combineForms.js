@@ -3,7 +3,7 @@ import modelReducer from './reducers/model-reducer';
 import formReducer from './reducers/form-reducer';
 import combineReducers from 'redux';
 
-const NULL_ACTION = { type: null };
+import NULL_ACTION from './constants/null-action';
 
 export default function combineForms(forms, formReducerKey = 'forms') {
   const formKeys = Object.keys(forms);

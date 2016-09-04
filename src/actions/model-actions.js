@@ -161,17 +161,17 @@ function createModelActions(s = defaultStrategies) {
 
   return mapValues({
     change,
-    filter,
-    map,
-    merge,
+    xor,
     push,
+    toggle,
+    filter,
+    reset,
+    map,
     remove,
     move,
-    reset,
-    toggle,
-    xor,
-    load,
+    merge,
     omit,
+    load,
   }, trackable);
 }
 
