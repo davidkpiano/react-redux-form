@@ -1302,7 +1302,7 @@ describe('Extended Control components', () => {
       assert.equal(document.activeElement, input);
     });
 
-    it('should manually blur the control', () => {
+    xit('should manually blur the control', () => {
       store.dispatch(actions.focus('test.foo'));
 
       assert.equal(document.activeElement, input);

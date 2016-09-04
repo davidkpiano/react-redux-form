@@ -2,7 +2,7 @@ import _get from '../utils/get';
 import mapValues from '../utils/map-values';
 
 import actionTypes from '../action-types';
-import batchActions from './batch-actions';
+import batch from './batch-actions';
 import getValidity from '../utils/get-validity';
 import isValidityValid from '../utils/is-validity-valid';
 import isValidityInvalid from '../utils/is-validity-invalid';
@@ -127,12 +127,13 @@ const submit = trackable((model, promise, options = {}) => dispatch => {
     : setErrors;
 
   promise.then(response => {
-    dispatch(batchActions.batch(model, [
+    dispatch(batch(model, [
       setSubmitted(model, true),
       setValidity(model, response),
     ]));
   }).catch(error => {
-    dispatch(batchActions.batch(model, [
+    console.error(error);
+    dispatch(batch(model, [
       setSubmitFailed(model),
       errorsAction(model, error),
     ]));

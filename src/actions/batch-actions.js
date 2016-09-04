@@ -5,7 +5,7 @@ import { trackable } from '../utils/track';
 
 import NULL_ACTION from '../constants/null-action';
 
-const batch =  trackable((model, actions) => {
+const batch = trackable((model, actions) => {
   const dispatchableActions = actions.filter((action) => !!action);
 
   if (!dispatchableActions.length) return NULL_ACTION;

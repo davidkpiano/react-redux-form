@@ -3,9 +3,9 @@ let currentFocusedModel = '';
 
 function handleFocus(fieldValue, node) {
   if (!fieldValue) return;
-  
+
   if (fieldValue.focus) {
-    if (currentFocusedModel !== fieldValue.model) {    
+    if (currentFocusedModel !== fieldValue.model) {
       if (document
         && document.activeElement !== node
         && node.focus

@@ -79,7 +79,7 @@ describe('batched actions', () => {
       undefined,
     ]);
 
-    const expectedActions = [{ type: actionTypes.NULL }];
+    const expectedActions = [{ type: null }];
 
     const store = mockStore({}, expectedActions, done);
 

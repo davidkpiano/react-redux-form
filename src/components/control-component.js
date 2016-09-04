@@ -113,8 +113,8 @@ function isReadOnlyValue(controlProps) {
 const emptyControlProps = {};
 
 /**
- * @public 
- * 
+ * @public
+ *
  * The <Control> component creates a React component that represents
  * a form control, including these standard form controls:
  *
@@ -128,7 +128,7 @@ const emptyControlProps = {};
 class Control extends Component {
   /**
    * @private
-   * 
+   *
    */
   constructor(props) {
     super(props);
@@ -153,7 +153,7 @@ class Control extends Component {
 
   /**
    * @private
-   * 
+   *
    * Attaches DOM node and calls `this.handleLoad()`
    */
   componentDidMount() {
@@ -163,7 +163,7 @@ class Control extends Component {
 
   /**
    * @private
-   * 
+   *
    * Updates `this.state.viewValue` if model was externally updated.
    */
   componentWillReceiveProps(nextProps) {
@@ -176,8 +176,8 @@ class Control extends Component {
 
   /**
    * @private
-   * 
-   * Shallow compares `props`, `props.controlProps`, and `state.viewValue` to 
+   *
+   * Shallow compares `props`, `props.controlProps`, and `state.viewValue` to
    * determine if component should be updated.
    */
   shouldComponentUpdate(nextProps, nextState) {
@@ -191,7 +191,7 @@ class Control extends Component {
 
   /**
    * @private
-   * 
+   *
    * Toggles validation if the `modelValue` changed, and ensures that
    * the control is properly focused/blurred.
    */
@@ -220,7 +220,7 @@ class Control extends Component {
 
   /**
    * @access private
-   * 
+   *
    * Resets validity of validators on `<Control validators={{...}}>` when
    * unmounted.
    */
@@ -245,7 +245,7 @@ class Control extends Component {
 
   /**
    * @private
-   * 
+   *
    * Maps the standard control props to the custom props specified in
    * `<Control mapProps={{...}}>`.
    * @return {object} the mapped props
@@ -280,7 +280,7 @@ class Control extends Component {
 
   /**
    * @private
-   * 
+   *
    * Returns the change action for the control.
    * @param  {Event|*} event the native event or value from an event.
    * @return {function(model: string, value: any)}       [description]
