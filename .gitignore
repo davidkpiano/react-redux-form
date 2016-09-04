@@ -28,6 +28,7 @@ node_modules
 
 # Docs
 _book/
+esdoc/
 
 # Distributed files
 dist/

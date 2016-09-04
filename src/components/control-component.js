@@ -105,9 +105,29 @@ function isReadOnlyValue(controlProps) {
   return ~['radio', 'checkbox'].indexOf(controlProps.type);
 }
 
+/**
+ * @private
+ */
 const emptyControlProps = {};
 
+/**
+ * @public 
+ * 
+ * The <Control> component creates a React component that represents
+ * a form control, including these standard form controls:
+ *
+ * - <Control> or <Control.input> for <input>
+ * - <Control.text> for <input type="text">
+ * - <Control.radio> for <input type="radio">
+ * - <Control.checkbox> for <input type="checkbox">
+ * - <Control.select> for <select>
+ * - <Control.file> for <input type="file">
+ */
 class Control extends Component {
+  /**
+   * @private
+   * 
+   */
   constructor(props) {
     super(props);
 
@@ -129,11 +149,21 @@ class Control extends Component {
     };
   }
 
+  /**
+   * @private
+   * 
+   * Attaches DOM node and calls `this.handleLoad()`
+   */
   componentDidMount() {
     this.attachNode();
     this.handleLoad();
   }
 
+  /**
+   * @private
+   * 
+   * Updates `this.state.viewValue` if model was externally updated.
+   */
   componentWillReceiveProps(nextProps) {
     const { modelValue } = nextProps;
 
@@ -142,6 +172,12 @@ class Control extends Component {
     }
   }
 
+  /**
+   * @private
+   * 
+   * Shallow compares `props`, `props.controlProps`, and `state.viewValue` to 
+   * determine if component should be updated.
+   */
   shouldComponentUpdate(nextProps, nextState) {
     const result =
       !shallowEqual(this.props, nextProps, ['controlProps'])
@@ -151,6 +187,12 @@ class Control extends Component {
     return result;
   }
 
+  /**
+   * @private
+   * 
+   * Toggles validation if the `modelValue` changed, and ensures that
+   * the control is properly focused/blurred.
+   */
   componentDidUpdate(prevProps) {
     const {
       modelValue,
@@ -174,6 +216,12 @@ class Control extends Component {
     handleFocus(fieldValue, this.node);
   }
 
+  /**
+   * @access private
+   * 
+   * Resets validity of validators on `<Control validators={{...}}>` when
+   * unmounted.
+   */
   componentWillUnmount() {
     const {
       model,
@@ -193,6 +241,13 @@ class Control extends Component {
     }
   }
 
+  /**
+   * @private
+   * 
+   * Maps the standard control props to the custom props specified in
+   * `<Control mapProps={{...}}>`.
+   * @return {object} the mapped props
+   */
   getMappedProps() {
     const props = this.props;
     const { mapProps } = props;
@@ -221,6 +276,13 @@ class Control extends Component {
     return mapProps(originalProps);
   }
 
+  /**
+   * @private
+   * 
+   * Returns the change action for the control.
+   * @param  {Event|*} event the native event or value from an event.
+   * @return {function(model: string, value: any)}       [description]
+   */
   getChangeAction(event) {
     const { model, controlProps } = this.props;
     const { changeAction = actions.change } = this.getMappedProps();
@@ -524,6 +586,9 @@ Control.defaultProps = {
   dynamic: false,
 };
 
+/**
+ * @private
+ */
 const BaseControl = connect(mapStateToProps)(Control);
 
 BaseControl.input = class extends BaseControl {};

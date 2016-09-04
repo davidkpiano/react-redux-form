@@ -3,5 +3,6 @@
   "destination": "./esdoc",
   "plugins": [
     {"name": "esdoc-es7-plugin"}
-  ]
+  ],
+  "access": ["public"]
 }
