@@ -34,14 +34,11 @@ function updateFieldValue(field, action) {
       result[key] = field[key];
     });
 
-    return { ...compact(result), $form: field.$form };
+    return icepick.set(compact(result), '$form', field.$form);
   }
 
   if (!Array.isArray(value) && !isPlainObject(value)) {
-    return icepick.merge(field, {
-      value,
-      ...changedFieldProps,
-    });
+    return icepick.merge(field, icepick.set(changedFieldProps, 'value', value));
   }
 
   const updatedField = mapValues(value, (subValue, index) => {
@@ -55,18 +52,13 @@ function updateFieldValue(field, action) {
       return subField;
     }
 
-    return icepick.merge(subField, {
-      value: subValue,
-      ...changedFieldProps,
-    });
+    return icepick.merge(subField, icepick.set(changedFieldProps, 'value', subValue));
   });
 
-  const dirtyFormState = icepick.merge(field.$form || initialFieldState, {
-    ...changedFieldProps,
-    retouched: field.submitted
-      ? true
-      : field.$form && field.$form.retouched,
-  });
+  const dirtyFormState = icepick.merge(field.$form || initialFieldState,
+    icepick.set(changedFieldProps, 'retouched',
+      field.submitted || (field.$form && field.$form.retouched)));
+
 
   return icepick.set(updatedField, '$form',
     icepick.set(dirtyFormState, 'value', value));
