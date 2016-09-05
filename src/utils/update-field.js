@@ -1,7 +1,7 @@
 import icepick from 'icepick';
 import get from './get';
 import mapValues from './map-values';
-import { initialFieldState } from '../reducers/form-reducer';
+import { createInitialState } from '../reducers/form-reducer';
 
 function assocIn(state, path, value, fn) {
   if (!fn) return icepick.assocIn(state, path, value);
@@ -15,22 +15,40 @@ function assocIn(state, path, value, fn) {
   return fn(icepick.assoc(state, key0, assocIn(state[key0] || {}, path.slice(1), value, fn)));
 }
 
-export default function updateField(state, path, newState, newSubState, updater) {
-  const field = path.length
-    ? get(state, path, initialFieldState)
-    : state;
+function tempInitialState(path) {
+  if (path.length === 1) return { [path[0]]: null };
 
-  const fieldPath = field.hasOwnProperty('$form')
+  return {
+    [path[0]]: tempInitialState(path.slice(1)),
+  };
+}
+
+export default function updateField(state, path, newState, newSubState, updater) {
+  let field = get(state, path);
+  let fullState = state;
+
+  if (!field) {
+    fullState = icepick.merge(state, createInitialState(
+      state.$form.model,
+      tempInitialState(path)));
+
+    field = get(fullState, path);
+  }
+
+  const isForm = field.hasOwnProperty('$form');
+  const fieldPath = isForm
     ? [...path, '$form']
     : path;
 
-  const fieldState = get(state, fieldPath, initialFieldState);
+  const fieldState = isForm
+    ? field.$form
+    : field;
 
   const updatedFieldState = typeof newState === 'function'
     ? newState(fieldState)
     : newState;
 
-  if ('$form' in field && newSubState) {
+  if (isForm && newSubState) {
     const formState = mapValues(field, (subState, key) => {
       if (key === '$form') {
         return icepick.assign(
@@ -47,10 +65,10 @@ export default function updateField(state, path, newState, newSubState, updater)
 
     if (!path.length) return formState;
 
-    return assocIn(state, path, formState, updater);
+    return assocIn(fullState, path, formState, updater);
   }
 
-  return assocIn(state, fieldPath, icepick.assign(
+  return assocIn(fullState, fieldPath, icepick.assign(
     fieldState,
     updatedFieldState), updater);
 }

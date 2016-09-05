@@ -19,7 +19,7 @@ const store = window.store = createStore(combineForms({
   fields: [],
 }), applyMiddleware(
   thunk
-  // createLogger()
+  ,createLogger()
 ));
 
 export default store;
