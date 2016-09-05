@@ -69,7 +69,7 @@
     "jsdom": "^9.2.1",
     "mocha": "^3.0.0",
     "react": "^15.0.2",
-    "react-addons-test-utils": "^15.0.1",
+    "react-addons-test-utils": "^15.1.0",
     "react-dom": "^15.0.1",
     "react-redux": "^4.4.0",
     "redux": "^3.3.1",
