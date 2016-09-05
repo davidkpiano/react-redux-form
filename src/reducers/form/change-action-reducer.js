@@ -5,13 +5,23 @@ import shallowEqual from '../../utils/shallow-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import compact from 'lodash/compact';
 import mapValues from '../../utils/map-values';
-import { initialFieldState } from '../form-reducer';
+import { initialFieldState, createInitialState } from '../form-reducer';
+
 
 function updateFieldValue(field, action) {
-  let method;
-  const { value, removeKeys, silent } = action;
+  const { value, removeKeys, silent, model } = action;
 
-  if (shallowEqual(field.value, value)) return field;
+  const changedFieldProps = {
+    pristine: false,
+    validated: false,
+    retouched: field.submitted
+      ? true
+      : field.retouched,
+  };
+
+  if (shallowEqual(field.value, value)) {
+    return icepick.merge(field, changedFieldProps);
+  }
 
   if (silent) return icepick.set(field, 'value', value);
 
@@ -27,53 +37,35 @@ function updateFieldValue(field, action) {
     return { ...compact(result), $form: field.$form };
   }
 
-  if (Array.isArray(value)) {
-    method = (val, iter) => Array.prototype.map.call(val, iter).filter(a => !!a);
-  } else if (isPlainObject(value)) {
-    method = (val, iter) => mapValues(val, iter);
-  } else {
+  if (!Array.isArray(value) && !isPlainObject(value)) {
     return icepick.merge(field, {
       value,
-      pristine: false,
-      validated: false,
-      retouched: field.submitted
-        ? true
-        : field.retouched,
+      ...changedFieldProps,
     });
   }
 
-  const updatedField = method(value, (subValue, index) => {
-    const subField = field[index];
+  const updatedField = mapValues(value, (subValue, index) => {
+    const subField = field[index] || createInitialState(`${model}.${index}`, subValue);
 
-    if (subField) {
-      if (Object.hasOwnProperty.call(subField, '$form')) {
-        return updateFieldValue(subField, subValue);
-      }
-
-      if (shallowEqual(subValue, subField.value)) {
-        return subField;
-      }
-
-      return icepick.merge(subField, {
-        value: subValue,
-        pristine: false,
-        validated: false,
-        retouched: field.submitted
-          ? true
-          : subField.retouched,
-      });
+    if (Object.hasOwnProperty.call(subField, '$form')) {
+      return updateFieldValue(subField, subValue);
     }
 
-    // Subfield did not exist or was removed
-    return false;
+    if (shallowEqual(subValue, subField.value)) {
+      return subField;
+    }
+
+    return icepick.merge(subField, {
+      value: subValue,
+      ...changedFieldProps,
+    });
   });
 
   const dirtyFormState = icepick.merge(field.$form || initialFieldState, {
-    pristine: false,
-    validated: false,
+    ...changedFieldProps,
     retouched: field.submitted
       ? true
-      : (field.$form || initialFieldState).retouched,
+      : field.$form && field.$form.retouched,
   });
 
   return icepick.set(updatedField, '$form',
@@ -83,7 +75,7 @@ function updateFieldValue(field, action) {
 export default function changeActionReducer(state, action, localPath) {
   if (action.type !== actionTypes.CHANGE) return state;
 
-  const field = get(state, localPath, initialFieldState);
+  const field = get(state, localPath, createInitialState(action.model, action.value));
 
   const updatedField = updateFieldValue(field, action);
 

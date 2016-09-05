@@ -4,5 +4,7 @@
   "plugins": [
     {"name": "esdoc-es7-plugin"}
   ],
-  "access": ["public"]
+  "access": ["public"],
+  "unexportIdentifier": true,
+  "undocumentIdentifier": false
 }

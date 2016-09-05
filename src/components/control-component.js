@@ -31,7 +31,15 @@ function containsEvent(events, event) {
   return !!~events.indexOf(event);
 }
 
+/**
+ * this is cool
+ * @type {Object}
+ */
 const propTypes = {
+  /**
+   * description of model
+   * @type {string|function}
+   */
   model: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.string,
@@ -113,17 +121,16 @@ function isReadOnlyValue(controlProps) {
 const emptyControlProps = {};
 
 /**
- * @public
  *
- * The <Control> component creates a React component that represents
+ * The `<Control>` component creates a React component that represents
  * a form control, including these standard form controls:
  *
- * - <Control> or <Control.input> for <input>
- * - <Control.text> for <input type="text">
- * - <Control.radio> for <input type="radio">
- * - <Control.checkbox> for <input type="checkbox">
- * - <Control.select> for <select>
- * - <Control.file> for <input type="file">
+ * - `<Control>` or `<Control.input>` for `<input>`
+ * - `<Control.text>` for `<input type="text">`
+ * - `<Control.radio>` for `<input type="radio">`
+ * - `<Control.checkbox>` for `<input type="checkbox">`
+ * - `<Control.select>` for `<select>`
+ * - `<Control.file>` for `<input type="file">`
  */
 class Control extends Component {
   /**
