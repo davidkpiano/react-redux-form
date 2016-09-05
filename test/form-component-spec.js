@@ -1428,4 +1428,73 @@ describe('<Form> component', () => {
 
     assert.isTrue(handleSubmit.calledOnce);
   });
+  describe('validation on validation prop change', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', {
+        foo: '',
+        bar: '',
+      }),
+    }));
+
+    let timesOneValidationCalled = 0;
+    let timesTwoValidationCalled = 0;
+
+    class ValidationChanger extends React.Component {
+      constructor() {
+        super();
+        this.state = { validateOne: true };
+      }
+
+      toggleValidateOne = () => {
+        this.setState({ validateOne: !this.state.validateOne });
+      };
+
+      validators() {
+        if (this.state.validateOne) {
+          return {
+            foo: () => {
+              timesOneValidationCalled += 1;
+              return true;
+            },
+          };
+        }
+        return {
+          foo: () => {
+            timesTwoValidationCalled += 1;
+            return true;
+          },
+        };
+      }
+
+      render() {
+        return (
+          <Provider store={store}>
+            <Form model="test" validators={this.validators()}>
+              <Field model="test.foo">
+                <input type="text" />
+              </Field>
+              <button onClick={this.toggleValidateOne}>Toggle One Validate</button>
+            </Form>
+          </Provider>
+        );
+      }
+    }
+
+    const form = TestUtils.renderIntoDocument(<ValidationChanger />);
+
+    const [toggleButton] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'button');
+
+    it('should validate form validators initially on load', () => {
+      assert.equal(timesOneValidationCalled, 1);
+      assert.equal(timesTwoValidationCalled, 0);
+    });
+
+    it('should revalidate on form validators changing', () => {
+      TestUtils.Simulate.click(toggleButton);
+
+      assert.equal(timesOneValidationCalled, 1);
+      assert.equal(timesTwoValidationCalled, 1);
+    });
+  });
 });
