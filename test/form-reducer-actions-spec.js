@@ -280,10 +280,34 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setFieldsValidity,
         model: 'user',
+        args: [{ foo: false, bar: false }],
+        expectedForm: (form) =>
+          form.foo.errors === true
+          && form.bar.errors === true,
+      },
+      {
+        action: actions.setFieldsValidity,
+        model: 'user.deep',
+        args: [{ foo: false, bar: false }],
+        expectedForm: (form) =>
+          form.deep.foo.errors === true
+          && form.deep.bar.errors === true,
+      },
+      {
+        action: actions.setFieldsValidity,
+        model: 'user',
         args: [{ foo: true, bar: true }, { errors: true }],
         expectedForm: (form) =>
           form.foo.errors === true
           && form.bar.errors === true,
+      },
+      {
+        action: actions.setFieldsValidity,
+        model: 'user.deep',
+        args: [{ foo: true, bar: true }, { errors: true }],
+        expectedForm: (form) =>
+          form.deep.foo.errors === true
+          && form.deep.bar.errors === true,
       },
     ],
     [actionTypes.SET_SUBMITTED]: [
