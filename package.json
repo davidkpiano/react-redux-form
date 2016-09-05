@@ -84,7 +84,7 @@
   },
   "dependencies": {
     "icepick": "^1.1.0",
-    "lodash": "^4.10.0"
+    "lodash": "^4.13.0"
   },
   "peerDependencies": {
     "react": "^0.14.0 || ^15.0.0",
