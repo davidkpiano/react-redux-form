@@ -20,7 +20,7 @@ export default function setValidityActionReducer(state, action, localPath) {
       ).reduce((accState, subAction) => setValidityActionReducer(
         accState,
         subAction,
-        toPath(subAction.model)), state);
+        localPath.concat(toPath(subAction.model))), state);
   }
 
   if (action.type === actionTypes.SET_VALIDATING) {
