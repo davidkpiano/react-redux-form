@@ -18,6 +18,12 @@ function compareChildren(props, nextProps) {
   const childrenArray = React.Children.toArray(children);
   const nextChildrenArray = React.Children.toArray(nextChildren);
 
+  // React.Children.toArray strip's `false` children so lengths
+  // can change
+  if (childrenArray.length !== nextChildrenArray.length) {
+    return false;
+  }
+
   return [].concat(childrenArray)
     .some((child, i) => {
       const nextChild = nextChildrenArray[i];
