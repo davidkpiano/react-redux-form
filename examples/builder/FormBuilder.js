@@ -44,7 +44,11 @@ class FormBuilder extends React.Component {
           Add Field
         </button>
         {fields.map((field) =>
-          <Field model={field.model} key={field.id} dynamic>
+          <Field
+            model={field.model}
+            key={field.id}
+            onClick={() => dispatch(actions.change('currentField', field.id))}
+          >
             <label>{field.label}</label>
             {controlMap[field.type] || <input />}
           </Field>

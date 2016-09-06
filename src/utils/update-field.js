@@ -37,7 +37,7 @@ export default function updateField(state, path, newState, newSubState, updater)
 
   const isForm = field.hasOwnProperty('$form');
   const fieldPath = isForm
-    ? [...path, '$form']
+    ? icepick.push(path, '$form')
     : path;
 
   const fieldState = isForm
