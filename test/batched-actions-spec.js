@@ -33,7 +33,13 @@ describe('batched actions', () => {
         ],
       },
 
-      { model: 'test.foo', type: actionTypes.CHANGE, value: true },
+      {
+        model: 'test.foo',
+        multi: false,
+        silent: false,
+        type: actionTypes.CHANGE,
+        value: true,
+      },
     ];
 
     const store = mockStore({}, expectedActions, done);

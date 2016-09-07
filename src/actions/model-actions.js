@@ -14,7 +14,14 @@ const defaultStrategies = {
   splice: icepick.splice,
   merge: icepick.merge,
   remove: icepick.dissoc,
+  push: icepick.push,
 };
+
+function optionsFromArgs(args, index, options = {}) {
+  if (typeof index === 'undefined') return undefined;
+
+  return { ...options, ...args[index] };
+}
 
 function createModelActions(s = defaultStrategies) {
   const change = (model, value, options = {}) => {
@@ -33,112 +40,75 @@ function createModelActions(s = defaultStrategies) {
     };
   };
 
-  const xor = (
-    model,
-    item,
-    iteratee = (value) => value === item
-  ) => (dispatch, getState) => {
-    const state = s.get(getState(), model, []);
-    const stateWithoutItem = state.filter(stateItem => !iteratee(stateItem));
-    const value = (state.length === stateWithoutItem.length) ? [...state, item] : stateWithoutItem;
+  function createModifierAction(modifier, defaultValue, optionsIndex, getOptions) {
+    const actionCreator = (model, ...args) => (dispatch, getState) => {
+      const modelValue = s.get(getState(), model, defaultValue);
+      const value = modifier(modelValue, ...args);
 
-    dispatch({
-      type: actionTypes.CHANGE,
-      model,
-      value,
-    });
-  };
+      const options = getOptions
+        ? getOptions(value, ...args)
+        : undefined;
 
-  const push = (model, item = null) => (dispatch, getState) => {
-    const collection = s.get(getState(), model);
-    const value = [...(collection || []), item];
+      dispatch(change(
+        model,
+        value,
+        optionsFromArgs(args, optionsIndex - 1, options)));
+    };
 
-    dispatch({
-      type: actionTypes.CHANGE,
-      model,
-      value,
-    });
-  };
+    actionCreator.withValue = (model, ...args) =>
+      (value) => {
+        const options = getOptions
+          ? getOptions(value, ...args)
+          : undefined;
 
-  const toggle = (model) => (dispatch, getState) => {
-    const value = !s.get(getState(), model);
+        change(
+          model,
+          modifier(value, ...args),
+          optionsFromArgs(args, optionsIndex - 1, options));
+      };
 
-    dispatch({
-      type: actionTypes.CHANGE,
-      model,
-      value,
-    });
-  };
+    return actionCreator;
+  }
 
-  const filter = (model, iteratee = identity) => (dispatch, getState) => {
-    const collection = s.get(getState(), model);
-    const value = collection.filter(iteratee);
+  const xor = createModifierAction((value, item, iteratee = (_item) => _item === item) => {
+    const valueWithoutItem = value.filter((_item) => !iteratee(_item));
 
-    dispatch({
-      type: actionTypes.CHANGE,
-      model,
-      value,
-    });
-  };
+    return (value.length === valueWithoutItem.length)
+      ? [...value, item]
+      : valueWithoutItem;
+  }, [], 3);
+
+  const push = createModifierAction((value, item) => s.push(value, item), [], 2);
+
+  const toggle = createModifierAction((value) => !value, undefined, 1);
+
+  const filter = createModifierAction((value, iteratee) => value.filter(iteratee), [], 2);
 
   const reset = (model) => ({
     type: actionTypes.RESET,
     model,
   });
 
-  const map = (model, iteratee = identity) => (dispatch, getState) => {
-    const collection = s.get(getState(), model, []);
-    const value = collection.map(iteratee);
+  const map = createModifierAction((value, iteratee = identity) => value.map(iteratee), [], 2);
 
-    dispatch({
-      type: actionTypes.CHANGE,
-      model,
-      value,
-    });
-  };
+  const remove = createModifierAction((value, index) => s.splice(value, index, 1), [], 2,
+    (_, index) => ({ removeKeys: [index] }));
 
-  const remove = (model, index) => (dispatch, getState) => {
-    const collection = s.get(getState(), model, []);
-
-    dispatch({
-      type: actionTypes.CHANGE,
-      model,
-      value: s.splice(collection, index, 1),
-      removeKeys: [index],
-    });
-  };
-
-  const move = (model, indexFrom, indexTo) => (dispatch, getState) => {
-    const collection = s.get(getState(), model, []);
-
-    if (indexFrom >= collection.length || indexTo >= collection.length) {
+  const move = createModifierAction((value, indexFrom, indexTo) => {
+    if (indexFrom >= value.length || indexTo >= value.length) {
       throw new Error(`Error moving array item: invalid bounds ${indexFrom}, ${indexTo}`);
     }
 
-    const item = collection[indexFrom];
-    const removed = s.splice(collection, indexFrom, 1);
+    const item = value[indexFrom];
+    const removed = s.splice(value, indexFrom, 1);
     const inserted = s.splice(removed, indexTo, 0, item);
 
-    dispatch({
-      type: actionTypes.CHANGE,
-      model,
-      value: inserted,
-    });
-  };
+    return inserted;
+  }, [], 3);
 
-  const merge = (model, values) => (dispatch, getState) => {
-    const value = s.get(getState(), model, {});
+  const merge = createModifierAction(s.merge, {}, 2);
 
-    dispatch({
-      type: actionTypes.CHANGE,
-      model,
-      value: s.merge(value, values),
-    });
-  };
-
-  const omit = (model, props = []) => (dispatch, getState) => {
-    const value = s.get(getState(), model, {});
-
+  const omit = createModifierAction((value, props = []) => {
     const propsArray = typeof props === 'string'
       ? [props]
       : props;
@@ -147,13 +117,8 @@ function createModelActions(s = defaultStrategies) {
       (acc, prop) => s.remove(acc, prop),
       value);
 
-    dispatch({
-      type: actionTypes.CHANGE,
-      model,
-      value: newValue,
-      removeKeys: propsArray,
-    });
-  };
+    return newValue;
+  }, {}, 2, (_, props) => ({ removeKeys: props }));
 
   const load = (model, values) => change(model, values, {
     silent: true,
