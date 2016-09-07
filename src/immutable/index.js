@@ -1,12 +1,17 @@
 import { createModeler } from '../reducers/model-reducer';
 import { createModelReducerEnhancer } from '../enhancers/modeled-enhancer';
 import { createFieldClass } from '../components/field-component';
+import { createModelActions } from '../actions/model-actions';
+import getValue from '../utils/get-value';
 import toPath from '../utils/to-path';
+import Immutable from 'immutable';
 
-function immutableGet(state, path, defaultValue) {
+function immutableGet(state, pathString, defaultValue) {
+  const path = toPath(pathString);
   try {
     return state.getIn(path, defaultValue);
   } catch (error) {
+    console.log(state);
     throw new Error(`Unable to retrieve path '${path.join(
       '.')}' in state. Please make sure that state is an Immutable instance.`);
   }
@@ -41,9 +46,25 @@ const ImmutableField = createFieldClass(undefined, {
 
 const modelReducer = createModeler(immutableGet, immutableSet);
 const modelReducerEnhancer = createModelReducerEnhancer(modelReducer);
+const immutableModelActions = createModelActions({
+  get: immutableGetFromState,
+  getValue,
+  splice: (list, ...args) => list.splice(...args),
+  merge: (map, ...args) => map.merge(...args),
+  remove: (map, ...args) => map.remove(...args),
+  push: (list, ...args) => {
+    console.log(list, args);
+    return list.push(...args)
+  },
+  length: (list) => list.size,
+}, {
+  object: new Immutable.Map(),
+  array: new Immutable.List(),
+});
 
 export {
   modelReducer,
   modelReducerEnhancer as modeled,
   ImmutableField as Field,
+  immutableModelActions as actions,
 };

@@ -1,4 +1,5 @@
 import _get from '../utils/get';
+import GET from 'lodash/get';
 import identity from 'lodash/identity';
 import icepick from 'icepick';
 
@@ -15,6 +16,12 @@ const defaultStrategies = {
   merge: icepick.merge,
   remove: icepick.dissoc,
   push: icepick.push,
+  length: (value) => value.length,
+};
+
+const defaultValues = {
+  object: {},
+  array: [],
 };
 
 function optionsFromArgs(args, index, options = {}) {
@@ -23,7 +30,7 @@ function optionsFromArgs(args, index, options = {}) {
   return { ...options, ...args[index] };
 }
 
-function createModelActions(s = defaultStrategies) {
+export function createModelActions(s = defaultStrategies, d = defaultValues) {
   const change = (model, value, options = {}) => {
     // option defaults
     const changeOptions = {
@@ -41,7 +48,7 @@ function createModelActions(s = defaultStrategies) {
   };
 
   function createModifierAction(modifier, defaultValue, optionsIndex, getOptions) {
-    const actionCreator = (model, ...args) => (dispatch, getState) => {
+    return (model, ...args) => (dispatch, getState) => {
       const modelValue = s.get(getState(), model, defaultValue);
       const value = modifier(modelValue, ...args);
 
@@ -73,38 +80,38 @@ function createModelActions(s = defaultStrategies) {
   const xor = createModifierAction((value, item, iteratee = (_item) => _item === item) => {
     const valueWithoutItem = value.filter((_item) => !iteratee(_item));
 
-    return (value.length === valueWithoutItem.length)
+    return (s.length(value) === s.length(valueWithoutItem))
       ? [...value, item]
       : valueWithoutItem;
-  }, [], 3);
+  }, d.array, 3);
 
-  const push = createModifierAction((value, item) => s.push(value, item), [], 2);
+  const push = createModifierAction((value, item) => s.push(value || d.array, item), d.array, 2);
 
   const toggle = createModifierAction((value) => !value, undefined, 1);
 
-  const filter = createModifierAction((value, iteratee) => value.filter(iteratee), [], 2);
+  const filter = createModifierAction((value, iteratee) => value.filter(iteratee), d.array, 2);
 
   const reset = (model) => ({
     type: actionTypes.RESET,
     model,
   });
 
-  const map = createModifierAction((value, iteratee = identity) => value.map(iteratee), [], 2);
+  const map = createModifierAction((value, iteratee = identity) => value.map(iteratee), d.array, 2);
 
-  const remove = createModifierAction((value, index) => s.splice(value, index, 1), [], 2,
+  const remove = createModifierAction((value, index) => s.splice(value, index, 1), d.array, 2,
     (_, index) => ({ removeKeys: [index] }));
 
   const move = createModifierAction((value, indexFrom, indexTo) => {
-    if (indexFrom >= value.length || indexTo >= value.length) {
+    if (indexFrom >= s.length(value) || indexTo >= s.length(value)) {
       throw new Error(`Error moving array item: invalid bounds ${indexFrom}, ${indexTo}`);
     }
 
-    const item = value[indexFrom];
+    const item = s.get(value, indexFrom);
     const removed = s.splice(value, indexFrom, 1);
     const inserted = s.splice(removed, indexTo, 0, item);
 
     return inserted;
-  }, [], 3);
+  }, d.array, 3);
 
   const merge = createModifierAction(s.merge, {}, 2);
 
