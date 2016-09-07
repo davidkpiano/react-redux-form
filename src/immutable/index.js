@@ -43,8 +43,8 @@ const ImmutableField = createFieldClass(undefined, {
   getter: immutableGetFromState,
 });
 
-const modelReducer = createModeler(immutableGet, immutableSet);
-const modelReducerEnhancer = createModelReducerEnhancer(modelReducer);
+const immutableModelReducer = createModeler(immutableGet, immutableSet);
+const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
 const immutableModelActions = createModelActions({
   get: immutableGetFromState,
   getValue,
@@ -59,8 +59,8 @@ const immutableModelActions = createModelActions({
 });
 
 export {
-  modelReducer,
-  modelReducerEnhancer as modeled,
+  immutableModelReducer as modelReducer,
+  immutableModelReducerEnhancer as modeled,
   ImmutableField as Field,
   immutableModelActions as actions,
 };
