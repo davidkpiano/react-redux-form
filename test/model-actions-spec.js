@@ -143,7 +143,7 @@ describe('model actions', () => {
             },
             testItems[2],
           ],
-          track: true,
+          tracked: true,
         },
       ],
       xor: [
@@ -170,7 +170,7 @@ describe('model actions', () => {
             { id: 2, value: [] },
             testItems[2],
           ],
-          track: true,
+          tracked: true,
         },
       ],
       toggle: [
@@ -187,7 +187,7 @@ describe('model actions', () => {
             { id: 2, value: false },
             testItems[2],
           ],
-          track: true,
+          tracked: true,
         },
       ],
       filter: [
@@ -208,7 +208,7 @@ describe('model actions', () => {
             { id: 2, value: [2, 4, 6] },
             testItems[2],
           ],
-          track: true,
+          tracked: true,
         },
       ],
       map: [
@@ -229,7 +229,7 @@ describe('model actions', () => {
             { id: 2, value: [2, 4, 6, 8, 10] },
             testItems[2],
           ],
-          track: true,
+          tracked: true,
         },
       ],
       remove: [
@@ -250,7 +250,7 @@ describe('model actions', () => {
             { id: 2, value: ['first', 'third'] },
             testItems[2],
           ],
-          track: true,
+          tracked: true,
         },
       ],
       move: [
@@ -281,7 +281,7 @@ describe('model actions', () => {
             { id: 2, value: ['second', 'third', 'first'] },
             testItems[2],
           ],
-          track: true,
+          tracked: true,
         },
       ],
       merge: [
@@ -305,7 +305,7 @@ describe('model actions', () => {
             { id: 2, value: { bar: 'new', one: 'two', untouched: 'intact' } },
             testItems[2],
           ],
-          track: true,
+          tracked: true,
         },
       ],
       omit: [
@@ -331,7 +331,7 @@ describe('model actions', () => {
             { id: 2, value: { one: 1, three: 3 } },
             testItems[2],
           ],
-          track: true,
+          tracked: true,
         },
       ],
     };
@@ -340,7 +340,7 @@ describe('model actions', () => {
     Object.keys(actionTests).map((action) => {
       describe(`${action}()`, () => {
         actionTests[action].map((test) => {
-          const { init, params, expected, immutable } = test;
+          const { init, params, expected } = test;
 
           it('should modify the model to the expected result', () => {
             const reducer = modelReducer('test');
@@ -366,10 +366,10 @@ describe('model actions', () => {
 
       describe(`${action}() (Immutable.JS)`, () => {
         actionTests[action].map((test, i) => {
-          const { init, params, expected, track, immutable } = test;
+          const { init, params, expected, tracked } = test;
 
           // TODO: test tracker with immutablejs
-          if (track) return;
+          if (tracked) return;
 
           const initImmutable = Immutable.fromJS(init);
           const immutableParams = params.map((param) => Immutable.fromJS(param));
@@ -388,7 +388,8 @@ describe('model actions', () => {
             };
 
             if (expected instanceof Error) {
-              assert.throws(() => immutableActions[action](...immutableParams)(dispatch, getState), expected.message);
+              assert.throws(() =>
+                immutableActions[action](...immutableParams)(dispatch, getState), expected.message);
             } else {
               immutableActions[action](...immutableParams)(dispatch, getState);
             }

@@ -11,7 +11,6 @@ function immutableGet(state, pathString, defaultValue) {
   try {
     return state.getIn(path, defaultValue);
   } catch (error) {
-    console.log(state);
     throw new Error(`Unable to retrieve path '${path.join(
       '.')}' in state. Please make sure that state is an Immutable instance.`);
   }
@@ -52,10 +51,7 @@ const immutableModelActions = createModelActions({
   splice: (list, ...args) => list.splice(...args),
   merge: (map, ...args) => map.merge(...args),
   remove: (map, ...args) => map.remove(...args),
-  push: (list, ...args) => {
-    console.log(list, args);
-    return list.push(...args)
-  },
+  push: (list, ...args) => list.push(...args),
   length: (list) => list.size,
 }, {
   object: new Immutable.Map(),

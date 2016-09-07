@@ -1,5 +1,4 @@
 import _get from '../utils/get';
-import GET from 'lodash/get';
 import identity from 'lodash/identity';
 import icepick from 'icepick';
 
@@ -48,7 +47,7 @@ export function createModelActions(s = defaultStrategies, d = defaultValues) {
   };
 
   function createModifierAction(modifier, defaultValue, optionsIndex, getOptions) {
-    return (model, ...args) => (dispatch, getState) => {
+    const actionCreator = (model, ...args) => (dispatch, getState) => {
       const modelValue = s.get(getState(), model, defaultValue);
       const value = modifier(modelValue, ...args);
 
