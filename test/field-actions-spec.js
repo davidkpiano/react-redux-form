@@ -1,5 +1,7 @@
 import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
+import createTestStore from 'redux-test-store';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
@@ -1296,6 +1298,92 @@ describe('field actions', () => {
         errors,
       })));
     });
+
+    it('should not submit if (optional) validators are invalid', (done) => {
+      const store = createTestStore(createStore(combineReducers({
+        testForm: formReducer('test'),
+      }, applyMiddleware(thunk))), done);
+
+      store.when(actionTypes.SET_VALIDITY, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          validity: { foo: false },
+        });
+      });
+
+      const action = actions.submit('test', new Promise((r) => r(true)), {
+        validators: { foo: () => false },
+      });
+
+      store.dispatch(action);
+    });
+
+    it('should submit if (optional) validators are valid', (done) => {
+      const store = createTestStore(createStore(combineReducers({
+        testForm: formReducer('test'),
+      }, applyMiddleware(thunk))), done);
+
+      store.when(actionTypes.SET_VALIDITY, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          validity: { foo: true },
+        });
+      });
+
+      store.when(actionTypes.SET_PENDING, () => true);
+      store.when(actionTypes.SET_SUBMITTED, (_, action) => {
+        assert.isTrue(action.submitted);
+      });
+
+      const action = actions.submit('test', new Promise((r) => r(true)), {
+        validators: { foo: () => true },
+      });
+
+      store.dispatch(action);
+    });
+
+    it('should not submit if (optional) errors are invalid', (done) => {
+      const store = createTestStore(createStore(combineReducers({
+        testForm: formReducer('test'),
+      }, applyMiddleware(thunk))), done);
+
+      store.when(actionTypes.SET_ERRORS, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          errors: { foo: true },
+        });
+      });
+
+      const action = actions.submit('test', new Promise((r) => r(true)), {
+        errors: { foo: () => true },
+      });
+
+      store.dispatch(action);
+    });
+
+    it('should submit if (optional) errors are valid', (done) => {
+      const store = createTestStore(createStore(combineReducers({
+        testForm: formReducer('test'),
+      }, applyMiddleware(thunk))), done);
+
+      store.when(actionTypes.SET_VALIDITY, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          validity: { foo: true },
+        });
+      });
+
+      store.when(actionTypes.SET_PENDING, () => true);
+      store.when(actionTypes.SET_SUBMITTED, (_, action) => {
+        assert.isTrue(action.submitted);
+      });
+
+      const action = actions.submit('test', new Promise((r) => r(true)), {
+        errors: { foo: () => false },
+      });
+
+      store.dispatch(action);
+    });
   });
 
   describe('validate() (thunk)', () => {
@@ -1595,6 +1683,56 @@ describe('field actions', () => {
       const action = actions.validateFieldsErrors('test', {
         foo: (val) => val === 'invalid',
       }, validationOptions);
+
+      store.dispatch(action);
+    });
+  });
+
+  describe('validSubmit() (thunk)', () => {
+    it('should not submit a form if invalid', (done) => {
+      const mockStore = configureMockStore([thunk]);
+      const reducer = formReducer('test');
+
+      const expectedActions = [
+        {
+          type: actionTypes.NULL,
+        },
+      ];
+
+      const store = mockStore(
+        () => ({
+          testForm: reducer(undefined, actions.setValidity('test', false)),
+        }),
+        expectedActions,
+        done);
+
+      const action = actions.validSubmit('test', new Promise((r) => r()));
+
+      store.dispatch(action);
+    });
+
+    it('should be able to resolve a form as valid', (done) => {
+      const store = createTestStore(createStore(combineReducers({
+        testForm: formReducer('test'),
+      }, applyMiddleware(thunk))), done);
+
+      store.when(actionTypes.SET_PENDING, () => true);
+
+      store.when(actionTypes.SET_SUBMITTED, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          submitted: true,
+        });
+      });
+
+      store.when(actionTypes.SET_VALIDITY, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          validity: true,
+        });
+      });
+
+      const action = actions.validSubmit('test', new Promise((r) => r(true)));
 
       store.dispatch(action);
     });

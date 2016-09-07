@@ -6,9 +6,11 @@ import batch from './batch-actions';
 import getValidity from '../utils/get-validity';
 import isValidityValid from '../utils/is-validity-valid';
 import isValidityInvalid from '../utils/is-validity-invalid';
+import invertValidity from '../utils/invert-validity';
 import { trackable } from '../utils/track';
 import getForm from '../utils/get-form';
 import isValid from '../form/is-valid';
+import NULL_ACTION from '../constants/null-action';
 
 const focus = trackable((model) => ({
   type: actionTypes.FOCUS,
@@ -119,8 +121,39 @@ const setSubmitFailed = trackable((model, submitFailed = true) => ({
   submitFailed,
 }));
 
-const submit = trackable((model, promise, options = {}) => dispatch => {
-  dispatch(setPending(model, true));
+const submit = trackable((model, promise, options = {}) => (dispatch, getState) => {
+  if (options.validate) {
+    const form = getForm(getState(), model);
+
+    if (!form.$form.valid) {
+      return dispatch(NULL_ACTION);
+    }
+
+    dispatch(setPending(model, true));
+  } else if (options.validators || options.errors) {
+    const validators = options.validators || options.errors;
+    const isErrors = options.errors;
+    const value = _get(getState(), model);
+    const validity = getValidity(validators, value);
+    const valid = options.errors
+      ? !isValidityInvalid(validity)
+      : isValidityValid(validity);
+
+    if (!valid) {
+      return dispatch(isErrors
+        ? setErrors(model, validity)
+        : setValidity(model, validity));
+    }
+
+    dispatch(batch(model, [
+      setValidity(model, isErrors
+        ? invertValidity(validity)
+        : validity),
+      setPending(model, true),
+    ]));
+  } else {
+    dispatch(setPending(model, true));
+  }
 
   const errorsAction = options.fields
     ? setFieldsErrors
@@ -142,11 +175,17 @@ const submit = trackable((model, promise, options = {}) => dispatch => {
   return promise;
 });
 
-const submitFields = trackable((model, promise, options = {}) =>
+const submitFields = (model, promise, options = {}) =>
   submit(model, promise, {
     ...options,
     fields: true,
-  }));
+  });
+
+const validSubmit = (model, promise, options = {}) =>
+  submit(model, promise, {
+    ...options,
+    validate: true,
+  });
 
 const validate = trackable((model, validators) => (dispatch, getState) => {
   const value = _get(getState(), model);
@@ -212,6 +251,7 @@ export default {
   focus,
   submit,
   submitFields,
+  validSubmit,
   setDirty,
   setErrors,
   setInitial,
