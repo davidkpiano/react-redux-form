@@ -121,6 +121,7 @@ export default function createFormReducer(
   const {
     plugins = [],
     initialFieldState: customInitialFieldState,
+    transformAction = null,
   } = options;
   const modelPath = toPath(model);
   const initialFormState = createInitialState(model, initialState, customInitialFieldState);
@@ -129,5 +130,7 @@ export default function createFormReducer(
     .concat(defaultPlugins)
     .map((plugin) => wrapFormReducer(plugin, modelPath, initialFormState));
 
-  return createBatchReducer(composeReducers(...wrappedPlugins));
+  return createBatchReducer(composeReducers(...wrappedPlugins), undefined, {
+    transformAction,
+  });
 }

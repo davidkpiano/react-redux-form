@@ -412,6 +412,7 @@ class Control extends Component {
       controlProps = emptyControlProps,
       onLoad,
       dispatch,
+      changeAction,
     } = this.props;
     const loadActions = [];
     let defaultValue = undefined;
@@ -424,7 +425,7 @@ class Control extends Component {
 
     if (typeof defaultValue !== 'undefined') {
       loadActions.push(this.getValidateAction(defaultValue));
-      loadActions.push(actions.change(model, defaultValue));
+      loadActions.push(changeAction(model, defaultValue));
     } else {
       loadActions.push(this.getValidateAction(modelValue));
     }

@@ -16,9 +16,6 @@ const defaultStrategies = {
   remove: icepick.dissoc,
   push: icepick.push,
   length: (value) => value.length,
-};
-
-const defaultValues = {
   object: {},
   array: [],
 };
@@ -29,7 +26,7 @@ function optionsFromArgs(args, index, options = {}) {
   return { ...options, ...args[index] };
 }
 
-export function createModelActions(s = defaultStrategies, d = defaultValues) {
+export function createModelActions(s = defaultStrategies) {
   const change = (model, value, options = {}) => {
     // option defaults
     const changeOptions = {
@@ -82,22 +79,22 @@ export function createModelActions(s = defaultStrategies, d = defaultValues) {
     return (s.length(value) === s.length(valueWithoutItem))
       ? [...value, item]
       : valueWithoutItem;
-  }, d.array, 3);
+  }, s.array, 3);
 
-  const push = createModifierAction((value, item) => s.push(value || d.array, item), d.array, 2);
+  const push = createModifierAction((value, item) => s.push(value || s.array, item), s.array, 2);
 
   const toggle = createModifierAction((value) => !value, undefined, 1);
 
-  const filter = createModifierAction((value, iteratee) => value.filter(iteratee), d.array, 2);
+  const filter = createModifierAction((value, iteratee) => value.filter(iteratee), s.array, 2);
 
   const reset = (model) => ({
     type: actionTypes.RESET,
     model,
   });
 
-  const map = createModifierAction((value, iteratee = identity) => value.map(iteratee), d.array, 2);
+  const map = createModifierAction((value, iteratee = identity) => value.map(iteratee), s.array, 2);
 
-  const remove = createModifierAction((value, index) => s.splice(value, index, 1), d.array, 2,
+  const remove = createModifierAction((value, index) => s.splice(value, index, 1), s.array, 2,
     (_, index) => ({ removeKeys: [index] }));
 
   const move = createModifierAction((value, indexFrom, indexTo) => {
@@ -110,7 +107,7 @@ export function createModelActions(s = defaultStrategies, d = defaultValues) {
     const inserted = s.splice(removed, indexTo, 0, item);
 
     return inserted;
-  }, d.array, 3);
+  }, s.array, 3);
 
   const merge = createModifierAction(s.merge, {}, 2);
 

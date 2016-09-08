@@ -1,20 +1,13 @@
 import { createModeler } from '../reducers/model-reducer';
+import formReducer from '../reducers/form-reducer';
 import { createModelReducerEnhancer } from '../enhancers/modeled-enhancer';
 import { createFieldClass } from '../components/field-component';
 import { createModelActions } from '../actions/model-actions';
+import { createControlPropsMap } from '../constants/control-props-map';
+import fieldActions from '../actions/field-actions';
 import getValue from '../utils/get-value';
 import toPath from '../utils/to-path';
 import Immutable from 'immutable';
-
-function immutableGet(state, pathString, defaultValue) {
-  const path = toPath(pathString);
-  try {
-    return state.getIn(path, defaultValue);
-  } catch (error) {
-    throw new Error(`Unable to retrieve path '${path.join(
-      '.')}' in state. Please make sure that state is an Immutable instance.`);
-  }
-}
 
 function immutableSet(state, path, value) {
   try {
@@ -29,6 +22,8 @@ function immutableGetFromState(state, modelString) {
   const path = toPath(modelString);
 
   return path.reduce((subState, subPath) => {
+    if (!subState) return subState;
+
     // Current subState is immutable
     if ('get' in subState) {
       return subState.get(subPath);
@@ -39,28 +34,66 @@ function immutableGetFromState(state, modelString) {
   }, state);
 }
 
-const ImmutableField = createFieldClass(undefined, {
-  getter: immutableGetFromState,
-});
-
-const immutableModelReducer = createModeler(immutableGet, immutableSet);
-const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
-const immutableModelActions = createModelActions({
+const immutableStrategy = {
   get: immutableGetFromState,
+  set: immutableSet,
   getValue,
   splice: (list, ...args) => list.splice(...args),
   merge: (map, ...args) => map.merge(...args),
   remove: (map, ...args) => map.remove(...args),
   push: (list, ...args) => list.push(...args),
   length: (list) => list.size,
-}, {
   object: new Immutable.Map(),
   array: new Immutable.List(),
+};
+
+function transformAction(action) {
+  if (action.value && action.value.toJS) {
+    return {
+      ...action,
+      value: action.value.toJS(),
+    };
+  }
+
+  if (action.actions) {
+    return {
+      ...action,
+      actions: action.actions.map(transformAction),
+    };
+  }
+
+  return action;
+}
+
+function immutableFormReducer(model, initialState = new Immutable.Map(), options = {}) {
+  const _initialState = initialState && initialState.toJS
+    ? initialState.toJS()
+    : initialState;
+
+  return formReducer(model, _initialState, {
+    ...options,
+    transformAction,
+  });
+}
+
+const immutableModelReducer = createModeler(immutableStrategy);
+const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
+const immutableModelActions = createModelActions(immutableStrategy);
+const immutableControlPropsMap = createControlPropsMap(immutableStrategy);
+const ImmutableField = createFieldClass(immutableControlPropsMap, {
+  getter: immutableGetFromState,
+  changeAction: immutableModelActions.change,
 });
+
+const immutableActions = {
+  ...immutableModelActions,
+  ...fieldActions,
+};
 
 export {
   immutableModelReducer as modelReducer,
+  immutableFormReducer as formReducer,
   immutableModelReducerEnhancer as modeled,
   ImmutableField as Field,
-  immutableModelActions as actions,
+  immutableActions as actions,
 };

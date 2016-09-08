@@ -10,8 +10,20 @@ function icepickSet(state, path, value) {
   return icepick.setIn(state, path, value);
 }
 
-function createModeler(getter = _get, setter = icepickSet, initialModelState = {}) {
-  return function _createModelReducer(model, initialState = initialModelState) {
+const defaultStrategy = {
+  get: _get,
+  set: icepickSet,
+  object: {},
+};
+
+function createModeler(strategy = defaultStrategy) {
+  const {
+    get: getter,
+    set: setter,
+    object,
+  } = strategy;
+
+  return function _createModelReducer(model, initialState = object) {
     const modelPath = toPath(model);
 
     const modelReducer = (state = initialState, action) => {
