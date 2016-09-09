@@ -15,6 +15,8 @@ export default function blurTouchActionReducer(state, action, localPath) {
       ? false
       : fieldState.focus,
     touched: true,
-    retouched: !!(fieldForm.submitted || fieldForm.submitFailed),
+    retouched: fieldForm
+      ? !!(fieldForm.submitted || fieldForm.submitFailed)
+      : false,
   }));
 }
