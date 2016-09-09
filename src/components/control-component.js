@@ -43,7 +43,7 @@ const propTypes = {
   model: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.string,
-  ]),
+  ]).isRequired,
   modelValue: PropTypes.any,
   viewValue: PropTypes.any,
   control: PropTypes.any,
