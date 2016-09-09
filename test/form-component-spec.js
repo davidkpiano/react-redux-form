@@ -1160,6 +1160,43 @@ describe('<Form> component', () => {
     });
   });
 
+  describe('form revalidation after manual validation', () => {
+    const store = testCreateStore({
+      login: modelReducer('login', { foo: 'bar' }),
+      loginForm: formReducer('login', { foo: 'bar' }),
+    });
+    const handleSubmit = (values) => {
+      if (values.foo !== 'changed') {
+        store.dispatch(actions.setValidity('login', {
+          correctDetails: false,
+        }));
+      }
+    };
+    const form = testRender(
+      <Form model="login" onSubmit={handleSubmit}>
+        <Field model="login.foo">
+          <input />
+        </Field>
+      </Form>, store);
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+    const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+    it('should revalidate after being set invalid', () => {
+      TestUtils.Simulate.submit(formNode);
+
+      assert.isFalse(store.getState().loginForm.$form.valid);
+
+      input.value = 'changed';
+
+      TestUtils.Simulate.change(input);
+
+      TestUtils.Simulate.submit(formNode);
+
+      assert.isTrue(store.getState().loginForm.$form.valid);
+    });
+  });
+
   describe('form reducer name isolation', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       user: modelReducer('user'),
