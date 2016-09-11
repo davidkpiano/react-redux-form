@@ -36,10 +36,6 @@ function containsEvent(events, event) {
  * @type {Object}
  */
 const propTypes = {
-  /**
-   * description of model
-   * @type {string|function}
-   */
   model: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.string,

@@ -37,8 +37,6 @@
   - [`actions.validateFieldsErrors()`](#actions-validateFieldsErrors)
   - [`actions.resetValidity()`](#actions-resetValidity)
 
-
-
 # Model Action Creators
 
 All model and field action creators can be imported via `import { actions } from 'react-redux-form'`. The action thunk creators require [redux-thunk middleware](https://github.com/gaearon/redux-thunk) to work, as they use thunks to get the current model state.
