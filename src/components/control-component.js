@@ -80,7 +80,10 @@ const propTypes = {
   dispatch: PropTypes.func,
   parser: PropTypes.func,
   getter: PropTypes.func,
-  ignore: PropTypes.arrayOf(PropTypes.string),
+  ignore: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
+  ]),
   dynamic: PropTypes.bool,
 };
 

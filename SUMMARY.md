@@ -10,6 +10,7 @@
   * [Compare to Redux-Form](docs/guides/compare-redux-form.md)
 * [API Reference](docs/api/README.md)
   * [Control component](docs/api/Control.md)
+  * [Field component](docs/api/Field.md)
   * [modelReducer](docs/api/modelReducer.md)
   * [formReducer](docs/api/formReducer.md)
   * [combineForms](docs/api/combineForms.md)
