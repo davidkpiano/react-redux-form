@@ -160,6 +160,24 @@ const validateErrors = trackable((model, errorValidators) => (dispatch, getState
   dispatch(setValidity(model, errors, { errors: true }));
 });
 
+function isFormValidWithoutFields(form, fieldsValidity) {
+  if (Object.keys(form.validity).length && !isValid(form.validity)) {
+    return false;
+  }
+
+  // TODO: map through form keys without $form
+  const valid = Object.keys(form.fields)
+    .every((fieldKey) => {
+      if (fieldsValidity.hasOwnProperty(fieldKey)) {
+        return true;
+      }
+
+      return form.fields[fieldKey].valid;
+    });
+
+  return valid;
+}
+
 const validateFields = trackable((model, fieldValidators, options = {}) => (dispatch, getState) => {
   const value = _get(getState(), model);
 
@@ -179,7 +197,7 @@ const validateFields = trackable((model, fieldValidators, options = {}) => (disp
   if (validCB || invalidCB) {
     const form = getForm(getState(), model);
     const formValid = (form && !fieldsValidity.hasOwnProperty(''))
-      ? form.valid
+      ? isFormValidWithoutFields(form, fieldsValidity)
       : true;
     const fieldsValid = options.errors
       ? !isInvalid(fieldsValidity)
