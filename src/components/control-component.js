@@ -31,10 +31,6 @@ function containsEvent(events, event) {
   return !!~events.indexOf(event);
 }
 
-/**
- * this is cool
- * @type {Object}
- */
 const propTypes = {
   model: PropTypes.oneOfType([
     PropTypes.func,

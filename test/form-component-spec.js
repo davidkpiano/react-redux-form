@@ -1502,4 +1502,43 @@ describe('<Form> component', () => {
       assert.equal(timesTwoValidationCalled, 1);
     });
   });
+
+  describe('submitting after invalid', () => {
+    const store = testCreateStore({
+      login: modelReducer('login', { username: '' }),
+      loginForm: formReducer('login', { username: '' }),
+    });
+    let timesCalled = 0;
+    const handleSubmit = () => {
+      timesCalled++;
+    };
+    const form = testRender(
+      <Form
+        model="login"
+        onSubmit={handleSubmit}
+        validators={{ username: (val) => !!val }}
+      >
+        <Field model="login.username">
+          <input />
+        </Field>
+      </Form>, store);
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+    it('should initially be invalid', () => {
+      assert.isFalse(store.getState().loginForm.$form.valid);
+      assert.isFalse(store.getState().loginForm.username.valid);
+    });
+
+    it('should submit after found to be valid', () => {
+      input.value = 'changed';
+
+      TestUtils.Simulate.change(input);
+
+      assert.isTrue(store.getState().loginForm.$form.valid);
+      assert.isTrue(store.getState().loginForm.username.valid);
+
+      assert.equal(timesCalled, 1);
+    });
+  });
 });

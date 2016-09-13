@@ -222,6 +222,7 @@ const validateFields = trackable((model, fieldValidators, options = {}) => (disp
     const formValid = (form && !fieldsValidity.hasOwnProperty(''))
       ? isValid(form)
       : true;
+
     const fieldsValid = options.errors
       ? !isValidityInvalid(fieldsValidity)
       : isValidityValid(fieldsValidity);
