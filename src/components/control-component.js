@@ -407,6 +407,7 @@ class Control extends Component {
       onLoad,
       dispatch,
       changeAction,
+      parser,
     } = this.props;
     const loadActions = [];
     let defaultValue = undefined;
@@ -422,6 +423,14 @@ class Control extends Component {
       loadActions.push(changeAction(model, defaultValue));
     } else {
       loadActions.push(this.getValidateAction(modelValue));
+
+      if (parser) {
+        const parsedValue = parser(modelValue);
+
+        if (parsedValue !== modelValue) {
+          loadActions.push(changeAction(model, parsedValue));
+        }
+      }
     }
 
     dispatchBatchIfNeeded(model, loadActions, dispatch);

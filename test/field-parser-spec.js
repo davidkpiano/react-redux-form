@@ -50,14 +50,16 @@ describe('<Field parser={...} />', () => {
     it('should parse before validation', () => {
       input.value = 'parse test';
 
+      console.log(store.getState().testForm);
+
       assert.isFalse(
-        store.getState().testForm.foo.validity.isParsed,
+        store.getState().testForm.foo.$form.validity.isParsed,
         'should not be valid yet');
 
       TestUtils.Simulate.change(input);
 
       assert.isTrue(
-        store.getState().testForm.foo.validity.isParsed);
+        store.getState().testForm.foo.$form.validity.isParsed);
     });
   });
 
