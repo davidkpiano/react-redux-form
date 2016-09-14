@@ -1502,30 +1502,36 @@ describe('<Form> component', () => {
       assert.equal(timesTwoValidationCalled, 1);
     });
   });
-
   describe('submitting after invalid', () => {
-    const store = testCreateStore({
+    const store = createStore(combineReducers({
       login: modelReducer('login', { username: '' }),
       loginForm: formReducer('login', { username: '' }),
-    });
+    }), applyMiddleware(thunk));
     let timesCalled = 0;
     const handleSubmit = () => {
       timesCalled++;
     };
-    const form = testRender(
-      <Form
-        model="login"
-        onSubmit={handleSubmit}
-        validators={{ username: (val) => !!val }}
-      >
-        <Field model="login.username">
-          <input />
-        </Field>
-      </Form>, store);
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form
+          model="login"
+          onSubmit={handleSubmit}
+          validators={{ username: (val) => !!val }}
+          validateOn="submit"
+        >
+          <Field model="login.username">
+            <input />
+          </Field>
+        </Form>
+      </Provider>
+    );
 
+    const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
     const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
 
-    it('should initially be invalid', () => {
+    it('should be invalid after initial submit', () => {
+      TestUtils.Simulate.submit(formNode);
+
       assert.isFalse(store.getState().loginForm.$form.valid);
       assert.isFalse(store.getState().loginForm.username.valid);
     });
@@ -1534,6 +1540,11 @@ describe('<Form> component', () => {
       input.value = 'changed';
 
       TestUtils.Simulate.change(input);
+
+      assert.isFalse(store.getState().loginForm.username.valid,
+        'should not be valid yet');
+
+      TestUtils.Simulate.submit(formNode);
 
       assert.isTrue(store.getState().loginForm.$form.valid);
       assert.isTrue(store.getState().loginForm.username.valid);
