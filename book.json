@@ -1,10 +1,22 @@
 {
   "gitbook": "3.x.x",
   "title": "React Redux Form",
-  "plugins": ["prism", "-highlight", "github"],
+  "plugins": [
+    "prism",
+
+    "-fontsettings",
+    "github",
+    "livereload",
+    "theme-rrf"
+  ],
   "pluginsConfig": {
     "github": {
       "url": "https://github.com/davidkpiano/react-redux-form"
+    },
+    "prism": {
+      "css": [
+        "prismjs/themes/prism-okaidia.css"
+      ]
     }
   }
 }
