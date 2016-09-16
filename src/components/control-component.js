@@ -1,4 +1,4 @@
-import { Component, createElement, cloneElement, PropTypes } from 'react';
+import React, { Component, createElement, cloneElement, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 import connect from 'react-redux/lib/components/connect';
 import { compose } from 'redux';
@@ -597,51 +597,77 @@ Control.defaultProps = {
 /**
  * @private
  */
-const BaseControl = connect(mapStateToProps)(Control);
+const ConnectedControl = connect(mapStateToProps)(Control);
 
-BaseControl.input = class extends BaseControl {};
-BaseControl.input.defaultProps = {
-  ...BaseControl.defaultProps,
+/* eslint-disable react/no-multi-comp */
+class ControlWrapper extends Component {
+  constructor(props, context) {
+    super(props, context);
+
+    this.model = context.model;
+  }
+  render() {
+    let resolvedModel = this.props.model;
+
+    if (this.model && this.props.model[0] === '.') {
+      resolvedModel = `${this.model}${this.props.model}`;
+    }
+
+    return <ConnectedControl {...this.props} model={resolvedModel} />;
+  }
+}
+
+ControlWrapper.propTypes = {
+  model: PropTypes.any,
+};
+
+ControlWrapper.contextTypes = {
+  model: PropTypes.any,
+};
+
+ControlWrapper.input = class extends ControlWrapper {};
+ControlWrapper.input.defaultProps = {
+  ...ConnectedControl.defaultProps,
   component: 'input',
   mapProps: controlPropsMap.default,
 };
 
-BaseControl.text = class extends BaseControl {};
-BaseControl.text.defaultProps = {
-  ...BaseControl.defaultProps,
+ControlWrapper.text = class extends ControlWrapper {};
+ControlWrapper.text.defaultProps = {
+  ...ConnectedControl.defaultProps,
   component: 'input',
   mapProps: controlPropsMap.text,
 };
 
-BaseControl.radio = class extends BaseControl {};
-BaseControl.radio.defaultProps = {
-  ...BaseControl.defaultProps,
+ControlWrapper.radio = class extends ControlWrapper {};
+ControlWrapper.radio.defaultProps = {
+  ...ConnectedControl.defaultProps,
   component: 'input',
   type: 'radio',
   mapProps: controlPropsMap.radio,
 };
 
-BaseControl.checkbox = class extends BaseControl {};
-BaseControl.checkbox.defaultProps = {
-  ...BaseControl.defaultProps,
+ControlWrapper.checkbox = class extends ControlWrapper {};
+ControlWrapper.checkbox.defaultProps = {
+  ...ConnectedControl.defaultProps,
   component: 'input',
   type: 'checkbox',
   mapProps: controlPropsMap.checkbox,
 };
 
-BaseControl.file = class extends BaseControl {};
-BaseControl.file.defaultProps = {
-  ...BaseControl.defaultProps,
+ControlWrapper.file = class extends ControlWrapper {};
+ControlWrapper.file.defaultProps = {
+  ...ConnectedControl.defaultProps,
   component: 'input',
   type: 'file',
   mapProps: controlPropsMap.file,
 };
 
-BaseControl.select = class extends BaseControl {};
-BaseControl.select.defaultProps = {
-  ...BaseControl.defaultProps,
+ControlWrapper.select = class extends ControlWrapper {};
+ControlWrapper.select.defaultProps = {
+  ...ConnectedControl.defaultProps,
   component: 'select',
   mapProps: controlPropsMap.select,
 };
 
-export default BaseControl;
+export default ControlWrapper;

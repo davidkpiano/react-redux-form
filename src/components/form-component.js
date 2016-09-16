@@ -44,6 +44,10 @@ class Form extends Component {
     this.attachNode = this.attachNode.bind(this);
   }
 
+  getChildContext() {
+    return { model: this.props.model };
+  }
+
   componentDidMount() {
     if (this.props.validateOn !== 'change') return;
 
@@ -264,10 +268,15 @@ Form.defaultProps = {
   component: 'form',
 };
 
+Form.childContextTypes = {
+  model: PropTypes.any,
+};
+
 function mapStateToProps(state, { model }) {
   const modelString = getModel(model, state);
 
   return {
+    model: modelString,
     modelValue: _get(state, modelString),
     formValue: getForm(state, modelString),
   };
