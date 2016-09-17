@@ -637,49 +637,55 @@ ControlWrapper.contextTypes = {
   model: PropTypes.any,
 };
 
-ControlWrapper.input = class extends ControlWrapper {};
-ControlWrapper.input.defaultProps = {
-  ...ConnectedControl.defaultProps,
-  component: 'input',
-  mapProps: controlPropsMap.default,
-};
+ControlWrapper.input = (props) => (
+  <ControlWrapper
+    component="input"
+    mapProps={controlPropsMap.default}
+    {...props}
+  />
+);
 
-ControlWrapper.text = class extends ControlWrapper {};
-ControlWrapper.text.defaultProps = {
-  ...ConnectedControl.defaultProps,
-  component: 'input',
-  mapProps: controlPropsMap.text,
-};
+ControlWrapper.text = (props) => (
+  <ControlWrapper
+    component="input"
+    mapProps={controlPropsMap.text}
+    {...props}
+  />
+);
 
-ControlWrapper.radio = class extends ControlWrapper {};
-ControlWrapper.radio.defaultProps = {
-  ...ConnectedControl.defaultProps,
-  component: 'input',
-  type: 'radio',
-  mapProps: controlPropsMap.radio,
-};
+ControlWrapper.radio = (props) => (
+  <ControlWrapper
+    component="input"
+    type="radio"
+    mapProps={controlPropsMap.radio}
+    {...props}
+  />
+);
 
-ControlWrapper.checkbox = class extends ControlWrapper {};
-ControlWrapper.checkbox.defaultProps = {
-  ...ConnectedControl.defaultProps,
-  component: 'input',
-  type: 'checkbox',
-  mapProps: controlPropsMap.checkbox,
-};
+ControlWrapper.checkbox = (props) => (
+  <ControlWrapper
+    component="input"
+    type="checkbox"
+    mapProps={controlPropsMap.checkbox}
+    {...props}
+  />
+);
 
-ControlWrapper.file = class extends ControlWrapper {};
-ControlWrapper.file.defaultProps = {
-  ...ConnectedControl.defaultProps,
-  component: 'input',
-  type: 'file',
-  mapProps: controlPropsMap.file,
-};
+ControlWrapper.file = (props) => (
+  <ControlWrapper
+    component="input"
+    type="file"
+    mapProps={controlPropsMap.file}
+    {...props}
+  />
+);
 
-ControlWrapper.select = class extends ControlWrapper {};
-ControlWrapper.select.defaultProps = {
-  ...ConnectedControl.defaultProps,
-  component: 'select',
-  mapProps: controlPropsMap.select,
-};
+ControlWrapper.select = (props) => (
+  <ControlWrapper
+    component="select"
+    mapProps={controlPropsMap.select}
+    {...props}
+  />
+);
 
 export default ControlWrapper;
