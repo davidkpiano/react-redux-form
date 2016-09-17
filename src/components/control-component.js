@@ -599,6 +599,24 @@ Control.defaultProps = {
  */
 const ConnectedControl = connect(mapStateToProps)(Control);
 
+function resolveModel(model, parentModel) {
+  if (parentModel) {
+    if (model[0] === '.' || model[0] === '[') {
+      return `${parentModel}${model}`;
+    }
+
+    if (typeof model === 'function') {
+      return (state) => {
+        const subState = _get(state, parentModel);
+
+        return [parentModel, model(subState)].join('.');
+      };
+    }
+  }
+
+  return model;
+}
+
 /* eslint-disable react/no-multi-comp */
 class ControlWrapper extends Component {
   constructor(props, context) {
@@ -607,11 +625,9 @@ class ControlWrapper extends Component {
     this.model = context.model;
   }
   render() {
-    let resolvedModel = this.props.model;
-
-    if (this.model && this.props.model[0] === '.') {
-      resolvedModel = `${this.model}${this.props.model}`;
-    }
+    const resolvedModel = resolveModel(
+      this.props.model,
+      this.model);
 
     return <ConnectedControl {...this.props} model={resolvedModel} />;
   }

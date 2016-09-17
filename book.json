@@ -2,8 +2,9 @@
   "gitbook": "3.x.x",
   "title": "React Redux Form",
   "plugins": [
-    "prism",
+    "-highlight",
 
+    "-sharing",
     "-fontsettings",
     "github",
     "livereload",
