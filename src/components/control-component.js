@@ -604,14 +604,6 @@ function resolveModel(model, parentModel) {
     if (model[0] === '.' || model[0] === '[') {
       return `${parentModel}${model}`;
     }
-
-    if (typeof model === 'function') {
-      return (state) => {
-        const subState = _get(state, parentModel);
-
-        return [parentModel, model(subState)].join('.');
-      };
-    }
   }
 
   return model;

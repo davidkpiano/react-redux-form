@@ -63,18 +63,6 @@ describe('model resolving', () => {
       model: '.value',
       expected: 'one',
     },
-    {
-      label: 'with a child tracker',
-      parent: 'test',
-      model: track('baz[].value', { id: 2 }),
-      expected: 'two',
-    },
-    {
-      label: 'with a parent and child tracker',
-      parent: track('test.baz[]', { id: 4 }),
-      model: track('value[].value', { id: 20 }),
-      expected: 'deep two',
-    },
   ];
 
   unresolvedModels.forEach(({
