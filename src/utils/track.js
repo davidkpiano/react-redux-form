@@ -3,11 +3,20 @@ import _get from '../utils/get';
 import iteratee from '../utils/iteratee';
 
 function track(model, ...predicates) {
-  return (state) => {
+  const isPartial = model[0] === '.';
+
+  return (fullState, parentModel) => {
+    const childModel = isPartial
+      ? model.slice(1)
+      : model;
+    const state = isPartial
+      ? _get(fullState, parentModel)
+      : fullState;
+
     const [
       parentModelPath,
       ...childModelPaths
-    ] = model.split(/\[\]\.?/);
+    ] = childModel.split(/\[\]\.?/);
 
     let fullPath = parentModelPath;
     let subState = _get(state, fullPath);
@@ -24,7 +33,9 @@ function track(model, ...predicates) {
       fullPath += `.${subPath}`;
     });
 
-    return fullPath;
+    return isPartial
+      ? [parentModel, fullPath].join('.')
+      : fullPath;
   };
 }
 

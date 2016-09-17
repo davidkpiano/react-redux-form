@@ -604,6 +604,10 @@ function resolveModel(model, parentModel) {
     if (model[0] === '.' || model[0] === '[') {
       return `${parentModel}${model}`;
     }
+
+    if (typeof model === 'function') {
+      return (state) => model(state, parentModel);
+    }
   }
 
   return model;
