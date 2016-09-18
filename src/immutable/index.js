@@ -1,13 +1,26 @@
 import { createModeler } from '../reducers/model-reducer';
 import formReducer from '../reducers/form-reducer';
 import { createModelReducerEnhancer } from '../enhancers/modeled-enhancer';
-import { createFieldClass } from '../components/field-component';
 import { createModelActions } from '../actions/model-actions';
 import { createControlPropsMap } from '../constants/control-props-map';
 import fieldActions from '../actions/field-actions';
 import getValue from '../utils/get-value';
 import toPath from '../utils/to-path';
 import Immutable from 'immutable';
+
+import {
+  combineForms,
+  initialFieldState,
+  actionTypes,
+  Control,
+  Form,
+  Errors,
+  createFieldClass,
+  batched,
+  form,
+  getField,
+  track,
+} from '../index';
 
 function immutableSet(state, path, value) {
   try {
@@ -91,9 +104,34 @@ const immutableActions = {
 };
 
 export {
-  immutableModelReducer as modelReducer,
+  // Reducers
   immutableFormReducer as formReducer,
-  immutableModelReducerEnhancer as modeled,
-  ImmutableField as Field,
+  immutableModelReducer as modelReducer,
+  combineForms,
+
+  // Constants
+  initialFieldState,
   immutableActions as actions,
+  actionTypes,
+  immutableControlPropsMap as controls,
+
+  // Components
+  ImmutableField as Field,
+  Control,
+  Form,
+  Errors,
+
+  // Factories
+  createFieldClass,
+
+  // Enhancers
+  immutableModelReducerEnhancer as modeled,
+  batched,
+
+  // Selectors
+  form,
+
+  // Utilities
+  getField,
+  track,
 };
