@@ -2,7 +2,7 @@
 
 Sometimes you want to use 3rd-party component libraries, such as [Material-UI](http://www.material-ui.com), [React Bootstrap](https://react-bootstrap.github.io), or better yet, creating your own custom components. It is straightforward to map RRF's actions to event handlers on any kind of custom component:
 
-```js
+```jsx
 // ...
 import { actions } from 'react-redux-form';
 
@@ -35,7 +35,7 @@ However, this can get a bit tedious, especially for complex controls. Thankfully
 
 With the `<Control>` component, a custom component can be passed into the `component={...}` prop, and standard control props and event handlers (such as `onChange`, `onBlur`, `onFocus`, `value`, etc.) will be mapped as expected:
 
-```js
+```jsx
 import { Control } from 'react-redux-form';
 
 const MyTextInput = (props) => <input className="my-input" {...props} />;
@@ -49,7 +49,7 @@ const MyTextInput = (props) => <input className="my-input" {...props} />;
 
 The mapping standard props to custom controls can be specified by the type of `<Control>` component you are using:
 
-```js
+```jsx
 // custom radio button
 <Control.radio
   model="user.gender"
@@ -68,7 +68,7 @@ The mapping standard props to custom controls can be specified by the type of `<
 
 By default, any props on `<Control>` that are _not_ part of the `Control.propTypes` will be passed down to the custom component. To prevent naming collisions or for more predictable prop-passing behavior, you can also specify the props in the `controlProps={...}` prop:
 
-```js
+```jsx
 <Control.checkbox
   model="user.active"
   component={MyCheckbox}
@@ -88,7 +88,7 @@ By default, any props on `<Control>` that are _not_ part of the `Control.propTyp
 
 Some custom controls won't have prop keys that match up exactly with the standard event handler props, such as `onChangeText` in React Native's `<TextInput>` component corresponding to `onChange`. You can specify a prop mapping in the `mapProps={{...}}` prop to specify the mapping:
 
-```js
+```jsx
 <Control
   model="..."
   component={DatePickerIOS}

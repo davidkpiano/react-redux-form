@@ -1,11 +1,11 @@
-import { createModeler } from '../reducers/model-reducer';
-import formReducer from '../reducers/form-reducer';
-import { createModelReducerEnhancer } from '../enhancers/modeled-enhancer';
-import { createModelActions } from '../actions/model-actions';
-import { createControlPropsMap } from '../constants/control-props-map';
-import fieldActions from '../actions/field-actions';
-import getValue from '../utils/get-value';
-import toPath from '../utils/to-path';
+import { createModeler } from './reducers/model-reducer';
+import formReducer from './reducers/form-reducer';
+import { createModelReducerEnhancer } from './enhancers/modeled-enhancer';
+import { createModelActions } from './actions/model-actions';
+import { createControlPropsMap } from './constants/control-props-map';
+import fieldActions from './actions/field-actions';
+import getValue from './utils/get-value';
+import toPath from './utils/to-path';
 import Immutable from 'immutable';
 
 import {
@@ -20,7 +20,7 @@ import {
   form,
   getField,
   track,
-} from '../index';
+} from './index';
 
 function immutableSet(state, path, value) {
   try {

@@ -43,7 +43,7 @@ All model and field action creators can be imported via `import { actions } from
 
 Also, all action creators are **trackable**, which means that the `model` argument can be a function, such as [`track()`](TODO), that returns a string model path given the store's state. For example:
 
-```js
+```jsx
 import { track, actions } from 'react-redux-form';
 
 // this will dispatch a change() action for the
@@ -69,7 +69,7 @@ When the change action is handled by a [`formReducer`](TODO), the field model's 
 - `.silent` _(boolean)_: if `true`, the `CHANGE` action will not trigger change-related operations in the form reducer, such as setting `.pristine = false`. Default: `false`
 
 ### Example
-```js
+```jsx
 import {
   modelReducer,
   actions
@@ -94,7 +94,7 @@ Returns an action that, when handled by a `modelReducer`, changes the value of t
 - `model` _(String | Function)_: the model whose value will be reset to its initial value.
 
 ### Example
-```js
+```jsx
 import {
   modelReducer,
   actions
@@ -141,7 +141,7 @@ If the model value contains `item`, it will be removed. If the model value doesn
 
 ### Example
 
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // assume user.numbers = [1, 2, 3, 4, 5]
@@ -217,7 +217,7 @@ If `fromIndex` or `toIndex` are out of bounds, an error will be thrown.
 - `toIndex` _(Number)_: the index to move the item to in the array.
 
 ### Example
-```js
+```jsx
 // Assuming this state:
 // {
 //  foo: {
@@ -252,7 +252,7 @@ Dispatches an `actions.change(...)` action with the `model` value updated to not
 - `props` _(String | String[])_: the props to omit from the model value
 
 ### Example
-```js
+```jsx
 // Assuming this state:
 // {
 //   test: {
@@ -286,7 +286,7 @@ The "focus" state indicates that the field model is the currently focused field 
 
 ### Example
 
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // in a connect()-ed component:
@@ -401,7 +401,7 @@ If the promise fails, the action will:
   - If invalid, the action will set the model's validity and not submit the form.
 
 ### Example
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // somewhere with dispatch()
@@ -433,7 +433,7 @@ If the promise fails, the action will:
 - _`options`_ _(Object)_: submit options (see [`actions.submit`](#actions-submit))
 
 ### Example
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // somewhere with dispatch()
@@ -469,7 +469,7 @@ The "submitted" state indicates that this model has been "sent off," or an actio
   - default: `true`
 
 ### Example
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // action thunk creator
@@ -509,7 +509,7 @@ Returns an action that, when handled by a [`formReducer`](TODO), changes the sta
 
 Here is the default initial field state:
 
-```js
+```jsx
 const initialFieldState = {
   focus: false,
   pending: false,
@@ -547,7 +547,7 @@ It also sets the `.errors` on the field model to the inverse of the `validity`.
 - `.errors` _(Boolean)_: if `true`, the validity will be set for `.errors` instead of `.validity` on the field. This is equivalent to `actions.setErrors()`.
 
 ### Example
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // somewhere with dispatch():
@@ -600,7 +600,7 @@ A **validator** is a function that returns `true` if valid, and `false` if inval
 - `validators` _(Function | Object)_: a validator function _or_ an object whose keys are validation keys (such as `'required'`) and values are validators.
 
 ### Example
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 const isEmail = (value) => // ... check if email is valid
@@ -632,7 +632,7 @@ Returns an action thunk that calculates the `validity` of the `model` based on t
   - `done` - the callback where the calculated `validity` is passed in as the argument.
 
 ### Example
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // async function
@@ -663,7 +663,7 @@ It simultaneously sets the `.validity` on the field model to the inverse of the 
 - `errors` _(Boolean | Object | String)_: a truthy/falsey value or an object indicating which error keys of the field model are invalid.
 
 ### Example
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // somewhere with dispatch():
@@ -724,7 +724,7 @@ An **error validator** is a function that returns `true` or a truthy value (such
 - `errorValidators` _(Function | Object)_: an error validator _or_ an object whose keys are error keys (such as `'incorrect'`) and values are error validators.
 
 ### Example
-```js
+```jsx
 import { actions } from 'react-redux-form';
 import { isEmail } from 'validator';
 
@@ -760,7 +760,7 @@ A **validator** is a function that returns `true` or a truthy value (such as a s
 - `fieldValidators` _(Object)_: an object whose keys are sub-models, and whose values are validators for each sub-model (see example).
 
 ### Example
-```js
+```jsx
 import { actions } from 'react-redux-form';
 import { isEmail } from 'validator';
 
@@ -788,7 +788,7 @@ An **error validator** is a function that returns `true` or a truthy value (such
 - `fieldErrorsValidators` _(Object)_: an object whose keys are sub-models, and whose values are error validators for each sub-model (see example).
 
 ### Example
-```js
+```jsx
 import { actions } from 'react-redux-form';
 import { isEmail } from 'validator';
 

@@ -3,7 +3,6 @@
   "title": "React Redux Form",
   "plugins": [
     "-highlight",
-
     "-sharing",
     "-fontsettings",
     "github",
@@ -13,11 +12,6 @@
   "pluginsConfig": {
     "github": {
       "url": "https://github.com/davidkpiano/react-redux-form"
-    },
-    "prism": {
-      "css": [
-        "prismjs/themes/prism-okaidia.css"
-      ]
     }
   }
 }

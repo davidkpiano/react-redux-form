@@ -3,7 +3,7 @@
 The `<Field>` component recursively checks its children to see if they can be made into a [`<Control>`](./Control.md). It then maps all of its props over to each created child `<Control>`.
 
 Example:
-```js
+```jsx
 <Field model="user.favoriteColors">
   <select>
     <option value="red">red</option>
@@ -23,7 +23,7 @@ _(Boolean)_: specifies whether the children inside `<Field>` are dynamic; that i
 Default value: `true`. To optimize for performance, set `dynamic={false}` for any `<Field>` that does not have dynamic children.
 
 Examples:
-```js
+```jsx
 // Does NOT have dynamic children
 <Field model="user.favoriteColors" dynamic={false}>
   <select>

@@ -4,7 +4,7 @@ Returns a form reducer that only responds to any actions on the model or model's
 
 The shape of the state returned from the `formReducer` is exactly the shape of the model it represents. Any non-primitive type (such as objects and arrays) will have a `$form` property with the form-specific state. All other types (such as numbers and strings) will be an object with their field-specific state.
 
-```js
+```jsx
 import { formReducer } from 'react-redux-form';
 
 const initialState = {
@@ -52,7 +52,7 @@ If provided an `initialState`, the form reducer will initialize its fields based
 
 ### Example
 
-```js
+```jsx
 import { formReducer } from 'react-redux-form';
 
 const initialUserState = {

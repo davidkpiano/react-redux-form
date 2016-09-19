@@ -1,7 +1,22 @@
 import React from 'react';
 
-import Form from '../components/form-component';
-import { createFieldClass } from '../components/field-component';
+import {
+  modelReducer,
+  formReducer,
+  modeled,
+  actions,
+  combineForms,
+  initialFieldState,
+  actionTypes,
+  Control,
+  Form,
+  Errors,
+  createFieldClass,
+  batched,
+  form,
+  getField,
+  track,
+} from './index';
 
 const View = process.env.NODE_ENV !== 'test'
   ? require('react-native').View
@@ -59,6 +74,33 @@ class NativeForm extends React.Component {
 }
 
 export {
+  // Reducers
+  formReducer,
+  modelReducer,
+  combineForms,
+
+  // Constants
+  initialFieldState,
+  actions,
+  actionTypes,
+
+  // Components
   NativeField as Field,
+  Control,
   NativeForm as Form,
+  Errors,
+
+  // Factories
+  createFieldClass,
+
+  // Enhancers
+  modeled,
+  batched,
+
+  // Selectors
+  form,
+
+  // Utilities
+  getField,
+  track,
 };

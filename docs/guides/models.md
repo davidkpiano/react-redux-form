@@ -2,7 +2,7 @@
 
 A **model** represents the data that the user can interact with. For example, the initial states of a `user` and `goat` model can look like this:
 
-```js
+```jsx
 const initialUser = {
   name: '',
   email: '',
@@ -18,7 +18,7 @@ const initialGoat = {
 
 To set up your app's models for RRF, it's recommended to use [`combineForms()`](../api/combineForms.md), which takes in the initial state (or custom reducers) of all your models:
 
-```js
+```jsx
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk'
 import { combineForms } from 'react-redux-form';
@@ -41,7 +41,7 @@ Internally, the `modelReducer()` uses the `model` path to know which part of the
 
 For example, given this state:
 
-```js
+```jsx
 const state = {
   user: {  
     firstName: 'John',
@@ -58,7 +58,7 @@ A value from this object is retrieved with the path `'user.firstName'` and a val
 
 For example, to update the second phone number's type, you can dispatch a change to its model path:
 
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // wherever dispatch() is available
@@ -69,7 +69,7 @@ dispatch(actions.change('user.phones[1].type', 'mobile'))
 
 If you provide a custom reducer for a model's value inside `combineForms()`, that reducer will automatically be wrapped (decorated) using [`modeled()`](../api/modeled.md). The `modeled()` reducer will then be able to respond to model changes in React Redux Form. Here's an example:
 
-```js
+```jsx
 // ...
 import myCustomReducer from './myCustomReducer.js';
 

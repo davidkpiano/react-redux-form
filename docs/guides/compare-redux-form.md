@@ -5,7 +5,7 @@
 Source: [http://redux-form.com/6.0.2/examples/simple/](http://redux-form.com/6.0.2/examples/simple/)
 
 **Redux-Form:**
-```js
+```jsx
 import { Field } from 'redux-form';
 
 <Field
@@ -32,7 +32,7 @@ export default reduxForm({
 ```
 
 **React-Redux-Form:**
-```js
+```jsx
 import { Control } from 'react-redux-form';
 
 <Control.text
@@ -52,7 +52,7 @@ import { Control } from 'react-redux-form';
 ---
 
 **Redux-Form:**
-```js
+```jsx
 import { Field } from 'redux-form';
 
 <div>
@@ -62,7 +62,7 @@ import { Field } from 'redux-form';
 ```
 
 **React-Redux-Form:**
-```js
+```jsx
 import { Field } from 'react-redux-form';
 
 <Field model="simple.sex">
@@ -74,7 +74,7 @@ import { Field } from 'react-redux-form';
 ---
 
 **Redux-Form:**
-```js
+```jsx
 import { Field } from 'redux-form';
 
 <Field name="favoriteColor" component="select">
@@ -86,7 +86,7 @@ import { Field } from 'redux-form';
 ```
 
 **React-Redux-Form:**
-```js
+```jsx
 import { Control } from 'react-redux-form';
 
 <Control.select model="simple.favoriteColor">
@@ -100,14 +100,14 @@ import { Control } from 'react-redux-form';
 ---
 
 **Redux-Form:**
-```js
+```jsx
 import { Field } from 'redux-form';
 
 <Field name="employed" id="employed" component="input" type="checkbox"/>
 ```
 
 **React-Redux-Form:**
-```js
+```jsx
 import { Control } from 'react-redux-form';
 
 <Control.checkbox model="simple.employed" id="employed" />
@@ -118,7 +118,7 @@ import { Control } from 'react-redux-form';
 Source: [http://redux-form.com/6.0.2/examples/syncValidation/](http://redux-form.com/6.0.2/examples/syncValidation/)
 
 **Redux-Form:**
-```js
+```jsx
 import { Field, reduxForm } from 'redux-form'
 
 const validate = values => {
@@ -154,7 +154,7 @@ export default reduxForm({
 ```
 
 **React-Redux-Form:**
-```js
+```jsx
 import { Form, Control, Errors } from 'react-redux-form';
 
 const required = (val) => !!(val && val.length);
@@ -181,12 +181,12 @@ export default SyncValidationForm;
 Source: [http://redux-form.com/6.0.2/examples/initializeFromState/](http://redux-form.com/6.0.2/examples/initializeFromState/)
 
 **Redux-Form:**
-```js
+```jsx
 // Too lengthy to display. See source above.
 ```
 
 **React-Redux-Form:**
-```js
+```jsx
 import { connect } from 'react-redux';
 import { actions } from 'react-redux-form';
 
@@ -214,7 +214,7 @@ export default connect(null)(InitializeFromStateForm);
 Source: [http://redux-form.com/6.0.2/examples/selectingFormValues/](http://redux-form.com/6.0.2/examples/selectingFormValues/)
 
 **Redux-Form:**
-```js
+```jsx
 import { formValueSelector } from 'redux-form';
 import { connect } from 'react-redux';
 
@@ -239,7 +239,7 @@ export default connect(
 ```
 
 **React-Redux-Form:**
-```js
+```jsx
 import { connect } from 'react-redux';
 
 const UserForm = // ...
@@ -256,12 +256,12 @@ export default connect(({ user }) => ({
 Source: [http://redux-form.com/6.0.2/examples/fieldArrays/](http://redux-form.com/6.0.2/examples/fieldArrays/)
 
 **Redux-Form:**
-```js
+```jsx
 // Too lengthy to display. See source above.
 ```
 
 **React-Redux-Form:**
-```js
+```jsx
 import { Control } from 'react-redux-form';
 
 const initialMember = { firstName: '', lastName: '' };

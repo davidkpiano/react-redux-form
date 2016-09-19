@@ -32,7 +32,7 @@ The following pre-defined `<Control>`s are available:
 
 For making custom controls that work with React Redux Form, see the [custom controls documentation](../guides/custom-controls.md).
 
-```js
+```jsx
 import React from 'react';
 import { Control } from 'react-redux-form';
 
@@ -63,7 +63,7 @@ export default App; // no need to connect
 ## `model="..."` (required)
 
 _(String | Function)_: The string representing the model value in the store.
-```js
+```jsx
 // in store.js
 export default createStore(combineForms({
   'user': { name: '' },
@@ -81,7 +81,7 @@ It can also be a function that returns a string model. See [the documentation on
 _(Object)_: A mapping of control-specific property keys to prop-getter functions that taken in the original props and return the result prop. See [the documentation on custom controls](../guides/custom-controls.md) for more information.
 
 Example:
-```js
+```jsx
 <Control
   mapProps={{
     customChange: (props) => props.change,
@@ -112,7 +112,7 @@ _(Object)_: A map where the keys are validation keys, and the values are the cor
 
 For example, this control validates that a username exists and is longer than 4 characters:
 
-```js
+```jsx
 <Control.text
   model="user.username"
   validators={{
@@ -125,7 +125,7 @@ For example, this control validates that a username exists and is longer than 4 
 ### Notes
 - If using ES2015 and you have validator functions, you can do this destructuring shortcut:
 
-```js
+```jsx
 const required = (val) => val && val.length;
 const length = (val) => val.length > 8;
 
@@ -156,7 +156,7 @@ Each async validator function is called with 2 arguments:
 
 For example, this control validates that a username is available via a promise:
 
-```js
+```jsx
 // function that returns a promise
 import isAvailable from '../path/to/is-available';
 
@@ -187,7 +187,7 @@ An **error validator** is a function that returns `true` or a truthy value (such
 
 For example, this control validates that a username exists and is longer than 4 characters:
 
-```js
+```jsx
 <Control.text
   model="user.username"
   errors={{
@@ -204,7 +204,7 @@ _(Function)_: A function that _parses_ the view value of the control before it i
 - `previous` (optional) - the current model value _before_ it is changed
 
 **Example**
-```js
+```jsx
 function toAge(value) {
   return parseInt(value) || 0;
 }
@@ -233,7 +233,7 @@ The action creator takes in two arguments:
 
 To create a custom `<Control>` that submits the form on blur:
 
-```js
+```jsx
 import { Control, actions } from 'react-redux-form';
 
 const submitPromise = ... // a promise
@@ -265,7 +265,7 @@ _(Object)_: A mapping of control-specific props that will be applied directly to
 The normal behavior is that any extraneous props on `<Control>` that are not part of `Control.propTypes` (which are documented here) will be given to the rendered input.
 
 Example:
-```js
+```jsx
 // Suppose your <CustomInput> takes in an "errors" prop:
 
 <Control.text
@@ -279,7 +279,7 @@ Example:
 ### `component={...}`
 _(Function | String | Node)_: A custom component can be passed into the `component={...}` prop, and standard control props and event handlers (such as `onChange`, `onBlur`, `onFocus`, `value`, etc.) will be mapped as expected:
 
-```js
+```jsx
 import { Control } from 'react-redux-form';
 
 const MyTextInput = (props) => <input className="my-input" {...props} />;
@@ -297,7 +297,7 @@ _(String | Array)_: The event(s) that you want the `<Control>` to ignore. This c
 
 For instance, if you don't care whether a `<Control>` is focused or blurred:
 
-```js
+```jsx
 // will ignore onFocus and onBlur
 <Control
   model="..."

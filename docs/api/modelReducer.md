@@ -21,7 +21,7 @@ _(Function)_: A reducer which updates the state in reaction to the above actions
 
 - The `model` provided to `modelReducer` _must_ be the exact path in the state to the model. For most use-case scenarios, this is sufficient:
 
-```js
+```jsx
 const initialUserState = {};
 
 const store = createStore(combineReducers({
@@ -31,7 +31,7 @@ const store = createStore(combineReducers({
 
 However, for deeper models, the full path string must be provided:
 
-```js
+```jsx
 const initialUserState = {};
 
 const store = createStore(combineReducers({

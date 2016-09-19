@@ -2,7 +2,7 @@
 
 Let's say you have a collection of data in a model that looks like this:
 
-```js
+```jsx
 const goats = [
   { id: 101, name: 'Australian Dwarf Goat' },
   { id: 202, name: 'Booted Goat' },
@@ -19,7 +19,7 @@ and you want to do any of the following:
 
 A naïve approach to creating fields for each item is by index:
 
-```js
+```jsx
 // in connected component's render()
 const { goats } = this.props;
 
@@ -47,7 +47,7 @@ Model getter functions answer the question, "What is the path to this entity?" e
 
 Here is an example model function that will always return the path to the Pygmy Goat (with an ID of 303):
 
-```js
+```jsx
 function pygmyGoatNameModel(state) {
   const goatIndex = state.goats.findIndex((goat) => {
     // hardcoded index; let's fix this
@@ -60,7 +60,7 @@ function pygmyGoatNameModel(state) {
 
 And you can use this model getter in any component that takes a `model={...}` prop:
 
-```js
+```jsx
 <Control.text model={pygmyGoatNameModel}>
 ```
 
@@ -77,7 +77,7 @@ You can create model getters using the `track()` function, which takes two argum
 
 For example, I can track the pygmy goat name by ID like so:
 
-```js
+```jsx
 // With a predicate function
 <Control.text model={track('goats[].name', (goat) => goat.id === 303)}>
 

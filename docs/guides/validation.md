@@ -10,7 +10,7 @@ Validation occurs as the result of dispatching validation actions, such as `acti
 
 Suppose you are validating `'user.email'`. At any point, you can dispatch `actions.setValidity()` to set the validity of that model on your form state:
 
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 function emailIsValid(email) {
@@ -34,7 +34,7 @@ You can also get more specific with validation by returning an object with valid
 
 **Note:** React Redux Form can work with any validator function library!
 
-```js
+```jsx
 import { actions } from 'react-redux-form';
 import validator from 'validator';
 
@@ -62,7 +62,7 @@ Here's what happens when you set the validity of a model, via `dispatch(actions.
 
 Here's an example:
 
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // wherever validation occurs...
@@ -89,7 +89,7 @@ There are multiple ways you can handle setting validity asynchronously. As long 
 
 Here's a solution using an action thunk creator (with `redux-thunk`):
 
-```js
+```jsx
 // username-actions.js
 import { actions } from 'react-redux-form';
 
@@ -112,7 +112,7 @@ export function checkAvailability(username) {
 
 Alternatively, the `asyncSetValidity(model, validator)` action thunk creator does the above by using the `done` callback as the second argument to `validator(value, done)`:
 
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // wherever validation occurs...
@@ -126,7 +126,7 @@ dispatch(actions.setAsyncValidity('user.username', (value, done) => {
 
 If you are working with **promises**, the `submit(model, promise)` action will automatically set the `.errors` of the `model` field if the promise is rejected:
 
-```js
+```jsx
 import { actions } from 'react-redux-form';
 
 // your custom promise
@@ -165,7 +165,7 @@ The `<Field>` and `<Control>` components accept a few validation-specific props:
 
 Here's an example with the above email and username fields:
 
-```js
+```jsx
 import { Control } from 'react-redux-form';
 import { isEmail } from '../path/to/validators';
 
@@ -209,7 +209,7 @@ import { isEmail } from '../path/to/validators';
 
 This means that validation such as the examples below will _just work_:
 
-```js
+```jsx
 import { Field, Control } from 'react-redux-form';
 
 // ...
@@ -226,7 +226,7 @@ import { Field, Control } from 'react-redux-form';
 
 If you want to disable HTML5 validation for a form, add a `novalidate` attribute to the form element:
 
-```js
+```jsx
 import { Form } from 'react-redux-form';
 
 // email input will not be validated
@@ -243,7 +243,7 @@ Similar to how the `validators` prop and `setValidity()` action works, you can u
 
 Here's how the `setErrors()` action works:
 
-```js
+```jsx
 import { actions } from 'react-redux-form';
 import validator from 'validator';
 
@@ -256,7 +256,7 @@ dispatch(actions.setErrors('user.email', {
 
 If a form reducer exists for `'user'`, this will set various properties of the `userForm.fields.email` state:
 
-```js
+```jsx
 // Assuming a long but invalid email:
 
 userForm.email.valid;
@@ -271,7 +271,7 @@ userForm.email.validity;
 
 Error validators can be defined in the `errors` prop of the `<Form>`, `<Field>`, and `<Control>` components, as well:
 
-```js
+```jsx
 import { Control } from 'react-redux-form';
 import { isEmail } from '../path/to/validators';
 

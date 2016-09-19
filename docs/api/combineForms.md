@@ -31,7 +31,7 @@ _(Function)_: A reducer which updates both the model state and the form state fo
 
 - The `model` provided to `combineForms()` _must_ be the exact path in the state to the _parent_ model. For most use-case scenarios, this is sufficient:
 
-```js
+```jsx
 const initialUserState = {};
 const initialGoatState = {};
 
@@ -43,7 +43,7 @@ const store = createStore(combineForms({
 
 However, for deeper parent models, the full path string must be provided:
 
-```js
+```jsx
 const initialUserState = {};
 const initialGoatState = {};
 
