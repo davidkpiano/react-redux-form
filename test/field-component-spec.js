@@ -1611,16 +1611,19 @@ Object.keys(testContexts).forEach((testKey) => {
     // TODO: control
     it('should remove the item at the specified index of the array'
       + 'represented by the model', (done) => {
+      const initialState = {
+        foo: [
+          { val: 1 },
+          { val: 2 },
+          { val: 3 },
+        ],
+      };
+
       const store = createTestStore(applyMiddleware(thunk)(createStore)(combineReducers({
-        form: formReducer('test'),
-        test: modelReducer('test', {
-          foo: [
-            { val: 1 },
-            { val: 2 },
-            { val: 3 },
-          ],
-        }),
+        form: formReducer('test', initialState),
+        test: modelReducer('test', initialState),
       })), done);
+
       const index = 1;
       TestUtils.renderIntoDocument(
         <Provider store={store}>

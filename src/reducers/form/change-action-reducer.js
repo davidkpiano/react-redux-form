@@ -26,19 +26,34 @@ function updateFieldValue(field, action) {
   if (silent) return icepick.set(field, 'value', value);
 
   if (removeKeys) {
-    const removeKeysArray = typeof removeKeys === 'string'
-      ? [removeKeys]
-      : removeKeys;
+    const valueIsArray = Array.isArray(field.$form.value);
+    const removeKeysArray = Array.isArray(removeKeys)
+      ? removeKeys
+      : [removeKeys];
 
-    const result = [];
+    let result;
+
+    if (valueIsArray) {
+      result = [];
+
+      Object.keys(field).forEach((key) => {
+        if (!!~removeKeysArray.indexOf(+key) || key === '$form') return;
+
+        result[key] = field[key];
+      });
+
+      return icepick.set(compact(result), '$form', field.$form);
+    }
+
+    result = { ...field };
 
     Object.keys(field).forEach((key) => {
-      if (!!~removeKeysArray.indexOf(+key) || key === '$form') return;
-
-      result[key] = field[key];
+      if (!!~removeKeysArray.indexOf(key)) {
+        delete result[`${key}`];
+      }
     });
 
-    return icepick.set(compact(result), '$form', field.$form);
+    return result;
   }
 
   if (!Array.isArray(value) && !isPlainObject(value)) {
