@@ -48,7 +48,11 @@ export function getField(state, path) {
     return state.$form;
   }
 
-  return _get(state, path, initialFieldState);
+  const result = _get(state, path, initialFieldState);
+
+  if ('$form' in result) return result.$form;
+
+  return result;
 }
 
 function getSubModelString(model, subModel) {
