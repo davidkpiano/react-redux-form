@@ -85,6 +85,7 @@ describe('<Control> component', () => {
 
 describe('Extended Control components', () => {
   const textFieldElements = [
+    [''],
     ['text'],
     ['input', 'text'],
     ['input', 'password'],
@@ -100,7 +101,7 @@ describe('Extended Control components', () => {
         test: modelReducer('test', { foo: 'bar' }),
       });
 
-      const TestControl = Control[controlType];
+      const TestControl = Control[controlType] || Control;
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>

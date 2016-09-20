@@ -33,7 +33,18 @@ export default store;
 
 This works similar to `combineReducers()` in `redux`, and will create a single `reducer()` that converts each key/value pair in the object given to `combineForms()` into a [`modelReducer()`](../api/modelReducer.md), and also set up a single [`formReducer()`](../api/formReducer.md) under the `'forms'` key.
 
-**Note:** Since `combineForms()` returns a single `reducer()` function, this can be nested however deep if you are already using `combineReducers()`.
+**Note:** Since `combineForms()` returns a single `reducer()` function, this can be nested however deep if you are already using `combineReducers()`. To nest it deep, you _must_ specify where the deep `combineForms()` reducer will live as a model string in the second argument to `combineForms(forms, model)`:
+
+```jsx
+const store = createStore(combineReducers({
+  foo: fooReducer,
+  bar: barReducer,
+  deep: combineForms({
+    user: initialUser,
+    goat: initialGoat,
+  }, 'deep'), // <== specify the deep model path here
+}));
+```
 
 # Updating Models
 

@@ -87,13 +87,9 @@ const propTypes = {
 function mapStateToProps(state, props) {
   const {
     model,
-    mapProps,
     getter = _get,
     controlProps = omit(props, Object.keys(propTypes)),
   } = props;
-
-
-  if (!mapProps) return props;
 
   const modelString = getModel(model, state);
   const fieldValue = getFieldFromState(state, modelString);
