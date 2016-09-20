@@ -83,28 +83,32 @@ describe('<Control> component', () => {
 
 
 describe('Extended Control components', () => {
-  const inputControlElements = [
-    '', // input with no type
-    'text',
-    'password',
-    'number',
-    'color',
+  const textFieldElements = [
+    ['text'],
+    ['input', 'text'],
+    ['input', 'password'],
+    ['input', 'number'],
+    ['input', 'color'],
+    ['textarea'],
   ];
 
-  inputControlElements.forEach((type) => {
-    describe(`with <Control.text> ${type ? `and type="${type}"` : ''}`, () => {
+  textFieldElements.forEach(([controlType, type]) => {
+    describe(`with <Control.${controlType}> ${type ? `and type="${type}"` : ''}`, () => {
       const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', { foo: 'bar' }),
       });
 
+      const TestControl = Control[controlType];
+
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Control.text model="test.foo" type={type} />
+          <TestControl model="test.foo" type={type} />
         </Provider>
       );
 
-      const node = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+      const node = TestUtils.findRenderedDOMComponentWithTag(field,
+        controlType === 'textarea' ? 'textarea' : 'input');
 
       it('should have an initial value from the model\'s initialState', () => {
         assert.equal(
