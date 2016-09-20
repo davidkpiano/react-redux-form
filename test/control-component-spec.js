@@ -1,6 +1,7 @@
 /* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
 import { assert } from 'chai';
 import React from 'react';
+import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
@@ -1280,6 +1281,110 @@ describe('Extended Control components', () => {
 
         assert.equal(targetValue, `testing ${event}`);
       });
+    });
+  });
+
+
+  describe('unmounting', () => {
+    it('should set the validity of the model to true when umounted', () => {
+      const store = testCreateStore({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      });
+
+      const container = document.createElement('div');
+
+      const field = ReactDOM.render(
+        <Provider store={store}>
+          <Control.input model="test.foo" />
+        </Provider>,
+      container);
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      store.dispatch(actions.setValidity('test.foo', false));
+      assert.isFalse(store.getState().testForm.foo.valid);
+
+      ReactDOM.unmountComponentAtNode(container);
+
+      assert.isTrue(store.getState().testForm.foo.valid);
+    });
+
+    it('should only reset the validity of field-specific validators', () => {
+      const store = testCreateStore({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      });
+
+      const container = document.createElement('div');
+
+      const field = ReactDOM.render(
+        <Provider store={store}>
+          <Control.input
+            model="test.foo"
+            validators={{
+              internal: () => false,
+            }}
+          />
+        </Provider>,
+      container);
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      assert.isFalse(store.getState().testForm.foo.valid);
+
+      store.dispatch(actions.setValidity('test.foo', {
+        ...store.getState().testForm.foo.validity,
+        external: false,
+      }));
+
+      assert.isFalse(store.getState().testForm.foo.valid);
+
+      ReactDOM.unmountComponentAtNode(container);
+
+      assert.isFalse(store.getState().testForm.foo.valid);
+
+      store.dispatch(actions.setValidity('test.foo', {
+        ...store.getState().testForm.foo.validity,
+        external: true,
+      }));
+
+      assert.isTrue(store.getState().testForm.foo.valid);
+    });
+  });
+
+  describe('with <Control.reset>', () => {
+    it('should reset the given model', () => {
+      const store = testCreateStore({
+        test: modelReducer('test', { foo: '' }),
+        testForm: formReducer('test', { foo: '' }),
+      });
+
+      const container = document.createElement('div');
+
+      const field = ReactDOM.render(
+        <Provider store={store}>
+          <div>
+            <Control.input
+              model="test.foo"
+            />
+            <Control.reset model="test.foo" />
+          </div>
+        </Provider>,
+      container);
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+      const reset = TestUtils.findRenderedDOMComponentWithTag(field, 'button');
+
+      input.value = 'changed';
+
+      TestUtils.Simulate.change(input);
+
+      assert.equal(store.getState().test.foo, 'changed');
+
+      TestUtils.Simulate.click(reset);
+
+      assert.equal(store.getState().test.foo, '');
     });
   });
 

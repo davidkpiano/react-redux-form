@@ -1608,6 +1608,7 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    // TODO: control
     it('should remove the item at the specified index of the array'
       + 'represented by the model', (done) => {
       const store = createTestStore(applyMiddleware(thunk)(createStore)(combineReducers({
@@ -1655,6 +1656,7 @@ Object.keys(testContexts).forEach((testKey) => {
       store.dispatch(actions.remove('test.foo', index));
     });
 
+    // TODO: control
     it('should maintain child references', (done) => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         test: modelReducer('test', { foo: '' }),
@@ -1701,6 +1703,7 @@ Object.keys(testContexts).forEach((testKey) => {
       TestUtils.Simulate.click(main);
     });
 
+    // TODO: control
     it('should not override custom value prop', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         test: modelReducer('test', { foo: '' }),
@@ -1727,6 +1730,7 @@ Object.keys(testContexts).forEach((testKey) => {
         'externally controlled input should not change');
     });
 
+    // TODO: control
     it('should allow an input to remain uncontrolled with value={undefined}', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         test: modelReducer('test', { foo: '' }),
@@ -1750,6 +1754,7 @@ Object.keys(testContexts).forEach((testKey) => {
       assert.equal(input.value, 'changed');
     });
 
+    // TODO: control
     it('should render a Component with an idempotent mapStateToProps', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         test: modelReducer('test', { foo: '' }),
@@ -1777,6 +1782,7 @@ Object.keys(testContexts).forEach((testKey) => {
         `stateProps should not have changed, changed props: ${failures.join(', ')}`);
     });
 
+    // TODO: control
     it('should not override the name prop', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         test: modelReducer('test', { foo: '' }),
@@ -1796,6 +1802,7 @@ Object.keys(testContexts).forEach((testKey) => {
       assert.equal(input.name, 'another[name]');
     });
 
+    // TODO: control
     it('should allow a custom mapProps() prop for use in Control', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         test: modelReducer('test', { foo: 'initial' }),
