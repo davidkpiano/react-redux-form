@@ -661,4 +661,13 @@ ConnectedControl.select = (props) => (
   />
 );
 
+ConnectedControl.reset = (props) => (
+  <ConnectedControl
+    component="button"
+    type="reset"
+    mapProps={controlPropsMap.reset}
+    {...props}
+  />
+);
+
 export default ConnectedControl;

@@ -15,7 +15,7 @@ import {
   Control,
   Field,
   track,
-  // actions,
+  actions,
 } from '../src';
 import { testCreateStore, testRender } from './utils';
 
@@ -113,6 +113,30 @@ describe('model resolving', () => {
       it(`should resolve a partial model ${label}`, () => {
         assert.equal(input.value, expected);
       });
+    });
+  });
+
+  describe('with reset control', () => {
+    const resetStore = testCreateStore({
+      test: modelReducer('test', { foo: '' }),
+      testForm: formReducer('test', { foo: '' }),
+    });
+
+    const app = testRender(
+      <Form model="test">
+        <Control.reset model="." />
+      </Form>, resetStore);
+
+    const button = TestUtils.findRenderedDOMComponentWithTag(app, 'button');
+
+    it('should resolve to the parent model and reset the form', () => {
+      resetStore.dispatch(actions.change('test.foo', 'changed'));
+
+      assert.equal(resetStore.getState().test.foo, 'changed');
+
+      TestUtils.Simulate.click(button);
+
+      assert.equal(resetStore.getState().test.foo, '');
     });
   });
 });
