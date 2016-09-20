@@ -14,6 +14,7 @@ import deepCompareChildren from '../utils/deep-compare-children';
 import shallowCompareWithoutChildren from '../utils/shallow-compare-without-children';
 import getModel from '../utils/get-model';
 import getFieldFromState from '../utils/get-field-from-state';
+import resolveModel from '../utils/resolve-model';
 
 const fieldPropTypes = {
   model: PropTypes.oneOfType([
@@ -204,7 +205,7 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     ...defaultProps,
   };
 
-  return connect(mapStateToProps)(Field);
+  return resolveModel(connect(mapStateToProps)(Field));
 }
 
 export {

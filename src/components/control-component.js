@@ -22,6 +22,7 @@ import actions from '../actions';
 import controlPropsMap from '../constants/control-props-map';
 import validityKeys from '../constants/validity-keys';
 import { dispatchBatchIfNeeded } from '../actions/batch-actions';
+import resolveModel from '../utils/resolve-model';
 
 function containsEvent(events, event) {
   if (typeof events === 'string') {
@@ -592,69 +593,41 @@ Control.defaultProps = {
   getter: _get,
   ignore: [],
   dynamic: false,
+  mapProps: controlPropsMap.default,
+  component: 'input',
 };
 
 /**
  * @private
  */
-const ConnectedControl = connect(mapStateToProps)(Control);
+const ConnectedControl = resolveModel(connect(mapStateToProps)(Control));
 
-function resolveModel(model, parentModel) {
-  if (parentModel) {
-    if (model[0] === '.' || model[0] === '[') {
-      return `${parentModel}${model}`;
-    }
-
-    if (typeof model === 'function') {
-      return (state) => model(state, parentModel);
-    }
-  }
-
-  return model;
-}
-
-/* eslint-disable react/no-multi-comp */
-class ControlWrapper extends Component {
-  constructor(props, context) {
-    super(props, context);
-
-    this.model = context.model;
-  }
-  render() {
-    const resolvedModel = resolveModel(
-      this.props.model,
-      this.model);
-
-    return <ConnectedControl {...this.props} model={resolvedModel} />;
-  }
-}
-
-ControlWrapper.propTypes = {
-  model: PropTypes.any,
-};
-
-ControlWrapper.contextTypes = {
-  model: PropTypes.any,
-};
-
-ControlWrapper.input = (props) => (
-  <ControlWrapper
+ConnectedControl.input = (props) => (
+  <ConnectedControl
     component="input"
     mapProps={controlPropsMap.default}
     {...props}
   />
 );
 
-ControlWrapper.text = (props) => (
-  <ControlWrapper
+ConnectedControl.text = (props) => (
+  <ConnectedControl
     component="input"
     mapProps={controlPropsMap.text}
     {...props}
   />
 );
 
-ControlWrapper.radio = (props) => (
-  <ControlWrapper
+ConnectedControl.textarea = (props) => (
+  <ConnectedControl
+    component="textarea"
+    mapProps={controlPropsMap.textarea}
+    {...props}
+  />
+);
+
+ConnectedControl.radio = (props) => (
+  <ConnectedControl
     component="input"
     type="radio"
     mapProps={controlPropsMap.radio}
@@ -662,8 +635,8 @@ ControlWrapper.radio = (props) => (
   />
 );
 
-ControlWrapper.checkbox = (props) => (
-  <ControlWrapper
+ConnectedControl.checkbox = (props) => (
+  <ConnectedControl
     component="input"
     type="checkbox"
     mapProps={controlPropsMap.checkbox}
@@ -671,8 +644,8 @@ ControlWrapper.checkbox = (props) => (
   />
 );
 
-ControlWrapper.file = (props) => (
-  <ControlWrapper
+ConnectedControl.file = (props) => (
+  <ConnectedControl
     component="input"
     type="file"
     mapProps={controlPropsMap.file}
@@ -680,12 +653,12 @@ ControlWrapper.file = (props) => (
   />
 );
 
-ControlWrapper.select = (props) => (
-  <ControlWrapper
+ConnectedControl.select = (props) => (
+  <ConnectedControl
     component="select"
     mapProps={controlPropsMap.select}
     {...props}
   />
 );
 
-export default ControlWrapper;
+export default ConnectedControl;

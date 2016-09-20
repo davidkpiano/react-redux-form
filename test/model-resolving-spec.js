@@ -13,6 +13,7 @@ import {
   formReducer,
   Form,
   Control,
+  Field,
   track,
   // actions,
 } from '../src';
@@ -83,15 +84,35 @@ describe('model resolving', () => {
     model,
     expected,
   }) => {
-    const app = testRender(
-      <Form model={parent}>
-        <Control.text model={model} />
-      </Form>, store);
+    ['input', 'text', 'textarea'].forEach((controlType) => {
+      const TestControl = Control[controlType];
 
-    const input = TestUtils.findRenderedDOMComponentWithTag(app, 'input');
+      const app = testRender(
+        <Form model={parent}>
+          <TestControl model={model} />
+        </Form>, store);
 
-    it(`should resolve a partial model ${label}`, () => {
-      assert.equal(input.value, expected);
+      const input = TestUtils.findRenderedDOMComponentWithTag(app,
+        controlType === 'textarea' ? 'textarea' : 'input');
+
+      it(`(${controlType}) should resolve a partial model ${label}`, () => {
+        assert.equal(input.value, expected);
+      });
+    });
+
+    describe('with <Field>', () => {
+      const app = testRender(
+        <Form model={parent}>
+          <Field model={model}>
+            <input />
+          </Field>
+        </Form>, store);
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(app, 'input');
+
+      it(`should resolve a partial model ${label}`, () => {
+        assert.equal(input.value, expected);
+      });
     });
   });
 });

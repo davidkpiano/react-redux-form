@@ -21,47 +21,34 @@ class UserForm extends React.Component {
     });
     dispatch(actions.submit('user', somePromise));
   }
-  // render() {
-  //   return (
-  //     <Form model="user" onSubmit={v => console.log(v)}>
-  //       <div>
-  //         <label>First name:</label>
-  //         <Control.text model="user.firstName" required />
-  //       </div>
-
-  //       <div>
-  //         <label>Last name:</label>
-  //         <Field model="user.lastName" updateOn="blur">
-  //           <input type="text" />
-  //         </Field>
-  //       </div>
-
-  //       <Field model="user.bag">
-  //         <label>
-  //           <input type="radio" value="paper" />
-  //           <span>Paper</span>
-  //         </label>
-  //         <label>
-  //           <input type="radio" value="plastic" />
-  //           <span>Plastic</span>
-  //         </label>
-  //       </Field>
-  //       <button type="submit">
-  //         Finish registration!
-  //       </button>
-  //     </Form>
-  //   );
-  // }
   render() {
-    return <Form model="user" onSubmit={(v) => this.handleSubmit(v)} validateOn="submit" validators={{username: val => !!val}}>
-        <Field model="user.username">
-          <label>Username</label>
-          <input type="text"/>
+    return (
+      <Form model="user" onSubmit={v => console.log(v)}>
+        <div>
+          <label>First name:</label>
+          <Control.text model="user.firstName" required />
+        </div>
+
+        <div>
+          <label>Last name:</label>
+          <Control model="user.lastName" />
+        </div>
+
+        <Field model="user.bag">
+          <label>
+            <input type="radio" value="paper" />
+            <span>Paper</span>
+          </label>
+          <label>
+            <input type="radio" value="plastic" />
+            <span>Plastic</span>
+          </label>
         </Field>
-    
-        
-        <button type="submit">send</button>
+        <button type="submit">
+          Finish registration!
+        </button>
       </Form>
+    );
   }
 }
 
