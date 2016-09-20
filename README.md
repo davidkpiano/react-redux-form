@@ -3,46 +3,43 @@
 [![Join the chat at https://gitter.im/react-redux-form/Lobby](https://badges.gitter.im/react-redux-form/Lobby.svg)](https://gitter.im/react-redux-form/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/davidkpiano/react-redux-form.svg?branch=master)](https://travis-ci.org/davidkpiano/react-redux-form) [![npm version](https://badge.fury.io/js/react-redux-form.svg)](https://badge.fury.io/js/react-redux-form)
 
-## [Read the Full Documentation (v0.14.x)](https://davidkpiano.gitbooks.io/react-redux-form/content/)
 ## [🆕 Read the V1 (beta) Documentation](https://davidkpiano.github.io/react-redux-form)
+
+Or, if you're not using the `@beta` yet, [read the v0.14.x documentation](https://davidkpiano.gitbooks.io/react-redux-form/content/)
 
 React Redux Form is a collection of reducer creators and action creators that make implementing even the most complex and custom forms with React and Redux simple and performant.
 
 `npm install react-redux-form --save`
 
-- Guides
-  - [Quick Start](https://davidkpiano.gitbooks.io/react-redux-form/content/step_by_step.html)
-  - [Model Reducers](https://davidkpiano.gitbooks.io/react-redux-form/content/model_reducers.html)
-  - [Form Reducers](https://davidkpiano.gitbooks.io/react-redux-form/content/form_reducers.html)
-  - [React Native & Custom Components](https://davidkpiano.gitbooks.io/react-redux-form/content/react_native_&_custom_components.html)
-  - [Validation](https://davidkpiano.gitbooks.io/react-redux-form/content/validation.html)
-  - [Tracking Collections](https://davidkpiano.gitbooks.io/react-redux-form/content/tracking_collections.html)
-  - [FAQs](https://davidkpiano.gitbooks.io/react-redux-form/content/faqs.html)
-- API Reference
-  - [Model Action Creators](https://davidkpiano.gitbooks.io/react-redux-form/content/model_actions.html)
-  - [Field Action Creators](https://davidkpiano.gitbooks.io/react-redux-form/content/field_actions.html)
-  - [Validation Action Creators](https://davidkpiano.gitbooks.io/react-redux-form/content/validation_actions.html)
-  - [Model Reducer](https://davidkpiano.gitbooks.io/react-redux-form/content/model_reducer.html)
-  - [Form Reducer](https://davidkpiano.gitbooks.io/react-redux-form/content/form_reducer.html)
-  - [`<Field>` Component](https://davidkpiano.gitbooks.io/react-redux-form/content/field_component.html)
-  - [`<Form>` Component](https://davidkpiano.gitbooks.io/react-redux-form/content/form_component.html)
-  - [`<Errors>` Component](https://davidkpiano.gitbooks.io/react-redux-form/content/errors_component.html)
+## Installation
+
+```bash
+# Dependencies (you probably already have these)
+npm install react react-dom redux react-redux redux-thunk --save
+
+# version 1.0.0-beta.x
+npm install react-redux-form@beta --save
+
+# version 0.14.x
+npm install react-redux-form@latest --save
+```
 
 ## Quick Start
 
-Be sure to read the [step-by-step](http://davidkpiano.github.io/react-redux-form/#/api/Guide:-Step-by-Step) guide in the documentation.
+Be sure to read the [step-by-step quick start guide](http://davidkpiano.github.io/react-redux-form/docs/guides/quickstart.html) in the documentation.
 
-```js
+```jsx
 import React from 'react';
-import { createStore, combineReducers } from 'redux';
+import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import { modelReducer, formReducer } from 'react-redux-form';
+import { combineForms } from 'react-redux-form';
 
 import MyForm from './components/my-form-component';
 
-const store = createStore(combineReducers({
-  user: modelReducer('user', { name: '' }),
-  userForm: formReducer('user')
+const initialUser = { name: '' };
+
+const store = createStore(combineForms({
+  user: initialUser,
 }));
 
 class App extends React.Component {
@@ -56,11 +53,11 @@ class App extends React.Component {
 }
 ```
 
-```js
+```jsx
 // ./components/my-form-component.js'
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, Form } from 'react-redux-form';
+import { Control, Form } from 'react-redux-form';
 
 class MyForm extends React.Component {
   handleSubmit(val) {
@@ -69,21 +66,18 @@ class MyForm extends React.Component {
   }
   
   render() {
-    let { user } = this.props;
-    
     return (
       <Form model="user" onSubmit={(val) => this.handleSubmit(val)}>
-        <h1>Hello, { user.name }!</h1>
-        <Field model="user.name">
-          <input type="text" />
-        </Field>
+        <label>Your name?</label>
+        <Control.text model="user.name" />
         <button>Submit!</button>
       </Form>
     );
   }
 }
 
-export default connect(state => ({ user: state.user }))(MyForm);
+// No need to connect()!
+export default MyForm;
 ```
 
 ## Posting Issues
