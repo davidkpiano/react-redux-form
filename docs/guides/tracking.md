@@ -1,5 +1,20 @@
 # Tracking Collections
 
+React Redux Form provides the `track()` function, which returns a function that, given state, returns the expected model string:
+
+```jsx
+import { track, Control } from 'react-redux-form';
+
+// in render...
+// this will represent the friend in the user.friends[]
+// collection whose id === 123.
+<Control.text
+  model={track('user.friends[].email', {id: 123})}
+/>
+```
+
+## Explanation
+
 Let's say you have a collection of data in a model that looks like this:
 
 ```jsx
