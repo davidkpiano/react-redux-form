@@ -1,8 +1,9 @@
+import isNative from './is-native';
 
 let currentFocusedModel = '';
 
 function handleFocus(fieldValue, node) {
-  if (!fieldValue) return;
+  if (!fieldValue || isNative) return;
 
   if (fieldValue.focus) {
     if (currentFocusedModel !== fieldValue.model) {
