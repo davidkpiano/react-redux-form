@@ -41,5 +41,5 @@ export default function deepCompareChildren(instance, nextProps, nextState) {
   if (!instance.props.children) return shallowCompare(instance, nextProps, nextState);
 
   return shallowCompare(instance, nextProps, nextState)
-    && compareChildren(instance.props, nextProps);
+    || compareChildren(instance.props, nextProps);
 }

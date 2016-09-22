@@ -2,6 +2,7 @@ import modeled from '../enhancers/modeled-enhancer';
 import modelReducer from './model-reducer';
 import formReducer from './form-reducer';
 import { combineReducers } from 'redux';
+import identity from 'lodash/identity';
 
 import NULL_ACTION from '../constants/null-action';
 
@@ -16,41 +17,55 @@ function getSubModelString(model, subModel) {
   return `${model}.${subModel}`;
 }
 
-export default function combineForms(forms, model = '', options = {}) {
-  const formKeys = Object.keys(forms);
-  const modelReducers = {};
-  const initialFormState = {};
-  const optionsWithDefaults = {
-    ...defaults,
-    ...options,
-  };
-  const {
-    key,
-    plugins,
-  } = optionsWithDefaults;
+const defaultStrategy = {
+  modelReducer,
+  formReducer,
+  modeled,
+  toJS: identity,
+};
 
-  formKeys.forEach((formKey) => {
-    const formValue = forms[formKey];
-    const subModel = getSubModelString(model, formKey);
+function createFormCombiner(strategy = defaultStrategy) {
+  function combineForms(forms, model = '', options = {}) {
+    const formKeys = Object.keys(forms);
+    const modelReducers = {};
+    const initialFormState = {};
+    const optionsWithDefaults = {
+      ...defaults,
+      ...options,
+    };
+    const {
+      key,
+      plugins,
+    } = optionsWithDefaults;
 
-    if (typeof formValue === 'function') {
-      let initialState;
-      try {
-        initialState = formValue(undefined, NULL_ACTION);
-      } catch (error) {
-        initialState = null;
+    formKeys.forEach((formKey) => {
+      const formValue = forms[formKey];
+      const subModel = getSubModelString(model, formKey);
+
+      if (typeof formValue === 'function') {
+        let initialState;
+        try {
+          initialState = formValue(undefined, NULL_ACTION);
+        } catch (error) {
+          initialState = null;
+        }
+
+        modelReducers[formKey] = strategy.modeled(formValue, subModel);
+        initialFormState[formKey] = initialState;
+      } else {
+        modelReducers[formKey] = strategy.modelReducer(subModel, formValue);
+        initialFormState[formKey] = strategy.toJS(formValue);
       }
+    });
 
-      modelReducers[formKey] = modeled(formValue, subModel);
-      initialFormState[formKey] = initialState;
-    } else {
-      modelReducers[formKey] = modelReducer(subModel, formValue);
-      initialFormState[formKey] = formValue;
-    }
-  });
+    return combineReducers({
+      ...modelReducers,
+      [key]: strategy.formReducer(model, initialFormState, { plugins }),
+    });
+  }
 
-  return combineReducers({
-    ...modelReducers,
-    [key]: formReducer(model, initialFormState, { plugins }),
-  });
+  return combineForms;
 }
+
+export default createFormCombiner();
+export { createFormCombiner };

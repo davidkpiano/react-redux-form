@@ -3,13 +3,13 @@ import formReducer from './reducers/form-reducer';
 import { createModelReducerEnhancer } from './enhancers/modeled-enhancer';
 import { createModelActions } from './actions/model-actions';
 import { createControlPropsMap } from './constants/control-props-map';
+import { createFormCombiner } from './reducers/forms-reducer';
 import fieldActions from './actions/field-actions';
 import getValue from './utils/get-value';
 import toPath from './utils/to-path';
 import Immutable from 'immutable';
 
 import {
-  combineForms,
   initialFieldState,
   actionTypes,
   Control,
@@ -97,6 +97,14 @@ const ImmutableField = createFieldClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
   changeAction: immutableModelActions.change,
 });
+const immutableCombineForms = createFormCombiner({
+  modelReducer: immutableModelReducer,
+  formReducer: immutableFormReducer,
+  modeled: immutableModelReducerEnhancer,
+  toJS: (val) => ((val && val.toJS)
+    ? val.toJS()
+    : val),
+});
 
 const immutableActions = {
   ...immutableModelActions,
@@ -107,7 +115,7 @@ export {
   // Reducers
   immutableFormReducer as formReducer,
   immutableModelReducer as modelReducer,
-  combineForms,
+  immutableCombineForms as combineForms,
 
   // Constants
   initialFieldState,
