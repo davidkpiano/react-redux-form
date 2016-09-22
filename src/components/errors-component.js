@@ -12,6 +12,7 @@ import getForm from '../utils/get-form';
 import getFieldFromState from '../utils/get-field-from-state';
 import getModel from '../utils/get-model';
 import isValid from '../form/is-valid';
+import resolveModel from '../utils/resolve-model';
 
 function showErrors(field, form, show = true) {
   if (typeof show === 'function') {
@@ -172,4 +173,4 @@ function mapStateToProps(state, { model }) {
   };
 }
 
-export default connect(mapStateToProps)(Errors);
+export default resolveModel(connect(mapStateToProps)(Errors));

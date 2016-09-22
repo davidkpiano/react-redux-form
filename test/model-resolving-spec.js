@@ -14,6 +14,7 @@ import {
   Form,
   Control,
   Field,
+  Errors,
   track,
   actions,
 } from '../src';
@@ -137,6 +138,28 @@ describe('model resolving', () => {
       TestUtils.Simulate.click(button);
 
       assert.equal(resetStore.getState().test.foo, '');
+    });
+  });
+
+  describe('with <Errors />', () => {
+    const errorStore = testCreateStore({
+      test: modelReducer('test', { foo: '' }),
+      testForm: formReducer('test', { foo: '' }),
+    });
+
+    const app = testRender(
+      <Form
+        model="test"
+        errors={{ foo: () => 'this is incorrect' }}
+      >
+        <Errors model=".foo" />
+      </Form>, errorStore);
+
+    const errors = TestUtils.scryRenderedDOMComponentsWithTag(app, 'span');
+
+    it('should show the proper errors for the resolved model', () => {
+      assert.lengthOf(errors, 1);
+      assert.equal(errors[0].innerHTML, 'this is incorrect');
     });
   });
 });
