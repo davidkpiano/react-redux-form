@@ -15,6 +15,7 @@ import {
   Control,
   Field,
   Errors,
+  Fieldset,
   track,
   actions,
 } from '../src';
@@ -86,18 +87,20 @@ describe('model resolving', () => {
     expected,
   }) => {
     ['input', 'text', 'textarea'].forEach((controlType) => {
-      const TestControl = Control[controlType];
+      [Form, Fieldset].forEach((Container) => {
+        const TestControl = Control[controlType];
 
-      const app = testRender(
-        <Form model={parent}>
-          <TestControl model={model} />
-        </Form>, store);
+        const app = testRender(
+          <Container model={parent}>
+            <TestControl model={model} />
+          </Container>, store);
 
-      const input = TestUtils.findRenderedDOMComponentWithTag(app,
-        controlType === 'textarea' ? 'textarea' : 'input');
+        const input = TestUtils.findRenderedDOMComponentWithTag(app,
+          controlType === 'textarea' ? 'textarea' : 'input');
 
-      it(`(${controlType}) should resolve a partial model ${label}`, () => {
-        assert.equal(input.value, expected);
+        it(`(${controlType}) should resolve a partial model ${label}`, () => {
+          assert.equal(input.value, expected);
+        });
       });
     });
 

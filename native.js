@@ -22,6 +22,7 @@ import {
   actionTypes,
   Control,
   Form,
+  Fieldset,
   Errors,
   batched,
   form,
@@ -140,6 +141,7 @@ Control.Slider = (props) => (
 );
 
 const NativeForm = (props) => <Form component={View} {...props} />;
+const NativeFieldset = (props) => <Fieldset component={View} {...props} />;
 const NativeErrors = (props) => (
   <Errors
     wrapper={View}
@@ -163,6 +165,7 @@ export {
   Control,
   NativeForm as Form,
   NativeErrors as Errors,
+  NativeFieldset as Fieldset,
 
   // Enhancers
   modeled,

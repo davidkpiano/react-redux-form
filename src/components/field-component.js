@@ -48,7 +48,10 @@ const fieldPropTypes = {
     PropTypes.func,
     PropTypes.object,
   ]),
-  mapProps: PropTypes.func,
+  mapProps: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
   componentMap: PropTypes.object,
   dynamic: PropTypes.bool,
   dispatch: PropTypes.func,

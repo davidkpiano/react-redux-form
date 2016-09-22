@@ -2,6 +2,7 @@ import actions from './actions';
 import actionTypes from './action-types';
 
 import Field, { createFieldClass } from './components/field-component';
+import Fieldset from './components/fieldset-component';
 import Control from './components/control-component';
 import Form from './components/form-component';
 import Errors from './components/errors-component';
@@ -42,6 +43,7 @@ export {
   Control,
   Form,
   Errors,
+  Fieldset,
 
   // Factories
   createFieldClass,
