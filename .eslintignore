@@ -7,3 +7,4 @@ esdoc/
 webpack.config.*
 wallaby.config.*
 examples/
+home/
