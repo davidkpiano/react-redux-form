@@ -1,47 +1,61 @@
 import actions from './actions';
 import actionTypes from './action-types';
 
-import Field, { controlPropsMap, createFieldClass } from './components/field-component';
+import Field, { createFieldClass } from './components/field-component';
+import Fieldset from './components/fieldset-component';
 import Control from './components/control-component';
 import Form from './components/form-component';
 import Errors from './components/errors-component';
 
+import controlPropsMap from './constants/control-props-map';
+
 import modeled from './enhancers/modeled-enhancer';
+import batched from './enhancers/batched-enhancer';
 
 import formReducer, {
-  createFormReducer,
   initialFieldState,
   getField,
 } from './reducers/form-reducer';
+import combineForms from './reducers/forms-reducer';
 
-import modelReducer, { createModelReducer } from './reducers/model-reducer';
-
-import modelFormReducer, { modelForm } from './reducers/model-form-reducer';
+import modelReducer from './reducers/model-reducer';
 
 import {
   track,
 } from './utils/track';
 
-import * as utils from './utils';
+import form from './form';
 
 export {
+  // Reducers
+  formReducer,
+  modelReducer,
+  combineForms,
+
+  // Constants
+  initialFieldState,
   actions,
   actionTypes,
   controlPropsMap as controls,
-  createFieldClass,
-  formReducer,
-  createFormReducer,
-  modelReducer,
-  createModelReducer,
-  modelFormReducer,
-  modelForm,
+
+  // Components
   Field,
   Control,
   Form,
   Errors,
-  getField,
-  initialFieldState,
+  Fieldset,
+
+  // Factories
+  createFieldClass,
+
+  // Enhancers
   modeled,
+  batched,
+
+  // Selectors
+  form,
+
+  // Utilities
+  getField,
   track,
-  utils,
 };

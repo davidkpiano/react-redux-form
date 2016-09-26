@@ -4,13 +4,26 @@ import arraysEqual from '../utils/arrays-equal';
 import toPath from '../utils/to-path';
 
 import actionTypes from '../action-types';
+import createBatchReducer from '../enhancers/batched-enhancer';
 
 function icepickSet(state, path, value) {
   return icepick.setIn(state, path, value);
 }
 
-function createModeler(getter = _get, setter = icepickSet, initialModelState = {}) {
-  return function _createModelReducer(model, initialState = initialModelState) {
+const defaultStrategy = {
+  get: _get,
+  set: icepickSet,
+  object: {},
+};
+
+function createModeler(strategy = defaultStrategy) {
+  const {
+    get: getter,
+    set: setter,
+    object,
+  } = strategy;
+
+  return function _createModelReducer(model, initialState = object) {
     const modelPath = toPath(model);
 
     const modelReducer = (state = initialState, action) => {
@@ -27,9 +40,6 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
       const localPath = path.slice(modelPath.length);
 
       switch (action.type) {
-        case actionTypes.BATCH:
-          return action.actions.reduce(modelReducer, state);
-
         case actionTypes.CHANGE:
         case actionTypes.LOAD:
           if (!localPath.length) {
@@ -62,21 +72,13 @@ function createModeler(getter = _get, setter = icepickSet, initialModelState = {
       }
     };
 
-    return modelReducer;
+    return createBatchReducer(modelReducer, initialState);
   };
 }
 
 const modelReducer = createModeler();
 
-function createModelReducer(...args) {
-  console.warn('The createModelReducer() function is deprecated (renamed). '
-    + 'Please use modelReducer().');
-
-  return modelReducer(...args);
-}
-
 export {
   createModeler,
-  createModelReducer,
 };
 export default modelReducer;

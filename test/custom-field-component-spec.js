@@ -6,11 +6,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 
-import {
-  Field as NativeField,
-  Form as NativeForm,
-} from '../src/native';
-import { controls, createFieldClass, formReducer, modelReducer, Field } from '../src';
+import { controls, createFieldClass, modelReducer, formReducer, Field } from '../src';
 
 describe('controls props mapping', () => {
   it('should exist', () => {
@@ -42,8 +38,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
     }
   }
 
-  CustomText.propTypes = { customOnChange: PropTypes.function };
-
+  CustomText.propTypes = { customOnChange: PropTypes.func };
 
   class FamiliarText extends Component {
     render() {
@@ -58,6 +53,21 @@ describe('custom <Field /> components with createFieldClass()', () => {
   }
 
   FamiliarText.propTypes = { onChange: PropTypes.function };
+
+  class CustomCheckbox extends Component {
+    render() {
+      const { onChange, value } = this.props;
+
+      return (
+        <span onClick={() => onChange(value)} />
+      );
+    }
+  }
+
+  CustomCheckbox.propTypes = {
+    onChange: PropTypes.func,
+    value: PropTypes.any,
+  };
 
   const MinifiedText = class MT extends Component {
     render() {
@@ -78,11 +88,11 @@ describe('custom <Field /> components with createFieldClass()', () => {
       customOnChange: props.onChange,
     }),
     FamiliarText: controls.text,
-    InputFoo: controls.checkbox,
-    MinifiedText: controls.text,
-  }, {
-    componentMap: {
-      MinifiedText,
+    CustomCheckbox: controls.checkbox,
+    MyCheckbox: controls.checkbox,
+    MinifiedText: {
+      ...controls.text,
+      component: MinifiedText,
     },
   });
 
@@ -171,7 +181,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
       test: modelReducer('test', { foo: 'bar' }),
     }));
 
-    class InputFoo extends React.Component {
+    class MyCheckbox extends React.Component {
       render() {
         return <div><input {...this.props} /></div>;
       }
@@ -180,7 +190,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
         <CustomField model="test.foo">
-          <InputFoo type="checkbox" />
+          <MyCheckbox type="checkbox" />
         </CustomField>
       </Provider>
     );
@@ -229,6 +239,70 @@ describe('custom <Field /> components with createFieldClass()', () => {
     assert.equal(
       store.getState().test.foo,
       'testing');
+  });
+
+  it('should work with custom checkboxes', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: true }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <CustomField model="test.foo">
+          <CustomCheckbox />
+        </CustomField>
+      </Provider>
+    );
+
+    const control = TestUtils.findRenderedDOMComponentWithTag(field, 'span');
+
+    TestUtils.Simulate.click(control);
+
+    assert.equal(
+      store.getState().test.foo,
+      false);
+  });
+
+  it('should work with custom checkboxes (multi)', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { items: [1, 2, 3] }),
+    }));
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <CustomField model="test.items[]">
+          <CustomCheckbox value={1} />
+          <CustomCheckbox value={2} />
+          <CustomCheckbox value={3} />
+        </CustomField>
+      </Provider>
+    );
+
+    const fieldControls = TestUtils.scryRenderedDOMComponentsWithTag(field, 'span');
+
+    assert.deepEqual(
+      store.getState().test.items,
+      [1, 2, 3]);
+
+    TestUtils.Simulate.click(fieldControls[0]);
+
+    assert.sameMembers(
+      store.getState().test.items,
+      [2, 3]);
+
+    TestUtils.Simulate.click(fieldControls[1]);
+
+    assert.sameMembers(
+      store.getState().test.items,
+      [3]);
+
+    TestUtils.Simulate.click(fieldControls[0]);
+
+    assert.sameMembers(
+      store.getState().test.items,
+      [1, 3]);
   });
 
   it('should pass event to asyncValidator', (done) => {
@@ -292,40 +366,5 @@ describe('custom <Field /> components with createFieldClass()', () => {
     const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
     input.value = 'testing';
     TestUtils.Simulate.blur(input);
-  });
-});
-
-describe('React Native <Field /> components', () => {
-  it('should exist', () => {
-    assert.ok(NativeField);
-  });
-
-  it('should map the native field component', () => {
-    // Placeholder div, for now
-    class TextField extends Component {
-      render() {
-        return <div />;
-      }
-    }
-
-    assert.ok(<NativeField model="foo.bar"><TextField /></NativeField>);
-  });
-
-  it('should render a Form component as a View', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('test'),
-      test: modelReducer('test', { foo: 'bar' }),
-    }));
-
-    const form = TestUtils.renderIntoDocument(
-      <Provider store={store}>
-        <NativeForm model="test" />
-      </Provider>
-    );
-
-    // Placeholder div, for now
-    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'div');
-
-    assert.ok(formElement);
   });
 });

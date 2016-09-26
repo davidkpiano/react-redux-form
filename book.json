@@ -1,7 +1,14 @@
 {
   "gitbook": "3.x.x",
   "title": "React Redux Form",
-  "plugins": ["prism", "-highlight", "github"],
+  "plugins": [
+    "-highlight",
+    "-sharing",
+    "-fontsettings",
+    "github",
+    "livereload",
+    "theme-rrf"
+  ],
   "pluginsConfig": {
     "github": {
       "url": "https://github.com/davidkpiano/react-redux-form"

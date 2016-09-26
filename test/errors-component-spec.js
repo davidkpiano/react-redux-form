@@ -79,7 +79,7 @@ describe('<Errors />', () => {
 
   describe('displaying errors from field .errors', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('test', {}),
+      testForm: formReducer('test'),
       test: modelReducer('test'),
     }));
 
@@ -115,25 +115,25 @@ describe('<Errors />', () => {
 
   describe('displaying errors from form .errors', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('test', { foo: '' }),
-      test: modelReducer('test', { foo: '' }),
+      testForm: formReducer('teste', { foo: '' }),
+      teste: modelReducer('teste', { foo: '' }),
     }));
 
     let formValid = false;
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form model="teste"
           validators={{
             '': { foo: ({ foo }) => foo && foo.length },
           }}
         >
-          <Errors model="test" 
+          <Errors model="teste" 
             messages={{
               foo: 'This form is invalid',
             }}
           />
-          <Field model="test.foo">
+          <Field model="teste.foo">
             <input type="text" />
           </Field>
         </Form>
@@ -223,9 +223,9 @@ describe('<Errors />', () => {
 
       const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
 
-      assert.property(store.getState().testForm.fields.foo.errors, 'doNotShow');
+      assert.property(store.getState().testForm.foo.errors, 'doNotShow');
 
-      assert.isTrue(store.getState().testForm.fields.foo.errors.doNotShow);
+      assert.isTrue(store.getState().testForm.foo.errors.doNotShow);
 
       assert.lengthOf(errors, 1);
     });
@@ -295,6 +295,7 @@ describe('<Errors />', () => {
               validators={{
                 required: (v) => v && v.length,
               }}
+              component="section"
             >
               <input type="text" />
             </Field>
@@ -341,6 +342,7 @@ describe('<Errors />', () => {
               validators={{
                 required: (v) => v && v.length,
               }}
+              component="section"
             >
               <input type="text" />
             </Field>
@@ -453,6 +455,7 @@ describe('<Errors />', () => {
                 foo: () => false,
                 bar: () => false,
               }}
+              component="main"
             >
               <input type="text" />
             </Field>
@@ -681,6 +684,7 @@ describe('<Errors />', () => {
       );
 
       store.dispatch(actions.setErrors('test', 'this is a single error message'));
+
 
       let error;
 

@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import shallowCompare from 'react/lib/shallowCompare';
 import connect from 'react-redux/lib/components/connect';
 import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
@@ -9,13 +8,30 @@ import identity from 'lodash/identity';
 import omit from 'lodash/omit';
 
 import actions from '../actions';
-import {
-  getValidity,
-  getForm,
-  invertValidators,
-  invertValidity,
-} from '../utils';
+import getValidity from '../utils/get-validity';
+import invertValidity from '../utils/invert-validity';
+import invertValidators from '../utils/invert-validators';
+import getForm from '../utils/get-form';
+import getModel from '../utils/get-model';
 import { getField } from '../reducers/form-reducer';
+import isValid from '../form/is-valid';
+import deepCompareChildren from '../utils/deep-compare-children';
+
+const propTypes = {
+  component: PropTypes.any,
+  validators: PropTypes.object,
+  errors: PropTypes.object,
+  validateOn: PropTypes.oneOf([
+    'change',
+    'submit',
+  ]),
+  model: PropTypes.string.isRequired,
+  modelValue: PropTypes.any,
+  formValue: PropTypes.object,
+  onSubmit: PropTypes.func,
+  dispatch: PropTypes.func,
+  children: PropTypes.node,
+};
 
 class Form extends Component {
   constructor(props) {
@@ -26,6 +42,10 @@ class Form extends Component {
     this.handleValidSubmit = this.handleValidSubmit.bind(this);
     this.handleInvalidSubmit = this.handleInvalidSubmit.bind(this);
     this.attachNode = this.attachNode.bind(this);
+  }
+
+  getChildContext() {
+    return { model: this.props.model };
   }
 
   componentDidMount() {
@@ -42,8 +62,8 @@ class Form extends Component {
     this.validate(nextProps);
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return shallowCompare(this, nextProps, nextState);
+  shouldComponentUpdate(nextProps) {
+    return deepCompareChildren(this, nextProps);
   }
 
   attachNode(node) {
@@ -70,7 +90,7 @@ class Form extends Component {
     if (!formValue) return;
 
     if (!validators && !errors && (modelValue !== nextProps.modelValue)) {
-      if (!formValue.valid) {
+      if (!isValid(formValue)) {
         dispatch(actions.setValidity(model, true));
       }
 
@@ -218,9 +238,16 @@ class Form extends Component {
   }
 
   render() {
-    const { component, children } = this.props;
+    const {
+      component,
+      children,
+      formValue,
+    } = this.props;
 
-    const allowedProps = omit(this.props, Object.keys(Form.propTypes));
+    const allowedProps = omit(this.props, Object.keys(propTypes));
+    const renderableChildren = typeof children === 'function'
+      ? children(formValue)
+      : children;
 
     return React.createElement(component,
       {
@@ -228,37 +255,28 @@ class Form extends Component {
         onSubmit: this.handleSubmit,
         onReset: this.handleReset,
         ref: this.attachNode,
-      }, children);
+      }, renderableChildren);
   }
 }
 
-Form.propTypes = {
-  component: PropTypes.any,
-  validators: PropTypes.object,
-  errors: PropTypes.object,
-  validateOn: PropTypes.oneOf([
-    'change',
-    'submit',
-  ]),
-  model: PropTypes.string.isRequired,
-  modelValue: PropTypes.any,
-  formValue: PropTypes.object,
-  onSubmit: PropTypes.func,
-  dispatch: PropTypes.func,
-  children: PropTypes.node,
-};
+if (process.env.NODE_ENV !== 'production') {
+  Form.propTypes = propTypes;
+}
 
 Form.defaultProps = {
   validateOn: 'change',
   component: 'form',
 };
 
+Form.childContextTypes = {
+  model: PropTypes.any,
+};
+
 function mapStateToProps(state, { model }) {
-  const modelString = typeof model === 'function'
-    ? model(state)
-    : model;
+  const modelString = getModel(model, state);
 
   return {
+    model: modelString,
     modelValue: _get(state, modelString),
     formValue: getForm(state, modelString),
   };

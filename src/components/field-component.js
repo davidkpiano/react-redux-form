@@ -1,60 +1,34 @@
 import React, { Component, PropTypes } from 'react';
-import shallowCompare from 'react/lib/shallowCompare';
-import connect from 'react-redux/lib/components/connect';
 
 import _get from '../utils/get';
 import identity from 'lodash/identity';
 import omit from 'lodash/omit';
+import isPlainObject from 'lodash/isPlainObject';
 import pick from 'lodash/pick';
+import connect from 'react-redux/lib/components/connect';
 
 import actions from '../actions';
 import Control from './control-component';
-import { isMulti } from '../utils';
-
-const {
-  change,
-} = actions;
-
-function mapStateToProps(state, { model }) {
-  const modelString = typeof model === 'function'
-    ? model(state)
-    : model;
-
-  return {
-    model: modelString,
-  };
-}
-
-function isChecked(props) {
-  if (isMulti(props.model)) {
-    return (props.modelValue || [])
-      .filter((item) =>
-        item === props.value)
-      .length;
-  }
-
-  return !!props.modelValue;
-}
-
-function getTextValue(value) {
-  if (typeof value === 'string' || typeof value === 'number') {
-    return `${value}`;
-  }
-
-  return '';
-}
+import controlPropsMap from '../constants/control-props-map';
+import deepCompareChildren from '../utils/deep-compare-children';
+import shallowCompareWithoutChildren from '../utils/shallow-compare-without-children';
+import getModel from '../utils/get-model';
+import getFieldFromState from '../utils/get-field-from-state';
+import resolveModel from '../utils/resolve-model';
 
 const fieldPropTypes = {
-  model: PropTypes.string.isRequired,
+  model: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.string,
+  ]).isRequired,
   component: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.string,
   ]),
   parser: PropTypes.func,
-  updateOn: PropTypes.oneOf([
-    'change',
-    'blur',
-    'focus',
+  updateOn: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
   ]),
   changeAction: PropTypes.func,
   validators: PropTypes.oneOfType([
@@ -62,69 +36,58 @@ const fieldPropTypes = {
     PropTypes.object,
   ]),
   asyncValidators: PropTypes.object,
-  validateOn: PropTypes.string,
-  asyncValidateOn: PropTypes.string,
+  validateOn: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
+  ]),
+  asyncValidateOn: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.string),
+    PropTypes.string,
+  ]),
   errors: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.object,
   ]),
-  mapProps: PropTypes.func,
+  mapProps: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.object,
+  ]),
   componentMap: PropTypes.object,
+  dynamic: PropTypes.bool,
   dispatch: PropTypes.func,
   getter: PropTypes.func,
+
+  // Calculated props
+  fieldValue: PropTypes.object,
 };
 
-const controlPropsMap = {
-  default: (props) => controlPropsMap.text(props),
-  checkbox: (props) => ({
-    name: props.name || props.model,
-    checked: props.defaultChecked
-      ? props.checked
-      : isChecked(props),
-    ...props,
-  }),
-  radio: (props) => ({
-    name: props.name || props.model,
-    checked: props.defaultChecked
-      ? props.checked
-      : props.modelValue === props.value,
-    value: props.value,
-    ...props,
-  }),
-  select: (props) => ({
-    name: props.name || props.model,
-    value: props.modelValue,
-    ...props,
-  }),
-  text: (props) => ({
-    value: props.updateOn === 'change'
-      && !props.defaultValue
-      && !props.hasOwnProperty('value')
-      ? getTextValue(props.modelValue)
-      : props.value,
-    name: props.name || props.model,
-    ...props,
-  }),
-  file: (props) => ({
-    name: props.name || props.model,
-    ...props,
-  }),
-  textarea: (props) => controlPropsMap.text(props),
-  reset: (props) => ({
-    onClick: (event) => {
-      event.preventDefault();
+function mapStateToProps(state, props) {
+  const {
+    model,
+  } = props;
 
-      props.dispatch(actions.reset(props.model));
-    },
-  }),
-};
+  const modelString = getModel(model, state);
+  const fieldValue = getFieldFromState(state, modelString);
+
+  return {
+    model: modelString,
+    fieldValue,
+  };
+}
 
 function getControlType(control, props, options) {
-  const { componentMap } = props;
   const { controlPropsMap: _controlPropsMap } = options;
 
-  const controlDisplayNames = Object.keys(componentMap).filter(
-    (controlName) => control.type === componentMap[controlName]);
+  const controlDisplayNames = Object.keys(_controlPropsMap)
+    .filter((controlKey) => {
+      const propsMap = _controlPropsMap[controlKey];
+
+      if (isPlainObject(propsMap) && propsMap.component) {
+        return control.type === propsMap.component;
+      }
+
+      return false;
+    });
 
   if (controlDisplayNames.length) return controlDisplayNames[0];
 
@@ -144,75 +107,6 @@ function getControlType(control, props, options) {
   }
 }
 
-/* eslint-disable no-use-before-define */
-function mapFieldChildrenToControl(children, props, options) {
-  if (React.Children.count(children) > 1) {
-    return React.Children.map(
-      children,
-      (child) => createFieldControlComponent(
-        child,
-        {
-          ...props,
-          ...(child && child.props
-            ? child.props
-            : {}),
-        },
-        options
-      )
-    );
-  }
-
-  return createFieldControlComponent(children, props, options);
-}
-
-function createFieldControlComponent(control, props, options) {
-  if (!control
-    || !control.props
-    || control instanceof Control) {
-    return control;
-  }
-
-  /* eslint-disable react/prop-types */
-  const {
-    mapProps = options.controlPropsMap[getControlType(control, props, options)],
-  } = props;
-
-  // const controlProps = omit(props, ['children', 'className']);
-  const controlProps = pick(props, Object.keys(fieldPropTypes));
-
-  if (!mapProps) {
-    return React.cloneElement(
-      control,
-      null,
-      mapFieldChildrenToControl(control.props.children, props, options)
-    );
-  }
-
-  return (
-    <Control
-      {...controlProps}
-      control={control}
-      controlProps={control.props}
-      component={control.type}
-      mapProps={mapProps}
-    />
-  );
-  /* eslint-enable react/prop-types */
-}
-/* eslint-enable no-use-before-define */
-
-function getFieldWrapper(props) {
-  if (props.component) {
-    return props.component;
-  }
-
-  if (props.className || (props.children && props.children.length > 1)) {
-    return 'div';
-  }
-
-  return null;
-}
-
 function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
   const options = {
     controlPropsMap: {
@@ -222,46 +116,99 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
   };
 
   class Field extends Component {
-    shouldComponentUpdate(nextProps, nextState) {
-      return shallowCompare(this, nextProps, nextState);
+    shouldComponentUpdate(nextProps) {
+      const { dynamic } = this.props;
+
+      if (dynamic) {
+        return deepCompareChildren(this, nextProps);
+      }
+
+      return shallowCompareWithoutChildren(this, nextProps);
+    }
+
+    createControlComponent(control) {
+      const { props } = this;
+
+      if (!control
+        || !control.props
+        || control instanceof Control) {
+        return control;
+      }
+
+      const controlType = getControlType(control, props, options);
+      const {
+        mapProps = options.controlPropsMap[controlType],
+      } = props;
+
+      const controlProps = pick(props, Object.keys(fieldPropTypes));
+
+      if (!mapProps) {
+        return React.cloneElement(
+          control,
+          null,
+          this.mapChildrenToControl(control.props.children)
+        );
+      }
+
+      return (
+        <Control
+          {...controlProps}
+          control={control}
+          controlProps={control.props}
+          component={control.type}
+          mapProps={mapProps}
+        />
+      );
+    }
+
+    mapChildrenToControl(children) {
+      if (React.Children.count(children) > 1) {
+        return React.Children.map(
+          children,
+          (child) => this.createControlComponent(child));
+      }
+
+      return this.createControlComponent(children);
     }
 
     render() {
       const { props } = this;
-      const component = getFieldWrapper(props);
+      const {
+        component,
+        children, // eslint-disable-line react/prop-types
+        fieldValue,
+      } = props;
+
 
       const allowedProps = omit(props, Object.keys(fieldPropTypes));
+      const renderableChildren = typeof children === 'function'
+        ? children(fieldValue)
+        : children;
 
-      if (component) {
-        return React.createElement(
-          component,
-          allowedProps,
-          React.Children.map(
-            props.children,
-            child => createFieldControlComponent(child, props, options))
-        );
-      }
-
-      return createFieldControlComponent(
-        React.Children.only(props.children),
-        props,
-        options);
+      return React.createElement(
+        component,
+        allowedProps,
+        React.Children.map(
+          renderableChildren,
+          (child) => this.createControlComponent(child)));
     }
   }
 
-  Field.propTypes = fieldPropTypes;
+  if (process.env.NODE_ENV !== 'production') {
+    Field.propTypes = fieldPropTypes;
+  }
 
   Field.defaultProps = {
     updateOn: 'change',
-    validateOn: 'change',
     asyncValidateOn: 'blur',
     parser: identity,
-    changeAction: change,
-    componentMap: {},
+    changeAction: actions.change,
+    dynamic: true,
+    component: 'div',
     ...defaultProps,
   };
 
-  return connect(mapStateToProps)(Field);
+  return resolveModel(connect(mapStateToProps)(Field));
 }
 
 export {

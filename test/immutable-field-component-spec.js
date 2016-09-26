@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
-import { formReducer, actions } from '../src';
+import { actions, formReducer } from '../src';
 import {
   modelReducer as immutableModelReducer,
   Field as ImmutableField,

@@ -16,14 +16,13 @@ function flatten(data) {
     } else {
       let isEmpty = true;
 
-      for (const key in cur) {
-        if (Object.hasOwnProperty.call(cur, key)) {
-          isEmpty = false;
-          recurse(cur[key], prop
-            ? [prop, key].join(delimiter)
-            : key);
-        }
-      }
+      Object.keys(cur).forEach((key) => {
+        isEmpty = false;
+        recurse(cur[key], prop
+          ? [prop, key].join(delimiter)
+          : key);
+      });
+
       if (isEmpty) result[prop] = {};
     }
   }

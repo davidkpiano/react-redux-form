@@ -1,31 +1,23 @@
 import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
+import createTestStore from 'redux-test-store';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
 import { actions, actionTypes, formReducer, initialFieldState } from '../src';
+import isValid from '../src/form/is-valid';
+import isPristine from '../src/form/is-pristine';
+import isRetouched from '../src/form/is-retouched';
 
 describe('field actions', () => {
-  describe('setViewValue()', () => {
-    it('should set the view value of the field', () => {
-      const reducer = formReducer('test');
-
-      assert.containSubset(
-        reducer(undefined, actions.setViewValue('test.foo', 'bar'))
-          .fields.foo,
-        {
-          viewValue: 'bar',
-        });
-    });
-  });
-
   describe('change()', () => {
     it('should set the retouched property to true upon change after submit', () => {
-      const reducer = formReducer('test');
+      const reducer = formReducer('test', { foo: '' });
       const state = reducer(undefined, actions.setSubmitted('test'));
 
       assert.containSubset(
-        state,
+        state.$form,
         {
           submitted: true,
           retouched: false,
@@ -34,14 +26,15 @@ describe('field actions', () => {
       const changedState = reducer(state, actions.change('test.foo', 'new'));
 
       assert.containSubset(
-        changedState,
+        changedState.$form,
         {
           submitted: true,
-          retouched: true,
-        }, 'form retouched after submit');
+        });
+
+      assert.isTrue(isRetouched(changedState), 'form retouched after submit');
 
       assert.containSubset(
-        changedState.fields.foo,
+        changedState.foo,
         {
           retouched: true,
         }, 'field retouched after submit');
@@ -54,7 +47,7 @@ describe('field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.reset('test.foo'))
-          .fields.foo,
+          .foo,
         initialFieldState);
     });
 
@@ -64,7 +57,7 @@ describe('field actions', () => {
       const localInitialFormState = reducer(undefined, 'BOGUS / INITIAL STATE');
 
       assert.containSubset(
-        reducer({ modified: 'form' }, actions.reset('test')),
+        reducer(undefined, actions.reset('test')),
         localInitialFormState);
     });
 
@@ -76,14 +69,14 @@ describe('field actions', () => {
         required: true,
       }));
 
-      assert.deepEqual(stateWithErrors.fields.foo.errors, {
+      assert.deepEqual(stateWithErrors.foo.errors, {
         valid: true,
         required: false,
       });
 
       const stateAfterReset = reducer(stateWithErrors, actions.reset('test.foo'));
 
-      assert.deepEqual(stateAfterReset.fields.foo.errors, {});
+      assert.deepEqual(stateAfterReset.foo.errors, {});
     });
 
     it('should reset all errors on the form', () => {
@@ -94,95 +87,80 @@ describe('field actions', () => {
         required: true,
       }));
 
-      assert.deepEqual(stateWithErrors.errors, {
+      assert.deepEqual(stateWithErrors.$form.errors, {
         valid: true,
         required: false,
       });
 
-      assert.deepEqual(stateWithErrors.validity, {
+      assert.deepEqual(stateWithErrors.$form.validity, {
         valid: false,
         required: true,
       });
 
       const stateAfterReset = reducer(stateWithErrors, actions.reset('test'));
 
-      assert.deepEqual(stateAfterReset.errors, {});
+      assert.deepEqual(stateAfterReset.$form.errors, {});
     });
   });
 
   describe('focus()', () => {
-    it('should set the focus state of the field to true and the blur state to false', () => {
+    it('should set the focus state of the field to true', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.focus('test.foo'))
-          .fields.foo,
+          .foo,
         {
           focus: true,
-          blur: false,
         });
     });
   });
 
   describe('blur()', () => {
-    it('should set the blur state of the field to true and the focus state to false', () => {
+    it('should set the focus state to false', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.blur('test.foo'))
-          .fields.foo,
+          .foo,
         {
-          blur: true,
           focus: false,
           touched: true,
-          untouched: false,
         });
     });
   });
 
   describe('setPristine()', () => {
-    it('should set the pristine state of the field to true and the dirty state to false', () => {
+    it('should set the pristine state of the field to true', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setPristine('test.foo'))
-          .fields.foo,
+          .foo,
         {
           pristine: true,
-          dirty: false,
         });
     });
 
-    it('should set the pristine state of the form to true and the dirty state to false if every ' +
+    it('should set the pristine state of the form to true if every ' +
       'field is pristine', () => {
       const reducer = formReducer('test');
 
       const actualPristine = reducer(undefined, actions.setPristine('test.foo'));
 
       assert.containSubset(
-        actualPristine,
+        actualPristine.$form,
         {
           pristine: true,
-          dirty: false,
         });
 
       const actualDirty = reducer(actualPristine, actions.setDirty('test.bar'));
 
-      assert.containSubset(
-        actualDirty,
-        {
-          pristine: false,
-          dirty: true,
-        });
+      assert.isFalse(isPristine(actualDirty));
 
       const actualMultiplePristine = reducer(actualDirty, actions.setPristine('test.bar'));
 
-      assert.containSubset(
-        actualMultiplePristine,
-        {
-          pristine: true,
-          dirty: false,
-        });
+      assert.isTrue(isPristine(actualMultiplePristine));
     });
 
     it('should be able to set the pristine state of the form and each field to true', () => {
@@ -190,45 +168,36 @@ describe('field actions', () => {
 
       const dirtyFormAndField = reducer(undefined, actions.setDirty('test.foo'));
 
-      assert.containSubset(
-        reducer(dirtyFormAndField, actions.setPristine('test')),
-        {
-          pristine: true,
-          dirty: false,
-        });
+      const pristineFormAndField = reducer(dirtyFormAndField, actions.setPristine('test'));
+
+      assert.isTrue(isPristine(pristineFormAndField));
 
       assert.containSubset(
-        reducer(dirtyFormAndField, actions.setPristine('test'))
-          .fields.foo,
+        pristineFormAndField.foo,
         {
           pristine: true,
-          dirty: false,
         });
     });
   });
 
   describe('setDirty()', () => {
-    it('should set dirty state of field to true & pristine state to false', () => {
+    it('should set pristine state to false', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setDirty('test.foo'))
-          .fields.foo,
+          .foo,
         {
-          dirty: true,
           pristine: false,
         });
     });
 
-    it('should set dirty state of form to true & pristine state to false', () => {
+    it('should set pristine form state to false', () => {
       const reducer = formReducer('test');
 
-      assert.containSubset(
-        reducer(undefined, actions.setDirty('test.foo')),
-        {
-          dirty: true,
-          pristine: false,
-        });
+      const actual = reducer(undefined, actions.setDirty('test.foo'));
+
+      assert.isFalse(isPristine(actual));
     });
   });
 
@@ -238,7 +207,7 @@ describe('field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setPending('test.foo'))
-          .fields.foo,
+          .foo,
         {
           pending: true,
           submitted: false,
@@ -252,7 +221,7 @@ describe('field actions', () => {
 
       assert.containSubset(
         actualPending
-          .fields.foo,
+          .foo,
         {
           pending: true,
           submitted: false,
@@ -262,7 +231,7 @@ describe('field actions', () => {
 
       assert.containSubset(
         actualNotPending
-          .fields.foo,
+          .foo,
         {
           pending: false,
           submitted: false,
@@ -275,17 +244,81 @@ describe('field actions', () => {
       const actualPending = reducer(undefined, actions.setPending('test'));
 
       assert.containSubset(
-        actualPending,
+        actualPending.$form,
         {
           pending: true,
           submitted: false,
         });
 
       assert.containSubset(
-        reducer(actualPending, actions.setPending('test', false)),
+        reducer(actualPending, actions.setPending('test', false))
+          .$form,
         {
           pending: false,
           submitted: false,
+        });
+    });
+  });
+
+  describe('setValidating()', () => {
+    it('should set the validating state of the field to true', () => {
+      const reducer = formReducer('test');
+
+      assert.containSubset(
+        reducer(undefined, actions.setValidating('test.foo'))
+          .foo,
+        {
+          validating: true,
+          validated: false,
+        });
+    });
+
+    it('should set the validating state of the field to the specified state', () => {
+      const reducer = formReducer('test');
+
+      const actualValidating = reducer(
+        undefined,
+        actions.setValidating('test.foo', true));
+
+      assert.containSubset(
+        actualValidating
+          .foo,
+        {
+          validating: true,
+          validated: false,
+        });
+
+      const actualNotValidating = reducer(
+        actualValidating,
+        actions.setValidating('test.foo', false));
+
+      assert.containSubset(
+        actualNotValidating
+          .foo,
+        {
+          validating: false,
+          validated: true,
+        });
+    });
+
+    it('should work with forms', () => {
+      const reducer = formReducer('test');
+
+      const actualValidating = reducer(undefined, actions.setValidating('test'));
+
+      assert.containSubset(
+        actualValidating.$form,
+        {
+          validating: true,
+          validated: false,
+        });
+
+      assert.containSubset(
+        reducer(actualValidating, actions.setValidating('test', false))
+          .$form,
+        {
+          validating: false,
+          validated: true,
         });
     });
   });
@@ -296,7 +329,7 @@ describe('field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setSubmitted('test.foo'))
-          .fields.foo,
+          .foo,
         {
           submitted: true,
           pending: false,
@@ -311,7 +344,7 @@ describe('field actions', () => {
 
       assert.containSubset(
         actualSubmitted
-          .fields.foo,
+          .foo,
         {
           submitted: true,
           pending: false,
@@ -322,7 +355,7 @@ describe('field actions', () => {
 
       assert.containSubset(
         actualNotSubmitted
-          .fields.foo,
+          .foo,
         {
           submitted: false,
           pending: false,
@@ -336,7 +369,7 @@ describe('field actions', () => {
       const actualSubmitted = reducer(undefined, actions.setSubmitted('test', true));
 
       assert.containSubset(
-        actualSubmitted,
+        actualSubmitted.$form,
         {
           submitted: true,
           pending: false,
@@ -345,7 +378,7 @@ describe('field actions', () => {
       const actualNotSubmitted = reducer(actualSubmitted, actions.setSubmitted('test', false));
 
       assert.containSubset(
-        actualNotSubmitted,
+        actualNotSubmitted.$form,
         {
           submitted: false,
           pending: false,
@@ -358,7 +391,8 @@ describe('field actions', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
-        reducer(undefined, actions.setSubmitFailed('test')),
+        reducer(undefined, actions.setSubmitFailed('test'))
+          .$form,
         {
           submitFailed: true,
           submitted: false,
@@ -371,7 +405,8 @@ describe('field actions', () => {
       const state = reducer(undefined, actions.setSubmitFailed('test'));
 
       assert.containSubset(
-        reducer(state, actions.setSubmitted('test')),
+        reducer(state, actions.setSubmitted('test'))
+          .$form,
         {
           submitFailed: false,
           submitted: true,
@@ -384,7 +419,8 @@ describe('field actions', () => {
       const state = reducer(undefined, actions.setSubmitFailed('test'));
 
       assert.containSubset(
-        reducer(state, actions.setPending('test')),
+        reducer(state, actions.setPending('test'))
+          .$form,
         {
           submitFailed: false,
           submitted: false,
@@ -397,7 +433,8 @@ describe('field actions', () => {
       let state = reducer(undefined, actions.setPending('test'));
 
       assert.containSubset(
-        reducer(state, actions.setSubmitFailed('test')),
+        reducer(state, actions.setSubmitFailed('test'))
+          .$form,
         {
           submitFailed: true,
           submitted: false,
@@ -407,7 +444,8 @@ describe('field actions', () => {
       state = reducer(state, actions.setSubmitted('test'));
 
       assert.containSubset(
-        reducer(state, actions.setSubmitFailed('test')),
+        reducer(state, actions.setSubmitFailed('test'))
+          .$form,
         {
           submitFailed: true,
           submitted: false,
@@ -423,13 +461,11 @@ describe('field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setTouched('test.foo'))
-          .fields.foo,
+          .foo,
         {
           touched: true,
-          untouched: false,
           retouched: false,
           focus: false,
-          blur: true,
         });
     });
 
@@ -438,14 +474,15 @@ describe('field actions', () => {
       const state = reducer(undefined, actions.setSubmitted('test'));
 
       assert.containSubset(
-        state,
+        state.$form,
         {
           submitted: true,
           retouched: false,
         }, 'not retouched yet');
 
       assert.containSubset(
-        reducer(state, actions.setTouched('test')),
+        reducer(state, actions.setTouched('test'))
+          .$form,
         {
           submitted: true,
           retouched: true,
@@ -457,7 +494,7 @@ describe('field actions', () => {
       const state = reducer(undefined, actions.setSubmitFailed('test'));
 
       assert.containSubset(
-        state,
+        state.$form,
         {
           submitted: false,
           submitFailed: true,
@@ -465,7 +502,8 @@ describe('field actions', () => {
         }, 'not retouched yet');
 
       assert.containSubset(
-        reducer(state, actions.setTouched('test')),
+        reducer(state, actions.setTouched('test'))
+          .$form,
         {
           submitted: false,
           submitFailed: true,
@@ -480,7 +518,7 @@ describe('field actions', () => {
       state = reducer(state, actions.setTouched('test'));
 
       assert.containSubset(
-        state,
+        state.$form,
         {
           submitted: true,
           retouched: true,
@@ -489,7 +527,7 @@ describe('field actions', () => {
       state = reducer(state, actions.setPending('test'));
 
       assert.containSubset(
-        state,
+        state.$form,
         {
           pending: true,
           submitted: false,
@@ -499,14 +537,13 @@ describe('field actions', () => {
   });
 
   describe('setUntouched()', () => {
-    it('should set the untouched state of the field to true and the touched state to false', () => {
+    it('should set the touched state to false', () => {
       const reducer = formReducer('test');
 
       assert.containSubset(
         reducer(undefined, actions.setUntouched('test.foo'))
-          .fields.foo,
+          .foo,
         {
-          untouched: true,
           touched: false,
         });
     });
@@ -518,14 +555,14 @@ describe('field actions', () => {
 
       assert.containSubset(
         reducer(undefined, actions.setValidity('test.foo', true))
-          .fields.foo,
+          .foo,
         {
           errors: false,
         });
 
       assert.containSubset(
         reducer(undefined, actions.setValidity('test.foo', false))
-          .fields.foo,
+          .foo,
         {
           errors: true,
         });
@@ -542,7 +579,7 @@ describe('field actions', () => {
 
         assert.containSubset(
           reducer(undefined, actions.setValidity('test.foo', validity))
-            .fields.foo,
+            .foo,
           {
             errors: {
               good: false,
@@ -561,17 +598,9 @@ describe('field actions', () => {
 
       const actualForm = reducer(undefined, actions.setValidity('test.foo', validity));
 
-      assert.containSubset(
-        actualForm.fields.foo,
-        {
-          valid: true,
-        });
+      assert.isTrue(isValid(actualForm.foo));
 
-      assert.containSubset(
-        actualForm,
-        {
-          valid: true,
-        }, 'form should be valid if all fields are valid');
+      assert.isTrue(isValid(actualForm), 'form should be valid if all fields are valid');
     });
 
     it('should set the valid state to false if any value in validity object are false', () => {
@@ -585,17 +614,9 @@ describe('field actions', () => {
 
       const actualForm = reducer(undefined, actions.setValidity('test.foo', validity));
 
-      assert.containSubset(
-        actualForm.fields.foo,
-        {
-          valid: false,
-        });
+      assert.isFalse(isValid(actualForm.foo));
 
-      assert.containSubset(
-        actualForm,
-        {
-          valid: false,
-        }, 'form should be invalid if any fields are invalid');
+      assert.isFalse(isValid(actualForm), 'form should be invalid if any fields are invalid');
     });
 
     it('should be able to set the validity of a form', () => {
@@ -611,14 +632,15 @@ describe('field actions', () => {
         actions.setValidity('test', validity));
 
       assert.containSubset(
-        actual,
+        actual.$form,
         {
-          valid: false,
           errors: {
             foo: false,
             baz: true,
           },
         });
+
+      assert.isFalse(isValid(actual));
     });
 
     it('should be able to set the validity to a non-boolean value', () => {
@@ -634,9 +656,8 @@ describe('field actions', () => {
         actions.setValidity('test', validity));
 
       assert.containSubset(
-        actual,
+        actual.$form,
         {
-          valid: false,
           validity: {
             foo: 'truthy string',
             baz: null,
@@ -647,14 +668,15 @@ describe('field actions', () => {
           },
         });
 
+      assert.isFalse(isValid(actual));
+
       actual = reducer(actual, actions.setValidity('test', {
         foo: false,
       }));
 
       assert.containSubset(
-        actual,
+        actual.$form,
         {
-          valid: false,
           validity: {
             foo: false,
           },
@@ -663,15 +685,16 @@ describe('field actions', () => {
           },
         });
 
+      assert.isFalse(isValid(actual));
+
       actual = reducer(actual, actions.setValidity('test', {
         foo: 'truthy string',
         baz: 100,
       }));
 
       assert.containSubset(
-        actual,
+        actual.$form,
         {
-          valid: true,
           validity: {
             foo: 'truthy string',
             baz: 100,
@@ -681,6 +704,8 @@ describe('field actions', () => {
             baz: false,
           },
         });
+
+      assert.isTrue(isValid(actual));
     });
 
     it('should overwrite the previous validity', () => {
@@ -695,7 +720,7 @@ describe('field actions', () => {
         actions.setValidity('test', oldValidity));
 
       assert.deepEqual(
-        oldState.validity,
+        oldState.$form.validity,
         oldValidity);
 
       const newValidity = {
@@ -708,11 +733,11 @@ describe('field actions', () => {
         actions.setValidity('test', newValidity));
 
       assert.deepEqual(
-        newState.validity,
+        newState.$form.validity,
         newValidity);
 
       assert.deepEqual(
-        newState.errors,
+        newState.$form.errors,
         {
           foo: false,
           bar: true,
@@ -724,23 +749,27 @@ describe('field actions', () => {
     it('should set the errors state of the field', () => {
       const reducer = formReducer('test');
 
+      const actualInvalid = reducer(undefined, actions.setErrors('test.foo', true));
+
       assert.containSubset(
-        reducer(undefined, actions.setErrors('test.foo', true))
-          .fields.foo,
+        actualInvalid.foo,
         {
           errors: true,
           validity: false,
-          valid: false,
         });
 
+      assert.isFalse(isValid(actualInvalid.foo));
+
+      const actualValid = reducer(undefined, actions.setErrors('test.foo', false));
+
       assert.containSubset(
-        reducer(undefined, actions.setErrors('test.foo', false))
-          .fields.foo,
+        actualValid.foo,
         {
           errors: false,
           validity: true,
-          valid: true,
         });
+
+      assert.isTrue(isValid(actualValid.foo));
     });
 
     it('should set the errors state of the field', () => {
@@ -751,20 +780,22 @@ describe('field actions', () => {
         bad: false,
       };
 
+      const actual = reducer(undefined, actions.setErrors('test.foo', errors));
+
       assert.containSubset(
-        reducer(undefined, actions.setErrors('test.foo', errors))
-          .fields.foo,
+        actual.foo,
         {
           errors: {
             good: true,
             bad: false,
           },
-          valid: false,
           validity: {
             good: false,
             bad: true,
           },
         });
+
+      assert.isFalse(isValid(actual.foo));
     });
 
     it('should set the valid state to true if all values in error object are false', () => {
@@ -779,9 +810,8 @@ describe('field actions', () => {
       const actualForm = reducer(undefined, actions.setErrors('test.foo', errors));
 
       assert.containSubset(
-        actualForm.fields.foo,
+        actualForm.foo,
         {
-          valid: true,
           validity: {
             one: true,
             two: true,
@@ -789,11 +819,10 @@ describe('field actions', () => {
           },
         });
 
-      assert.containSubset(
-        actualForm,
-        {
-          valid: true,
-        }, 'form should be valid if all fields are valid');
+      assert.isTrue(isValid(actualForm.foo));
+
+      assert.isTrue(isValid(actualForm),
+        'form should be valid if all fields are valid');
     });
 
     it('should set the valid state to false if any value in error object is true', () => {
@@ -808,9 +837,8 @@ describe('field actions', () => {
       const actualForm = reducer(undefined, actions.setErrors('test.foo', errors));
 
       assert.containSubset(
-        actualForm.fields.foo,
+        actualForm.foo,
         {
-          valid: false,
           errors: {
             one: true,
             two: false,
@@ -823,11 +851,10 @@ describe('field actions', () => {
           },
         });
 
-      assert.containSubset(
-        actualForm,
-        {
-          valid: false,
-        }, 'form should be invalid if any fields are invalid');
+      assert.isFalse(isValid(actualForm.foo));
+
+      assert.isFalse(isValid(actualForm),
+        'form should be invalid if any fields are invalid');
     });
 
     it('should be able to set the errors of a form', () => {
@@ -843,14 +870,15 @@ describe('field actions', () => {
         actions.setErrors('test', errors));
 
       assert.containSubset(
-        actual,
+        actual.$form,
         {
-          valid: false,
           errors: {
             foo: true,
             baz: false,
           },
         });
+
+      assert.isFalse(isValid(actual));
     });
 
     it('should be able to set the errors to an object', () => {
@@ -866,9 +894,8 @@ describe('field actions', () => {
         actions.setErrors('test', errors));
 
       assert.containSubset(
-        actual,
+        actual.$form,
         {
-          valid: false,
           validity: {
             foo: false,
             baz: true,
@@ -879,14 +906,15 @@ describe('field actions', () => {
           },
         });
 
+      assert.isFalse(isValid(actual));
+
       actual = reducer(actual, actions.setErrors('test', {
         foo: false,
       }));
 
       assert.containSubset(
-        actual,
+        actual.$form,
         {
-          valid: true,
           validity: {
             foo: true,
           },
@@ -895,15 +923,16 @@ describe('field actions', () => {
           },
         });
 
+      assert.isTrue(isValid(actual));
+
       actual = reducer(actual, actions.setErrors('test', {
         foo: 'foo is required',
         baz: 'baz is also required',
       }));
 
       assert.containSubset(
-        actual,
+        actual.$form,
         {
-          valid: false,
           validity: {
             foo: false,
             baz: false,
@@ -913,6 +942,8 @@ describe('field actions', () => {
             baz: 'baz is also required',
           },
         });
+
+      assert.isFalse(isValid(actual));
     });
 
     it('should be able to set the errors to a string', () => {
@@ -926,52 +957,52 @@ describe('field actions', () => {
         actions.setErrors('test', errors));
 
       assert.containSubset(
-        actual,
+        actual.$form,
         {
           errors,
-          valid: false,
           validity: false,
         });
+
+      assert.isFalse(isValid(actual));
 
       actual = reducer(
         actual,
         actions.setErrors('test', false));
 
       assert.containSubset(
-        actual,
+        actual.$form,
         {
           errors: false,
-          valid: true,
           validity: true,
         });
+
+      assert.isTrue(isValid(actual));
 
       let actualField = reducer(
         undefined,
         actions.setErrors('test.foo', fieldErrors));
 
       assert.containSubset(
-        actualField.fields.foo,
+        actualField.foo,
         {
           errors: fieldErrors,
-          valid: false,
           validity: false,
         });
 
-      assert.isFalse(actualField.valid);
+      assert.isFalse(isValid(actualField));
 
       actualField = reducer(
         actualField,
         actions.setErrors('test.foo', false));
 
       assert.containSubset(
-        actualField.fields.foo,
+        actualField.foo,
         {
           errors: false,
-          valid: true,
           validity: true,
         });
 
-      assert.isTrue(actualField.valid);
+      assert.isTrue(isValid(actualField));
     });
   });
 
@@ -984,24 +1015,26 @@ describe('field actions', () => {
         actions.setErrors('test.foo', { bar: true, baz: true }));
 
       assert.containSubset(
-        stateWithErrors.fields.foo,
+        stateWithErrors.foo,
         {
-          valid: false,
           validity: { bar: false, baz: false },
           errors: { bar: true, baz: true },
         });
+
+      assert.isFalse(isValid(stateWithErrors.foo));
 
       const actualState = reducer(
         stateWithErrors,
         actions.resetValidity('test.foo'));
 
       assert.containSubset(
-        actualState.fields.foo,
+        actualState.foo,
         {
-          valid: true,
           validity: {},
           errors: {},
         });
+
+      assert.isTrue(isValid(actualState.foo));
     });
 
     it('should reset the validity and errors of a form', () => {
@@ -1014,48 +1047,49 @@ describe('field actions', () => {
         actions.setErrors('test.bar', { foo: true, baz: true }));
 
       assert.containSubset(
-        stateWithMoreErrors.fields.foo,
+        stateWithMoreErrors.foo,
         {
-          valid: false,
           validity: { bar: false, baz: false },
           errors: { bar: true, baz: true },
         });
 
+      assert.isFalse(isValid(stateWithMoreErrors.foo));
+
       assert.containSubset(
-        stateWithMoreErrors.fields.bar,
+        stateWithMoreErrors.bar,
         {
-          valid: false,
           validity: { foo: false, baz: false },
           errors: { foo: true, baz: true },
         });
+
+      assert.isFalse(isValid(stateWithMoreErrors.bar));
 
       const actualState = reducer(
         stateWithMoreErrors,
         actions.resetValidity('test'));
 
+      assert.deepEqual(actualState.foo.validity, {});
+      assert.deepEqual(actualState.foo.errors, {});
+
+      assert.isTrue(isValid(actualState));
+
       assert.containSubset(
-        actualState,
+        actualState.foo,
         {
-          valid: true,
           validity: {},
           errors: {},
         });
 
+      assert.isTrue(isValid(actualState.foo));
+
       assert.containSubset(
-        actualState.fields.foo,
+        actualState.bar,
         {
-          valid: true,
           validity: {},
           errors: {},
         });
 
-      assert.containSubset(
-        actualState.fields.bar,
-        {
-          valid: true,
-          validity: {},
-          errors: {},
-        });
+      assert.isTrue(isValid(actualState.bar));
     });
 
     it('should be aliased to resetErrors()', () => {
@@ -1067,13 +1101,10 @@ describe('field actions', () => {
         stateWithErrors,
         actions.resetErrors('test.foo'));
 
-      assert.containSubset(
-        actualState.fields.foo,
-        {
-          valid: true,
-          validity: {},
-          errors: {},
-        });
+      assert.deepEqual(actualState.foo.validity, {});
+      assert.deepEqual(actualState.foo.errors, {});
+
+      assert.isTrue(isValid(actualState.foo));
     });
   });
 
@@ -1081,17 +1112,21 @@ describe('field actions', () => {
     it('should asynchronously call setValidity() action', (testDone) => {
       const reducer = formReducer('test');
       const dispatch = action => {
-        if (action.type === actionTypes.BATCH) {
-          testDone(assert.containSubset(
-            reducer(undefined, action)
-              .fields.foo,
+        if (action.type === actionTypes.SET_VALIDITY) {
+          const actual = reducer(undefined, action);
+
+          assert.isFalse(isValid(actual));
+
+          assert.containSubset(
+            actual.foo,
             {
-              valid: false,
               errors: {
                 good: false,
                 bad: true,
               },
-            }));
+            });
+
+          testDone();
         }
       };
 
@@ -1110,16 +1145,21 @@ describe('field actions', () => {
     it('should work with forms to asynchronously call setValidity() action', testDone => {
       const reducer = formReducer('test');
       const dispatch = action => {
-        if (action.type === actionTypes.BATCH) {
-          testDone(assert.containSubset(
-            reducer(undefined, action),
+        if (action.type === actionTypes.SET_VALIDITY) {
+          const actual = reducer(undefined, action);
+
+          assert.containSubset(
+            actual.$form,
             {
-              valid: false,
               errors: {
                 good: false,
                 bad: true,
               },
-            }));
+            });
+
+          assert.isFalse(isValid(actual));
+
+          testDone();
         }
       };
 
@@ -1135,9 +1175,9 @@ describe('field actions', () => {
       actions.asyncSetValidity('test', validator)(dispatch, getState);
     });
 
-    it('should set pending to true for a field when validating, and false when done validating',
+    it('should set validating to true for a field when validating, and false when done validating',
       testDone => {
-        const pendingStates = [];
+        const validatingStates = [];
         const executedActions = [];
 
         const reducer = formReducer('test');
@@ -1145,15 +1185,15 @@ describe('field actions', () => {
           executedActions.push(action);
           const state = reducer(undefined, action);
 
-          if (action.type === actionTypes.SET_PENDING) {
-            pendingStates.push(action.pending);
+          if (action.type === actionTypes.SET_VALIDATING) {
+            validatingStates.push(action.validating);
 
-            assert.equal(state.fields.foo.pending, action.pending);
-          } else if (action.type === actionTypes.BATCH) {
-            pendingStates.push(state.fields.foo.pending);
+            assert.equal(state.foo.validating, action.validating);
+          } else if (action.type === actionTypes.SET_VALIDITY) {
+            validatingStates.push(state.foo.validating);
 
             testDone(assert.deepEqual(
-              pendingStates,
+              validatingStates,
               [true, false]));
           }
         };
@@ -1165,25 +1205,25 @@ describe('field actions', () => {
         actions.asyncSetValidity('test.foo', validator)(dispatch, getState);
       });
 
-    it('should set pending to true for a form when validating, and false when done validating',
+    it('should set validating to true for a form when validating, and false when done validating',
       testDone => {
-        const pendingStates = [];
+        const validatingStates = [];
         const executedActions = [];
 
         const reducer = formReducer('test');
-        const dispatch = action => {
+        const dispatch = (action) => {
           executedActions.push(action);
           const state = reducer(undefined, action);
 
-          if (action.type === actionTypes.SET_PENDING) {
-            pendingStates.push(action.pending);
+          if (action.type === actionTypes.SET_VALIDATING) {
+            validatingStates.push(action.validating);
 
-            assert.equal(state.pending, action.pending);
-          } else if (action.type === actionTypes.BATCH) {
-            pendingStates.push(state.pending);
+            assert.equal(state.$form.validating, action.validating);
+          } else if (action.type === actionTypes.SET_VALIDITY) {
+            validatingStates.push(state.$form.validating);
 
             testDone(assert.deepEqual(
-              pendingStates,
+              validatingStates,
               [true, false]));
           }
         };
@@ -1241,7 +1281,11 @@ describe('field actions', () => {
           type: actionTypes.BATCH,
           model: 'test',
           actions: [
-            { type: actionTypes.SET_SUBMIT_FAILED, model: 'test' },
+            {
+              type: actionTypes.SET_SUBMIT_FAILED,
+              submitFailed: true,
+              model: 'test',
+            },
             { type: actionTypes.SET_ERRORS, errors, model: 'test' },
           ],
         },
@@ -1253,6 +1297,92 @@ describe('field actions', () => {
         valid: false,
         errors,
       })));
+    });
+
+    it('should not submit if (optional) validators are invalid', (done) => {
+      const store = createTestStore(createStore(combineReducers({
+        testForm: formReducer('test'),
+      }, applyMiddleware(thunk))), done);
+
+      store.when(actionTypes.SET_VALIDITY, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          validity: { foo: false },
+        });
+      });
+
+      const action = actions.submit('test', new Promise((r) => r(true)), {
+        validators: { foo: () => false },
+      });
+
+      store.dispatch(action);
+    });
+
+    it('should submit if (optional) validators are valid', (done) => {
+      const store = createTestStore(createStore(combineReducers({
+        testForm: formReducer('test'),
+      }, applyMiddleware(thunk))), done);
+
+      store.when(actionTypes.SET_VALIDITY, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          validity: { foo: true },
+        });
+      });
+
+      store.when(actionTypes.SET_PENDING, () => true);
+      store.when(actionTypes.SET_SUBMITTED, (_, action) => {
+        assert.isTrue(action.submitted);
+      });
+
+      const action = actions.submit('test', new Promise((r) => r(true)), {
+        validators: { foo: () => true },
+      });
+
+      store.dispatch(action);
+    });
+
+    it('should not submit if (optional) errors are invalid', (done) => {
+      const store = createTestStore(createStore(combineReducers({
+        testForm: formReducer('test'),
+      }, applyMiddleware(thunk))), done);
+
+      store.when(actionTypes.SET_ERRORS, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          errors: { foo: true },
+        });
+      });
+
+      const action = actions.submit('test', new Promise((r) => r(true)), {
+        errors: { foo: () => true },
+      });
+
+      store.dispatch(action);
+    });
+
+    it('should submit if (optional) errors are valid', (done) => {
+      const store = createTestStore(createStore(combineReducers({
+        testForm: formReducer('test'),
+      }, applyMiddleware(thunk))), done);
+
+      store.when(actionTypes.SET_VALIDITY, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          validity: { foo: true },
+        });
+      });
+
+      store.when(actionTypes.SET_PENDING, () => true);
+      store.when(actionTypes.SET_SUBMITTED, (_, action) => {
+        assert.isTrue(action.submitted);
+      });
+
+      const action = actions.submit('test', new Promise((r) => r(true)), {
+        errors: { foo: () => false },
+      });
+
+      store.dispatch(action);
     });
   });
 
@@ -1553,6 +1683,56 @@ describe('field actions', () => {
       const action = actions.validateFieldsErrors('test', {
         foo: (val) => val === 'invalid',
       }, validationOptions);
+
+      store.dispatch(action);
+    });
+  });
+
+  describe('validSubmit() (thunk)', () => {
+    it('should not submit a form if invalid', (done) => {
+      const mockStore = configureMockStore([thunk]);
+      const reducer = formReducer('test');
+
+      const expectedActions = [
+        {
+          type: actionTypes.NULL,
+        },
+      ];
+
+      const store = mockStore(
+        () => ({
+          testForm: reducer(undefined, actions.setValidity('test', false)),
+        }),
+        expectedActions,
+        done);
+
+      const action = actions.validSubmit('test', new Promise((r) => r()));
+
+      store.dispatch(action);
+    });
+
+    it('should be able to resolve a form as valid', (done) => {
+      const store = createTestStore(createStore(combineReducers({
+        testForm: formReducer('test'),
+      }, applyMiddleware(thunk))), done);
+
+      store.when(actionTypes.SET_PENDING, () => true);
+
+      store.when(actionTypes.SET_SUBMITTED, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          submitted: true,
+        });
+      });
+
+      store.when(actionTypes.SET_VALIDITY, (_, action) => {
+        assert.containSubset(action, {
+          model: 'test',
+          validity: true,
+        });
+      });
+
+      const action = actions.validSubmit('test', new Promise((r) => r(true)));
 
       store.dispatch(action);
     });

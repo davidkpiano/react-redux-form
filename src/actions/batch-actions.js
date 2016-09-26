@@ -1,30 +1,56 @@
 import actionTypes from '../action-types';
-import partition from 'lodash/partition';
-import every from 'lodash/every';
+import partition from '../utils/partition';
+import isPlainObject from 'lodash/isPlainObject';
+import { trackable } from '../utils/track';
 
-function batch(model, actions) {
-  if (every(actions, (action) => typeof action !== 'function')) {
+import NULL_ACTION from '../constants/null-action';
+
+const batch = trackable((model, actions) => {
+  const dispatchableActions = actions.filter((action) => !!action);
+
+  if (!dispatchableActions.length) return NULL_ACTION;
+
+  if (dispatchableActions.length && dispatchableActions.every(isPlainObject)) {
+    if (dispatchableActions.length === 1) {
+      return dispatchableActions[0];
+    }
+
     return {
       type: actionTypes.BATCH,
       model,
-      actions,
+      actions: dispatchableActions,
     };
   }
 
   return (dispatch) => {
-    const [plainActions, actionThunks] = partition(actions,
+    const [plainActions, actionThunks] = partition(dispatchableActions,
       (action) => typeof action !== 'function');
 
-    dispatch({
-      type: actionTypes.BATCH,
-      model,
-      actions: plainActions,
-    });
+    if (plainActions.length > 1) {
+      dispatch({
+        type: actionTypes.BATCH,
+        model,
+        actions: plainActions,
+      });
+    } else if (plainActions.length === 1) {
+      dispatch(plainActions[0]);
+    }
 
-    actionThunks.map(dispatch);
+    actionThunks.forEach(dispatch);
   };
+});
+
+function dispatchBatchIfNeeded(model, actions, dispatch) {
+  if (!actions.length) return void 0;
+
+  const dispatchableActions = actions.filter((action) => !!action);
+
+  if (!dispatchableActions.length) return void 0;
+
+  return dispatch(batch(model, dispatchableActions));
 }
 
-export default {
-  batch,
+export default batch;
+export {
+  dispatchBatchIfNeeded,
 };

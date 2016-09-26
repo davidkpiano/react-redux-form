@@ -1,11 +1,11 @@
 import fieldActions from './field-actions';
 import modelActions from './model-actions';
-import batchActions from './batch-actions';
+import batch from './batch-actions';
 
 const actions = {
   ...fieldActions,
   ...modelActions,
-  ...batchActions,
+  batch,
 };
 
 export default actions;

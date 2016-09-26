@@ -1,14 +1,18 @@
 import React, { Component, PropTypes } from 'react';
 import connect from 'react-redux/lib/components/connect';
 import _get from '../utils/get';
-import map from 'lodash/map';
+import map from '../utils/map';
 import compact from 'lodash/compact';
-import iteratee from 'lodash/_baseIteratee';
+import iteratee from '../utils/iteratee';
 import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
 import omit from 'lodash/omit';
 
-import { getFieldFromState, getForm } from '../utils';
+import getForm from '../utils/get-form';
+import getFieldFromState from '../utils/get-field-from-state';
+import getModel from '../utils/get-model';
+import isValid from '../form/is-valid';
+import resolveModel from '../utils/resolve-model';
 
 function showErrors(field, form, show = true) {
   if (typeof show === 'function') {
@@ -95,10 +99,6 @@ class Errors extends Component {
   render() {
     const {
       fieldValue,
-      fieldValue: {
-        valid,
-        errors,
-      },
       formValue,
       show,
       wrapper,
@@ -112,9 +112,9 @@ class Errors extends Component {
       return null;
     }
 
-    const errorMessages = valid
+    const errorMessages = isValid(fieldValue)
       ? null
-      : this.mapErrorMessages(errors);
+      : this.mapErrorMessages(fieldValue.errors);
 
     if (!errorMessages) return null;
 
@@ -160,11 +160,9 @@ Errors.defaultProps = {
 };
 
 function mapStateToProps(state, { model }) {
-  const modelString = typeof model === 'function'
-    ? model(state)
-    : model;
+  const modelString = getModel(model, state);
 
-  const formValue = getForm(state, modelString);
+  const formValue = getForm(state, modelString).$form;
   const fieldValue = getFieldFromState(state, modelString);
 
   return {
@@ -175,4 +173,4 @@ function mapStateToProps(state, { model }) {
   };
 }
 
-export default connect(mapStateToProps)(Errors);
+export default resolveModel(connect(mapStateToProps)(Errors));

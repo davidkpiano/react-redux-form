@@ -1,23 +1,22 @@
-import {
-  invertValidators,
-  getValidity,
-  isInvalid,
-  getFormStateKey,
-} from '../src/utils/index';
+import invertValidators from '../src/utils/invert-validators';
+import getValidity from '../src/utils/get-validity';
+import isValidityInvalid from '../src/utils/is-validity-invalid';
+import { getFormStateKey } from '../src/utils/get-form';
+import getFieldFromState from '../src/utils/get-field-from-state';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
 import { assert } from 'chai';
 
-import { actions, formReducer, utils } from '../src';
+import { actions, formReducer } from '../src';
 
 describe('utils', () => {
   describe('invertValidators()', () => {
     it('should invert the validity of a validator function', () => {
       const validator = (val) => val === 'foo';
       const inverted = invertValidators(validator);
-      const error = isInvalid(getValidity(inverted, 'foo'));
+      const error = isValidityInvalid(getValidity(inverted, 'foo'));
 
       assert.isFalse(error);
     });
@@ -28,7 +27,7 @@ describe('utils', () => {
         isBar: (val) => val === 'bar',
       };
       const inverted = invertValidators(validators);
-      const error = isInvalid(getValidity(inverted, 'foo'));
+      const error = isValidityInvalid(getValidity(inverted, 'foo'));
 
       assert.isTrue(error);
     });
@@ -80,7 +79,7 @@ describe('utils', () => {
 
   describe('getFieldFromState()', () => {
     it('should exist', () => {
-      assert.isFunction(utils.getFieldFromState);
+      assert.isFunction(getFieldFromState);
     });
 
     context('standard form', () => {
@@ -88,8 +87,8 @@ describe('utils', () => {
         const reducer = formReducer('person');
         const personForm = reducer(undefined, actions.change('person.name', 'john'));
 
-        const field = utils.getFieldFromState({ personForm }, 'person.name');
-        assert.strictEqual(personForm.fields.name, field);
+        const field = getFieldFromState({ personForm }, 'person.name');
+        assert.strictEqual(personForm.name, field);
       });
     });
 
@@ -98,8 +97,8 @@ describe('utils', () => {
         const reducer = formReducer('app.car');
         const carForm = reducer(undefined, actions.change('app.car.make', 'mazda'));
 
-        const field = utils.getFieldFromState({ carForm }, 'app.car.make');
-        assert.strictEqual(carForm.fields.make, field);
+        const field = getFieldFromState({ carForm }, 'app.car.make');
+        assert.strictEqual(carForm.make, field);
       });
     });
 
@@ -108,8 +107,8 @@ describe('utils', () => {
         const reducer = formReducer('district.library');
         const libraryForm = reducer(undefined, actions.change('district.library.hours.open', 8));
 
-        const field = utils.getFieldFromState({ libraryForm }, 'district.library.hours.open');
-        assert.strictEqual(libraryForm.fields['hours.open'], field);
+        const field = getFieldFromState({ libraryForm }, 'district.library.hours.open');
+        assert.strictEqual(libraryForm.hours.open, field);
       });
     });
   });
@@ -119,6 +118,9 @@ describe('utils', () => {
       firstForm: formReducer('first'),
       deep: combineReducers({
         secondForm: formReducer('second'),
+        deeper: combineReducers({
+          thirdForm: formReducer('third'),
+        }),
       }),
     }));
 
@@ -144,6 +146,18 @@ describe('utils', () => {
       assert.equal(
         getFormStateKey(store.getState(), 'second.anything'),
         'deep.secondForm');
+    });
+
+    it('should find a deeper form reducer state key', () => {
+      assert.equal(
+        getFormStateKey(store.getState(), 'third'),
+        'deep.deeper.thirdForm');
+    });
+
+    it('should find a deeper form reducer state key with deep model', () => {
+      assert.equal(
+        getFormStateKey(store.getState(), 'third.anything'),
+        'deep.deeper.thirdForm');
     });
   });
 });

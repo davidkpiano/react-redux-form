@@ -10,6 +10,8 @@ import createTestStore from 'redux-test-store';
 import sinon from 'sinon';
 
 import { Form, modelReducer, formReducer, Field, actions, actionTypes } from '../src';
+import isValid from '../src/form/is-valid';
+import { testCreateStore, testRender } from './utils';
 
 describe('<Form> component', () => {
   describe('wraps component if specified', () => {
@@ -78,7 +80,8 @@ describe('<Form> component', () => {
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Form model="test"
+          <Form
+            model="test"
             validators={{
               foo: (val) => {
                 timesValidated += 1;
@@ -144,9 +147,7 @@ describe('<Form> component', () => {
 
       assert.equal(timesValidated(), 1);
 
-      assert.containSubset(
-        store.getState().testForm.fields.foo,
-        { valid: false });
+      assert.isFalse(store.getState().testForm.foo.valid);
 
       fooControl.value = 'testing foo';
 
@@ -163,9 +164,7 @@ describe('<Form> component', () => {
 
       assert.equal(timesValidated(), 2);
 
-      assert.containSubset(
-        store.getState().testForm.fields.foo,
-        { valid: true });
+      assert.isTrue(store.getState().testForm.foo.valid);
     });
 
     it('should allow for keywise validation', () => {
@@ -174,11 +173,12 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm.fields.bar,
+        store.getState().testForm.bar,
         {
           errors: { one: true, two: true },
-          valid: false,
         });
+
+      assert.isFalse(store.getState().testForm.bar.valid);
 
       barControl.value = '1';
       TestUtils.Simulate.change(barControl);
@@ -190,11 +190,12 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm.fields.bar,
+        store.getState().testForm.bar,
         {
           errors: { one: false, two: true },
-          valid: false,
         });
+
+      assert.isFalse(store.getState().testForm.bar.valid);
 
       barControl.value = '12';
       TestUtils.Simulate.change(barControl);
@@ -206,11 +207,12 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm.fields.bar,
+        store.getState().testForm.bar,
         {
           errors: { one: false, two: false },
-          valid: true,
         });
+
+      assert.isTrue(store.getState().testForm.bar.valid);
     });
   });
 
@@ -225,7 +227,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           errors={{
             foo: (val) => val !== 'valid foo' && 'invalid foo',
             bar: {
@@ -253,11 +256,12 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm.fields.foo,
+        store.getState().testForm.foo,
         {
-          valid: false,
           errors: 'invalid foo',
         });
+
+      assert.isFalse(store.getState().testForm.foo.valid);
 
       fooControl.value = 'valid foo';
 
@@ -266,67 +270,72 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm.fields.foo,
+        store.getState().testForm.foo,
         {
-          valid: true,
           errors: false,
         });
+
+      assert.isTrue(store.getState().testForm.foo.valid);
     });
 
     it('should allow for keywise validation', () => {
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm.fields.bar,
+        store.getState().testForm.bar,
         {
           errors: {
             one: 'bar too short',
             two: false,
           },
-          valid: false,
         });
+
+      assert.isFalse(store.getState().testForm.bar.valid);
 
       barControl.value = '1';
       TestUtils.Simulate.change(barControl);
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm.fields.bar,
+        store.getState().testForm.bar,
         {
           errors: {
             one: false,
             two: false,
           },
-          valid: true,
         });
+
+      assert.isTrue(store.getState().testForm.bar.valid);
 
       barControl.value = '12';
       TestUtils.Simulate.change(barControl);
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm.fields.bar,
+        store.getState().testForm.bar,
         {
           errors: {
             one: false,
             two: false,
           },
-          valid: true,
         });
+
+      assert.isTrue(store.getState().testForm.bar.valid);
 
       barControl.value = '123';
       TestUtils.Simulate.change(barControl);
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm.fields.bar,
+        store.getState().testForm.bar,
         {
           errors: {
             one: false,
             two: 'bar too long',
           },
-          valid: false,
         });
+
+      assert.isFalse(store.getState().testForm.bar.valid);
     });
   });
 
@@ -346,7 +355,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: required,
             bar: required,
@@ -368,31 +378,31 @@ describe('<Form> component', () => {
     const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
 
     it('fields should not be validated initially', () => {
-      assert.ok(store.getState().testForm.fields.foo.valid);
-      assert.ok(store.getState().testForm.fields.bar.valid);
+      assert.ok(store.getState().testForm.foo.valid);
+      assert.ok(store.getState().testForm.bar.valid);
     });
 
     it('fields should not be validated after change', () => {
       TestUtils.Simulate.change(inputs[0]);
       TestUtils.Simulate.change(inputs[1]);
 
-      assert.ok(store.getState().testForm.fields.foo.valid);
-      assert.ok(store.getState().testForm.fields.bar.valid);
+      assert.ok(store.getState().testForm.foo.valid);
+      assert.ok(store.getState().testForm.bar.valid);
     });
 
     it('fields should be validated after submit', () => {
       TestUtils.Simulate.submit(formNode);
 
-      assert.isFalse(store.getState().testForm.fields.foo.valid);
-      assert.isFalse(store.getState().testForm.fields.bar.valid);
+      assert.isFalse(store.getState().testForm.foo.valid);
+      assert.isFalse(store.getState().testForm.bar.valid);
     });
 
     it('fields should be validated with current values after submit', () => {
       TestUtils.Simulate.submit(formNode);
 
       // Not valid yet
-      assert.isFalse(store.getState().testForm.fields.foo.valid);
-      assert.isFalse(store.getState().testForm.fields.bar.valid);
+      assert.isFalse(store.getState().testForm.foo.valid);
+      assert.isFalse(store.getState().testForm.bar.valid);
 
       inputs[0].value = 'first';
       inputs[1].value = 'second';
@@ -403,8 +413,8 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formNode);
 
       // Still not valid yet
-      assert.isFalse(store.getState().testForm.fields.foo.valid);
-      assert.isFalse(store.getState().testForm.fields.bar.valid);
+      assert.isFalse(store.getState().testForm.foo.valid);
+      assert.isFalse(store.getState().testForm.bar.valid);
 
       // Change model
       TestUtils.Simulate.blur(inputs[0]);
@@ -413,8 +423,8 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formNode);
 
       // Should be valid
-      assert.ok(store.getState().testForm.fields.foo.valid);
-      assert.ok(store.getState().testForm.fields.bar.valid);
+      assert.ok(store.getState().testForm.foo.valid);
+      assert.ok(store.getState().testForm.bar.valid);
     });
   });
 
@@ -429,7 +439,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           errors={{
             foo: (val) => val !== 'valid foo' && 'invalid foo',
             bar: {
@@ -453,7 +464,7 @@ describe('<Form> component', () => {
 
     it('should show correct initial error messages', () => {
       assert.deepEqual(
-        store.getState().testForm.fields.bar.errors,
+        store.getState().testForm.bar.errors,
         {
           one: 'bar too short',
           two: false,
@@ -466,7 +477,7 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formElement);
 
       assert.equal(
-        store.getState().testForm.fields.foo.errors,
+        store.getState().testForm.foo.errors,
         'invalid foo');
     });
   });
@@ -484,7 +495,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: (val) => val && val === 'testing foo',
             bar: {
@@ -520,22 +532,24 @@ describe('<Form> component', () => {
       TestUtils.Simulate.change(fooControl);
 
       assert.containSubset(
-        store.getState().testForm.fields.foo,
+        store.getState().testForm.foo,
         {
           errors: true,
-          valid: false,
         });
+
+      assert.isFalse(store.getState().testForm.foo.valid);
 
       fooControl.value = 'testing foo';
 
       TestUtils.Simulate.change(fooControl);
 
       assert.containSubset(
-        store.getState().testForm.fields.foo,
+        store.getState().testForm.foo,
         {
           errors: false,
-          valid: true,
         });
+
+      assert.isTrue(store.getState().testForm.foo.valid);
     });
 
     it('should NOT run validation for fields that have not changed', () => {
@@ -560,7 +574,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           errors={{
             foo: (val) => val !== 'valid foo' && 'invalid foo',
             bar: () => {
@@ -593,22 +608,24 @@ describe('<Form> component', () => {
       TestUtils.Simulate.change(fooControl);
 
       assert.containSubset(
-        store.getState().testForm.fields.foo,
+        store.getState().testForm.foo,
         {
           errors: 'invalid foo',
-          valid: false,
         });
+
+      assert.isFalse(store.getState().testForm.foo.valid);
 
       fooControl.value = 'valid foo';
 
       TestUtils.Simulate.change(fooControl);
 
       assert.containSubset(
-        store.getState().testForm.fields.foo,
+        store.getState().testForm.foo,
         {
           errors: false,
-          valid: true,
         });
+
+      assert.isTrue(store.getState().testForm.foo.valid);
     });
 
     it('should NOT run validation for fields that have not changed', () => {
@@ -632,7 +649,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: required,
             bar: required,
@@ -653,7 +671,7 @@ describe('<Form> component', () => {
     const [fooControl, barControl] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
 
     it('should initially be invalid', () => {
-      assert.isFalse(store.getState().testForm.valid);
+      assert.isFalse(store.getState().testForm.$form.valid);
     });
 
     it('should still be invalid if fields are still invalid', () => {
@@ -661,14 +679,14 @@ describe('<Form> component', () => {
       TestUtils.Simulate.change(fooControl);
 
       assert.isTrue(
-        store.getState().testForm.fields.foo.valid,
+        store.getState().testForm.foo.valid,
         'foo should be valid');
       assert.isFalse(
-        store.getState().testForm.fields.bar.valid,
+        store.getState().testForm.bar.valid,
         'bar should be invalid');
 
       assert.isFalse(
-        store.getState().testForm.valid,
+        store.getState().testForm.$form.valid,
         'form should be invalid');
     });
 
@@ -679,14 +697,14 @@ describe('<Form> component', () => {
       TestUtils.Simulate.change(barControl);
 
       assert.isTrue(
-        store.getState().testForm.fields.foo.valid,
+        store.getState().testForm.foo.valid,
         'foo should be valid');
       assert.isTrue(
-        store.getState().testForm.fields.bar.valid,
+        store.getState().testForm.bar.valid,
         'bar should be valid');
 
       assert.isTrue(
-        store.getState().testForm.valid,
+        store.getState().testForm.$form.valid,
         'form should be valid');
     });
   });
@@ -705,7 +723,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: (val) => val && val === 'valid',
             baz: {
@@ -750,7 +769,7 @@ describe('<Form> component', () => {
       TestUtils.Simulate.change(fooControl);
 
       assert.isTrue(
-        store.getState().testForm.fields.foo.valid);
+        store.getState().testForm.foo.valid);
 
       assert.isNull(submitValue);
     });
@@ -758,7 +777,7 @@ describe('<Form> component', () => {
     it('should set submitFailed to true if form is invalid and submitted', () => {
       TestUtils.Simulate.submit(formElement);
 
-      assert.isTrue(store.getState().testForm.submitFailed);
+      assert.isTrue(store.getState().testForm.$form.submitFailed);
     });
 
     it('should call onSubmit with model value if form is valid', () => {
@@ -806,7 +825,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             '': {
               foobar: (val) => val.foo + val.bar === 'foobar',
@@ -835,9 +855,7 @@ describe('<Form> component', () => {
     it('should be able to set keyed validation to the form model', () => {
       TestUtils.Simulate.submit(formElement);
 
-      assert.containSubset(
-        store.getState().testForm,
-        { valid: false });
+      assert.isFalse(store.getState().testForm.$form.valid);
 
       fooControl.value = 'foo';
       TestUtils.Simulate.change(fooControl);
@@ -847,9 +865,7 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.submit(formElement);
 
-      assert.containSubset(
-        store.getState().testForm,
-        { valid: true });
+      assert.isTrue(store.getState().testForm.$form.valid);
     });
 
     it('should be able to set keyed errors to the form model', () => {
@@ -859,14 +875,15 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm,
+        store.getState().testForm.$form,
         {
-          valid: false,
           errors: {
             foobar: true,
             formError: 'form error',
           },
         });
+
+      assert.isFalse(store.getState().testForm.$form.valid);
     });
   });
 
@@ -887,10 +904,12 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           onSubmit={handleSubmit}
         >
-          <Field model="test.foo"
+          <Field
+            model="test.foo"
             validators={{
               required: (val) => val && val.length > 5,
             }}
@@ -929,100 +948,6 @@ describe('<Form> component', () => {
     });
   });
 
-  describe('internal validators without form reducers', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      test: modelReducer('test', {
-        foo: '',
-        bar: '',
-      }),
-    }));
-
-    let timesSubmitCalled = 0;
-
-    function handleSubmit() {
-      timesSubmitCalled++;
-    }
-
-    const form = TestUtils.renderIntoDocument(
-      <Provider store={store}>
-        <Form model="test"
-          validators={{
-            foo: (val) => val && val.length > 5,
-          }}
-          onSubmit={handleSubmit}
-        >
-          <Field model="test.foo">
-            <input type="text" />
-          </Field>
-        </Form>
-      </Provider>
-    );
-
-    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
-    const inputElement = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
-
-    it('should initially be invalid if the form state is invalid', () => {
-      TestUtils.Simulate.submit(formElement);
-
-      assert.equal(timesSubmitCalled, 0);
-    });
-
-    it('should prevent onSubmit if the form state is invalid after change', () => {
-      inputElement.value = 'short';
-
-      TestUtils.Simulate.change(inputElement);
-      TestUtils.Simulate.submit(formElement);
-
-      assert.equal(timesSubmitCalled, 0);
-    });
-
-    it('should submit once the form state is valid after change', () => {
-      inputElement.value = 'longer';
-
-      TestUtils.Simulate.change(inputElement);
-      TestUtils.Simulate.submit(formElement);
-
-      assert.equal(timesSubmitCalled, 1);
-    });
-  });
-
-  describe('plain form without form reducers', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      test: modelReducer('test', {
-        foo: '',
-        bar: '',
-      }),
-    }));
-
-    let timesSubmitCalled = 0;
-
-    function handleSubmit() {
-      timesSubmitCalled++;
-    }
-
-    const form = TestUtils.renderIntoDocument(
-      <Provider store={store}>
-        <Form model="test"
-          onSubmit={handleSubmit}
-        >
-          <Field model="test.foo">
-            <input type="text" />
-          </Field>
-        </Form>
-      </Provider>
-    );
-
-    const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
-
-    it('should handle submit without any errors', () => {
-      assert.doesNotThrow(() => {
-        TestUtils.Simulate.submit(formElement);
-
-        assert.equal(timesSubmitCalled, 1);
-      });
-    });
-  });
-
   describe('deep state path', () => {
     const formsReducer = combineReducers({
       testForm: formReducer('forms.test'),
@@ -1049,7 +974,8 @@ describe('<Form> component', () => {
     });
 
     it('should resolve the form value', () => {
-      assert.containSubset(props.formValue, { valid: true, model: 'forms.test' });
+      assert.containSubset(props.formValue.$form, { model: 'forms.test' });
+      assert.ok(isValid(props.formValue));
     });
   });
 
@@ -1067,7 +993,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           onSubmit={handleSubmit}
         >
           <Field model="test.foo">
@@ -1082,8 +1009,8 @@ describe('<Form> component', () => {
 
     it('should set errors from rejected submit handler on valid submit', (done) => {
       store.when(actionTypes.SET_ERRORS, (state) => {
-        assert.isFalse(state.testForm.valid);
-        assert.equal(state.testForm.errors, 'Form is invalid');
+        assert.isFalse(isValid(state.testForm));
+        assert.equal(state.testForm.$form.errors, 'Form is invalid');
         done();
       });
 
@@ -1094,7 +1021,7 @@ describe('<Form> component', () => {
       inputElement.value = 'valid';
       TestUtils.Simulate.change(inputElement);
 
-      assert.isTrue(store.getState().testForm.valid);
+      assert.isTrue(store.getState().testForm.$form.valid);
     });
   });
 
@@ -1113,7 +1040,8 @@ describe('<Form> component', () => {
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="test"
+        <Form
+          model="test"
           validators={{
             foo: (val) => val && val.length,
           }}
@@ -1130,10 +1058,12 @@ describe('<Form> component', () => {
     const inputElement = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
 
     it('should set errors from rejected submit handler on valid submit', () => {
+      assert.isTrue(store.getState().testForm.$form.valid);
+
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm,
+        store.getState().testForm.$form,
         { errors: 'Form is invalid' });
     });
 
@@ -1141,7 +1071,7 @@ describe('<Form> component', () => {
       inputElement.value = 'valid';
       TestUtils.Simulate.change(inputElement);
 
-      assert.isTrue(store.getState().testForm.valid);
+      assert.isTrue(store.getState().testForm.$form.valid);
     });
   });
 
@@ -1184,12 +1114,13 @@ describe('<Form> component', () => {
     it('should fail to submit with an invalid form', () => {
       TestUtils.Simulate.submit(formElement);
 
+      assert.isFalse(store.getState().testForm.$form.valid);
       assert.containSubset(
-        store.getState().testForm,
+        store.getState().testForm.$form,
         {
-          valid: false,
           submitFailed: true,
         });
+
 
       pass1.value = 'aaa';
       pass2.value = 'bbb';
@@ -1200,11 +1131,12 @@ describe('<Form> component', () => {
       TestUtils.Simulate.submit(formElement);
 
       assert.containSubset(
-        store.getState().testForm,
+        store.getState().testForm.$form,
         {
-          valid: false,
           submitFailed: true,
         });
+
+      assert.isFalse(store.getState().testForm.$form.valid);
     });
 
     it('should submit with a valid form', () => {
@@ -1212,19 +1144,56 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.change(pass2);
 
-
       TestUtils.Simulate.submit(formElement);
 
-      assert.isTrue(store.getState().testForm.valid);
+      assert.isTrue(store.getState().testForm.$form.valid);
 
       assert.isTrue(handleSubmit.calledOnce);
 
       assert.containSubset(
-        store.getState().testForm,
+        store.getState().testForm.$form,
         {
-          valid: true,
           submitFailed: false,
         });
+
+      assert.ok(store.getState().testForm.$form.valid);
+    });
+  });
+
+  describe('form revalidation after manual validation', () => {
+    const store = testCreateStore({
+      login: modelReducer('login', { foo: 'bar' }),
+      loginForm: formReducer('login', { foo: 'bar' }),
+    });
+    const handleSubmit = (values) => {
+      if (values.foo !== 'changed') {
+        store.dispatch(actions.setValidity('login', {
+          correctDetails: false,
+        }));
+      }
+    };
+    const form = testRender(
+      <Form model="login" onSubmit={handleSubmit}>
+        <Field model="login.foo">
+          <input />
+        </Field>
+      </Form>, store);
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+    const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+    it('should revalidate after being set invalid', () => {
+      TestUtils.Simulate.submit(formNode);
+
+      assert.isFalse(store.getState().loginForm.$form.valid);
+
+      input.value = 'changed';
+
+      TestUtils.Simulate.change(input);
+
+      TestUtils.Simulate.submit(formNode);
+
+      assert.isTrue(store.getState().loginForm.$form.valid);
     });
   });
 
@@ -1271,7 +1240,7 @@ describe('<Form> component', () => {
 
     it('the similarly-named userEx form should not be valid in presence of'
       + 'valid user form', () => {
-      assert.isFalse(store.getState().userExForm.valid);
+      assert.isFalse(store.getState().userExForm.$form.valid);
     });
   });
 
@@ -1303,14 +1272,14 @@ describe('<Form> component', () => {
         </Provider>
       );
 
-      assert.isFalse(store.getState().testForm.valid);
+      assert.isFalse(store.getState().testForm.$form.valid);
 
       store.dispatch(actions.merge('test', {
         foo: 'foo valid',
         bar: 'bar valid',
       }));
 
-      assert.isTrue(store.getState().testForm.valid);
+      assert.isTrue(store.getState().testForm.$form.valid);
     });
   });
 
@@ -1324,9 +1293,7 @@ describe('<Form> component', () => {
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Form model="test">
-            <Field
-              model="test.foo"
-            >
+            <Field model="test.foo">
               <input type="text" />
             </Field>
             <button type="reset" />
@@ -1391,10 +1358,10 @@ describe('<Form> component', () => {
 
     class App extends React.Component {
       attachNode(node) {
-        this._node = findDOMNode(node);
+        this.node = findDOMNode(node);
       }
       handleClick() {
-        this._node.submit();
+        this.node.submit();
       }
       render() {
         return (
@@ -1428,6 +1395,44 @@ describe('<Form> component', () => {
 
     assert.isTrue(handleSubmit.calledOnce);
   });
+
+  describe('function as children', () => {
+    const store = testCreateStore({
+      test: modelReducer('test', { foo: 'bar' }),
+      testForm: formReducer('test', { foo: 'bar' }),
+    });
+    const form = testRender(
+      <Form model="test">
+      {(formValue) =>
+        <Field model={`${formValue.$form.model}.foo`}>
+          <input className={formValue.foo.focus ? 'focused' : ''} />
+        </Field>
+      }
+      </Form>, store);
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
+
+    it('treats the return value as expected with normal children', () => {
+      assert.equal(input.value, 'bar');
+
+      input.value = 'testing';
+      TestUtils.Simulate.change(input);
+
+      assert.equal(input.value, 'testing');
+      assert.equal(store.getState().test.foo, 'testing');
+    });
+
+    it('rerenders the function when the form value changes', () => {
+      assert.throws(() => TestUtils.findRenderedDOMComponentWithClass(form, 'focused'));
+
+      TestUtils.Simulate.focus(input);
+
+      assert.isTrue(store.getState().testForm.foo.focus);
+
+      assert.ok(TestUtils.findRenderedDOMComponentWithClass(form, 'focused'));
+    });
+  });
+
   describe('validation on validation prop change', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       testForm: formReducer('test'),
@@ -1497,7 +1502,6 @@ describe('<Form> component', () => {
       assert.equal(timesTwoValidationCalled, 1);
     });
   });
-
   describe('submitting after invalid', () => {
     const store = createStore(combineReducers({
       login: modelReducer('login', { username: '' }),
@@ -1528,8 +1532,8 @@ describe('<Form> component', () => {
     it('should be invalid after initial submit', () => {
       TestUtils.Simulate.submit(formNode);
 
-      assert.isFalse(store.getState().loginForm.valid);
-      assert.isFalse(store.getState().loginForm.fields.username.valid);
+      assert.isFalse(store.getState().loginForm.$form.valid);
+      assert.isFalse(store.getState().loginForm.username.valid);
     });
 
     it('should submit after found to be valid', () => {
@@ -1537,13 +1541,13 @@ describe('<Form> component', () => {
 
       TestUtils.Simulate.change(input);
 
-      assert.isFalse(store.getState().loginForm.fields.username.valid,
+      assert.isFalse(store.getState().loginForm.username.valid,
         'should not be valid yet');
 
       TestUtils.Simulate.submit(formNode);
 
-      assert.isTrue(store.getState().loginForm.valid);
-      assert.isTrue(store.getState().loginForm.fields.username.valid);
+      assert.isTrue(store.getState().loginForm.$form.valid);
+      assert.isTrue(store.getState().loginForm.username.valid);
 
       assert.equal(timesCalled, 1);
     });

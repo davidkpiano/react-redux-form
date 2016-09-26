@@ -18,3 +18,7 @@ a.active {
 .breadcrumbs a {
   text-decoration: none;
 }
+
+label {
+  display: block;
+}

@@ -1,6 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { Field, Form, actions } from 'react-redux-form';
+import { Form, actions, Control, Field } from 'react-redux-form';
 
 class UserForm extends React.Component {
   constructor(props) {
@@ -23,22 +22,30 @@ class UserForm extends React.Component {
     dispatch(actions.submit('user', somePromise));
   }
   render() {
-    const { user } = this.props;
-
     return (
-      <Form model="user" onSubmit={this.handleSubmit}>
-        <Field model="user.firstName">
+      <Form model="user" onSubmit={v => console.log(v)}>
+        <div>
           <label>First name:</label>
-          <input type="text" />
-        </Field>
+          <Control.text model="user.firstName" required />
+        </div>
 
-        <Field model="user.lastName">
+        <div>
           <label>Last name:</label>
-          <input type="text" />
-        </Field>
+          <Control model="user.lastName" />
+        </div>
 
+        <Field model="user.bag">
+          <label>
+            <input type="radio" value="paper" />
+            <span>Paper</span>
+          </label>
+          <label>
+            <input type="radio" value="plastic" />
+            <span>Plastic</span>
+          </label>
+        </Field>
         <button type="submit">
-          Finish registration, {user.firstName} {user.lastName}!
+          Finish registration!
         </button>
       </Form>
     );
@@ -53,8 +60,4 @@ UserForm.propTypes = {
   }).isRequired,
 };
 
-function mapStateToProps(state) {
-  return { user: state.user };
-}
-
-export default connect(mapStateToProps)(UserForm);
+export default UserForm;

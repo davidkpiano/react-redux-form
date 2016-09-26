@@ -1,176 +1,146 @@
 import _get from '../utils/get';
-import endsWith from 'lodash/endsWith';
 import identity from 'lodash/identity';
 import icepick from 'icepick';
 
+import getValue from '../utils/get-value';
+import isMulti from '../utils/is-multi';
 import actionTypes from '../action-types';
+import mapValues from '../utils/map-values';
 import { trackable } from '../utils/track';
 
-function isEvent(event) {
-  return !!(event && event.stopPropagation && event.preventDefault);
+const defaultStrategies = {
+  get: _get,
+  getValue,
+  splice: icepick.splice,
+  merge: icepick.merge,
+  remove: icepick.dissoc,
+  push: icepick.push,
+  length: (value) => value.length,
+  object: {},
+  array: [],
+};
+
+function optionsFromArgs(args, index, options = {}) {
+  if (typeof index === 'undefined') return undefined;
+
+  return { ...options, ...args[index] };
 }
 
-function getValue(event) {
-  return isEvent(event) ? event.target.value : event;
-}
+export function createModelActions(s = defaultStrategies) {
+  const change = (model, value, options = {}) => {
+    // option defaults
+    const changeOptions = {
+      silent: false,
+      multi: isMulti(model),
+      ...options,
+    };
 
-function isMulti(model) {
-  return endsWith(model, '[]');
-}
-
-const change = trackable((model, value, options = {}) => {
-  // option defaults
-  const changeOptions = {
-    silent: false,
-    multi: isMulti(model),
-    ...options,
+    return {
+      type: actionTypes.CHANGE,
+      model,
+      value: s.getValue(value),
+      ...changeOptions,
+    };
   };
 
-  return {
-    type: actionTypes.CHANGE,
-    model,
-    value: getValue(value),
-    ...changeOptions,
-  };
-});
+  function createModifierAction(modifier, defaultValue, optionsIndex, getOptions) {
+    const actionCreator = (model, ...args) => (dispatch, getState) => {
+      const modelValue = s.get(getState(), model, defaultValue);
+      const value = modifier(modelValue, ...args);
 
-const xor = trackable((
-  model,
-  item,
-  iteratee = (value) => value === item
-) => (dispatch, getState) => {
-  const state = _get(getState(), model, []);
-  const stateWithoutItem = state.filter(stateItem => !iteratee(stateItem));
-  const value = (state.length === stateWithoutItem.length) ? [...state, item] : stateWithoutItem;
+      const options = getOptions
+        ? getOptions(value, ...args)
+        : undefined;
 
-  dispatch({
-    type: actionTypes.CHANGE,
-    model,
-    value,
-  });
-});
+      dispatch(change(
+        model,
+        value,
+        optionsFromArgs(args, optionsIndex - 1, options)));
+    };
 
-const push = trackable((model, item = null) => (dispatch, getState) => {
-  const collection = _get(getState(), model);
-  const value = [...(collection || []), item];
+    actionCreator.withValue = (model, ...args) =>
+      (value) => {
+        const options = getOptions
+          ? getOptions(value, ...args)
+          : undefined;
 
-  dispatch({
-    type: actionTypes.CHANGE,
-    model,
-    value,
-  });
-});
+        change(
+          model,
+          modifier(value, ...args),
+          optionsFromArgs(args, optionsIndex - 1, options));
+      };
 
-const toggle = trackable((model) => (dispatch, getState) => {
-  const value = !_get(getState(), model);
-
-  dispatch({
-    type: actionTypes.CHANGE,
-    model,
-    value,
-  });
-});
-
-const filter = trackable((model, iteratee = identity) => (dispatch, getState) => {
-  const collection = _get(getState(), model);
-  const value = collection.filter(iteratee);
-
-  dispatch({
-    type: actionTypes.CHANGE,
-    model,
-    value,
-  });
-});
-
-const reset = trackable((model) => ({
-  type: actionTypes.RESET,
-  model,
-}));
-
-const map = trackable((model, iteratee = identity) => (dispatch, getState) => {
-  const collection = _get(getState(), model, []);
-  const value = collection.map(iteratee);
-
-  dispatch({
-    type: actionTypes.CHANGE,
-    model,
-    value,
-  });
-});
-
-const remove = trackable((model, index) => (dispatch, getState) => {
-  const collection = _get(getState(), model, []);
-
-  dispatch({
-    type: actionTypes.CHANGE,
-    model,
-    value: icepick.splice(collection, index, 1),
-    removeKeys: [index],
-  });
-});
-
-const move = trackable((model, indexFrom, indexTo) => (dispatch, getState) => {
-  const collection = _get(getState(), model, []);
-
-  if (indexFrom >= collection.length || indexTo >= collection.length) {
-    throw new Error(`Error moving array item: invalid bounds ${indexFrom}, ${indexTo}`);
+    return actionCreator;
   }
 
-  const item = collection[indexFrom];
-  const removed = icepick.splice(collection, indexFrom, 1);
-  const inserted = icepick.splice(removed, indexTo, 0, item);
+  const xor = createModifierAction((value, item, iteratee = (_item) => _item === item) => {
+    const valueWithoutItem = value.filter((_item) => !iteratee(_item));
 
-  dispatch({
-    type: actionTypes.CHANGE,
+    return (s.length(value) === s.length(valueWithoutItem))
+      ? [...value, item]
+      : valueWithoutItem;
+  }, s.array, 3);
+
+  const push = createModifierAction((value, item) => s.push(value || s.array, item), s.array, 2);
+
+  const toggle = createModifierAction((value) => !value, undefined, 1);
+
+  const filter = createModifierAction((value, iteratee) => value.filter(iteratee), s.array, 2);
+
+  const reset = (model) => ({
+    type: actionTypes.RESET,
     model,
-    value: inserted,
   });
-});
 
-const merge = trackable((model, values) => (dispatch, getState) => {
-  const value = _get(getState(), model, {});
+  const map = createModifierAction((value, iteratee = identity) => value.map(iteratee), s.array, 2);
 
-  dispatch({
-    type: actionTypes.CHANGE,
-    model,
-    value: icepick.merge(value, values),
+  const remove = createModifierAction((value, index) => s.splice(value, index, 1), s.array, 2,
+    (_, index) => ({ removeKeys: [index] }));
+
+  const move = createModifierAction((value, indexFrom, indexTo) => {
+    if (indexFrom >= s.length(value) || indexTo >= s.length(value)) {
+      throw new Error(`Error moving array item: invalid bounds ${indexFrom}, ${indexTo}`);
+    }
+
+    const item = s.get(value, indexFrom);
+    const removed = s.splice(value, indexFrom, 1);
+    const inserted = s.splice(removed, indexTo, 0, item);
+
+    return inserted;
+  }, s.array, 3);
+
+  const merge = createModifierAction(s.merge, {}, 2);
+
+  const omit = createModifierAction((value, props = []) => {
+    const propsArray = typeof props === 'string'
+      ? [props]
+      : props;
+
+    const newValue = propsArray.reduce(
+      (acc, prop) => s.remove(acc, prop),
+      value);
+
+    return newValue;
+  }, {}, 2, (_, props) => ({ removeKeys: props }));
+
+  const load = (model, values) => change(model, values, {
+    silent: true,
   });
-});
 
-const omit = trackable((model, props = []) => (dispatch, getState) => {
-  const value = _get(getState(), model, {});
+  return mapValues({
+    change,
+    xor,
+    push,
+    toggle,
+    filter,
+    reset,
+    map,
+    remove,
+    move,
+    merge,
+    omit,
+    load,
+  }, trackable);
+}
 
-  const propsArray = typeof props === 'string'
-    ? [props]
-    : props;
-
-  const newValue = propsArray.reduce(
-    (acc, prop) => icepick.dissoc(acc, prop),
-    value);
-
-  dispatch({
-    type: actionTypes.CHANGE,
-    model,
-    value: newValue,
-    removeKeys: propsArray,
-  });
-});
-
-const load = trackable((model, values) => change(model, values, {
-  silent: true,
-}));
-
-export default {
-  change,
-  filter,
-  map,
-  merge,
-  push,
-  remove,
-  move,
-  reset,
-  toggle,
-  xor,
-  load,
-  omit,
-};
+export default createModelActions();

@@ -1,23 +1,24 @@
 // ./store.js
 import {
-  createStore,
-  combineReducers,
   applyMiddleware,
+  createStore,
 } from 'redux';
 import {
-  modelReducer,
-  formReducer,
+  combineForms,
 } from 'react-redux-form';
 import thunk from 'redux-thunk';
+import createLogger from 'redux-logger';
 
 const initialUserState = {
-  firstName: '',
-  lastName: '',
+  firstName: 'first',
+  lastName: 'last',
+  bag: 'paper',
 };
 
-const store = applyMiddleware(thunk)(createStore)(combineReducers({
-  user: modelReducer('user', initialUserState),
-  userForm: formReducer('user', initialUserState),
-}));
+const store = createStore(combineForms({
+  user: initialUserState,
+}), applyMiddleware(
+  createLogger(),
+  thunk));
 
 export default store;

@@ -18,7 +18,7 @@ Check out the above links if you need any help with those prerequisites.
 
 ### 2. Setup your app.
 
-```js
+```jsx
 import React from 'react';
 import ReactDOM from 'react-dom';
 
@@ -48,7 +48,7 @@ ReactDOM.render(<App />, document.getElementById('app'));
 We'll be using [`combineForms`]('../api/combineForms.html') to create the reducer that contains all of your `modelReducer`s, and
 a single `formReducer` under the `'form'` key.
 
-```js
+```jsx
 // ./store.js
 import {
   createStore,
@@ -71,7 +71,7 @@ export default store;
 
 ### 4. Setup your form!
 
-```js
+```jsx
 // ./components/UserForm.js
 
 import React from 'react';

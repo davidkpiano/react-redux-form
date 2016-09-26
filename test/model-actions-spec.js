@@ -1,6 +1,11 @@
 import { assert } from 'chai';
 import { combineReducers } from 'redux';
+import Immutable from 'immutable';
 import { actions, modelReducer, formReducer, track } from '../src';
+import {
+  actions as immutableActions,
+  modelReducer as immutableModelReducer,
+} from '../src/immutable';
 
 describe('model actions', () => {
   const testItems = [
@@ -25,8 +30,8 @@ describe('model actions', () => {
 
       const actual = reducer({}, actions.load('foo', { bar: 'string' }));
       assert.deepEqual(actual.foo, { bar: 'string' });
-      assert.equal(actual.fooForm.dirty, false);
-      assert.equal(actual.fooForm.untouched, true);
+      assert.equal(actual.fooForm.$form.pristine, true);
+      assert.equal(actual.fooForm.$form.touched, false);
     });
   });
 
@@ -138,6 +143,7 @@ describe('model actions', () => {
             },
             testItems[2],
           ],
+          tracked: true,
         },
       ],
       xor: [
@@ -148,8 +154,9 @@ describe('model actions', () => {
         },
         {
           init: { foo: ['primitive', { a: 'b' }] },
-          params: ['test.foo', { a: 'b' }, (item) => item.a === 'b'],
+          params: ['test.foo', { a: 'b' }, (item) => (item.get ? item.get('a') : item.a) === 'b'],
           expected: { foo: ['primitive'] },
+          immutable: false,
         },
         {
           init: [
@@ -163,6 +170,7 @@ describe('model actions', () => {
             { id: 2, value: [] },
             testItems[2],
           ],
+          tracked: true,
         },
       ],
       toggle: [
@@ -179,6 +187,7 @@ describe('model actions', () => {
             { id: 2, value: false },
             testItems[2],
           ],
+          tracked: true,
         },
       ],
       filter: [
@@ -199,6 +208,7 @@ describe('model actions', () => {
             { id: 2, value: [2, 4, 6] },
             testItems[2],
           ],
+          tracked: true,
         },
       ],
       map: [
@@ -219,6 +229,7 @@ describe('model actions', () => {
             { id: 2, value: [2, 4, 6, 8, 10] },
             testItems[2],
           ],
+          tracked: true,
         },
       ],
       remove: [
@@ -239,6 +250,7 @@ describe('model actions', () => {
             { id: 2, value: ['first', 'third'] },
             testItems[2],
           ],
+          tracked: true,
         },
       ],
       move: [
@@ -269,6 +281,7 @@ describe('model actions', () => {
             { id: 2, value: ['second', 'third', 'first'] },
             testItems[2],
           ],
+          tracked: true,
         },
       ],
       merge: [
@@ -292,6 +305,7 @@ describe('model actions', () => {
             { id: 2, value: { bar: 'new', one: 'two', untouched: 'intact' } },
             testItems[2],
           ],
+          tracked: true,
         },
       ],
       omit: [
@@ -317,6 +331,7 @@ describe('model actions', () => {
             { id: 2, value: { one: 1, three: 3 } },
             testItems[2],
           ],
+          tracked: true,
         },
       ],
     };
@@ -326,6 +341,7 @@ describe('model actions', () => {
       describe(`${action}()`, () => {
         actionTests[action].map((test) => {
           const { init, params, expected } = test;
+
           it('should modify the model to the expected result', () => {
             const reducer = modelReducer('test');
             const getState = () => ({ test: init });
@@ -343,6 +359,39 @@ describe('model actions', () => {
               assert.throws(() => actions[action](...params)(dispatch, getState), expected.message);
             } else {
               actions[action](...params)(dispatch, getState);
+            }
+          });
+        });
+      });
+
+      describe(`${action}() (Immutable.JS)`, () => {
+        actionTests[action].map((test, i) => {
+          const { init, params, expected, tracked } = test;
+
+          // TODO: test tracker with immutablejs
+          if (tracked) return;
+
+          const initImmutable = Immutable.fromJS(init);
+          const immutableParams = params.map((param) => Immutable.fromJS(param));
+
+          it(`should modify the model to the expected result (${i})`, () => {
+            const reducer = immutableModelReducer('test');
+            const getState = () => ({ test: Immutable.fromJS(initImmutable) });
+            const dispatch = (_action) => {
+              if (typeof _action === 'function') {
+                _action(dispatch, getState);
+              } else {
+                assert.deepEqual(
+                  reducer(initImmutable, _action).toJS(),
+                  expected, [reducer(initImmutable, _action), expected]);
+              }
+            };
+
+            if (expected instanceof Error) {
+              assert.throws(() =>
+                immutableActions[action](...immutableParams)(dispatch, getState), expected.message);
+            } else {
+              immutableActions[action](...immutableParams)(dispatch, getState);
             }
           });
         });
