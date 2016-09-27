@@ -8,6 +8,7 @@ node_modules/
 .editorconfig
 .eslintignore
 .eslintrc
+.babelrc
 .gitignore
 .travis.yml
 wallaby.config.js
