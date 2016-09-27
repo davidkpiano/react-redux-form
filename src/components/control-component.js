@@ -540,10 +540,14 @@ Control.defaultProps = {
 
 const ConnectedControl = resolveModel(connect(mapStateToProps)(Control));
 
+/* eslint-disable react/prop-types */
 ConnectedControl.input = (props) => (
   <ConnectedControl
     component="input"
-    mapProps={controlPropsMap.default}
+    mapProps={{
+      ...controlPropsMap.default,
+      ...props.mapProps,
+    }}
     {...props}
   />
 );
@@ -551,7 +555,10 @@ ConnectedControl.input = (props) => (
 ConnectedControl.text = (props) => (
   <ConnectedControl
     component="input"
-    mapProps={controlPropsMap.text}
+    mapProps={{
+      ...controlPropsMap.text,
+      ...props.mapProps,
+    }}
     {...props}
   />
 );
@@ -559,7 +566,10 @@ ConnectedControl.text = (props) => (
 ConnectedControl.textarea = (props) => (
   <ConnectedControl
     component="textarea"
-    mapProps={controlPropsMap.textarea}
+    mapProps={{
+      ...controlPropsMap.textarea,
+      ...props.mapProps,
+    }}
     {...props}
   />
 );
@@ -568,7 +578,10 @@ ConnectedControl.radio = (props) => (
   <ConnectedControl
     component="input"
     type="radio"
-    mapProps={controlPropsMap.radio}
+    mapProps={{
+      ...controlPropsMap.radio,
+      ...props.mapProps,
+    }}
     {...props}
   />
 );
@@ -577,7 +590,10 @@ ConnectedControl.checkbox = (props) => (
   <ConnectedControl
     component="input"
     type="checkbox"
-    mapProps={controlPropsMap.checkbox}
+    mapProps={{
+      ...controlPropsMap.checkbox,
+      ...props.mapProps,
+    }}
     {...props}
   />
 );
@@ -586,7 +602,10 @@ ConnectedControl.file = (props) => (
   <ConnectedControl
     component="input"
     type="file"
-    mapProps={controlPropsMap.file}
+    mapProps={{
+      ...controlPropsMap.file,
+      ...props.mapProps,
+    }}
     {...props}
   />
 );
@@ -594,7 +613,10 @@ ConnectedControl.file = (props) => (
 ConnectedControl.select = (props) => (
   <ConnectedControl
     component="select"
-    mapProps={controlPropsMap.select}
+    mapProps={{
+      ...controlPropsMap.select,
+      ...props.mapProps,
+    }}
     {...props}
   />
 );
@@ -603,7 +625,10 @@ ConnectedControl.reset = (props) => (
   <ConnectedControl
     component="button"
     type="reset"
-    mapProps={controlPropsMap.reset}
+    mapProps={{
+      ...controlPropsMap.reset,
+      ...props.mapProps,
+    }}
     {...props}
   />
 );

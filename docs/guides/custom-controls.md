@@ -84,6 +84,44 @@ By default, any props on `<Control>` that are _not_ part of the `Control.propTyp
 />
 ```
 
+## Model and View Values
+
+One important thing to keep in mind is that there is no single `value` for a `<Control>`; rather, there are two types of values (that are equivalent, more often than not):
+
+- `modelValue` - the exact value of the model in the store's state
+- `viewValue` - the _displayed_ value of the model in the component's state
+
+For example, if a text control has `updateOn="blur"`, its `viewValue` will represent what is being typed in the input, whereas the `modelValue` will represent the persisted value, once the input is blurred.
+
+Because of this, you will want to map the `viewValue` to a custom control's `value` if you wish to externally update the value:
+
+```jsx
+const CustomInput = (props) => (
+  <div className="custom-input">
+    <input type="text" {...props} />
+  </div>
+);
+
+const CustomInputControl = (props) => (
+  <Control
+    component={CustomInput}
+    mapProps={{
+      value: (props) => props.viewValue,
+    }}
+    {...props}
+  />
+);
+```
+
+Alternatively, you can just _assign_ existing mapped props to your custom control:
+
+```jsx
+// the prop mapping of Control.text is used below:
+const CustomInputControl = (props) => (
+  <Control.text component={CustomInput} />
+);
+```
+
 ## Advanced Custom Controls
 
 Some custom controls won't have prop keys that match up exactly with the standard event handler props, such as `onChangeText` in React Native's `<TextInput>` component corresponding to `onChange`. You can specify a prop mapping in the `mapProps={{...}}` prop to specify the mapping:
