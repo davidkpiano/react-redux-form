@@ -1,5 +1,4 @@
 import React, { Component, createElement, cloneElement, PropTypes } from 'react';
-import { findDOMNode } from 'react-dom';
 import connect from 'react-redux/lib/components/connect';
 import { compose } from 'redux';
 import identity from 'lodash/identity';
@@ -23,6 +22,11 @@ import controlPropsMap from '../constants/control-props-map';
 import validityKeys from '../constants/validity-keys';
 import { dispatchBatchIfNeeded } from '../actions/batch-actions';
 import resolveModel from '../utils/resolve-model';
+import isNative from '../utils/is-native';
+
+const findDOMNode = !isNative
+  ? require('react-dom').findDOMNode
+  : null;
 
 function containsEvent(events, event) {
   if (typeof events === 'string') {
@@ -451,6 +455,8 @@ class Control extends Component {
   }
 
   attachNode() {
+    if (!findDOMNode) return;
+
     const node = findDOMNode(this);
 
     if (node) this.node = node;

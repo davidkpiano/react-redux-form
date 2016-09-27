@@ -28,7 +28,7 @@ import {
   form,
   getField,
   track,
-} from '../src/index';
+} from './src/index';
 
 function getTextValue(value) {
   if (typeof value === 'string' || typeof value === 'number') {

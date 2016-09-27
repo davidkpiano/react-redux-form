@@ -1,10 +1,10 @@
 # Docs
+_book/
 docs/
 dist/
 
 # Misc
 node_modules/
-.babelrc
 .editorconfig
 .eslintignore
 .eslintrc

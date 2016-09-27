@@ -6,7 +6,6 @@
     "-sharing",
     "-fontsettings",
     "github",
-    "livereload",
     "theme-rrf"
   ],
   "pluginsConfig": {
