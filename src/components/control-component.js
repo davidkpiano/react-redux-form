@@ -1,5 +1,5 @@
 import React, { Component, createElement, cloneElement, PropTypes } from 'react';
-import connect from 'react-redux/lib/components/connect';
+import { connect } from 'react-redux';
 import { compose } from 'redux';
 import identity from 'lodash/identity';
 import shallowEqual from '../utils/shallow-equal';

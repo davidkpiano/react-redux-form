@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import connect from 'react-redux/lib/components/connect';
+import { connect } from 'react-redux';
 import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import mapValues from '../utils/map-values';
