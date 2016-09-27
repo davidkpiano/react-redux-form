@@ -722,23 +722,23 @@ describe('Extended Control components', () => {
       test: modelReducer('test', {}),
     });
 
-    it('async validation should not override sync validity', () => {
-      const field = TestUtils.renderIntoDocument(
-        <Provider store={store}>
-          <Control.text
-            model="test.foo"
-            validators={{
-              required: (val) => val && val.length,
-            }}
-            asyncValidators={{
-              asyncValid: (_, asyncDone) => asyncDone(false),
-            }}
-          />
-        </Provider>
-      );
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Control.text
+          model="test.foo"
+          validators={{
+            required: (val) => val && val.length,
+          }}
+          asyncValidators={{
+            asyncValid: (_, asyncDone) => asyncDone(false),
+          }}
+        />
+      </Provider>
+    );
 
-      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
+    it('async validation should not run when field is invalid', () => {
       input.value = '';
       TestUtils.Simulate.change(input);
       TestUtils.Simulate.blur(input);
@@ -747,6 +747,22 @@ describe('Extended Control components', () => {
         store.getState().testForm.foo.validity,
         {
           required: false,
+        });
+
+      assert.isUndefined(store.getState().testForm.foo.validity.asyncValid);
+    });
+
+    it('async validation should not override sync validity', () => {
+      input.value = 'asdf';
+      TestUtils.Simulate.change(input);
+      TestUtils.Simulate.blur(input);
+
+      assert.isDefined(store.getState().testForm.foo.validity.asyncValid);
+
+      assert.deepEqual(
+        store.getState().testForm.foo.validity,
+        {
+          required: true,
           asyncValid: false,
         });
     });
