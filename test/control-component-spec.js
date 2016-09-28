@@ -775,6 +775,17 @@ describe('Extended Control components', () => {
       test: modelReducer('test', { foo: '' }),
     });
 
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Control.text
+          model="test.foo"
+          validators={{
+            required: (val) => val && val.length,
+          }}
+        />
+      </Provider>
+    );
+
     it('should initially be invalid', () => {
       assert.deepEqual(
         store.getState().testForm.foo.validity,
