@@ -768,6 +768,53 @@ describe('Extended Control components', () => {
     });
   });
 
+  describe('validation after reset', () => {
+    const reducer = formReducer('test');
+    const store = testCreateStore({
+      testForm: reducer,
+      test: modelReducer('test', { foo: '' }),
+    });
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Control.text
+          model="test.foo"
+          validators={{
+            required: (val) => val && val.length,
+          }}
+        />
+      </Provider>
+    );
+
+    it('should initially be invalid', () => {
+      assert.deepEqual(
+        store.getState().testForm.foo.validity,
+        {
+          required: false,
+        });
+    });
+
+    it('should still be invalid after resetting the form model', () => {
+      store.dispatch(actions.reset('test'));
+
+      assert.deepEqual(
+        store.getState().testForm.foo.validity,
+        {
+          required: false,
+        });
+    });
+
+    it('should still be invalid after resetting the field model', () => {
+      store.dispatch(actions.reset('test.foo'));
+
+      assert.deepEqual(
+        store.getState().testForm.foo.validity,
+        {
+          required: false,
+        });
+    });
+  });
+
   describe('errors property', () => {
     const reducer = formReducer('test');
 

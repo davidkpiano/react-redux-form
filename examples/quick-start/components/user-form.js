@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, actions, Control, Field } from 'react-redux-form';
+import { Form, actions, Control, Field, Errors } from 'react-redux-form';
 
 class UserForm extends React.Component {
   constructor(props) {
@@ -26,7 +26,10 @@ class UserForm extends React.Component {
       <Form model="user" onSubmit={v => console.log(v)}>
         <div>
           <label>First name:</label>
-          <Control.text model="user.firstName" required />
+          <Control.text model="user.firstName" validators={{len: (val) => val.length > 8}} />
+          <Errors model=".firstName" messages={{
+            len: 'len must be > 4'
+          }} />
         </div>
 
         <div>
@@ -47,6 +50,7 @@ class UserForm extends React.Component {
         <button type="submit">
           Finish registration!
         </button>
+        <input type="reset" value="fasdf" title="reset"/>
       </Form>
     );
   }

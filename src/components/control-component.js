@@ -156,9 +156,8 @@ class Control extends Component {
     return result;
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate() {
     const {
-      modelValue,
       fieldValue,
       updateOn,
       validateOn = updateOn,
@@ -169,7 +168,6 @@ class Control extends Component {
     if ((validators || errors)
       && fieldValue
       && !fieldValue.validated
-      && modelValue !== prevProps.modelValue
       && validateOn === 'change'
     ) {
       this.validate();
@@ -273,21 +271,7 @@ class Control extends Component {
       model,
     } = this.props;
 
-    // If there are no async validators,
-    // do not run async validation
     if (!asyncValidators) return false;
-
-    // If any sync validity is invalid,
-    // do not run async validation
-    const asyncValidatorKeys = Object.keys(asyncValidators);
-    const syncValid = Object.keys(fieldValue.validity).every((key) => {
-      // If validity is based on async validator, skip
-      if (!!~asyncValidatorKeys.indexOf(key)) return true;
-
-      return fieldValue.validity[key];
-    });
-
-    if (!syncValid) return false;
 
     return (dispatch) => {
       mapValues(asyncValidators,
