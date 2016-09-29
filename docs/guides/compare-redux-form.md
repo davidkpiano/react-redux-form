@@ -190,7 +190,7 @@ Source: [http://redux-form.com/6.0.2/examples/initializeFromState/](http://redux
 import { connect } from 'react-redux';
 import { actions } from 'react-redux-form';
 
-// external data to load
+// external user data to load
 const data = { /* ... */ };
 
 const InitializeFromStateForm = (props) => {
@@ -198,7 +198,7 @@ const InitializeFromStateForm = (props) => {
 
   return (
     <form>
-      <button type="button" onClick={() => dispatch(actions.load(data))}>
+      <button type="button" onClick={() => dispatch(actions.load('user', data))}>
         Load Account
       </button>
       {/* ... */}
