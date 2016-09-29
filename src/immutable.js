@@ -4,6 +4,7 @@ import { createModelReducerEnhancer } from './enhancers/modeled-enhancer';
 import { createModelActions } from './actions/model-actions';
 import { createControlPropsMap } from './constants/control-props-map';
 import { createFormCombiner } from './reducers/forms-reducer';
+import { createErrorsClass } from './components/errors-component';
 import fieldActions from './actions/field-actions';
 import getValue from './utils/get-value';
 import toPath from './utils/to-path';
@@ -14,7 +15,6 @@ import {
   actionTypes,
   Control,
   Form,
-  Errors,
   createFieldClass,
   batched,
   form,
@@ -97,6 +97,7 @@ const ImmutableField = createFieldClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
   changeAction: immutableModelActions.change,
 });
+const ImmutableErrors = createErrorsClass(immutableStrategy);
 const immutableCombineForms = createFormCombiner({
   modelReducer: immutableModelReducer,
   formReducer: immutableFormReducer,
@@ -127,7 +128,7 @@ export {
   ImmutableField as Field,
   Control,
   Form,
-  Errors,
+  ImmutableErrors as Errors,
 
   // Factories
   createFieldClass,
