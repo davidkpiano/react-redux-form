@@ -13,6 +13,7 @@ import getFieldFromState from '../utils/get-field-from-state';
 import getModel from '../utils/get-model';
 import isValid from '../form/is-valid';
 import resolveModel from '../utils/resolve-model';
+import { initialFieldState } from '../reducers/form-reducer';
 
 function showErrors(field, form, show = true) {
   if (typeof show === 'function') {
@@ -163,7 +164,8 @@ function mapStateToProps(state, { model }) {
   const modelString = getModel(model, state);
 
   const formValue = getForm(state, modelString).$form;
-  const fieldValue = getFieldFromState(state, modelString);
+  const fieldValue = getFieldFromState(state, modelString)
+    || initialFieldState;
 
   return {
     model: modelString,

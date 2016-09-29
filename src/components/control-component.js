@@ -23,6 +23,7 @@ import validityKeys from '../constants/validity-keys';
 import { dispatchBatchIfNeeded } from '../actions/batch-actions';
 import resolveModel from '../utils/resolve-model';
 import isNative from '../utils/is-native';
+import { initialFieldState } from '../reducers/form-reducer';
 
 const findDOMNode = !isNative
   ? require('react-dom').findDOMNode
@@ -96,7 +97,8 @@ function mapStateToProps(state, props) {
   } = props;
 
   const modelString = getModel(model, state);
-  const fieldValue = getFieldFromState(state, modelString);
+  const fieldValue = getFieldFromState(state, modelString)
+    || initialFieldState;
 
   return {
     model: modelString,
@@ -192,7 +194,7 @@ class Control extends Component {
       const keys = Object.keys(validators)
         .concat(Object.keys(errors));
 
-      dispatch(actions.setValidity(model, omit(fieldValue.validity, keys)));
+      dispatch(actions.resetValidity(model, keys));
     }
   }
 

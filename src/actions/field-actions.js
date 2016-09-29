@@ -9,8 +9,10 @@ import isValidityInvalid from '../utils/is-validity-invalid';
 import invertValidity from '../utils/invert-validity';
 import { trackable } from '../utils/track';
 import getForm from '../utils/get-form';
+import getFieldFromState from '../utils/get-field-from-state';
 import isValid from '../form/is-valid';
 import NULL_ACTION from '../constants/null-action';
+import omit from 'lodash/omit';
 
 const focus = trackable((model) => ({
   type: actionTypes.FOCUS,
@@ -57,6 +59,29 @@ const setValidity = trackable((model, validity, options = {}) => ({
   [options.errors ? 'errors' : 'validity']: validity,
 }));
 
+const resetValidity = trackable((model, omitKeys = false) => {
+  if (!omitKeys) {
+    return {
+      type: actionTypes.RESET_VALIDITY,
+      model,
+    };
+  }
+
+  return (dispatch, getState) => {
+    const field = getFieldFromState(getState(), model);
+
+    if (!field) {
+      dispatch(NULL_ACTION);
+    } else {
+      dispatch({
+        type: actionTypes.SET_VALIDITY,
+        model,
+        validity: omit(field.validity, omitKeys),
+      });
+    }
+  };
+});
+
 const setFieldsValidity = trackable((model, fieldsValidity, options = {}) => ({
   type: actionTypes.SET_FIELDS_VALIDITY,
   model,
@@ -75,11 +100,6 @@ const setFieldsErrors = trackable((model, fieldsErrors, options) =>
     ...options,
     errors: true,
   }));
-
-const resetValidity = trackable((model) => ({
-  type: actionTypes.RESET_VALIDITY,
-  model,
-}));
 
 const resetErrors = resetValidity;
 

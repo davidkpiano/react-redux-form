@@ -37,7 +37,7 @@ function updateFieldValue(field, action) {
       result = [];
 
       Object.keys(field).forEach((key) => {
-        if (!!~removeKeysArray.indexOf(+key) || key === '$form') return;
+        if (!!~removeKeysArray.indexOf(+key) || (key === '$form')) return;
 
         result[key] = field[key];
       });

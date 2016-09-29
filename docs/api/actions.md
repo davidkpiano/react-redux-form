@@ -804,13 +804,16 @@ dispatch(actions.validateFieldsErrors('user', {
 ```
 
 <h2 id="actions-resetValidity"></h2>
-## `actions.resetValidity(model)`
+## `actions.resetValidity(model, [omitKeys])`
 Resets the `.validity` and `.errors` for the field model to the `.validity` and `.errors` of the initial field state.
+
+If `omitKeys` is specified as an array, it will only reset the validity to the omitted keys by removing them from the current validity/errors.
 
 _Alias:_ `actions.resetErrors(model)`
 
 ### Arguments
 - `model` _(String | Function)_: the model whose validity and errors will be reset.
+- `omitKeys` _(Array)_: the keys to reset by omitting them. Default: `false` (will reset all keys)
 
 
 
