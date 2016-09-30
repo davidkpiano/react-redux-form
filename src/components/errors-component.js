@@ -17,6 +17,7 @@ import { initialFieldState } from '../reducers/form-reducer';
 
 const defaultStrategy = {
   get: _get,
+  getForm: getForm
 };
 
 function showErrors(field, form, show = true) {

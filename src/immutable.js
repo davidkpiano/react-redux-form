@@ -7,6 +7,7 @@ import { createFormCombiner } from './reducers/forms-reducer';
 import { createErrorsClass } from './components/errors-component';
 import fieldActions from './actions/field-actions';
 import getValue from './utils/get-value';
+import getForm from './utils/get-form';
 import toPath from './utils/to-path';
 import Immutable from 'immutable';
 
@@ -51,6 +52,7 @@ const immutableStrategy = {
   get: immutableGetFromState,
   set: immutableSet,
   getValue,
+  getForm: (state, modelString) => getForm(state, modelString, immutableGetFromState),
   splice: (list, ...args) => list.splice(...args),
   merge: (map, ...args) => map.merge(...args),
   remove: (map, ...args) => map.remove(...args),
