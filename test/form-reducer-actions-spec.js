@@ -86,6 +86,62 @@ describe('formReducer() (V1)', () => {
         args: [],
         expectedField: { pristine: true },
       },
+      {
+        action: actions.setPristine,
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            pristine: false,
+          },
+          name: {
+            ...initialFieldState,
+            pristine: false,
+          },
+        },
+        args: [],
+        expectedField: { pristine: true },
+        expectedForm: { pristine: true },
+      },
+      {
+        action: actions.setPristine,
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            pristine: false,
+          },
+          name: {
+            ...initialFieldState,
+            pristine: false,
+          },
+          other: {
+            ...initialFieldState,
+            pristine: true,
+          },
+        },
+        args: [],
+        expectedField: { pristine: true },
+        expectedForm: { pristine: true },
+      },
+      {
+        action: actions.setPristine,
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            pristine: false,
+          },
+          name: {
+            ...initialFieldState,
+            pristine: false,
+          },
+          other: {
+            ...initialFieldState,
+            pristine: false,
+          },
+        },
+        args: [],
+        expectedField: { pristine: true },
+        expectedForm: { pristine: false },
+      },
     ],
     [actionTypes.SET_DIRTY]: [
       {
@@ -142,8 +198,29 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setPending,
         args: [],
-        expectedForm: (form) => selectForm(form).pending
-          && !selectForm(form).retouched,
+        expectedForm: {
+          pending: true,
+          retouched: false,
+        },
+        expectedField: {
+          pending: true,
+          submitted: false,
+          submitFailed: false,
+          retouched: false,
+        },
+      },
+      {
+        action: actions.setPending,
+        args: [],
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            retouched: true,
+          },
+        },
+        expectedForm: {
+          pending: true,
+        },
         expectedField: {
           pending: true,
           submitted: false,

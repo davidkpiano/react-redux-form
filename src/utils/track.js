@@ -53,7 +53,7 @@ function trackable(actionCreator) {
   };
 }
 
+export default track;
 export {
-  track,
   trackable,
 };

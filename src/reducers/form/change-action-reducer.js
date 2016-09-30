@@ -1,11 +1,12 @@
 import actionTypes from '../../action-types';
-import icepick from 'icepick';
+import i from 'icepick';
 import get from '../../utils/get';
 import shallowEqual from '../../utils/shallow-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import compact from 'lodash/compact';
 import mapValues from '../../utils/map-values';
-import { initialFieldState, createInitialState } from '../form-reducer';
+import { createInitialState } from '../form-reducer';
+import initialFieldState from '../../constants/initial-field-state';
 
 
 function updateFieldValue(field, action) {
@@ -20,10 +21,10 @@ function updateFieldValue(field, action) {
   };
 
   if (shallowEqual(field.value, value)) {
-    return icepick.merge(field, changedFieldProps);
+    return i.merge(field, changedFieldProps);
   }
 
-  if (silent) return icepick.set(field, 'value', value);
+  if (silent) return i.set(field, 'value', value);
 
   if (removeKeys) {
     const valueIsArray = Array.isArray(field.$form.value);
@@ -42,7 +43,7 @@ function updateFieldValue(field, action) {
         result[key] = field[key];
       });
 
-      return icepick.set(compact(result), '$form', field.$form);
+      return i.set(compact(result), '$form', field.$form);
     }
 
     result = { ...field };
@@ -57,7 +58,7 @@ function updateFieldValue(field, action) {
   }
 
   if (!Array.isArray(value) && !isPlainObject(value)) {
-    return icepick.merge(field, icepick.set(changedFieldProps, 'value', value));
+    return i.merge(field, i.set(changedFieldProps, 'value', value));
   }
 
   const updatedField = mapValues(value, (subValue, index) => {
@@ -71,16 +72,16 @@ function updateFieldValue(field, action) {
       return subField;
     }
 
-    return icepick.merge(subField, icepick.set(changedFieldProps, 'value', subValue));
+    return i.merge(subField, i.set(changedFieldProps, 'value', subValue));
   });
 
-  const dirtyFormState = icepick.merge(field.$form || initialFieldState,
-    icepick.set(changedFieldProps, 'retouched',
+  const dirtyFormState = i.merge(field.$form || initialFieldState,
+    i.set(changedFieldProps, 'retouched',
       field.submitted || (field.$form && field.$form.retouched)));
 
 
-  return icepick.set(updatedField, '$form',
-    icepick.set(dirtyFormState, 'value', value));
+  return i.set(updatedField, '$form',
+    i.set(dirtyFormState, 'value', value));
 }
 
 export default function changeActionReducer(state, action, localPath) {
@@ -92,5 +93,5 @@ export default function changeActionReducer(state, action, localPath) {
 
   if (!localPath.length) return updatedField;
 
-  return icepick.setIn(state, localPath, updatedField);
+  return i.setIn(state, localPath, updatedField);
 }

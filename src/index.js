@@ -12,17 +12,14 @@ import controlPropsMap from './constants/control-props-map';
 import modeled from './enhancers/modeled-enhancer';
 import batched from './enhancers/batched-enhancer';
 
-import formReducer, {
-  initialFieldState,
-  getField,
-} from './reducers/form-reducer';
+import formReducer from './reducers/form-reducer';
+import initialFieldState from './constants/initial-field-state';
 import combineForms from './reducers/forms-reducer';
 
 import modelReducer from './reducers/model-reducer';
 
-import {
-  track,
-} from './utils/track';
+import track from './utils/track';
+import getField from './utils/get-field';
 
 import form from './form';
 

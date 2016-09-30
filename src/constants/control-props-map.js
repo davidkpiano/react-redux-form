@@ -1,12 +1,12 @@
 import isMulti from '../utils/is-multi';
-import icepick from 'icepick';
+import i from 'icepick';
 import actions from '../actions';
 
 const defaultStrategies = {
   array: [],
   object: {},
   length: (val) => val.length,
-  push: icepick.push,
+  push: i.push,
 };
 
 function createControlPropsMap(s = defaultStrategies) {

@@ -15,7 +15,7 @@ import shallowCompareWithoutChildren from '../utils/shallow-compare-without-chil
 import getModel from '../utils/get-model';
 import getFieldFromState from '../utils/get-field-from-state';
 import resolveModel from '../utils/resolve-model';
-import { initialFieldState } from '../reducers/form-reducer';
+import initialFieldState from '../constants/initial-field-state';
 
 const fieldPropTypes = {
   model: PropTypes.oneOfType([

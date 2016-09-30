@@ -13,7 +13,7 @@ import getFieldFromState from '../utils/get-field-from-state';
 import getModel from '../utils/get-model';
 import isValid from '../form/is-valid';
 import resolveModel from '../utils/resolve-model';
-import { initialFieldState } from '../reducers/form-reducer';
+import initialFieldState from '../constants/initial-field-state';
 
 const defaultStrategy = {
   get: _get,

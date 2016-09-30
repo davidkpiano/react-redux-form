@@ -1,5 +1,5 @@
 import _get from '../utils/get';
-import icepick from 'icepick';
+import i from 'icepick';
 import arraysEqual from '../utils/arrays-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import isArray from 'lodash/isArray';
@@ -7,6 +7,7 @@ import mapValues from '../utils/map-values';
 import toPath from '../utils/to-path';
 import composeReducers from '../utils/compose-reducers';
 import createBatchReducer from '../enhancers/batched-enhancer';
+import initialFieldState from '../constants/initial-field-state';
 
 import changeActionReducer from './form/change-action-reducer';
 import setValidityActionReducer from './form/set-validity-action-reducer';
@@ -21,40 +22,6 @@ import submittedActionReducer from './form/submitted-action-reducer';
 import submitFailedActionReducer from './form/submit-failed-action-reducer';
 import resetActionReducer from './form/reset-action-reducer';
 
-export const initialFieldState = {
-  focus: false,
-  pending: false,
-  pristine: true,
-  submitted: false,
-  submitFailed: false,
-  retouched: false,
-  touched: false,
-  valid: true,
-  validating: false,
-  validated: false,
-  validity: {},
-  errors: {},
-};
-
-export function getField(state, path) {
-  if (process.env.NODE_ENV !== 'production') {
-    if (!isPlainObject(state)) {
-      throw new Error(`Could not retrieve field '${path}' `
-        + 'from an invalid/empty form state.');
-    }
-  }
-
-  if (!path.length && state.$form) {
-    return state.$form;
-  }
-
-  const result = _get(state, path, initialFieldState);
-
-  if ('$form' in result) return result.$form;
-
-  return result;
-}
-
 function getSubModelString(model, subModel) {
   if (!model) return subModel;
 
@@ -68,7 +35,7 @@ export function createInitialState(model, state, customInitialFieldState = {}) {
     initialState = mapValues(state, (subState, subModel) =>
       createInitialState(getSubModelString(model, subModel), subState, customInitialFieldState));
   } else {
-    return icepick.merge(initialFieldState, {
+    return i.merge(initialFieldState, {
       initialValue: state,
       value: state,
       model,
@@ -76,14 +43,14 @@ export function createInitialState(model, state, customInitialFieldState = {}) {
     });
   }
 
-  const initialForm = icepick.merge(initialFieldState, {
+  const initialForm = i.merge(initialFieldState, {
     initialValue: state,
     value: state,
     model,
     ...customInitialFieldState,
   });
 
-  return icepick.set(initialState, '$form', initialForm);
+  return i.set(initialState, '$form', initialForm);
 }
 
 function wrapFormReducer(plugin, modelPath, initialState) {
