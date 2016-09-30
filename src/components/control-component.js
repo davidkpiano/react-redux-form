@@ -23,7 +23,7 @@ import validityKeys from '../constants/validity-keys';
 import { dispatchBatchIfNeeded } from '../actions/batch-actions';
 import resolveModel from '../utils/resolve-model';
 import isNative from '../utils/is-native';
-import { initialFieldState } from '../reducers/form-reducer';
+import initialFieldState from '../constants/initial-field-state';
 
 const findDOMNode = !isNative
   ? require('react-dom').findDOMNode

@@ -1,6 +1,6 @@
 import actionTypes from '../../action-types';
 import updateField from '../../utils/update-field';
-import { initialFieldState } from '../form-reducer';
+import initialFieldState from '../../constants/initial-field-state';
 
 export default function resetActionReducer(state, action, localPath) {
   if (action.type !== actionTypes.RESET

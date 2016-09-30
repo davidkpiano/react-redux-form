@@ -13,7 +13,7 @@ import invertValidity from '../utils/invert-validity';
 import invertValidators from '../utils/invert-validators';
 import getForm from '../utils/get-form';
 import getModel from '../utils/get-model';
-import { getField } from '../reducers/form-reducer';
+import getField from '../utils/get-field';
 import isValid from '../form/is-valid';
 import deepCompareChildren from '../utils/deep-compare-children';
 

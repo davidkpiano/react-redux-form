@@ -5,7 +5,8 @@ import shallowEqual from '../../utils/shallow-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import compact from 'lodash/compact';
 import mapValues from '../../utils/map-values';
-import { initialFieldState, createInitialState } from '../form-reducer';
+import { createInitialState } from '../form-reducer';
+import initialFieldState from '../../constants/initial-field-state';
 
 
 function updateFieldValue(field, action) {
