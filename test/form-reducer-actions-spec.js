@@ -86,6 +86,62 @@ describe('formReducer() (V1)', () => {
         args: [],
         expectedField: { pristine: true },
       },
+      {
+        action: actions.setPristine,
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            pristine: false,
+          },
+          name: {
+            ...initialFieldState,
+            pristine: false,
+          },
+        },
+        args: [],
+        expectedField: { pristine: true },
+        expectedForm: { pristine: true },
+      },
+      {
+        action: actions.setPristine,
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            pristine: false,
+          },
+          name: {
+            ...initialFieldState,
+            pristine: false,
+          },
+          other: {
+            ...initialFieldState,
+            pristine: true,
+          },
+        },
+        args: [],
+        expectedField: { pristine: true },
+        expectedForm: { pristine: true },
+      },
+      {
+        action: actions.setPristine,
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            pristine: false,
+          },
+          name: {
+            ...initialFieldState,
+            pristine: false,
+          },
+          other: {
+            ...initialFieldState,
+            pristine: false,
+          },
+        },
+        args: [],
+        expectedField: { pristine: true },
+        expectedForm: { pristine: false },
+      },
     ],
     [actionTypes.SET_DIRTY]: [
       {
