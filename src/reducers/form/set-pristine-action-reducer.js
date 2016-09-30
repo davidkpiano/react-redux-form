@@ -8,13 +8,13 @@ export default function setPristineActionReducer(state, action, localPath) {
     return state;
   }
 
-  const updatedField = updateField(state, localPath, {
+  const newState = updateField(state, localPath, {
     pristine: true,
   }, {
     pristine: true,
   });
 
-  return updateParentForms(updatedField, localPath, (form) => ({
+  return updateParentForms(newState, localPath, (form) => ({
     pristine: isPristine(form),
   }));
 }

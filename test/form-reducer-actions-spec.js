@@ -198,8 +198,29 @@ describe('formReducer() (V1)', () => {
       {
         action: actions.setPending,
         args: [],
-        expectedForm: (form) => selectForm(form).pending
-          && !selectForm(form).retouched,
+        expectedForm: {
+          pending: true,
+          retouched: false,
+        },
+        expectedField: {
+          pending: true,
+          submitted: false,
+          submitFailed: false,
+          retouched: false,
+        },
+      },
+      {
+        action: actions.setPending,
+        args: [],
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            retouched: true,
+          },
+        },
+        expectedForm: {
+          pending: true,
+        },
         expectedField: {
           pending: true,
           submitted: false,

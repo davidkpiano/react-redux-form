@@ -1,5 +1,5 @@
 import _get from '../utils/get';
-import icepick from 'icepick';
+import i from 'icepick';
 import arraysEqual from '../utils/arrays-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import isArray from 'lodash/isArray';
@@ -68,7 +68,7 @@ export function createInitialState(model, state, customInitialFieldState = {}) {
     initialState = mapValues(state, (subState, subModel) =>
       createInitialState(getSubModelString(model, subModel), subState, customInitialFieldState));
   } else {
-    return icepick.merge(initialFieldState, {
+    return i.merge(initialFieldState, {
       initialValue: state,
       value: state,
       model,
@@ -76,14 +76,14 @@ export function createInitialState(model, state, customInitialFieldState = {}) {
     });
   }
 
-  const initialForm = icepick.merge(initialFieldState, {
+  const initialForm = i.merge(initialFieldState, {
     initialValue: state,
     value: state,
     model,
     ...customInitialFieldState,
   });
 
-  return icepick.set(initialState, '$form', initialForm);
+  return i.set(initialState, '$form', initialForm);
 }
 
 function wrapFormReducer(plugin, modelPath, initialState) {

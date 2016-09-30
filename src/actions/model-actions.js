@@ -1,6 +1,6 @@
 import _get from '../utils/get';
 import identity from 'lodash/identity';
-import icepick from 'icepick';
+import i from 'icepick';
 
 import getValue from '../utils/get-value';
 import isMulti from '../utils/is-multi';
@@ -11,10 +11,10 @@ import { trackable } from '../utils/track';
 const defaultStrategies = {
   get: _get,
   getValue,
-  splice: icepick.splice,
-  merge: icepick.merge,
-  remove: icepick.dissoc,
-  push: icepick.push,
+  splice: i.splice,
+  merge: i.merge,
+  remove: i.dissoc,
+  push: i.push,
   length: (value) => value.length,
   object: {},
   array: [],

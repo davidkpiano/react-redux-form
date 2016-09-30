@@ -7,7 +7,7 @@ import _get from '../utils/get';
 import merge from '../utils/merge';
 import mapValues from '../utils/map-values';
 import isPlainObject from 'lodash/isPlainObject';
-import icepick from 'icepick';
+import i from 'icepick';
 import omit from 'lodash/omit';
 import handleFocus from '../utils/handle-focus';
 
@@ -213,7 +213,7 @@ class Control extends Component {
     };
 
     if (isPlainObject(mapProps)) {
-      return icepick.merge(originalProps,
+      return i.merge(originalProps,
         mapValues(mapProps, (value, key) => {
           if (typeof value === 'function' && key !== 'component') {
             return value(originalProps);
@@ -294,7 +294,7 @@ class Control extends Component {
         (validator, key) => dispatch(actions.asyncSetValidity(model,
           (_, done) => {
             const outerDone = (valid) => {
-              const validity = icepick.merge(fieldValue.validity, { [key]: valid });
+              const validity = i.merge(fieldValue.validity, { [key]: valid });
 
               done(validity);
             };
