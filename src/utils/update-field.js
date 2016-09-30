@@ -28,9 +28,9 @@ export default function updateField(state, path, newState, newSubState, updater)
   let fullState = state;
 
   if (!field) {
-    fullState = i.merge(state, createInitialState(
+    fullState = i.merge(createInitialState(
       state.$form.model,
-      tempInitialState(path)));
+      tempInitialState(path)), state);
 
     field = get(fullState, path);
   }
