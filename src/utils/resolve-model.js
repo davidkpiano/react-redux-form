@@ -21,15 +21,14 @@ export default function wrapWithModelResolver(WrappedComponent) {
       super(props, context);
 
       this.model = context.model;
-
-      this.resolvedModel = null;
     }
     shouldComponentUpdate(nextProps) {
       return !shallowEqual(this.props, nextProps);
     }
     render() {
-      const resolvedModel = this.resolvedModel
-        || resolveModel(this.props.model, this.model);
+      const resolvedModel = resolveModel(
+        this.props.model,
+        this.model);
 
       return <WrappedComponent {...this.props} model={resolvedModel} />;
     }
