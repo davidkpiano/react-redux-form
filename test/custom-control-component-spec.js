@@ -285,4 +285,65 @@ describe('custom <Control /> components', () => {
     input.value = 'testing';
     TestUtils.Simulate.blur(input);
   });
+
+  it('should pass fieldValue in mapProps', () => {
+    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: '' }),
+    }));
+
+    class TextInput extends React.Component {
+      render() {
+        const { focus, touched } = this.props;
+        const className = [
+          focus ? 'focus' : '',
+          touched ? 'touched' : '',
+        ].join(' ');
+
+        return (
+          <div>
+            <input
+              className={className}
+              {...this.props}
+              onChange={this.props.onChangeText}
+            />
+          </div>
+        );
+      }
+    }
+
+    TextInput.propTypes = {
+      onChangeText: React.PropTypes.func,
+      focus: React.PropTypes.bool,
+      touched: React.PropTypes.bool,
+    };
+
+    const mapProps = {
+      onChange: (props) => props.onChange,
+      onBlur: (props) => props.onBlur,
+      onFocus: (props) => props.onFocus,
+      focus: ({ fieldValue }) => fieldValue.focus,
+      touched: ({ fieldValue }) => fieldValue.touched,
+    };
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Control
+          model="test.foo"
+          component={TextInput}
+          mapProps={mapProps}
+        />
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    TestUtils.Simulate.focus(input);
+
+    assert.equal(input.className.trim(), 'focus');
+
+    TestUtils.Simulate.blur(input);
+
+    assert.equal(input.className.trim(), 'touched');
+  });
 });

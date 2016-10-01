@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
+window.React = require('react/lib/ReactWithAddons');
+
 import { Provider, connect } from 'react-redux';
 import {
   Control,
@@ -10,50 +12,42 @@ import {
 
 import store from './store.js';
 
-const UPDATE_ON = 'change';
+const UPDATE_ON = 'blur';
 
-const Rows = connect(({ rows }) => ({ rows }))(class extends Component {
-  constructor(props) {
-    super(props);
-    const { rows } = props;
+class Rows extends Component {
+  constructor() {
+    super();
+
+    const rows = Array(100).fill({
+        name: '',
+        email: '',
+        active: false,
+      });
 
     this.state = {
-      rendered: rows.map((row, i) =>
-            <tr key={i}>
-              <td>
-                <Control.text
-                  updateOn={UPDATE_ON}
-                  model={`rows[${i}].name`}
-    />
-              </td>
-              <td>
-                <Control.text
-                  updateOn={UPDATE_ON}
-                  model={`rows[${i}].email`}
-    />
-              </td>
-              <td>
-                <Field
-                  updateOn={UPDATE_ON}
-                  model={`rows[${i}].active`}
-    >
-                  <label>
-                    <input type="radio" value />
-                    Active
-                  </label>
-                  <label>
-                    <input type="radio" value={false} />
-                    Inactive
-                  </label>
-                </Field>
-              </td>
-            </tr>
-          ),
-    };
+      rows,
+      rendered: rows.map((row, i) => (
+        <tr key={i}>
+          <td>
+            <Control.text
+              updateOn={UPDATE_ON}
+              model={`rows[${i}].name`}
+              placeholder="Name"
+            />
+            <Control.text
+              updateOn={UPDATE_ON}
+              model={`rows[${i}].email`}
+              placeholder="Email"
+            />
+            <Control.checkbox
+              model={`rows[${i}].active`}
+            />
+          </td>
+        </tr>
+      )),
+    }
   }
   render() {
-    const { rows } = this.props;
-
     return (
       <section>
         <table>
@@ -64,7 +58,7 @@ const Rows = connect(({ rows }) => ({ rows }))(class extends Component {
       </section>
     );
   }
-});
+};
 
 class StressForm extends Component {
   render() {

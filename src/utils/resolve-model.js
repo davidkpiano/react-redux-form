@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import shallowEqual from './shallow-equal';
 
 function resolveModel(model, parentModel) {
   if (parentModel) {
@@ -20,6 +21,9 @@ export default function wrapWithModelResolver(WrappedComponent) {
       super(props, context);
 
       this.model = context.model;
+    }
+    shouldComponentUpdate(nextProps) {
+      return !shallowEqual(this.props, nextProps);
     }
     render() {
       const resolvedModel = resolveModel(

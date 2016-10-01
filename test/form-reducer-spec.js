@@ -1,5 +1,8 @@
 import { assert } from 'chai';
-import { actions, formReducer, initialFieldState, getField } from '../src';
+import {
+  actions,
+  formReducer,
+} from '../src';
 import isValid from '../src/form/is-valid';
 
 describe('formReducer()', () => {
@@ -13,38 +16,6 @@ describe('formReducer()', () => {
     const reducer = formReducer('test');
 
     assert.doesNotThrow(() => reducer(undefined, { type: 'ANY' }));
-  });
-
-  describe('getField() function', () => {
-    it('should return an initialFieldState given an uninitialized model', () => {
-      const reducer = formReducer('test');
-
-      const actual = reducer(undefined, { type: 'ANY' });
-
-      assert.isFunction(getField);
-
-      assert.deepEqual(getField(actual, 'any'), initialFieldState);
-
-      assert.isObject(getField(actual, 'foo').errors);
-    });
-
-    it('should maintain the full fieldState of an updated model', () => {
-      const reducer = formReducer('test');
-
-      const actual = reducer(undefined, actions.focus('test.foo'));
-
-      assert.containSubset(getField(actual, 'foo'), {
-        focus: true,
-      });
-
-      assert.isObject(getField(actual, 'foo').errors);
-    });
-
-    it('should throw an error when given an invalid argument for form state', () => {
-      assert.throws(() => getField(true, 'foo'));
-      assert.throws(() => getField(undefined, 'foo'));
-      assert.throws(() => getField(null, 'foo'));
-    });
   });
 
   describe('deep paths', () => {

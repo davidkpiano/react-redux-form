@@ -89,18 +89,37 @@ const propTypes = {
   dynamic: PropTypes.bool,
 };
 
-function isReadOnlyValue(controlProps) {
-  return ~['radio', 'checkbox'].indexOf(controlProps.type);
-}
-
-const emptyControlProps = {};
-
 function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
 
   const controlPropsMap = {
     ...defaultControlPropsMap,
     ...customControlPropsMap,
   };
+
+  function mapStateToProps(state, props) {
+    const {
+      model,
+      getter = Control.defaultProps.getter,
+      controlProps = omit(props, Object.keys(propTypes)),
+    } = props;
+
+    const modelString = getModel(model, state);
+    const fieldValue = getFieldFromState(state, modelString)
+      || initialFieldState;
+
+    return {
+      model: modelString,
+      modelValue: getter(state, modelString),
+      fieldValue,
+      controlProps,
+    };
+  }
+
+  function isReadOnlyValue(controlProps) {
+    return ~['radio', 'checkbox'].indexOf(controlProps.type);
+  }
+
+  const emptyControlProps = {};
 
   class Control extends Component {
     constructor(props) {
@@ -130,7 +149,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     }
 
     componentWillReceiveProps(nextProps) {
-      const {modelValue} = nextProps;
+      const { modelValue } = nextProps;
 
       if (modelValue !== this.props.modelValue) {
         this.setViewValue(modelValue, nextProps);
@@ -139,7 +158,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
 
     shouldComponentUpdate(nextProps, nextState) {
       const result =
-        !shallowEqual(this.props, nextProps, ['controlProps'])
+        !shallowEqual(this.props, nextProps, ['controlProps', 'mapProps'])
         || !shallowEqual(this.props.controlProps, nextProps.controlProps)
         || !shallowEqual(this.state.viewValue, nextState.viewValue);
 
@@ -188,8 +207,8 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
 
     getMappedProps() {
       const props = this.props;
-      const {mapProps} = props;
-      const {viewValue} = this.state;
+      const { mapProps } = props;
+      const { viewValue } = this.state;
       const originalProps = {
         ...props,
         ...props.controlProps,
@@ -201,22 +220,26 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
       };
 
       if (isPlainObject(mapProps)) {
-        return i.merge(originalProps,
-          mapValues(mapProps, (value, key) => {
-            if (typeof value === 'function' && key !== 'component') {
-              return value(originalProps);
-            }
+        return mapValues(mapProps, (value, key) => {
+          if (typeof value === 'function' && key !== 'component') {
+            return value(originalProps);
+          }
 
-            return value;
-          }));
+          return value;
+        });
       }
 
       return mapProps(originalProps);
     }
 
     getChangeAction(event) {
-      const {model, controlProps} = this.props;
-      const {changeAction = actions.change} = this.getMappedProps();
+      const {
+        model,
+        controlProps,
+      } = this.props;
+      const {
+        changeAction = this.props.changeAction,
+      } = this.getMappedProps();
       const value = isReadOnlyValue(controlProps)
         ? controlProps.value
         : event;
@@ -282,7 +305,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
           (validator, key) => dispatch(actions.asyncSetValidity(model,
             (_, done) => {
               const outerDone = (valid) => {
-                const validity = i.merge(fieldValue.validity, {[key]: valid});
+                const validity = i.merge(fieldValue.validity, { [key]: valid });
 
                 done(validity);
               };
@@ -299,7 +322,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     getNodeErrors() {
       const {
         node,
-        props: {fieldValue},
+        props: { fieldValue },
       } = this;
 
       if (!node || !node.willValidate) {
@@ -325,7 +348,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
 
     setViewValue(viewValue, props = this.props) {
       if (!isReadOnlyValue(props.controlProps)) {
-        this.setState({viewValue});
+        this.setState({ viewValue });
       }
     }
 
@@ -381,7 +404,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     }
 
     handleSubmit(event) {
-      const {dispatch} = this.props;
+      const { dispatch } = this.props;
 
       dispatch(this.getChangeAction(event));
     }
@@ -499,14 +522,12 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
 
       const mappedProps = this.getMappedProps();
 
-      const allowedProps = omit(mappedProps, Object.keys(propTypes));
-
       // If there is an existing control, clone it
       if (control) {
         return cloneElement(
           control,
           {
-            ...allowedProps,
+            ...mappedProps,
             onKeyPress: this.handleKeyPress,
           },
           controlProps.children);
@@ -516,7 +537,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         component,
         {
           ...controlProps,
-          ...allowedProps,
+          ...mappedProps,
           onKeyPress: this.handleKeyPress,
         },
         controlProps.children);
@@ -541,25 +562,6 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     ...defaultProps,
   };
 
-  function mapStateToProps(state, props) {
-    const {
-      model,
-      getter = Control.defaultProps.getter,
-      controlProps = omit(props, Object.keys(propTypes)),
-    } = props;
-
-    const modelString = getModel(model, state);
-    const fieldValue = getFieldFromState(state, modelString)
-      || initialFieldState;
-
-    return {
-      model: modelString,
-      modelValue: getter(state, modelString),
-      fieldValue,
-      controlProps,
-    };
-  }
-
   const ConnectedControl = resolveModel(connect(mapStateToProps)(Control));
 
   /* eslint-disable react/prop-types */
@@ -570,7 +572,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         ...controlPropsMap.default,
         ...props.mapProps,
       }}
-      {...props}
+      {...omit(props, 'mapProps')}
     />
   );
 
@@ -581,7 +583,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         ...controlPropsMap.text,
         ...props.mapProps,
       }}
-      {...props}
+      {...omit(props, 'mapProps')}
     />
   );
 
@@ -592,7 +594,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         ...controlPropsMap.textarea,
         ...props.mapProps,
       }}
-      {...props}
+      {...omit(props, 'mapProps')}
     />
   );
 
@@ -604,7 +606,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         ...controlPropsMap.radio,
         ...props.mapProps,
       }}
-      {...props}
+      {...omit(props, 'mapProps')}
     />
   );
 
@@ -616,7 +618,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         ...controlPropsMap.checkbox,
         ...props.mapProps,
       }}
-      {...props}
+      {...omit(props, 'mapProps')}
     />
   );
 
@@ -628,7 +630,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         ...controlPropsMap.file,
         ...props.mapProps,
       }}
-      {...props}
+      {...omit(props, 'mapProps')}
     />
   );
 
@@ -639,7 +641,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         ...controlPropsMap.select,
         ...props.mapProps,
       }}
-      {...props}
+      {...omit(props, 'mapProps')}
     />
   );
 
@@ -651,7 +653,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         ...controlPropsMap.reset,
         ...props.mapProps,
       }}
-      {...props}
+      {...omit(props, 'mapProps')}
     />
   );
 

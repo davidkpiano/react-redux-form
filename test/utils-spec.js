@@ -1,7 +1,7 @@
 import invertValidators from '../src/utils/invert-validators';
 import getValidity from '../src/utils/get-validity';
 import isValidityInvalid from '../src/utils/is-validity-invalid';
-import { getFormStateKey } from '../src/utils/get-form';
+import getForm, { getFormStateKey } from '../src/utils/get-form';
 import getFieldFromState from '../src/utils/get-field-from-state';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
@@ -9,7 +9,13 @@ import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
 import { assert } from 'chai';
 
-import { actions, formReducer } from '../src';
+import {
+  actions,
+  formReducer,
+  getField,
+  getModel,
+  combineForms,
+} from '../src';
 
 describe('utils', () => {
   describe('invertValidators()', () => {
@@ -158,6 +164,120 @@ describe('utils', () => {
       assert.equal(
         getFormStateKey(store.getState(), 'third.anything'),
         'deep.deeper.thirdForm');
+    });
+  });
+
+  describe('getField()', () => {
+    beforeEach(() => getForm.clearCache());
+
+    it('should exist', () => {
+      assert.isFunction(getField);
+    });
+
+    const store = createStore(combineForms({
+      test: {
+        foo: 'foo',
+        deep: {
+          bar: 'bar',
+        },
+      },
+    }));
+
+    it('should find a field from a store', () => {
+      assert.containSubset(getField(store.getState(), 'test.foo'), {
+        model: 'test.foo',
+      });
+    });
+
+    it('should find a deep field from a store', () => {
+      assert.containSubset(getField(store.getState(), 'test.deep.bar'), {
+        model: 'test.deep.bar',
+      });
+    });
+
+    it('should find a nested form from a store', () => {
+      assert.containSubset(getField(store.getState(), 'test.deep'), {
+        model: 'test.deep',
+      });
+    });
+  });
+
+  describe('getModel', () => {
+    it('should exist', () => {
+      assert.isFunction(getModel);
+    });
+
+    const store = createStore(combineForms({
+      test: {
+        foo: 'foo',
+        deep: {
+          bar: 'bar',
+        },
+      },
+    }));
+
+    it('should find a model from a store', () => {
+      assert.equal(
+        getModel(store.getState(), 'test.foo'),
+        'foo');
+    });
+
+    it('should find a deep model from a store', () => {
+      assert.equal(
+        getModel(store.getState(), 'test.deep.bar'),
+        'bar');
+    });
+
+    it('should work with bracket notation', () => {
+      assert.equal(
+        getModel(store.getState(), 'test.deep["bar"]'),
+        'bar');
+
+      assert.equal(
+        getModel(store.getState(), 'test["deep"].bar'),
+        'bar');
+
+      assert.equal(
+        getModel(store.getState(), 'test["deep"]["bar"]'),
+        'bar');
+    });
+
+    it('should find a complex model from a store', () => {
+      assert.deepEqual(
+        getModel(store.getState(), 'test.deep'),
+        { bar: 'bar' });
+    });
+
+    it('should ignore stray periods', () => {
+      assert.equal(
+        getModel(store.getState(), 'test.foo.'),
+        'foo');
+    });
+
+    it('should ignore ending empty brackets', () => {
+      assert.equal(
+        getModel(store.getState(), 'test.foo[]'),
+        'foo');
+    });
+
+    it('should work when given a number index as path', () => {
+      const arrayStore = createStore(combineForms([
+        { foo: 'foo' },
+      ]));
+
+      assert.deepEqual(
+        getModel(arrayStore.getState(), 0),
+        { foo: 'foo' });
+    });
+
+    it('should work with an array path', () => {
+      assert.equal(
+        getModel(store.getState(), ['test', 'foo']),
+        'foo');
+
+      assert.equal(
+        getModel(store.getState(), ['test', 'deep', 'bar']),
+        'bar');
     });
   });
 });

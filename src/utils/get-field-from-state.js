@@ -4,7 +4,9 @@ import getForm from './get-form';
 import isPlainObject from 'lodash/isPlainObject';
 
 export default function getFieldFromState(state, modelString) {
-  const form = getForm(state, modelString);
+  const form = (state && '$form' in state)
+    ? state
+    : getForm(state, modelString);
 
   if (!form) return null;
 
