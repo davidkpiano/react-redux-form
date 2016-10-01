@@ -6,7 +6,7 @@ import thunk from 'redux-thunk';
 import createLogger from 'redux-logger';
 import { combineForms } from 'react-redux-form';
 
-const initialState = Array(100)
+const initialState = Array(1000)
   .fill({
     name: '',
     email: '',

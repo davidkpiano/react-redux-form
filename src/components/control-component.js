@@ -151,7 +151,7 @@ class Control extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const result =
-      !shallowEqual(this.props, nextProps, ['controlProps'])
+      !shallowEqual(this.props, nextProps, ['controlProps', 'mapProps'])
       || !shallowEqual(this.props.controlProps, nextProps.controlProps)
       || !shallowEqual(this.state.viewValue, nextState.viewValue);
 
