@@ -92,7 +92,7 @@
   "peerDependencies": {
     "react": "^0.14.0 || ^15.0.0",
     "react-dom": "^0.14.7 || ^15.0.0",
-    "react-redux": "^4.0.0",
+    "react-redux": "^4.0.0 || ^5.0.0",
     "redux": "^3.0.0",
     "redux-thunk": "^2.0.1"
   }
