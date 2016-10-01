@@ -34,6 +34,10 @@ function createControlPropsMap(s = defaultStrategies) {
       ? getTextValue(props.viewValue)
       : props.value),
     name: (props) => props.name || props.model,
+    onChange: ({onChange}) => onChange,
+    onBlur: ({onBlur}) => onBlur,
+    onFocus: ({onFocus}) => onFocus,
+    onKeyPress: ({onKeyPress}) => onKeyPress,
   };
 
   return {
@@ -59,6 +63,10 @@ function createControlPropsMap(s = defaultStrategies) {
 
         return actions.change(model, !modelValue);
       },
+      onChange: ({onChange}) => onChange,
+      onBlur: ({onBlur}) => onBlur,
+      onFocus: ({onFocus}) => onFocus,
+      onKeyPress: ({onKeyPress}) => onKeyPress,
     },
     radio: {
       name: (props) => props.name || props.model,
@@ -66,21 +74,35 @@ function createControlPropsMap(s = defaultStrategies) {
         ? props.checked
         : props.modelValue === props.value),
       value: (props) => props.value,
+      onChange: ({onChange}) => onChange,
+      onBlur: ({onBlur}) => onBlur,
+      onFocus: ({onFocus}) => onFocus,
+      onKeyPress: ({onKeyPress}) => onKeyPress,
     },
     select: {
       name: (props) => (props.name || props.model),
       value: (props) => (props.modelValue),
+      onChange: ({onChange}) => onChange,
+      onBlur: ({onBlur}) => onBlur,
+      onFocus: ({onFocus}) => onFocus,
+      onKeyPress: ({onKeyPress}) => onKeyPress,
     },
     text: textPropsMap,
     textarea: textPropsMap,
     file: {
       name: (props) => props.name || props.model,
+      onChange: ({onChange}) => onChange,
+      onBlur: ({onBlur}) => onBlur,
+      onFocus: ({onFocus}) => onFocus,
+      onKeyPress: ({onKeyPress}) => onKeyPress,
     },
     reset: {
       onClick: (props) => (event) => {
         event.preventDefault();
         props.dispatch(actions.reset(props.model));
       },
+      onFocus: ({onFocus}) => onFocus,
+      onBlur: ({onBlur}) => onBlur,
     },
   };
 }

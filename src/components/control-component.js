@@ -213,22 +213,26 @@ class Control extends Component {
     };
 
     if (isPlainObject(mapProps)) {
-      return i.merge(originalProps,
-        mapValues(mapProps, (value, key) => {
-          if (typeof value === 'function' && key !== 'component') {
-            return value(originalProps);
-          }
+      return mapValues(mapProps, (value, key) => {
+        if (typeof value === 'function' && key !== 'component') {
+          return value(originalProps);
+        }
 
-          return value;
-        }));
+        return value;
+      });
     }
 
     return mapProps(originalProps);
   }
 
   getChangeAction(event) {
-    const { model, controlProps } = this.props;
-    const { changeAction = actions.change } = this.getMappedProps();
+    const {
+      model,
+      controlProps,
+    } = this.props;
+    const {
+      changeAction = this.props.changeAction,
+    } = this.getMappedProps();
     const value = isReadOnlyValue(controlProps)
       ? controlProps.value
       : event;
@@ -511,14 +515,12 @@ class Control extends Component {
 
     const mappedProps = this.getMappedProps();
 
-    const allowedProps = omit(mappedProps, Object.keys(propTypes));
-
     // If there is an existing control, clone it
     if (control) {
       return cloneElement(
         control,
         {
-          ...allowedProps,
+          ...mappedProps,
           onKeyPress: this.handleKeyPress,
         },
         controlProps.children);
@@ -528,7 +530,7 @@ class Control extends Component {
       component,
       {
         ...controlProps,
-        ...allowedProps,
+        ...mappedProps,
         onKeyPress: this.handleKeyPress,
       },
       controlProps.children);
@@ -562,7 +564,7 @@ ConnectedControl.input = (props) => (
       ...controlPropsMap.default,
       ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -573,7 +575,7 @@ ConnectedControl.text = (props) => (
       ...controlPropsMap.text,
       ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -584,7 +586,7 @@ ConnectedControl.textarea = (props) => (
       ...controlPropsMap.textarea,
       ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -596,7 +598,7 @@ ConnectedControl.radio = (props) => (
       ...controlPropsMap.radio,
       ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -608,7 +610,7 @@ ConnectedControl.checkbox = (props) => (
       ...controlPropsMap.checkbox,
       ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -620,7 +622,7 @@ ConnectedControl.file = (props) => (
       ...controlPropsMap.file,
       ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -631,7 +633,7 @@ ConnectedControl.select = (props) => (
       ...controlPropsMap.select,
       ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -643,7 +645,7 @@ ConnectedControl.reset = (props) => (
       ...controlPropsMap.reset,
       ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
