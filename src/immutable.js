@@ -4,15 +4,16 @@ import { createModelReducerEnhancer } from './enhancers/modeled-enhancer';
 import { createModelActions } from './actions/model-actions';
 import { createControlPropsMap } from './constants/control-props-map';
 import { createFormCombiner } from './reducers/forms-reducer';
+import { createControlClass } from './components/control-component';
 import fieldActions from './actions/field-actions';
 import getValue from './utils/get-value';
+import getForm from './utils/get-form';
 import toPath from './utils/to-path';
 import Immutable from 'immutable';
 
 import {
   initialFieldState,
   actionTypes,
-  Control,
   Form,
   Errors,
   createFieldClass,
@@ -47,10 +48,15 @@ function immutableGetFromState(state, modelString) {
   }, state);
 }
 
+function immutableGetForm(state, modelString) {
+  return getForm(state, modelString, immutableGetFromState);
+}
+
 const immutableStrategy = {
   get: immutableGetFromState,
   set: immutableSet,
   getValue,
+  getForm: immutableGetForm,
   splice: (list, ...args) => list.splice(...args),
   merge: (map, ...args) => map.merge(...args),
   remove: (map, ...args) => map.remove(...args),
@@ -90,13 +96,18 @@ function immutableFormReducer(model, initialState = new Immutable.Map(), options
 }
 
 const immutableModelReducer = createModeler(immutableStrategy);
-const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
+const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer/*, { transformAction }*/); // TODO: is transformAction needed?
 const immutableModelActions = createModelActions(immutableStrategy);
 const immutableControlPropsMap = createControlPropsMap(immutableStrategy);
 const ImmutableField = createFieldClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
   changeAction: immutableModelActions.change,
 });
+const ImmutableControl = createControlClass(immutableControlPropsMap, {
+  getter: immutableGetFromState,
+  changeAction: immutableModelActions.change,
+});
+
 const immutableCombineForms = createFormCombiner({
   modelReducer: immutableModelReducer,
   formReducer: immutableFormReducer,
@@ -125,7 +136,7 @@ export {
 
   // Components
   ImmutableField as Field,
-  Control,
+  ImmutableControl as Control,
   Form,
   Errors,
 
