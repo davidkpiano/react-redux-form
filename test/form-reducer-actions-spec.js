@@ -480,4 +480,58 @@ describe('formReducer() (V1)', () => {
       }
     });
   }));
+
+  describe('valid state of parent forms', () => {
+    const reducer = formReducer('test', {
+      foo: 'foo',
+      meta: {
+        bar: 'deep',
+      },
+    });
+
+    const invalidFoo = reducer(undefined,
+      actions.setValidity('test.foo', false));
+
+    it('parent form should be invalid if child is invalid', () => {
+      assert.isFalse(invalidFoo.$form.valid);
+      assert.isFalse(invalidFoo.foo.valid);
+    });
+
+    const invalidFooBar = reducer(invalidFoo,
+      actions.setValidity('test.meta.bar', false));
+
+    it('parent form should remain invalid if grandchild is invalid', () => {
+      assert.isFalse(invalidFooBar.$form.valid);
+      assert.isFalse(invalidFooBar.foo.valid);
+      assert.isFalse(invalidFooBar.meta.bar.valid);
+    });
+
+    const focusedNewField = reducer(invalidFooBar,
+      actions.focus('test.meta.new', true));
+
+    it('parent form should remain invalid if new field dynamically added', () => {
+      assert.isFalse(focusedNewField.$form.valid);
+      assert.isFalse(focusedNewField.foo.valid);
+      assert.isFalse(focusedNewField.meta.bar.valid);
+      assert.isTrue(focusedNewField.meta.new.valid);
+    });
+
+    const invalidFooValidBar = reducer(focusedNewField,
+      actions.setValidity('test.meta.bar', true));
+
+    it('parent form should remain invalid if only grandchild is valid', () => {
+      assert.isFalse(invalidFooValidBar.$form.valid);
+      assert.isFalse(invalidFooValidBar.foo.valid);
+      assert.isTrue(invalidFooValidBar.meta.bar.valid);
+    });
+
+    const validFooValidBar = reducer(invalidFooValidBar,
+      actions.setValidity('test.foo', true));
+
+    it('parent form should be valid if all descendants are valid', () => {
+      assert.isTrue(validFooValidBar.$form.valid);
+      assert.isTrue(validFooValidBar.foo.valid);
+      assert.isTrue(validFooValidBar.meta.bar.valid);
+    });
+  });
 });

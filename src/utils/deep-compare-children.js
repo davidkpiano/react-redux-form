@@ -2,7 +2,7 @@ import React from 'react';
 import shallowCompare from 'react/lib/shallowCompare';
 import shallowEqual from './shallow-equal';
 
-function compareChildren(props, nextProps) {
+export function compareChildren(props, nextProps) {
   const { children } = props;
   const { children: nextChildren } = nextProps;
 

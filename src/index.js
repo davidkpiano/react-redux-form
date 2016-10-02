@@ -19,7 +19,8 @@ import combineForms from './reducers/forms-reducer';
 import modelReducer from './reducers/model-reducer';
 
 import track from './utils/track';
-import getField from './utils/get-field';
+import getFieldFromState from './utils/get-field-from-state';
+import get from './utils/get';
 
 import form from './form';
 
@@ -53,6 +54,7 @@ export {
   form,
 
   // Utilities
-  getField,
+  getFieldFromState as getField,
+  get as getModel,
   track,
 };
