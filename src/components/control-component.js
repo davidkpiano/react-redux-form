@@ -90,30 +90,10 @@ const propTypes = {
 };
 
 function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
-
   const controlPropsMap = {
     ...defaultControlPropsMap,
     ...customControlPropsMap,
   };
-
-  function mapStateToProps(state, props) {
-    const {
-      model,
-      getter = Control.defaultProps.getter,
-      controlProps = omit(props, Object.keys(propTypes)),
-    } = props;
-
-    const modelString = getModel(model, state);
-    const fieldValue = getFieldFromState(state, modelString)
-      || initialFieldState;
-
-    return {
-      model: modelString,
-      modelValue: getter(state, modelString),
-      fieldValue,
-      controlProps,
-    };
-  }
 
   function isReadOnlyValue(controlProps) {
     return ~['radio', 'checkbox'].indexOf(controlProps.type);
@@ -562,6 +542,25 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     ...defaultProps,
   };
 
+  function mapStateToProps(state, props) {
+    const {
+      model,
+      getter = Control.defaultProps.getter,
+      controlProps = omit(props, Object.keys(propTypes)),
+    } = props;
+
+    const modelString = getModel(model, state);
+    const fieldValue = getFieldFromState(state, modelString)
+      || initialFieldState;
+
+    return {
+      model: modelString,
+      modelValue: getter(state, modelString),
+      fieldValue,
+      controlProps,
+    };
+  }
+
   const ConnectedControl = resolveModel(connect(mapStateToProps)(Control));
 
   /* eslint-disable react/prop-types */
@@ -661,6 +660,6 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
 }
 
 export {
-  createControlClass
+  createControlClass,
 };
 export default createControlClass();
