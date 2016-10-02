@@ -96,7 +96,7 @@ function immutableFormReducer(model, initialState = new Immutable.Map(), options
 }
 
 const immutableModelReducer = createModeler(immutableStrategy);
-const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer/*, { transformAction }*/); // TODO: is transformAction needed?
+const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
 const immutableModelActions = createModelActions(immutableStrategy);
 const immutableControlPropsMap = createControlPropsMap(immutableStrategy);
 const ImmutableField = createFieldClass(immutableControlPropsMap, {
