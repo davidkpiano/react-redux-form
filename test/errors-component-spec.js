@@ -2,10 +2,13 @@
 import { assert } from 'chai';
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
-import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
-import { Map } from 'immutable';
+import _get from 'lodash/get';
+import i from 'icepick';
+import Immutable from 'immutable';
+
+import { testCreateStore } from './utils';
 
 import {
   Form as _Form,
@@ -31,7 +34,10 @@ const testContexts = {
     Field: _Field,
     Errors: _Errors,
     actions: _actions,
-    initialState: {foo: ''}
+    object: {},
+    get: _get,
+    set: (state, path, value) => i.setIn(state, path, value),
+    getInitialState: (state) => state
    },
    immutable: {
      modelReducer: immutableModelReducer,
@@ -39,7 +45,17 @@ const testContexts = {
      Field: ImmutableField,
      Errors: ImmutableErrors,
      actions: immutableActions,
-     initialState: {foo: new Map()}
+     object: new Immutable.Map(),
+     get: (value, path) => {
+       const result = value.getIn(toPath(path));
+       try {
+         return result.toJS();
+       } catch (e) {
+         return result;
+       }
+     },
+     set: (state, path, value) => state.setIn(path, value),
+     getInitialState: (state) => Immutable.fromJS(state)
    }
 };
 
@@ -51,20 +67,22 @@ Object.keys(testContexts).forEach((testKey) => {
   const Field = testContext.Field;
   const Errors = testContext.Errors;
   const actions = testContext.actions;
-  const initialState = testContext.initialState;
+  const object = testContext.object;
+  const get = testContext.get;
+  const set = testContext.set;
+  const getInitialState = testContext.getInitialState;
 
-  console.log("Test Context: " + testKey);
-
-  describe('<Errors /> ' + testKey, () => {
+  describe('<Errors /> (' + testKey + ' context) ' + testKey, () => {
     it('should exist', () => {
       assert.ok(Errors);
     });
 
     describe('displaying errors from messages', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const initialState = getInitialState({foo: ''});
+      const store = testCreateStore({
         testForm: formReducer('test', initialState),
         test: modelReducer('test', initialState),
-      }));
+      });
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -124,11 +142,11 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-     /*xdescribe('displaying errors from field .errors', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+     describe('displaying errors from field .errors', () => {
+      const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test'),
-      }));
+      });
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -160,11 +178,12 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    xdescribe('displaying errors from form .errors', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        testForm: formReducer('teste', {foo: ''}),
-        teste: modelReducer('teste', {foo: ''}),
-      }));
+    describe('displaying errors from form .errors', () => {
+      const initialState = getInitialState({foo: ''});
+      const store = testCreateStore({
+        testForm: formReducer('teste', initialState),
+        test: modelReducer('teste', initialState),
+      });
 
       let formValid = false;
 
@@ -206,11 +225,12 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    xdescribe('displaying no errors', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        testForm: formReducer('test', {foo: ''}),
-        test: modelReducer('test', {foo: ''}),
-      }));
+    describe('displaying no errors', () => {
+      const initialState = getInitialState({foo: ''});
+      const store = testCreateStore({
+        testForm: formReducer('test', initialState),
+        test: modelReducer('test', initialState),
+      });
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -224,11 +244,12 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    xdescribe('displaying custom messages', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        testForm: formReducer('test', {foo: ''}),
-        test: modelReducer('test', {foo: ''}),
-      }));
+    describe('displaying custom messages', () => {
+      const initialState = getInitialState({foo: ''});
+      const store = testCreateStore({
+        testForm: formReducer('test', initialState),
+        test: modelReducer('test', initialState),
+      });
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -278,11 +299,12 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    xdescribe('displaying custom error messages', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        testForm: formReducer('test', {foo: ''}),
-        test: modelReducer('test', {foo: ''}),
-      }));
+    describe('displaying custom error messages', () => {
+      const initialState = getInitialState({foo: ''});
+      const store = testCreateStore({
+        testForm: formReducer('test', initialState),
+        test: modelReducer('test', initialState),
+      });
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -321,12 +343,12 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
 
-    xdescribe('the "show" prop', () => {
+    describe('the "show" prop', () => {
       function renderErrorsWithShow(show) {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
-          testForm: formReducer('test', {}),
+        const store = testCreateStore({
+          testForm: formReducer('test', object),
           test: modelReducer('test'),
-        }));
+        });
 
         return TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -368,10 +390,10 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should support a function that shows based on field and form value', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
-          testForm: formReducer('test', {}),
+        const store = testCreateStore({
+          testForm: formReducer('test', object),
           test: modelReducer('test'),
-        }));
+        });
 
         const showFn = (field, form) => field.focus || form.submitFailed;
 
@@ -478,12 +500,12 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    xdescribe('the "wrapper" prop', () => {
+    describe('the "wrapper" prop', () => {
       function renderErrorsWithWrapper(wrapper, props) {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
-          testForm: formReducer('test', {}),
+        const store = testCreateStore({
+          testForm: formReducer('test', object),
           test: modelReducer('test'),
-        }));
+        });
 
         return TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -588,12 +610,12 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    xdescribe('the "component" prop', () => {
+    describe('the "component" prop', () => {
       function renderErrorsWithComponent(component) {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
-          testForm: formReducer('test', {}),
+        const store = testCreateStore({
+          testForm: formReducer('test', object),
           test: modelReducer('test'),
-        }));
+        });
 
         return TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -679,11 +701,11 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    xdescribe('deep model paths', () => {
+    describe('deep model paths', () => {
       it('should work with deep model paths', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore(({
           forms: combineReducers({
-            testForm: formReducer('forms.test', {}),
+            testForm: formReducer('forms.test', object),
             test: modelReducer('forms.test'),
           }),
         }));
@@ -713,12 +735,12 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    xdescribe('single string error messages', () => {
+    describe('single string error messages', () => {
       it('should work with single string error messages', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
-          testForm: formReducer('test', {}),
+        const store = testCreateStore({
+          testForm: formReducer('test', object),
           test: modelReducer('test'),
-        }));
+        });
 
         const form = TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -739,6 +761,6 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.equal(error.innerHTML, 'this is a single error message');
       });
-    });*/
+    });
   });
 });
