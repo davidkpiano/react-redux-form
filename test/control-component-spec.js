@@ -10,6 +10,7 @@ import sinon from 'sinon';
 import capitalize from 'lodash/capitalize';
 import _get from 'lodash/get';
 import toPath from 'lodash/toPath';
+import i from 'icepick';
 import Immutable from 'immutable';
 
 import { testCreateStore, testRender } from './utils';
@@ -37,8 +38,10 @@ const testContexts = {
     formReducer: _formReducer,
     Control: _Control,
     actions: _actions,
-    initialState: { foo: 'bar' },
-    get: _get
+    object: {},
+    get: _get,
+    set: (state, path, value) => i.setIn(state, path, value),
+    getInitialState: (state) => state
   },
   immutable: {
     controls: immutableControls,
@@ -46,7 +49,7 @@ const testContexts = {
     formReducer: immutableFormReducer,
     Control: immutableControl,
     actions: immutableActions,
-    initialState: Immutable.fromJS({ foo: 'bar' }),
+    object: new Immutable.Map(),
     get: (value, path) => {
       const result = value.getIn(toPath(path));
       try {
@@ -54,7 +57,9 @@ const testContexts = {
       } catch (e) {
         return result;
       }
-    }
+    },
+    set: (state, path, value) => state.setIn(path, value),
+    getInitialState: (state) => Immutable.fromJS(state)
   }
 };
 
@@ -65,8 +70,10 @@ Object.keys(testContexts).forEach((testKey) => {
   const formReducer = testContext.formReducer;
   const Control = testContext.Control;
   const actions = testContext.actions;
-  const initialState = testContext.initialState;
+  const object = testContext.object;
   const get = testContext.get;
+  const set = testContext.set;
+  const getInitialState = testContext.getInitialState;
 
   describe('<Control> component (' + testKey + ' context)', () => {
 
@@ -77,6 +84,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('basic functionality', () => {
+      const initialState = getInitialState({foo: 'bar'});
       const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', initialState),
@@ -105,6 +113,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('onLoad prop', () => {
+      const initialState = getInitialState({foo: 'bar'});
       const store = testCreateStore({
         test: modelReducer('test', initialState),
         testForm: formReducer('test', initialState),
@@ -139,7 +148,7 @@ Object.keys(testContexts).forEach((testKey) => {
   });
 
 
-  /*describe('Extended Control components', () => {
+  describe('Extended Control components', () => {
     const textFieldElements = [
       [''],
       ['text'],
@@ -152,9 +161,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     textFieldElements.forEach(([controlType, type]) => {
       describe(`with <Control.${controlType}> ${type ? `and type="${type}"` : ''}`, () => {
+        const initialState = getInitialState({foo: 'bar'});
         const store = testCreateStore({
           testForm: formReducer('test'),
-          test: modelReducer('test', {foo: 'bar'}),
+          test: modelReducer('test', initialState),
         });
 
         const TestControl = Control[controlType] || Control;
@@ -196,7 +206,7 @@ Object.keys(testContexts).forEach((testKey) => {
           TestUtils.Simulate.change(node);
 
           assert.equal(
-            store.getState().test.foo,
+            get(store.getState().test, 'foo'),
             'testing');
 
           node.value = 'testing again';
@@ -204,16 +214,17 @@ Object.keys(testContexts).forEach((testKey) => {
           TestUtils.Simulate.change(node);
 
           assert.equal(
-            store.getState().test.foo,
+            get(store.getState().test, 'foo'),
             'testing again');
         });
       });
     });
 
     describe('with <Control.radio />', () => {
+      const initialState = getInitialState({foo: 'two'});
       const store = testCreateStore({
         testForm: formReducer('test'),
-        test: modelReducer('test', {foo: 'two'}),
+        test: modelReducer('test', initialState),
       });
 
       const field = TestUtils.renderIntoDocument(
@@ -242,13 +253,13 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.change(radioOne);
 
         assert.equal(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           'one');
 
         TestUtils.Simulate.change(radioTwo);
 
         assert.equal(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           'two');
       });
 
@@ -273,11 +284,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <Control.checkbox /> (single toggle)', () => {
+      const initialState = getInitialState({single: true});
       const store = testCreateStore({
         testForm: formReducer('test'),
-        test: modelReducer('test', {
-          single: true,
-        }),
+        test: modelReducer('test', initialState),
       });
 
       const field = TestUtils.renderIntoDocument(
@@ -300,13 +310,13 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.change(checkbox);
 
         assert.equal(
-          store.getState().test.single,
+          get(store.getState().test, 'single'),
           false, 'false');
 
         TestUtils.Simulate.change(checkbox);
 
         assert.equal(
-          store.getState().test.single,
+          get(store.getState().test, 'single'),
           true, 'true');
       });
 
@@ -328,12 +338,11 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <Control.checkbox /> (multi toggle)', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const initialState = getInitialState({foo: [1]});
+      const store = testCreateStore({
         testForm: formReducer('test'),
-        test: modelReducer('test', {
-          foo: [1],
-        }),
-      }));
+        test: modelReducer('test', initialState),
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -361,31 +370,31 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.change(checkboxes[0]);
 
         assert.sameMembers(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           [], 'all unchecked');
 
         TestUtils.Simulate.change(checkboxes[1]);
 
         assert.sameMembers(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           [2], 'one checked');
 
         TestUtils.Simulate.change(checkboxes[0]);
 
         assert.sameMembers(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           [1, 2], 'two checked');
 
         TestUtils.Simulate.change(checkboxes[2]);
 
         assert.sameMembers(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           [1, 2, 3], 'all checked');
 
         TestUtils.Simulate.change(checkboxes[0]);
 
         assert.sameMembers(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           [2, 3], 'one unchecked');
       });
 
@@ -399,11 +408,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <Control.checkbox /> (custom onChange)', () => {
+      const initialState = getInitialState({foo: true});
       const store = testCreateStore({
         testForm: formReducer('test'),
-        test: modelReducer('test', {
-          foo: true,
-        }),
+        test: modelReducer('test', initialState),
       });
 
       const handleOnChange = sinon.spy((e) => e);
@@ -423,15 +431,16 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should update the state as expected', () => {
-        assert.isFalse(store.getState().test.foo);
+        assert.isFalse(get(store.getState().test, 'foo'));
       });
     });
 
     describe('with <Control.file />', () => {
       it('should update with an array of files', () => {
+        const initialState = getInitialState({foo: []});
         const store = testCreateStore({
           testForm: formReducer('test'),
-          test: modelReducer('test', {foo: []}),
+          test: modelReducer('test', initialState),
         });
 
         const field = TestUtils.renderIntoDocument(
@@ -453,7 +462,7 @@ Object.keys(testContexts).forEach((testKey) => {
         });
 
         assert.deepEqual(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           [
             {name: 'first.jpg'},
             {name: 'second.jpg'},
@@ -462,11 +471,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <Control.select />', () => {
+      const initialState = getInitialState({foo: 'one'});
       const store = testCreateStore({
         testForm: formReducer('test'),
-        test: modelReducer('test', {
-          foo: 'one',
-        }),
+        test: modelReducer('test', initialState),
       });
 
       const field = TestUtils.renderIntoDocument(
@@ -497,7 +505,7 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.change(options[1]);
 
         assert.equal(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           'two');
       });
 
@@ -513,15 +521,16 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isTrue(options[3].selected);
         assert.equal(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           'four');
       });
     });
 
     describe('ignoring events with ignore prop', () => {
+      const initialState = getInitialState({foo: 'bar'});
       const store = testCreateStore({
-        test: modelReducer('test', {foo: 'bar'}),
-        testForm: formReducer('test', {foo: 'bar'}),
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
       });
 
       const control = testRender(
@@ -548,13 +557,15 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('validators and validateOn property', () => {
+      let initialState = getInitialState({
+        foo: '',
+        blur: '',
+        external: ''
+      });
+
       const store = testCreateStore({
         testForm: formReducer('test'),
-        test: modelReducer('test', {
-          foo: '',
-          blur: '',
-          external: '',
-        }),
+        test: modelReducer('test', initialState),
       });
 
       it('should set the proper field state for validation', () => {
@@ -679,7 +690,7 @@ Object.keys(testContexts).forEach((testKey) => {
       const reducer = formReducer('test');
       const store = testCreateStore({
         testForm: reducer,
-        test: modelReducer('test', {}),
+        test: modelReducer('test', object),
       });
 
       it('should set the proper field state for a valid async validation', done => {
@@ -775,7 +786,7 @@ Object.keys(testContexts).forEach((testKey) => {
       const reducer = formReducer('test');
       const store = testCreateStore({
         testForm: reducer,
-        test: modelReducer('test', {}),
+        test: modelReducer('test', object),
       });
 
       const field = TestUtils.renderIntoDocument(
@@ -825,10 +836,11 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('validation after reset', () => {
+      const initialState = getInitialState({foo: ''});
       const reducer = formReducer('test');
       const store = testCreateStore({
         testForm: reducer,
-        test: modelReducer('test', {foo: ''}),
+        test: modelReducer('test', initialState),
       });
 
       TestUtils.renderIntoDocument(
@@ -875,11 +887,10 @@ Object.keys(testContexts).forEach((testKey) => {
       const reducer = formReducer('test');
 
       it('should set the proper field state for errors', () => {
+        const initialState = getInitialState({foo: ''});
         const store = testCreateStore({
           testForm: reducer,
-          test: modelReducer('test', {
-            foo: '',
-          }),
+          test: modelReducer('test', initialState),
         });
 
         const field = TestUtils.renderIntoDocument(
@@ -920,11 +931,10 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should only validate errors on blur if validateOn="blur"', () => {
+        const initialState = getInitialState({foo: ''});
         const store = testCreateStore({
           testForm: reducer,
-          test: modelReducer('test', {
-            foo: '',
-          }),
+          test: modelReducer('test', initialState),
         });
 
         let timesValidationCalled = 0;
@@ -993,12 +1003,11 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should handle a validator function for errors', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const initialState = getInitialState({foo: ''});
+        const store = testCreateStore({
           testForm: reducer,
-          test: modelReducer('test', {
-            foo: '',
-          }),
-        }));
+          test: modelReducer('test', initialState),
+        });
 
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -1029,7 +1038,7 @@ Object.keys(testContexts).forEach((testKey) => {
       const reducer = formReducer('test');
       const store = testCreateStore({
         testForm: reducer,
-        test: modelReducer('test', {}),
+        test: modelReducer('test', object),
       });
 
       class DynamicSelectForm extends React.Component {
@@ -1081,8 +1090,9 @@ Object.keys(testContexts).forEach((testKey) => {
       ];
 
       onEvents.forEach((onEvent) => {
+        const initialState = getInitialState({foo: 'initial'});
         const store = testCreateStore({
-          test: modelReducer('test', {foo: 'initial'}),
+          test: modelReducer('test', initialState),
           testForm: formReducer('test'),
         });
 
@@ -1098,30 +1108,29 @@ Object.keys(testContexts).forEach((testKey) => {
 
           const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
-          assert.equal(store.getState().test.foo, 'initial');
+          assert.equal(get(store.getState().test, 'foo'), 'initial');
 
           const testValue = `${onEvent} test`;
 
           control.value = testValue;
 
-          assert.equal(store.getState().test.foo, 'initial',
+          assert.equal(get(store.getState().test, 'foo'), 'initial',
             'Model value should not change yet');
 
           TestUtils.Simulate[onEvent](control);
 
-          assert.equal(store.getState().test.foo, testValue);
+          assert.equal(get(store.getState().test, 'foo'), testValue);
         });
       });
     });
 
     describe('validation on load', () => {
+      const initialState = getInitialState({foo: 'invalid'});
       const reducer = formReducer('test');
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: reducer,
-        test: modelReducer('test', {
-          foo: 'invalid',
-        }),
-      }));
+        test: modelReducer('test', initialState),
+      });
 
       it('should always validate the model initially', () => {
         TestUtils.renderIntoDocument(
@@ -1151,7 +1160,8 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('syncing control defaultValue on load', () => {
-      const reducer = modelReducer('test', {foo: ''});
+      const initialState = getInitialState({foo: ''});
+      const reducer = modelReducer('test', initialState);
       const store = testCreateStore({
         test: reducer,
         testForm: formReducer('test'),
@@ -1168,7 +1178,7 @@ Object.keys(testContexts).forEach((testKey) => {
         );
 
         assert.equal(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           'testing');
       });
     });
@@ -1201,13 +1211,14 @@ Object.keys(testContexts).forEach((testKey) => {
         });
 
         assert.equal(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           'testing');
       });
     });
 
     describe('changeAction prop', () => {
-      const reducer = modelReducer('test', {foo: ''});
+      const initialState = getInitialState({foo: ''});
+      const reducer = modelReducer('test', initialState);
       const store = testCreateStore({
         test: reducer,
         testForm: formReducer('test'),
@@ -1237,13 +1248,18 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(customChanged);
 
         assert.equal(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           'testing');
       });
     });
 
     describe('event handlers on control', () => {
-      const reducer = modelReducer('test', {foo: '', bar: ''});
+      let initialState = getInitialState({
+        foo: '',
+        bar: ''
+      });
+
+      const reducer = modelReducer('test', initialState);
       const store = testCreateStore({
         test: reducer,
         testForm: formReducer('test'),
@@ -1359,7 +1375,7 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(onChangeFnSpy.calledOnce);
         assert.isUndefined(onChangeFnSpy.returnValues[0]);
         assert.equal(
-          store.getState().test.foo,
+          get(store.getState().test, 'foo'),
           'testing 2');
       });
 
@@ -1408,9 +1424,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('unmounting', () => {
       it('should set the validity of the model to true when umounted', () => {
+        const initialState = getInitialState({foo: ''});
         const store = testCreateStore({
-          test: modelReducer('test', {foo: ''}),
-          testForm: formReducer('test', {foo: ''}),
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
         });
 
         const container = document.createElement('div');
@@ -1432,9 +1449,10 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should only reset the validity of field-specific validators', () => {
+        const initialState = getInitialState({foo: ''});
         const store = testCreateStore({
-          test: modelReducer('test', {foo: ''}),
-          testForm: formReducer('test', {foo: ''}),
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
         });
 
         const container = document.createElement('div');
@@ -1476,9 +1494,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('with <Control.reset>', () => {
       it('should reset the given model', () => {
+        const initialState = getInitialState({foo: ''});
         const store = testCreateStore({
-          test: modelReducer('test', {foo: ''}),
-          testForm: formReducer('test', {foo: ''}),
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
         });
 
         const container = document.createElement('div');
@@ -1501,11 +1520,11 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.Simulate.change(input);
 
-        assert.equal(store.getState().test.foo, 'changed');
+        assert.equal(get(store.getState().test, 'foo'), 'changed');
 
         TestUtils.Simulate.click(reset);
 
-        assert.equal(store.getState().test.foo, '');
+        assert.equal(get(store.getState().test, 'foo'), '');
       });
     });
 
@@ -1514,9 +1533,10 @@ Object.keys(testContexts).forEach((testKey) => {
         handleFocus.clearCache();
       });
 
+      const initialState = getInitialState({foo: 'bar'});
       const store = testCreateStore({
-        test: modelReducer('test', {foo: 'bar'}),
-        testForm: formReducer('test', {foo: 'bar'}),
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
       });
 
       const control = testRender(
@@ -1544,9 +1564,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('handling on multiple events', () => {
+      const initialState = getInitialState({foo: 'bar'});
       const store = testCreateStore({
-        test: modelReducer('test', {foo: 'bar'}),
-        testForm: formReducer('test', {foo: 'bar'}),
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
       });
 
       const control = testRender(
@@ -1562,7 +1583,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.Simulate.change(input);
 
-        assert.equal(store.getState().test.foo, 'update on change');
+        assert.equal(get(store.getState().test, 'foo'), 'update on change');
       });
 
       it('should update on blur', () => {
@@ -1570,8 +1591,8 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.Simulate.blur(input);
 
-        assert.equal(store.getState().test.foo, 'update on blur');
+        assert.equal(get(store.getState().test, 'foo'), 'update on blur');
       });
     });
-  });*/
+  });
 });
