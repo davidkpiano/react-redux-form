@@ -5,6 +5,7 @@ import { createModelActions } from './actions/model-actions';
 import { createControlPropsMap } from './constants/control-props-map';
 import { createFormCombiner } from './reducers/forms-reducer';
 import { createErrorsClass } from './components/errors-component';
+import { createControlClass } from './components/control-component';
 import fieldActions from './actions/field-actions';
 import getValue from './utils/get-value';
 import getForm from './utils/get-form';
@@ -14,7 +15,6 @@ import Immutable from 'immutable';
 import {
   initialFieldState,
   actionTypes,
-  Control,
   Form,
   createFieldClass,
   batched,
@@ -48,11 +48,15 @@ function immutableGetFromState(state, modelString) {
   }, state);
 }
 
+function immutableGetForm(state, modelString) {
+  return getForm(state, modelString, immutableGetFromState);
+}
+
 const immutableStrategy = {
   get: immutableGetFromState,
   set: immutableSet,
   getValue,
-  getForm: (state, modelString) => getForm(state, modelString, immutableGetFromState),
+  getForm: immutableGetForm,
   splice: (list, ...args) => list.splice(...args),
   merge: (map, ...args) => map.merge(...args),
   remove: (map, ...args) => map.remove(...args),
@@ -100,6 +104,11 @@ const ImmutableField = createFieldClass(immutableControlPropsMap, {
   changeAction: immutableModelActions.change,
 });
 const ImmutableErrors = createErrorsClass(immutableStrategy);
+const ImmutableControl = createControlClass(immutableControlPropsMap, {
+  getter: immutableGetFromState,
+  changeAction: immutableModelActions.change,
+});
+
 const immutableCombineForms = createFormCombiner({
   modelReducer: immutableModelReducer,
   formReducer: immutableFormReducer,
@@ -128,7 +137,7 @@ export {
 
   // Components
   ImmutableField as Field,
-  Control,
+  ImmutableControl as Control,
   Form,
   ImmutableErrors as Errors,
 
