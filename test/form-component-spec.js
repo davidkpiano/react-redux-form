@@ -7,10 +7,6 @@ import { combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import createTestStore from 'redux-test-store';
 import sinon from 'sinon';
-import _get from 'lodash/get';
-import toPath from 'lodash/toPath';
-import i from 'icepick';
-import Immutable from 'immutable';
 
 import isValid from '../src/form/is-valid';
 import { defaultTestContexts, testCreateStore, testRender } from './utils';
@@ -64,7 +60,6 @@ Object.keys(testContexts).forEach((testKey) => {
   const actions = testContext.actions;
   const object = testContext.object;
   const get = testContext.get;
-  const length = testContext.length;
   const getInitialState = testContext.getInitialState;
 
   describe(`<Form> component (${testKey} context)`, () => {
@@ -891,12 +886,12 @@ Object.keys(testContexts).forEach((testKey) => {
             model="test"
             validators={{
               '': {
-                foobar: (val) => val.foo + val.bar === 'foobar',
+                foobar: (val) => get(val, 'foo') + get(val, 'bar') === 'foobar',
               },
             }}
             errors={{
               '': {
-                formError: (val) => val.foo === 'error' && 'form error',
+                formError: (val) => get(val, 'foo') === 'error' && 'form error',
               },
             }}
           >
@@ -1112,7 +1107,7 @@ Object.keys(testContexts).forEach((testKey) => {
           <Form
             model="test"
             validators={{
-              foo: (val) => val && length(val),
+              foo: (val) => val && val.length,
             }}
             onSubmit={handleSubmit}
           >
@@ -1156,7 +1151,7 @@ Object.keys(testContexts).forEach((testKey) => {
         testForm: formReducer('test', initialState),
       }));
 
-      const passwordsMatch = (val) => val.pass1 === val.pass2;
+      const passwordsMatch = (val) => get(val, 'pass1') === get(val, 'pass2');
       const required = (val) => val && val.length;
 
       const form = TestUtils.renderIntoDocument(
@@ -1188,12 +1183,7 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.submit(formElement);
 
         assert.isFalse(store.getState().testForm.$form.valid);
-        assert.containSubset(
-          store.getState().testForm.$form,
-          {
-            submitFailed: true,
-          });
-
+        assert.isTrue(store.getState().testForm.$form.submitFailed);
 
         pass1.value = 'aaa';
         pass2.value = 'bbb';
@@ -1204,7 +1194,6 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.submit(formElement);
 
         assert.isTrue(store.getState().testForm.$form.submitFailed);
-
         assert.isFalse(store.getState().testForm.$form.valid);
       });
 
@@ -1236,7 +1225,7 @@ Object.keys(testContexts).forEach((testKey) => {
         loginForm: formReducer('login', initialState),
       });
       const handleSubmit = (values) => {
-        if (values.foo !== 'changed') {
+        if (get(values, 'foo') !== 'changed') {
           store.dispatch(actions.setValidity('login', {
             correctDetails: false,
           }));
