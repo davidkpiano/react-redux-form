@@ -95,10 +95,16 @@ function immutableFormReducer(model, initialState = new Immutable.Map(), options
   });
 }
 
-const immutableModelReducer = createModeler(immutableStrategy);
-const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
 const immutableModelActions = createModelActions(immutableStrategy);
 const immutableFieldActions = createFieldActions(immutableStrategy);
+
+const immutableActions = {
+  ...immutableModelActions,
+  ...immutableFieldActions,
+};
+
+const immutableModelReducer = createModeler(immutableStrategy);
+const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
 const immutableControlPropsMap = createControlPropsMap(immutableStrategy);
 const ImmutableField = createFieldClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
@@ -108,7 +114,10 @@ const ImmutableControl = createControlClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
   changeAction: immutableModelActions.change,
 });
-const ImmutableForm = createFormClass(immutableStrategy);
+const ImmutableForm = createFormClass({
+  ...immutableStrategy,
+  actions: immutableActions,
+});
 
 const immutableCombineForms = createFormCombiner({
   modelReducer: immutableModelReducer,
@@ -118,11 +127,6 @@ const immutableCombineForms = createFormCombiner({
     ? val.toJS()
     : val),
 });
-
-const immutableActions = {
-  ...immutableModelActions,
-  ...immutableFieldActions,
-};
 
 export {
   // Reducers

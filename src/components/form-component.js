@@ -35,6 +35,8 @@ const propTypes = {
 
 const defaultStrategy = {
   get: _get,
+  getForm,
+  actions,
 };
 
 function createFormClass(s = defaultStrategy) {
@@ -99,7 +101,7 @@ function createFormClass(s = defaultStrategy) {
         // but its fields are valid and the value has changed,
         // the form should be "valid" again.
         if (!formValue.$form.valid && fieldsValid(formValue)) {
-          dispatch(actions.setValidity(model, true));
+          dispatch(s.actions.setValidity(model, true));
         }
 
         return;
@@ -169,7 +171,7 @@ function createFormClass(s = defaultStrategy) {
       }
 
       if (validityChanged) {
-        dispatch(actions.setFieldsErrors(model, fieldsErrors));
+        dispatch(s.actions.setFieldsErrors(model, fieldsErrors));
       }
     }
 
@@ -181,7 +183,7 @@ function createFormClass(s = defaultStrategy) {
         onSubmit = identity,
       } = this.props;
 
-      dispatch(actions.setPending(model));
+      dispatch(s.actions.setPending(model));
 
       return onSubmit(modelValue);
     }
@@ -192,7 +194,7 @@ function createFormClass(s = defaultStrategy) {
         model,
       } = this.props;
 
-      dispatch(actions.setSubmitFailed(model));
+      dispatch(s.actions.setSubmitFailed(model));
     }
 
     handleReset(e) {
@@ -203,7 +205,7 @@ function createFormClass(s = defaultStrategy) {
         dispatch,
       } = this.props;
 
-      dispatch(actions.reset(model));
+      dispatch(s.actions.reset(model));
     }
 
     handleSubmit(e) {
@@ -220,7 +222,7 @@ function createFormClass(s = defaultStrategy) {
       } = this.props;
 
       const formValid = formValue
-        ? formValue.valid
+        ? formValue.valid  // TODO: should this be formValue.$form.valid?  Write a test to catch this?
         : true;
 
       if (!validators && onSubmit && formValid) {
@@ -238,7 +240,7 @@ function createFormClass(s = defaultStrategy) {
         ? merge(invertValidators(validators), errorValidators)
         : errorValidators;
 
-      dispatch(actions.validateFieldsErrors(
+      dispatch(s.actions.validateFieldsErrors(
         model,
         finalErrorValidators,
         validationOptions));
@@ -287,7 +289,7 @@ function createFormClass(s = defaultStrategy) {
     return {
       model: modelString,
       modelValue: s.get(state, modelString),
-      formValue: getForm(state, modelString),
+      formValue: s.getForm(state, modelString),
     };
   }
 
