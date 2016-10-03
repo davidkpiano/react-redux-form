@@ -33,253 +33,265 @@ const propTypes = {
   children: PropTypes.node,
 };
 
-class Form extends Component {
-  constructor(props) {
-    super(props);
+const defaultStrategy = {
+  get: _get,
+};
 
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleReset = this.handleReset.bind(this);
-    this.handleValidSubmit = this.handleValidSubmit.bind(this);
-    this.handleInvalidSubmit = this.handleInvalidSubmit.bind(this);
-    this.attachNode = this.attachNode.bind(this);
-  }
+function createFormClass(s = defaultStrategy) {
+  class Form extends Component {
+    constructor(props) {
+      super(props);
 
-  getChildContext() {
-    return { model: this.props.model };
-  }
-
-  componentDidMount() {
-    if (this.props.validateOn !== 'change') return;
-
-    this.validate(this.props, true);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { validateOn } = this.props;
-
-    if (validateOn !== 'change') return;
-
-    this.validate(nextProps);
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return deepCompareChildren(this, nextProps);
-  }
-
-  attachNode(node) {
-    if (!node) return;
-
-    this._node = node;
-
-    this._node.submit = this.handleSubmit;
-  }
-
-  validate(nextProps, initial = false) {
-    const {
-      model,
-      dispatch,
-      formValue,
-      modelValue,
-    } = this.props;
-
-    const {
-      validators,
-      errors,
-    } = nextProps;
-
-    if (!formValue) return;
-
-    if (!validators && !errors && (modelValue !== nextProps.modelValue)) {
-      if (!isValid(formValue)) {
-        dispatch(actions.setValidity(model, true));
-      }
-
-      return;
+      this.handleSubmit = this.handleSubmit.bind(this);
+      this.handleReset = this.handleReset.bind(this);
+      this.handleValidSubmit = this.handleValidSubmit.bind(this);
+      this.handleInvalidSubmit = this.handleInvalidSubmit.bind(this);
+      this.attachNode = this.attachNode.bind(this);
     }
 
-    const validatorsChanged = validators !== this.props.validators || errors !== this.props.errors;
-
-    let validityChanged = false;
-
-    const fieldsValidity = mapValues(validators, (validator, field) => {
-      const nextValue = field
-        ? _get(nextProps.modelValue, field)
-        : nextProps.modelValue;
-
-      const currentValue = field
-        ? _get(modelValue, field)
-        : modelValue;
-
-      const currentValidity = getField(formValue, field).validity;
-
-      if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
-        return currentValidity;
-      }
-
-      const fieldValidity = getValidity(validator, nextValue);
-
-      if (!shallowEqual(fieldValidity, currentValidity)) {
-        validityChanged = true;
-      }
-
-      return fieldValidity;
-    });
-
-    const fieldsErrorsValidity = mapValues(errors, (errorValidator, field) => {
-      const nextValue = field
-        ? _get(nextProps.modelValue, field)
-        : nextProps.modelValue;
-
-      const currentValue = field
-        ? _get(modelValue, field)
-        : modelValue;
-
-      const currentErrors = getField(formValue, field).errors;
-
-      if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
-        return getField(formValue, field).errors;
-      }
-
-      const fieldErrors = getValidity(errorValidator, nextValue);
-
-      if (!shallowEqual(fieldErrors, currentErrors)) {
-        validityChanged = true;
-      }
-
-      return fieldErrors;
-    });
-
-    const fieldsErrors = merge(
-      invertValidity(fieldsValidity),
-      fieldsErrorsValidity
-    );
-
-    // Compute form-level validity
-    if (!fieldsValidity.hasOwnProperty('') && !fieldsErrorsValidity.hasOwnProperty('')) {
-      fieldsErrors[''] = false;
+    getChildContext() {
+      return { model: this.props.model };
     }
 
-    if (validityChanged) {
-      dispatch(actions.setFieldsErrors(model, fieldsErrors));
+    componentDidMount() {
+      if (this.props.validateOn !== 'change') return;
+
+      this.validate(this.props, true);
     }
-  }
 
-  handleValidSubmit() {
-    const {
-      dispatch,
-      model,
-      modelValue,
-      onSubmit = identity,
-    } = this.props;
+    componentWillReceiveProps(nextProps) {
+      const { validateOn } = this.props;
 
-    dispatch(actions.setPending(model));
+      if (validateOn !== 'change') return;
 
-    return onSubmit(modelValue);
-  }
+      this.validate(nextProps);
+    }
 
-  handleInvalidSubmit() {
-    const {
-      dispatch,
-      model,
-    } = this.props;
+    shouldComponentUpdate(nextProps) {
+      return deepCompareChildren(this, nextProps);
+    }
 
-    dispatch(actions.setSubmitFailed(model));
-  }
+    attachNode(node) {
+      if (!node) return;
 
-  handleReset(e) {
-    if (e) e.preventDefault();
+      this._node = node;
 
-    const {
-      model,
-      dispatch,
-    } = this.props;
+      this._node.submit = this.handleSubmit;
+    }
 
-    dispatch(actions.reset(model));
-  }
+    validate(nextProps, initial = false) {
+      const {
+        model,
+        dispatch,
+        formValue,
+        modelValue,
+      } = this.props;
 
-  handleSubmit(e) {
-    if (e) e.preventDefault();
+      const {
+        validators,
+        errors,
+      } = nextProps;
 
-    const {
-      model,
-      modelValue,
-      formValue,
-      onSubmit,
-      dispatch,
-      validators,
-      errors: errorValidators,
-    } = this.props;
+      if (!formValue) return;
 
-    const formValid = formValue
-      ? formValue.valid
-      : true;
+      if (!validators && !errors && (modelValue !== nextProps.modelValue)) {
+        if (!isValid(formValue)) {
+          dispatch(actions.setValidity(model, true));
+        }
 
-    if (!validators && onSubmit && formValid) {
-      onSubmit(modelValue);
+        return;
+      }
+
+      const validatorsChanged = validators !== this.props.validators
+        || errors !== this.props.errors;
+
+      let validityChanged = false;
+
+      const fieldsValidity = mapValues(validators, (validator, field) => {
+        const nextValue = field
+          ? s.get(nextProps.modelValue, field)
+          : nextProps.modelValue;
+
+        const currentValue = field
+          ? s.get(modelValue, field)
+          : modelValue;
+
+        const currentValidity = getField(formValue, field).validity;
+
+        if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
+          return currentValidity;
+        }
+
+        const fieldValidity = getValidity(validator, nextValue);
+
+        if (!shallowEqual(fieldValidity, currentValidity)) {
+          validityChanged = true;
+        }
+
+        return fieldValidity;
+      });
+
+      const fieldsErrorsValidity = mapValues(errors, (errorValidator, field) => {
+        const nextValue = field
+          ? s.get(nextProps.modelValue, field)
+          : nextProps.modelValue;
+
+        const currentValue = field
+          ? s.get(modelValue, field)
+          : modelValue;
+
+        const currentErrors = getField(formValue, field).errors;
+
+        if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
+          return getField(formValue, field).errors;
+        }
+
+        const fieldErrors = getValidity(errorValidator, nextValue);
+
+        if (!shallowEqual(fieldErrors, currentErrors)) {
+          validityChanged = true;
+        }
+
+        return fieldErrors;
+      });
+
+      const fieldsErrors = merge(
+        invertValidity(fieldsValidity),
+        fieldsErrorsValidity
+      );
+
+      // Compute form-level validity
+      if (!fieldsValidity.hasOwnProperty('') && !fieldsErrorsValidity.hasOwnProperty('')) {
+        fieldsErrors[''] = false;
+      }
+
+      if (validityChanged) {
+        dispatch(actions.setFieldsErrors(model, fieldsErrors));
+      }
+    }
+
+    handleValidSubmit() {
+      const {
+        dispatch,
+        model,
+        modelValue,
+        onSubmit = identity,
+      } = this.props;
+
+      dispatch(actions.setPending(model));
+
+      return onSubmit(modelValue);
+    }
+
+    handleInvalidSubmit() {
+      const {
+        dispatch,
+        model,
+      } = this.props;
+
+      dispatch(actions.setSubmitFailed(model));
+    }
+
+    handleReset(e) {
+      if (e) e.preventDefault();
+
+      const {
+        model,
+        dispatch,
+      } = this.props;
+
+      dispatch(actions.reset(model));
+    }
+
+    handleSubmit(e) {
+      if (e) e.preventDefault();
+
+      const {
+        model,
+        modelValue,
+        formValue,
+        onSubmit,
+        dispatch,
+        validators,
+        errors: errorValidators,
+      } = this.props;
+
+      const formValid = formValue
+        ? formValue.valid
+        : true;
+
+      if (!validators && onSubmit && formValid) {
+        onSubmit(modelValue);
+
+        return modelValue;
+      }
+
+      const validationOptions = {
+        onValid: this.handleValidSubmit,
+        onInvalid: this.handleInvalidSubmit,
+      };
+
+      const finalErrorValidators = validators
+        ? merge(invertValidators(validators), errorValidators)
+        : errorValidators;
+
+      dispatch(actions.validateFieldsErrors(
+        model,
+        finalErrorValidators,
+        validationOptions));
 
       return modelValue;
     }
 
-    const validationOptions = {
-      onValid: this.handleValidSubmit,
-      onInvalid: this.handleInvalidSubmit,
-    };
+    render() {
+      const {
+        component,
+        children,
+        formValue,
+      } = this.props;
 
-    const finalErrorValidators = validators
-      ? merge(invertValidators(validators), errorValidators)
-      : errorValidators;
+      const allowedProps = omit(this.props, Object.keys(propTypes));
+      const renderableChildren = typeof children === 'function'
+        ? children(formValue)
+        : children;
 
-    dispatch(actions.validateFieldsErrors(
-      model,
-      finalErrorValidators,
-      validationOptions));
-
-    return modelValue;
+      return React.createElement(component,
+        {
+          ...allowedProps,
+          onSubmit: this.handleSubmit,
+          onReset: this.handleReset,
+          ref: this.attachNode,
+        }, renderableChildren);
+    }
   }
 
-  render() {
-    const {
-      component,
-      children,
-      formValue,
-    } = this.props;
-
-    const allowedProps = omit(this.props, Object.keys(propTypes));
-    const renderableChildren = typeof children === 'function'
-      ? children(formValue)
-      : children;
-
-    return React.createElement(component,
-      {
-        ...allowedProps,
-        onSubmit: this.handleSubmit,
-        onReset: this.handleReset,
-        ref: this.attachNode,
-      }, renderableChildren);
+  if (process.env.NODE_ENV !== 'production') {
+    Form.propTypes = propTypes;
   }
-}
 
-if (process.env.NODE_ENV !== 'production') {
-  Form.propTypes = propTypes;
-}
-
-Form.defaultProps = {
-  validateOn: 'change',
-  component: 'form',
-};
-
-Form.childContextTypes = {
-  model: PropTypes.any,
-};
-
-function mapStateToProps(state, { model }) {
-  const modelString = getModel(model, state);
-
-  return {
-    model: modelString,
-    modelValue: _get(state, modelString),
-    formValue: getForm(state, modelString),
+  Form.defaultProps = {
+    validateOn: 'change',
+    component: 'form',
   };
+
+  Form.childContextTypes = {
+    model: PropTypes.any,
+  };
+
+  function mapStateToProps(state, { model }) {
+    const modelString = getModel(model, state);
+
+    return {
+      model: modelString,
+      modelValue: s.get(state, modelString),
+      formValue: getForm(state, modelString),
+    };
+  }
+
+  return connect(mapStateToProps)(Form);
 }
 
-export default connect(mapStateToProps)(Form);
+export {
+  createFormClass,
+};
+export default createFormClass();
