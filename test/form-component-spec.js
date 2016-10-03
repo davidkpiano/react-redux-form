@@ -9,7 +9,15 @@ import thunk from 'redux-thunk';
 import createTestStore from 'redux-test-store';
 import sinon from 'sinon';
 
-import { Form, modelReducer, formReducer, Field, actions, actionTypes } from '../src';
+import {
+  Form,
+  modelReducer,
+  formReducer,
+  Field,
+  Control,
+  actions,
+  actionTypes,
+} from '../src';
 import isValid from '../src/form/is-valid';
 import { testCreateStore, testRender } from './utils';
 
@@ -1502,6 +1510,7 @@ describe('<Form> component', () => {
       assert.equal(timesTwoValidationCalled, 1);
     });
   });
+
   describe('submitting after invalid', () => {
     const store = createStore(combineReducers({
       login: modelReducer('login', { username: '' }),
@@ -1550,6 +1559,53 @@ describe('<Form> component', () => {
       assert.isTrue(store.getState().loginForm.username.valid);
 
       assert.equal(timesCalled, 1);
+    });
+  });
+
+  describe('form-wide validation with no validators', () => {
+    const initialState = { foo: '', bar: '' };
+
+    const store = createStore(combineReducers({
+      test: modelReducer('test', initialState),
+      testForm: formReducer('test', initialState),
+    }), applyMiddleware(thunk));
+
+    const required = (val) => !!(val && val.length);
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test">
+          <Control model=".foo" validators={{ required }} />
+          <Control model=".bar" validators={{ required }} />
+        </Form>
+      </Provider>
+    );
+
+    const [foo, bar] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+
+    it('should initially be invalid', () => {
+      assert.isFalse(store.getState().testForm.$form.valid);
+    });
+
+    it('should still be invalid after only one field made valid', () => {
+      foo.value = 'changed';
+
+      TestUtils.Simulate.change(foo);
+
+      assert.isTrue(store.getState().testForm.foo.valid);
+      assert.isFalse(store.getState().testForm.$form.valid);
+    });
+
+    it('should be valid after only both fields are made valid', () => {
+      foo.value = 'changed';
+      bar.value = 'changed';
+
+      TestUtils.Simulate.change(foo);
+      TestUtils.Simulate.change(bar);
+
+      assert.isTrue(store.getState().testForm.foo.valid);
+      assert.isTrue(store.getState().testForm.bar.valid);
+      assert.isTrue(store.getState().testForm.$form.valid);
     });
   });
 });
