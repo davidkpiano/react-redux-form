@@ -13,7 +13,7 @@ import i from 'icepick';
 import Immutable from 'immutable';
 
 import isValid from '../src/form/is-valid';
-import { testCreateStore, testRender } from './utils';
+import { defaultTestContexts, testCreateStore, testRender } from './utils';
 
 import {
   Form as _Form,
@@ -35,35 +35,22 @@ import {
 
 const testContexts = {
   standard: {
+    ...defaultTestContexts.standard,
     Form: _Form,
     modelReducer: _modelReducer,
     formReducer: _formReducer,
     Field: _Field,
     Control: _Control,
     actions: _actions,
-    object: {},
-    get: _get,
-    set: (state, path, value) => i.setIn(state, path, value),
-    getInitialState: (state) => state,
   },
   immutable: {
+    ...defaultTestContexts.immutable,
     Form: ImmutableForm,
     modelReducer: immutableModelReducer,
     formReducer: immutableFormReducer,
     Field: ImmutableField,
     Control: ImmutableControl,
     actions: immutableActions,
-    object: new Immutable.Map(),
-    get: (value, path) => {
-      const result = value.getIn(toPath(path));
-      try {
-        return result.toJS();
-      } catch (e) {
-        return result;
-      }
-    },
-    set: (state, path, value) => state.setIn(path, value),
-    getInitialState: (state) => Immutable.fromJS(state),
   },
 };
 
@@ -77,6 +64,7 @@ Object.keys(testContexts).forEach((testKey) => {
   const actions = testContext.actions;
   const object = testContext.object;
   const get = testContext.get;
+  const length = testContext.length;
   const getInitialState = testContext.getInitialState;
 
   describe(`<Form> component (${testKey} context)`, () => {
@@ -878,7 +866,7 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.submit(formElement);
 
         assert.deepEqual(
-          submitValue,
+          get(submitValue),
           {
             bar: 'bar',
             baz: 'valid',
@@ -1049,7 +1037,7 @@ Object.keys(testContexts).forEach((testKey) => {
       const props = component.renderedElement.props;
 
       it('should resolve the model value', () => {
-        assert.containSubset(props.modelValue, { foo: '', bar: '' });
+        assert.containSubset(get(props.modelValue), { foo: '', bar: '' });
       });
 
       it('should resolve the form value', () => {
@@ -1124,7 +1112,7 @@ Object.keys(testContexts).forEach((testKey) => {
           <Form
             model="test"
             validators={{
-              foo: (val) => val && val.length,
+              foo: (val) => val && length(val),
             }}
             onSubmit={handleSubmit}
           >
@@ -1215,11 +1203,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.Simulate.submit(formElement);
 
-        assert.containSubset(
-          store.getState().testForm.$form,
-          {
-            submitFailed: true,
-          });
+        assert.isTrue(store.getState().testForm.$form.submitFailed);
 
         assert.isFalse(store.getState().testForm.$form.valid);
       });
