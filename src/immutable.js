@@ -6,7 +6,7 @@ import { createControlPropsMap } from './constants/control-props-map';
 import { createFormCombiner } from './reducers/forms-reducer';
 import { createControlClass } from './components/control-component';
 import { createFormClass } from './components/form-component';
-import fieldActions from './actions/field-actions';
+import { createFieldActions } from './actions/field-actions';
 import getValue from './utils/get-value';
 import getForm from './utils/get-form';
 import toPath from './utils/to-path';
@@ -98,6 +98,7 @@ function immutableFormReducer(model, initialState = new Immutable.Map(), options
 const immutableModelReducer = createModeler(immutableStrategy);
 const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
 const immutableModelActions = createModelActions(immutableStrategy);
+const immutableFieldActions = createFieldActions(immutableStrategy);
 const immutableControlPropsMap = createControlPropsMap(immutableStrategy);
 const ImmutableField = createFieldClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
@@ -120,7 +121,7 @@ const immutableCombineForms = createFormCombiner({
 
 const immutableActions = {
   ...immutableModelActions,
-  ...fieldActions,
+  ...immutableFieldActions,
 };
 
 export {
