@@ -1655,12 +1655,12 @@ Object.keys(testContexts).forEach((testKey) => {
   });
 
   describe('form-wide validation with no validators', () => {
-    const initialState = { foo: '', bar: '' };
+    const initialState = getInitialState({ foo: '', bar: '' });
 
-    const store = createStore(combineReducers({
+    const store = testCreateStore({
       test: modelReducer('test', initialState),
       testForm: formReducer('test', initialState),
-    }), applyMiddleware(thunk));
+    });
 
     const required = (val) => !!(val && val.length);
 
