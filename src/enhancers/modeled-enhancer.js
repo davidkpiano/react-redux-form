@@ -1,7 +1,7 @@
 import modelReducer from '../reducers/model-reducer';
 import NULL_ACTION from '../constants/null-action';
 
-function createModelReducerEnhancer(modelReducerCreator = modelReducer) {
+function createModelReducerEnhancer(modelReducerCreator = modelReducer, options = {}) {
   return function modelReducerEnhancer(reducer, model) {
     let initialState;
     try {
@@ -10,7 +10,7 @@ function createModelReducerEnhancer(modelReducerCreator = modelReducer) {
       initialState = null;
     }
 
-    const _modelReducer = modelReducerCreator(model, initialState);
+    const _modelReducer = modelReducerCreator(model, initialState, options);
 
     return (state = initialState, action) => {
       const updatedState = _modelReducer(state, action);
