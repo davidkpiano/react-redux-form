@@ -7,6 +7,7 @@ import { createFormCombiner } from './reducers/forms-reducer';
 import { createControlClass } from './components/control-component';
 import { createFormClass } from './components/form-component';
 import { createFieldActions } from './actions/field-actions';
+import batch from './actions/batch-actions';
 import getValue from './utils/get-value';
 import getForm from './utils/get-form';
 import toPath from './utils/to-path';
@@ -101,6 +102,7 @@ const immutableFieldActions = createFieldActions(immutableStrategy);
 const immutableActions = {
   ...immutableModelActions,
   ...immutableFieldActions,
+  batch,
 };
 
 const immutableModelReducer = createModeler(immutableStrategy);
