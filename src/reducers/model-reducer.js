@@ -23,7 +23,7 @@ function createModeler(strategy = defaultStrategy) {
     object,
   } = strategy;
 
-  return function _createModelReducer(model, initialState = object) {
+  return function _createModelReducer(model, initialState = object, options = {}) {
     const modelPath = toPath(model);
 
     const modelReducer = (state = initialState, action) => {
@@ -72,7 +72,7 @@ function createModeler(strategy = defaultStrategy) {
       }
     };
 
-    return createBatchReducer(modelReducer, initialState);
+    return createBatchReducer(modelReducer, initialState, options);
   };
 }
 
