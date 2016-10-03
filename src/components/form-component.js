@@ -14,7 +14,7 @@ import invertValidators from '../utils/invert-validators';
 import getForm from '../utils/get-form';
 import getModel from '../utils/get-model';
 import getField from '../utils/get-field';
-import isValid from '../form/is-valid';
+import { fieldsValid } from '../form/is-valid';
 import deepCompareChildren from '../utils/deep-compare-children';
 
 const propTypes = {
@@ -95,7 +95,10 @@ function createFormClass(s = defaultStrategy) {
       if (!formValue) return;
 
       if (!validators && !errors && (modelValue !== nextProps.modelValue)) {
-        if (!isValid(formValue)) {
+        // If the form is invalid (due to async validity)
+        // but its fields are valid and the value has changed,
+        // the form should be "valid" again.
+        if (!formValue.$form.valid && fieldsValid(formValue)) {
           dispatch(actions.setValidity(model, true));
         }
 

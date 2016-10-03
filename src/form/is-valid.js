@@ -20,3 +20,8 @@ export default function isValid(formState) {
   return Object.keys(formState)
     .every((key) => isValid(formState[key]));
 }
+
+export function fieldsValid(formState) {
+  return Object.keys(formState)
+    .every((key) => (key === '$form') || isValid(formState[key]));
+}

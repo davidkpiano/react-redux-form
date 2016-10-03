@@ -20,6 +20,7 @@ import {
   modelReducer as _modelReducer,
   formReducer as _formReducer,
   Field as _Field,
+  Control as _Control,
   actions as _actions,
   actionTypes,
 } from '../src';
@@ -28,6 +29,7 @@ import {
   modelReducer as immutableModelReducer,
   formReducer as immutableFormReducer,
   Field as ImmutableField,
+  Control as ImmutableControl,
   actions as immutableActions,
 } from '../src/immutable';
 
@@ -37,6 +39,7 @@ const testContexts = {
     modelReducer: _modelReducer,
     formReducer: _formReducer,
     Field: _Field,
+    Control: _Control,
     actions: _actions,
     object: {},
     get: _get,
@@ -48,6 +51,7 @@ const testContexts = {
     modelReducer: immutableModelReducer,
     formReducer: immutableFormReducer,
     Field: ImmutableField,
+    Control: ImmutableControl,
     actions: immutableActions,
     object: new Immutable.Map(),
     get: (value, path) => {
@@ -69,6 +73,7 @@ Object.keys(testContexts).forEach((testKey) => {
   const modelReducer = testContext.modelReducer;
   const formReducer = testContext.formReducer;
   const Field = testContext.Field;
+  const Control = testContext.Control;
   const actions = testContext.actions;
   const object = testContext.object;
   const get = testContext.get;
@@ -1646,6 +1651,53 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.equal(timesCalled, 1);
       });
+    });
+  });
+
+  describe('form-wide validation with no validators', () => {
+    const initialState = { foo: '', bar: '' };
+
+    const store = createStore(combineReducers({
+      test: modelReducer('test', initialState),
+      testForm: formReducer('test', initialState),
+    }), applyMiddleware(thunk));
+
+    const required = (val) => !!(val && val.length);
+
+    const form = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Form model="test">
+          <Control model=".foo" validators={{ required }} />
+          <Control model=".bar" validators={{ required }} />
+        </Form>
+      </Provider>
+    );
+
+    const [foo, bar] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+
+    it('should initially be invalid', () => {
+      assert.isFalse(store.getState().testForm.$form.valid);
+    });
+
+    it('should still be invalid after only one field made valid', () => {
+      foo.value = 'changed';
+
+      TestUtils.Simulate.change(foo);
+
+      assert.isTrue(store.getState().testForm.foo.valid);
+      assert.isFalse(store.getState().testForm.$form.valid);
+    });
+
+    it('should be valid after only both fields are made valid', () => {
+      foo.value = 'changed';
+      bar.value = 'changed';
+
+      TestUtils.Simulate.change(foo);
+      TestUtils.Simulate.change(bar);
+
+      assert.isTrue(store.getState().testForm.foo.valid);
+      assert.isTrue(store.getState().testForm.bar.valid);
+      assert.isTrue(store.getState().testForm.$form.valid);
     });
   });
 });
