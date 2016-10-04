@@ -14,304 +14,316 @@ import isValid from '../form/is-valid';
 import NULL_ACTION from '../constants/null-action';
 import omit from 'lodash/omit';
 
-const focus = trackable((model) => ({
-  type: actionTypes.FOCUS,
-  model,
-}));
+const defaultStrategies = {
+  get: _get,
+};
 
-const blur = trackable((model) => ({
-  type: actionTypes.BLUR,
-  model,
-}));
+function createFieldActions(s = defaultStrategies) {
+  const focus = (model) => ({
+    type: actionTypes.FOCUS,
+    model,
+  });
 
-const setPristine = trackable((model) => ({
-  type: actionTypes.SET_PRISTINE,
-  model,
-}));
+  const blur = (model) => ({
+    type: actionTypes.BLUR,
+    model,
+  });
 
-const setDirty = trackable((model) => ({
-  type: actionTypes.SET_DIRTY,
-  model,
-}));
+  const setPristine = (model) => ({
+    type: actionTypes.SET_PRISTINE,
+    model,
+  });
 
-const setInitial = trackable((model) => ({
-  type: actionTypes.SET_INITIAL,
-  model,
-}));
+  const setDirty = (model) => ({
+    type: actionTypes.SET_DIRTY,
+    model,
+  });
 
-const setPending = trackable((model, pending = true) => ({
-  type: actionTypes.SET_PENDING,
-  model,
-  pending,
-}));
+  const setInitial = (model) => ({
+    type: actionTypes.SET_INITIAL,
+    model,
+  });
 
-const setValidating = trackable((model, validating = true) => ({
-  type: actionTypes.SET_VALIDATING,
-  model,
-  validating,
-}));
+  const setPending = (model, pending = true) => ({
+    type: actionTypes.SET_PENDING,
+    model,
+    pending,
+  });
 
-const setValidity = trackable((model, validity, options = {}) => ({
-  type: options.errors
-    ? actionTypes.SET_ERRORS
-    : actionTypes.SET_VALIDITY,
-  model,
-  [options.errors ? 'errors' : 'validity']: validity,
-}));
+  const setValidating = (model, validating = true) => ({
+    type: actionTypes.SET_VALIDATING,
+    model,
+    validating,
+  });
 
-const resetValidity = trackable((model, omitKeys = false) => {
-  if (!omitKeys) {
-    return {
-      type: actionTypes.RESET_VALIDITY,
-      model,
-    };
-  }
+  const setValidity = (model, validity, options = {}) => ({
+    type: options.errors
+      ? actionTypes.SET_ERRORS
+      : actionTypes.SET_VALIDITY,
+    model,
+    [options.errors ? 'errors' : 'validity']: validity,
+  });
 
-  return (dispatch, getState) => {
-    const field = getFieldFromState(getState(), model);
-
-    if (!field) {
-      dispatch(NULL_ACTION);
-    } else {
-      dispatch({
-        type: actionTypes.SET_VALIDITY,
+  const resetValidity = (model, omitKeys = false) => {
+    if (!omitKeys) {
+      return {
+        type: actionTypes.RESET_VALIDITY,
         model,
-        validity: omit(field.validity, omitKeys),
-      });
+      };
+    }
+
+    return (dispatch, getState) => {
+      const field = getFieldFromState(getState(), model);
+
+      if (!field) {
+        dispatch(NULL_ACTION);
+      } else {
+        dispatch({
+          type: actionTypes.SET_VALIDITY,
+          model,
+          validity: omit(field.validity, omitKeys),
+        });
+      }
+    };
+  };
+
+  const setFieldsValidity = (model, fieldsValidity, options = {}) => ({
+    type: actionTypes.SET_FIELDS_VALIDITY,
+    model,
+    fieldsValidity,
+    options,
+  });
+
+  const setErrors = (model, errors, options = {}) =>
+    setValidity(model, errors, {
+      ...options,
+      errors: true,
+    });
+
+  const setFieldsErrors = (model, fieldsErrors, options) =>
+    setFieldsValidity(model, fieldsErrors, {
+      ...options,
+      errors: true,
+    });
+
+  const resetErrors = resetValidity;
+
+  const setTouched = (model) => ({
+    type: actionTypes.SET_TOUCHED,
+    model,
+  });
+
+  const setUntouched = (model) => ({
+    type: actionTypes.SET_UNTOUCHED,
+    model,
+  });
+
+  const asyncSetValidity = (model, validator) => (dispatch, getState) => {
+    const value = s.get(getState(), model);
+
+    dispatch(setValidating(model, true));
+
+    const done = (validity) => {
+      dispatch(setValidity(model, validity));
+    };
+
+    const immediateResult = validator(value, done);
+
+    if (typeof immediateResult !== 'undefined') {
+      done(immediateResult);
     }
   };
-});
 
-const setFieldsValidity = trackable((model, fieldsValidity, options = {}) => ({
-  type: actionTypes.SET_FIELDS_VALIDITY,
-  model,
-  fieldsValidity,
-  options,
-}));
+  const setSubmitted = (model, submitted = true) => ({
+    type: actionTypes.SET_SUBMITTED,
+    model,
+    submitted,
+  });
 
-const setErrors = trackable((model, errors, options = {}) =>
-  setValidity(model, errors, {
-    ...options,
-    errors: true,
-  }));
+  const setSubmitFailed = (model, submitFailed = true) => ({
+    type: actionTypes.SET_SUBMIT_FAILED,
+    model,
+    submitFailed,
+  });
 
-const setFieldsErrors = trackable((model, fieldsErrors, options) =>
-  setFieldsValidity(model, fieldsErrors, {
-    ...options,
-    errors: true,
-  }));
+  const submit = (model, promise, options = {}) => (dispatch, getState) => {
+    if (options.validate) {
+      const form = getForm(getState(), model);
 
-const resetErrors = resetValidity;
+      if (!form.$form.valid) {
+        return dispatch(NULL_ACTION);
+      }
 
-const setTouched = trackable((model) => ({
-  type: actionTypes.SET_TOUCHED,
-  model,
-}));
+      dispatch(setPending(model, true));
+    } else if (options.validators || options.errors) {
+      const validators = options.validators || options.errors;
+      const isErrors = options.errors;
+      const value = s.get(getState(), model);
+      const validity = getValidity(validators, value);
+      const valid = options.errors
+        ? !isValidityInvalid(validity)
+        : isValidityValid(validity);
 
-const setUntouched = trackable((model) => ({
-  type: actionTypes.SET_UNTOUCHED,
-  model,
-}));
+      if (!valid) {
+        return dispatch(isErrors
+          ? setErrors(model, validity)
+          : setValidity(model, validity));
+      }
 
-const asyncSetValidity = trackable((model, validator) => (dispatch, getState) => {
-  const value = _get(getState(), model);
+      dispatch(batch(model, [
+        setValidity(model, isErrors
+          ? invertValidity(validity)
+          : validity),
+        setPending(model, true),
+      ]));
+    } else {
+      dispatch(setPending(model, true));
+    }
 
-  dispatch(setValidating(model, true));
+    const errorsAction = options.fields
+      ? setFieldsErrors
+      : setErrors;
 
-  const done = (validity) => {
+    promise.then(response => {
+      dispatch(batch(model, [
+        setSubmitted(model, true),
+        setValidity(model, response),
+      ]));
+    }).catch(error => {
+      console.error(error);
+      dispatch(batch(model, [
+        setSubmitFailed(model),
+        errorsAction(model, error),
+      ]));
+    });
+
+    return promise;
+  };
+
+  const submitFields = (model, promise, options = {}) =>
+    submit(model, promise, {
+      ...options,
+      fields: true,
+    });
+
+  const validSubmit = (model, promise, options = {}) =>
+    submit(model, promise, {
+      ...options,
+      validate: true,
+    });
+
+  const validate = (model, validators) => (dispatch, getState) => {
+    const value = s.get(getState(), model);
+    const validity = getValidity(validators, value);
+
     dispatch(setValidity(model, validity));
   };
 
-  const immediateResult = validator(value, done);
+  const validateErrors = (model, errorValidators) => (dispatch, getState) => {
+    const value = s.get(getState(), model);
+    const errors = getValidity(errorValidators, value);
 
-  if (typeof immediateResult !== 'undefined') {
-    done(immediateResult);
-  }
-});
+    dispatch(setValidity(model, errors, { errors: true }));
+  };
 
-const setSubmitted = trackable((model, submitted = true) => ({
-  type: actionTypes.SET_SUBMITTED,
-  model,
-  submitted,
-}));
-
-const setSubmitFailed = trackable((model, submitFailed = true) => ({
-  type: actionTypes.SET_SUBMIT_FAILED,
-  model,
-  submitFailed,
-}));
-
-const submit = trackable((model, promise, options = {}) => (dispatch, getState) => {
-  if (options.validate) {
-    const form = getForm(getState(), model);
-
-    if (!form.$form.valid) {
-      return dispatch(NULL_ACTION);
+  function isFormValidWithoutFields(form, fieldsValidity) {
+    if (Object.keys(form.$form.validity).length
+      && !isValidityValid(form.$form.validity)) {
+      return false;
     }
 
-    dispatch(setPending(model, true));
-  } else if (options.validators || options.errors) {
-    const validators = options.validators || options.errors;
-    const isErrors = options.errors;
-    const value = _get(getState(), model);
-    const validity = getValidity(validators, value);
-    const valid = options.errors
-      ? !isValidityInvalid(validity)
-      : isValidityValid(validity);
+    // TODO: map through form keys without $form
+    const valid = Object.keys(form)
+      .every((fieldKey) => {
+        if (fieldKey === '$form') return true;
 
-    if (!valid) {
-      return dispatch(isErrors
-        ? setErrors(model, validity)
-        : setValidity(model, validity));
-    }
+        if (fieldsValidity.hasOwnProperty(fieldKey)) {
+          return true;
+        }
 
-    dispatch(batch(model, [
-      setValidity(model, isErrors
-        ? invertValidity(validity)
-        : validity),
-      setPending(model, true),
-    ]));
-  } else {
-    dispatch(setPending(model, true));
+        return isValid(form[fieldKey]);
+      });
+
+    return valid;
   }
 
-  const errorsAction = options.fields
-    ? setFieldsErrors
-    : setErrors;
+  const validateFields =
+    (model, fieldValidators, options = {}) => (dispatch, getState) => {
+      const value = s.get(getState(), model);
 
-  promise.then(response => {
-    dispatch(batch(model, [
-      setSubmitted(model, true),
-      setValidity(model, response),
-    ]));
-  }).catch(error => {
-    console.error(error);
-    dispatch(batch(model, [
-      setSubmitFailed(model),
-      errorsAction(model, error),
-    ]));
-  });
+      const fieldsValidity = mapValues(fieldValidators, (validator, field) => {
+        const fieldValue = field
+          ? s.get(value, field)
+          : value;
 
-  return promise;
-});
+        const fieldValidity = getValidity(validator, fieldValue);
 
-const submitFields = (model, promise, options = {}) =>
-  submit(model, promise, {
-    ...options,
-    fields: true,
-  });
+        return fieldValidity;
+      });
 
-const validSubmit = (model, promise, options = {}) =>
-  submit(model, promise, {
-    ...options,
-    validate: true,
-  });
+      const validCB = options.onValid;
+      const invalidCB = options.onInvalid;
 
-const validate = trackable((model, validators) => (dispatch, getState) => {
-  const value = _get(getState(), model);
-  const validity = getValidity(validators, value);
+      if (validCB || invalidCB) {
+        const form = getForm(getState(), model);
+        const formValid = (form && !fieldsValidity.hasOwnProperty(''))
+          ? isFormValidWithoutFields(form, fieldsValidity)
+          : true;
 
-  dispatch(setValidity(model, validity));
-});
+        const fieldsValid = options.errors
+          ? !isValidityInvalid(fieldsValidity)
+          : isValidityValid(fieldsValidity);
 
-const validateErrors = trackable((model, errorValidators) => (dispatch, getState) => {
-  const value = _get(getState(), model);
-  const errors = getValidity(errorValidators, value);
-
-  dispatch(setValidity(model, errors, { errors: true }));
-});
-
-function isFormValidWithoutFields(form, fieldsValidity) {
-  if (Object.keys(form.$form.validity).length
-    && !isValidityValid(form.$form.validity)) {
-    return false;
-  }
-
-  // TODO: map through form keys without $form
-  const valid = Object.keys(form)
-    .every((fieldKey) => {
-      if (fieldKey === '$form') return true;
-
-      if (fieldsValidity.hasOwnProperty(fieldKey)) {
-        return true;
+        if (validCB && formValid && fieldsValid) {
+          validCB();
+        } else if (invalidCB) {
+          invalidCB();
+        }
       }
 
-      return isValid(form[fieldKey]);
+      const fieldsValiditySetter = options.errors
+        ? setFieldsErrors
+        : setFieldsValidity;
+
+      dispatch(fieldsValiditySetter(model, fieldsValidity));
+    };
+
+  const validateFieldsErrors = (model, fieldErrorsValidators, options = {}) =>
+    validateFields(model, fieldErrorsValidators, {
+      ...options,
+      errors: true,
     });
 
-  return valid;
+  return mapValues({
+    blur,
+    focus,
+    submit,
+    submitFields,
+    validSubmit,
+    setDirty,
+    setErrors,
+    setInitial,
+    setPending,
+    setValidating,
+    setPristine,
+    setSubmitted,
+    setSubmitFailed,
+    setTouched,
+    setUntouched,
+    setValidity,
+    setFieldsValidity,
+    setFieldsErrors,
+    resetValidity,
+    resetErrors,
+    validate,
+    validateErrors,
+    validateFields,
+    validateFieldsErrors,
+    asyncSetValidity,
+  }, trackable);
 }
 
-const validateFields = trackable((model, fieldValidators, options = {}) => (dispatch, getState) => {
-  const value = _get(getState(), model);
-
-  const fieldsValidity = mapValues(fieldValidators, (validator, field) => {
-    const fieldValue = field
-      ? _get(value, field)
-      : value;
-
-    const fieldValidity = getValidity(validator, fieldValue);
-
-    return fieldValidity;
-  });
-
-  const validCB = options.onValid;
-  const invalidCB = options.onInvalid;
-
-  if (validCB || invalidCB) {
-    const form = getForm(getState(), model);
-    const formValid = (form && !fieldsValidity.hasOwnProperty(''))
-      ? isFormValidWithoutFields(form, fieldsValidity)
-      : true;
-
-    const fieldsValid = options.errors
-      ? !isValidityInvalid(fieldsValidity)
-      : isValidityValid(fieldsValidity);
-
-    if (validCB && formValid && fieldsValid) {
-      validCB();
-    } else if (invalidCB) {
-      invalidCB();
-    }
-  }
-
-  const fieldsValiditySetter = options.errors
-    ? setFieldsErrors
-    : setFieldsValidity;
-
-  dispatch(fieldsValiditySetter(model, fieldsValidity));
-});
-
-const validateFieldsErrors = trackable((model, fieldErrorsValidators, options = {}) =>
-  validateFields(model, fieldErrorsValidators, {
-    ...options,
-    errors: true,
-  }));
-
-export default {
-  blur,
-  focus,
-  submit,
-  submitFields,
-  validSubmit,
-  setDirty,
-  setErrors,
-  setInitial,
-  setPending,
-  setValidating,
-  setPristine,
-  setSubmitted,
-  setSubmitFailed,
-  setTouched,
-  setUntouched,
-  setValidity,
-  setFieldsValidity,
-  setFieldsErrors,
-  resetValidity,
-  resetErrors,
-  validate,
-  validateErrors,
-  validateFields,
-  validateFieldsErrors,
-  asyncSetValidity,
+export {
+  createFieldActions,
 };
+export default createFieldActions();
