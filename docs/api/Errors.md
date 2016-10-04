@@ -102,7 +102,7 @@ _(String | Function | Element)_: The `component`, which is the component for eac
 
 ### Examples 
 - `component="li"` will wrap all errors in a `<li>`
-- `component={(props) => <div className="error">{props.message}</div>}` will render the error message in the specified functional component, with these props:
+- `component={(props) => <div className="error">{props.children}</div>}` will render the error message in the specified functional component, with these props:
   - `modelValue` - the current value of the `model`
   - `fieldValue` - the current field state of the `model`
   - `children` - the error message (text).
