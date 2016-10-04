@@ -115,25 +115,25 @@ describe('<Errors />', () => {
 
   describe('displaying errors from form .errors', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
-      testForm: formReducer('teste', { foo: '' }),
-      teste: modelReducer('teste', { foo: '' }),
+      testForm: formReducer('test', { foo: '' }),
+      test: modelReducer('test', { foo: '' }),
     }));
 
     let formValid = false;
 
     const form = TestUtils.renderIntoDocument(
       <Provider store={store}>
-        <Form model="teste"
+        <Form model="test"
           validators={{
             '': { foo: ({ foo }) => foo && foo.length },
           }}
         >
-          <Errors model="teste" 
+          <Errors model="test" 
             messages={{
               foo: 'This form is invalid',
             }}
           />
-          <Field model="teste.foo">
+          <Field model="test.foo">
             <input type="text" />
           </Field>
         </Form>
