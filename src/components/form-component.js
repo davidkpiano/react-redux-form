@@ -222,7 +222,7 @@ function createFormClass(s = defaultStrategy) {
       } = this.props;
 
       const formValid = formValue
-        ? formValue.valid  // TODO: should this be formValue.$form.valid?  Write a test to catch this?
+        ? formValue.$form.valid
         : true;
 
       if (!validators && onSubmit && formValid) {

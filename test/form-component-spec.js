@@ -1623,52 +1623,90 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(handleSubmit.calledOnce);
       });
     });
-  });
 
-  describe('form-wide validation with no form validators', () => {
-    const initialState = getInitialState({ foo: '', bar: '' });
+    describe('form-wide validation with no form validators', () => {
+      const initialState = getInitialState({ foo: '', bar: '' });
 
-    const store = testCreateStore({
-      test: modelReducer('test', initialState),
-      testForm: formReducer('test', initialState),
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
+
+      const required = (val) => !!(val && val.length);
+
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form model="test">
+            <Control model=".foo" validators={{ required }} />
+            <Control model=".bar" validators={{ required }} />
+          </Form>
+        </Provider>
+      );
+
+      const [foo, bar] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+
+      it('should initially be invalid', () => {
+        assert.isFalse(store.getState().testForm.$form.valid);
+      });
+
+      it('should still be invalid after only one field made valid', () => {
+        foo.value = 'changed';
+
+        TestUtils.Simulate.change(foo);
+
+        assert.isTrue(store.getState().testForm.foo.valid);
+        assert.isFalse(store.getState().testForm.$form.valid);
+      });
+
+      it('should be valid after only both fields are made valid', () => {
+        foo.value = 'changed';
+        bar.value = 'changed';
+
+        TestUtils.Simulate.change(foo);
+        TestUtils.Simulate.change(bar);
+
+        assert.isTrue(store.getState().testForm.foo.valid);
+        assert.isTrue(store.getState().testForm.bar.valid);
+        assert.isTrue(store.getState().testForm.$form.valid);
+      });
     });
 
-    const required = (val) => !!(val && val.length);
+    describe('submit valid form no validators', () => {
+      const initialState = getInitialState({ foo: '' });
 
-    const form = TestUtils.renderIntoDocument(
-      <Provider store={store}>
-        <Form model="test">
-          <Control model=".foo" validators={{ required }} />
-          <Control model=".bar" validators={{ required }} />
-        </Form>
-      </Provider>
-    );
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
 
-    const [foo, bar] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
+      const handleSubmit = sinon.spy((val) => val);
 
-    it('should initially be invalid', () => {
-      assert.isFalse(store.getState().testForm.$form.valid);
-    });
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form
+            model="test"
+            onSubmit={handleSubmit}
+          >
+            <Control model=".foo" />
+          </Form>
+        </Provider>
+      );
 
-    it('should still be invalid after only one field made valid', () => {
-      foo.value = 'changed';
+      const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
 
-      TestUtils.Simulate.change(foo);
+      it('should initially be valid and not pending', () => {
+        assert.isTrue(store.getState().testForm.$form.valid);
+        assert.isFalse(store.getState().testForm.$form.pending);
+      });
 
-      assert.isTrue(store.getState().testForm.foo.valid);
-      assert.isFalse(store.getState().testForm.$form.valid);
-    });
+      it('should call onSubmit() prop and not set to pending after submitting', () => {
+        TestUtils.Simulate.submit(formNode);
 
-    it('should be valid after only both fields are made valid', () => {
-      foo.value = 'changed';
-      bar.value = 'changed';
+        assert.isTrue(handleSubmit.calledOnce);
 
-      TestUtils.Simulate.change(foo);
-      TestUtils.Simulate.change(bar);
-
-      assert.isTrue(store.getState().testForm.foo.valid);
-      assert.isTrue(store.getState().testForm.bar.valid);
-      assert.isTrue(store.getState().testForm.$form.valid);
+        assert.isFalse(store.getState().testForm.$form.pending);
+        assert.isFalse(store.getState().testForm.$form.submitFailed);
+      });
     });
   });
 });
