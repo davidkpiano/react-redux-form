@@ -17,7 +17,7 @@ import initialFieldState from '../constants/initial-field-state';
 
 const defaultStrategy = {
   get: _get,
-  getForm: getForm
+  getForm,
 };
 
 function showErrors(field, form, show = true) {
@@ -35,15 +35,14 @@ function showErrors(field, form, show = true) {
 }
 
 function createErrorsClass(s = defaultStrategy) {
-
   class Errors extends Component {
-    shouldComponentUpdate({fieldValue, formValue}) {
+    shouldComponentUpdate({ fieldValue, formValue }) {
       return fieldValue !== this.props.fieldValue
         || formValue !== this.props.formValue;
     }
 
     mapErrorMessages(errors) {
-      const {messages} = this.props;
+      const { messages } = this.props;
 
       if (typeof errors === 'string') {
         return this.renderError(errors, 'error');
@@ -78,7 +77,7 @@ function createErrorsClass(s = defaultStrategy) {
         model,
         modelValue,
         fieldValue,
-        fieldValue: {errors},
+        fieldValue: { errors },
       } = this.props;
 
       const errorProps = {
@@ -96,7 +95,7 @@ function createErrorsClass(s = defaultStrategy) {
 
       const allowedProps = typeof component === 'function'
         ? errorProps
-        : {key};
+        : { key };
 
       return React.createElement(
         component,
@@ -167,7 +166,7 @@ function createErrorsClass(s = defaultStrategy) {
     show: true,
   };
 
-  function mapStateToProps(state, {model}) {
+  function mapStateToProps(state, { model }) {
     const modelString = getModel(model, state);
 
     const formValue = getForm(state, modelString).$form;
@@ -186,6 +185,6 @@ function createErrorsClass(s = defaultStrategy) {
 }
 
 export {
-  createErrorsClass
+  createErrorsClass,
 };
 export default createErrorsClass();
