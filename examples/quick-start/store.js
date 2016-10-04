@@ -10,8 +10,8 @@ import thunk from 'redux-thunk';
 import createLogger from 'redux-logger';
 
 const initialUserState = {
-  firstName: 'first',
-  lastName: 'last',
+  firstName: '',
+  lastName: '',
   bag: 'paper',
 };
 

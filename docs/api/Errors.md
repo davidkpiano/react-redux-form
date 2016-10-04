@@ -42,6 +42,18 @@ There are many configurable props that will let you control:
 
 _(String | Function)_: the string representation of the model path to show the errors for that model. A tracking function may be provided, as well.
 
+### Notes
+- If you want to display form-wide errors, just use the form model! For example, if you have a form-wide `passwordsMatch` validator on the `user` form, you can display an error message like so:
+
+```jsx
+<Errors
+  model="user"
+  messages={{
+    passwordsMatch: 'Passwords do not match.',
+  }}
+/>
+```
+
 ## `messages={{...}}`
 
 _(Object)_: a plain object mapping where:
@@ -50,7 +62,7 @@ _(Object)_: a plain object mapping where:
 
 If the message value is a function, it will be called with the model value.
 
-**Example**
+### Example
 
 ```jsx
 <Errors
@@ -63,7 +75,7 @@ If the message value is a function, it will be called with the model value.
 />
 ```
 
-**Tips**
+### Notes
 - The `messages` prop is a great place to keep custom error messages that can vary based on the location in the UI, instead of hardcoding error messages in validation fuctions.
 - If a message is _not_ provided for an error key, the message will default to the key value in the control's `.errors` property.
   - This means if you're using `actions.setErrors` or the `errors={{...}}` prop in `<Control>` or `<Field>` to set error messages, they will automatically be shown in `<Errors />`.
@@ -81,7 +93,7 @@ It can be a boolean, or a function, string, or object as a [Lodash iteratee](htt
 - `show={{touched: true, focus: false}}` is the same as above
 - `show="touched"` will show errors if the model's field is touched
 
-**Tips**
+### Notes
 - For the greatest amount of control, use `show` as a function.
 - Use `show` as a boolean if you want to calculate when an error should be shown based on external factors, such as form state.
 
@@ -102,7 +114,7 @@ _(String | Function | Element)_: The `component`, which is the component for eac
 
 ### Examples 
 - `component="li"` will wrap all errors in a `<li>`
-- `component={(props) => <div className="error">{props.message}</div>}` will render the error message in the specified functional component, with these props:
+- `component={(props) => <div className="error">{props.children}</div>}` will render the error message in the specified functional component, with these props:
   - `modelValue` - the current value of the `model`
   - `fieldValue` - the current field state of the `model`
   - `children` - the error message (text).

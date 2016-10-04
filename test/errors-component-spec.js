@@ -181,26 +181,26 @@ Object.keys(testContexts).forEach((testKey) => {
     describe('displaying errors from form .errors', () => {
       const initialState = getInitialState({foo: ''});
       const store = testCreateStore({
-        testForm: formReducer('teste', initialState),
-        test: modelReducer('teste', initialState),
+        testForm: formReducer('test', initialState),
+        test: modelReducer('test', initialState),
       });
 
       let formValid = false;
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Form model="teste"
-                validators={{
-                  '': {foo: ({foo}) => foo && foo.length},
-                }}
+          <Form model="test"
+            validators={{
+              '': { foo: ({ foo }) => foo && foo.length },
+            }}
           >
-            <Errors model="teste"
-                    messages={{
-                      foo: 'This form is invalid',
-                    }}
+            <Errors model="test"
+              messages={{
+                foo: 'This form is invalid',
+              }}
             />
-            <Field model="teste.foo">
-              <input type="text"/>
+            <Field model="test.foo">
+              <input type="text" />
             </Field>
           </Form>
         </Provider>

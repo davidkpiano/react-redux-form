@@ -75,7 +75,7 @@ class UserForm extends React.Component {
             show={{ pristine: false }}
             model="user.dob"
             messages={{
-              lessThan: (value, { lessThan }) => `Error: ${value} is not less than ${lessThan}`,
+              lessThan10: (value, { lessThan }) => `Error: ${value} is not less than ${lessThan}`,
             }}
           />
         </Field>

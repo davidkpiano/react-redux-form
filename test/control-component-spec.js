@@ -3,9 +3,7 @@ import { assert } from 'chai';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
-import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import sinon from 'sinon';
 import capitalize from 'lodash/capitalize';
 import _get from 'lodash/get';
@@ -21,14 +19,14 @@ import {
   modelReducer as _modelReducer,
   formReducer as _formReducer,
   Control as _Control,
-  actions as _actions
+  actions as _actions,
 } from '../src';
 import {
   controls as immutableControls,
   modelReducer as immutableModelReducer,
   formReducer as immutableFormReducer,
   Control as immutableControl,
-  actions as immutableActions
+  actions as immutableActions,
 } from '../src/immutable';
 
 const testContexts = {
@@ -41,7 +39,7 @@ const testContexts = {
     object: {},
     get: _get,
     set: (state, path, value) => i.setIn(state, path, value),
-    getInitialState: (state) => state
+    getInitialState: (state) => state,
   },
   immutable: {
     controls: immutableControls,
@@ -59,8 +57,8 @@ const testContexts = {
       }
     },
     set: (state, path, value) => state.setIn(path, value),
-    getInitialState: (state) => Immutable.fromJS(state)
-  }
+    getInitialState: (state) => Immutable.fromJS(state),
+  },
 };
 
 Object.keys(testContexts).forEach((testKey) => {
@@ -72,11 +70,9 @@ Object.keys(testContexts).forEach((testKey) => {
   const actions = testContext.actions;
   const object = testContext.object;
   const get = testContext.get;
-  const set = testContext.set;
   const getInitialState = testContext.getInitialState;
 
-  describe('<Control> component (' + testKey + ' context)', () => {
-
+  describe(`<Control> component (${testKey} context)`, () => {
     describe('existence check', () => {
       it('should exist', () => {
         assert.ok(Control);
@@ -84,7 +80,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('basic functionality', () => {
-      const initialState = getInitialState({foo: 'bar'});
+      const initialState = getInitialState({ foo: 'bar' });
       const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', initialState),
@@ -92,7 +88,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Control model="test.foo" mapProps={controls.text} component="input"/>
+          <Control model="test.foo" mapProps={controls.text} component="input" />
         </Provider>
       );
 
@@ -113,7 +109,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('onLoad prop', () => {
-      const initialState = getInitialState({foo: 'bar'});
+      const initialState = getInitialState({ foo: 'bar' });
       const store = testCreateStore({
         test: modelReducer('test', initialState),
         testForm: formReducer('test', initialState),
@@ -161,7 +157,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
     textFieldElements.forEach(([controlType, type]) => {
       describe(`with <Control.${controlType}> ${type ? `and type="${type}"` : ''}`, () => {
-        const initialState = getInitialState({foo: 'bar'});
+        const initialState = getInitialState({ foo: 'bar' });
         const store = testCreateStore({
           testForm: formReducer('test'),
           test: modelReducer('test', initialState),
@@ -171,7 +167,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
-            <TestControl model="test.foo" type={type}/>
+            <TestControl model="test.foo" type={type} />
           </Provider>
         );
 
@@ -189,7 +185,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
           assert.containSubset(
             store.getState().testForm.foo,
-            {focus: true});
+            { focus: true });
         });
 
         it('should dispatch a blur event when blurred', () => {
@@ -197,7 +193,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
           assert.containSubset(
             store.getState().testForm.foo,
-            {focus: false});
+            { focus: false });
         });
 
         it('should dispatch a change event when changed', () => {
@@ -221,7 +217,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <Control.radio />', () => {
-      const initialState = getInitialState({foo: 'two'});
+      const initialState = getInitialState({ foo: 'two' });
       const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', initialState),
@@ -230,8 +226,8 @@ Object.keys(testContexts).forEach((testKey) => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <div>
-            <Control.radio model="test.foo" value="one"/>
-            <Control.radio model="test.foo" value="two"/>
+            <Control.radio model="test.foo" value="one" />
+            <Control.radio model="test.foo" value="two" />
           </div>
         </Provider>
       );
@@ -284,7 +280,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <Control.checkbox /> (single toggle)', () => {
-      const initialState = getInitialState({single: true});
+      const initialState = getInitialState({ single: true });
       const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', initialState),
@@ -292,7 +288,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Control.checkbox model="test.single"/>
+          <Control.checkbox model="test.single" />
         </Provider>
       );
 
@@ -338,7 +334,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <Control.checkbox /> (multi toggle)', () => {
-      const initialState = getInitialState({foo: [1]});
+      const initialState = getInitialState({ foo: [1] });
       const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', initialState),
@@ -347,9 +343,9 @@ Object.keys(testContexts).forEach((testKey) => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <div>
-            <Control.checkbox model="test.foo[]" value={1}/>
-            <Control.checkbox model="test.foo[]" value={2}/>
-            <Control.checkbox model="test.foo[]" value={3}/>
+            <Control.checkbox model="test.foo[]" value={1} />
+            <Control.checkbox model="test.foo[]" value={2} />
+            <Control.checkbox model="test.foo[]" value={3} />
           </div>
         </Provider>
       );
@@ -408,7 +404,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <Control.checkbox /> (custom onChange)', () => {
-      const initialState = getInitialState({foo: true});
+      const initialState = getInitialState({ foo: true });
       const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', initialState),
@@ -418,7 +414,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Control.checkbox model="test.foo" onChange={handleOnChange}/>
+          <Control.checkbox model="test.foo" onChange={handleOnChange} />
         </Provider>
       );
 
@@ -437,7 +433,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('with <Control.file />', () => {
       it('should update with an array of files', () => {
-        const initialState = getInitialState({foo: []});
+        const initialState = getInitialState({ foo: [] });
         const store = testCreateStore({
           testForm: formReducer('test'),
           test: modelReducer('test', initialState),
@@ -445,7 +441,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
-            <Control.file model="test.foo"/>
+            <Control.file model="test.foo" />
           </Provider>
         );
 
@@ -455,8 +451,8 @@ Object.keys(testContexts).forEach((testKey) => {
           target: {
             type: 'file',
             files: [
-              {name: 'first.jpg'},
-              {name: 'second.jpg'},
+              { name: 'first.jpg' },
+              { name: 'second.jpg' },
             ],
           },
         });
@@ -464,14 +460,14 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.deepEqual(
           get(store.getState().test, 'foo'),
           [
-            {name: 'first.jpg'},
-            {name: 'second.jpg'},
+            { name: 'first.jpg' },
+            { name: 'second.jpg' },
           ]);
       });
     });
 
     describe('with <Control.select />', () => {
-      const initialState = getInitialState({foo: 'one'});
+      const initialState = getInitialState({ foo: 'one' });
       const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', initialState),
@@ -480,13 +476,13 @@ Object.keys(testContexts).forEach((testKey) => {
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Control.select model="test.foo">
-            <option value="one"/>
-            <option value="two"/>
-            <option value="three"/>
+            <option value="one" />
+            <option value="two" />
+            <option value="three" />
             <optgroup>
-              <option value="four"/>
-              <option value="five"/>
-              <option value="six"/>
+              <option value="four" />
+              <option value="five" />
+              <option value="six" />
             </optgroup>
           </Control.select>
         </Provider>
@@ -527,7 +523,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('ignoring events with ignore prop', () => {
-      const initialState = getInitialState({foo: 'bar'});
+      const initialState = getInitialState({ foo: 'bar' });
       const store = testCreateStore({
         test: modelReducer('test', initialState),
         testForm: formReducer('test', initialState),
@@ -557,10 +553,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('validators and validateOn property', () => {
-      let initialState = getInitialState({
+      const initialState = getInitialState({
         foo: '',
         blur: '',
-        external: ''
+        external: '',
       });
 
       const store = testCreateStore({
@@ -726,8 +722,8 @@ Object.keys(testContexts).forEach((testKey) => {
           actualStates.push(state.testForm.foo);
 
           if (actualStates.length === expectedStates.length) {
-            expectedStates.map((expectedFn, i) =>
-              assert.ok(expectedFn(actualStates[i]), `${i}`)
+            expectedStates.map((expectedFn, index) =>
+              assert.ok(expectedFn(actualStates[index]), `${index}`)
             );
 
             done();
@@ -770,8 +766,8 @@ Object.keys(testContexts).forEach((testKey) => {
           actualStates.push(state.testForm.foo);
 
           if (actualStates.length === expectedStates.length) {
-            expectedStates.map((expectedFn, i) =>
-              assert.ok(expectedFn(actualStates[i]), `${i}`)
+            expectedStates.map((expectedFn, index) =>
+              assert.ok(expectedFn(actualStates[index]), `${index}`)
             );
 
             done();
@@ -836,7 +832,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('validation after reset', () => {
-      const initialState = getInitialState({foo: ''});
+      const initialState = getInitialState({ foo: '' });
       const reducer = formReducer('test');
       const store = testCreateStore({
         testForm: reducer,
@@ -887,7 +883,7 @@ Object.keys(testContexts).forEach((testKey) => {
       const reducer = formReducer('test');
 
       it('should set the proper field state for errors', () => {
-        const initialState = getInitialState({foo: ''});
+        const initialState = getInitialState({ foo: '' });
         const store = testCreateStore({
           testForm: reducer,
           test: modelReducer('test', initialState),
@@ -931,7 +927,7 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should only validate errors on blur if validateOn="blur"', () => {
-        const initialState = getInitialState({foo: ''});
+        const initialState = getInitialState({ foo: '' });
         const store = testCreateStore({
           testForm: reducer,
           test: modelReducer('test', initialState),
@@ -1003,7 +999,7 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should handle a validator function for errors', () => {
-        const initialState = getInitialState({foo: ''});
+        const initialState = getInitialState({ foo: '' });
         const store = testCreateStore({
           testForm: reducer,
           test: modelReducer('test', initialState),
@@ -1045,16 +1041,16 @@ Object.keys(testContexts).forEach((testKey) => {
         constructor() {
           super();
 
-          this.state = {options: [1, 2]};
+          this.state = { options: [1, 2] };
         }
 
         render() {
           return (
             <div>
-              <button onClick={() => this.setState({options: [1, 2, 3]})}/>
+              <button onClick={() => this.setState({ options: [1, 2, 3] })} />
               <Control.select model="test.foo" dynamic>
-                {this.state.options.map((option, i) =>
-                  <option key={i} value={option}/>
+                {this.state.options.map((option, index) =>
+                  <option key={index} value={option} />
                 )}
               </Control.select>
             </div>
@@ -1090,7 +1086,7 @@ Object.keys(testContexts).forEach((testKey) => {
       ];
 
       onEvents.forEach((onEvent) => {
-        const initialState = getInitialState({foo: 'initial'});
+        const initialState = getInitialState({ foo: 'initial' });
         const store = testCreateStore({
           test: modelReducer('test', initialState),
           testForm: formReducer('test'),
@@ -1125,7 +1121,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('validation on load', () => {
-      const initialState = getInitialState({foo: 'invalid'});
+      const initialState = getInitialState({ foo: 'invalid' });
       const reducer = formReducer('test');
       const store = testCreateStore({
         testForm: reducer,
@@ -1160,7 +1156,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('syncing control defaultValue on load', () => {
-      const initialState = getInitialState({foo: ''});
+      const initialState = getInitialState({ foo: '' });
       const reducer = modelReducer('test', initialState);
       const store = testCreateStore({
         test: reducer,
@@ -1217,7 +1213,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('changeAction prop', () => {
-      const initialState = getInitialState({foo: ''});
+      const initialState = getInitialState({ foo: '' });
       const reducer = modelReducer('test', initialState);
       const store = testCreateStore({
         test: reducer,
@@ -1254,9 +1250,9 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('event handlers on control', () => {
-      let initialState = getInitialState({
+      const initialState = getInitialState({
         foo: '',
-        bar: ''
+        bar: '',
       });
 
       const reducer = modelReducer('test', initialState);
@@ -1393,7 +1389,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
           const onEventSpy = sinon.spy(onEvent);
 
-          const prop = {[eventHandler]: onEventSpy};
+          const prop = { [eventHandler]: onEventSpy };
 
           const field = TestUtils.renderIntoDocument(
             <Provider store={store}>
@@ -1424,7 +1420,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('unmounting', () => {
       it('should set the validity of the model to true when umounted', () => {
-        const initialState = getInitialState({foo: ''});
+        const initialState = getInitialState({ foo: '' });
         const store = testCreateStore({
           test: modelReducer('test', initialState),
           testForm: formReducer('test', initialState),
@@ -1434,7 +1430,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const field = ReactDOM.render(
           <Provider store={store}>
-            <Control.input model="test.foo"/>
+            <Control.input model="test.foo" />
           </Provider>,
           container);
 
@@ -1449,7 +1445,7 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should only reset the validity of field-specific validators', () => {
-        const initialState = getInitialState({foo: ''});
+        const initialState = getInitialState({ foo: '' });
         const store = testCreateStore({
           test: modelReducer('test', initialState),
           testForm: formReducer('test', initialState),
@@ -1494,7 +1490,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('with <Control.reset>', () => {
       it('should reset the given model', () => {
-        const initialState = getInitialState({foo: ''});
+        const initialState = getInitialState({ foo: '' });
         const store = testCreateStore({
           test: modelReducer('test', initialState),
           testForm: formReducer('test', initialState),
@@ -1508,7 +1504,7 @@ Object.keys(testContexts).forEach((testKey) => {
               <Control.input
                 model="test.foo"
               />
-              <Control.reset model="test.foo"/>
+              <Control.reset model="test.foo" />
             </div>
           </Provider>,
           container);
@@ -1533,7 +1529,7 @@ Object.keys(testContexts).forEach((testKey) => {
         handleFocus.clearCache();
       });
 
-      const initialState = getInitialState({foo: 'bar'});
+      const initialState = getInitialState({ foo: 'bar' });
       const store = testCreateStore({
         test: modelReducer('test', initialState),
         testForm: formReducer('test', initialState),
@@ -1564,7 +1560,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('handling on multiple events', () => {
-      const initialState = getInitialState({foo: 'bar'});
+      const initialState = getInitialState({ foo: 'bar' });
       const store = testCreateStore({
         test: modelReducer('test', initialState),
         testForm: formReducer('test', initialState),

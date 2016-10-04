@@ -534,4 +534,25 @@ describe('formReducer() (V1)', () => {
       assert.isTrue(validFooValidBar.meta.bar.valid);
     });
   });
+
+  describe('deep resetting', () => {
+    const reducer = formReducer('test', {
+      foo: '',
+      meta: {
+        bar: '',
+      },
+    });
+
+    const changedState = reducer(undefined, actions.change('test', {
+      foo: 'changed foo',
+      meta: { bar: 'changed bar' },
+    }));
+
+    it('resetting a parent field should reset child fields in form', () => {
+      const resetState = reducer(changedState, actions.reset('test'));
+
+      assert.equal(resetState.foo.value, '');
+      assert.equal(resetState.meta.bar.value, '');
+    });
+  });
 });
