@@ -1139,7 +1139,7 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    describe('submit after invalid', () => {
+    describe('submit after fields valid but form invalid', () => {
       const handleSubmit = sinon.spy((val) => val);
 
       const initialState = getInitialState({
@@ -1179,7 +1179,7 @@ Object.keys(testContexts).forEach((testKey) => {
       const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
       const [pass1, pass2] = TestUtils.scryRenderedDOMComponentsWithTag(form, 'input');
 
-      it('should fail to submit with an invalid form', () => {
+      it('should fail to submit with valid fields but an invalid form', () => {
         TestUtils.Simulate.submit(formElement);
 
         assert.isFalse(store.getState().testForm.$form.valid);
@@ -1193,11 +1193,13 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.Simulate.submit(formElement);
 
+        assert.isTrue(handleSubmit.callCount === 0);
+
         assert.isTrue(store.getState().testForm.$form.submitFailed);
         assert.isFalse(store.getState().testForm.$form.valid);
       });
 
-      it('should submit with a valid form', () => {
+      it('should submit with valid fields and a valid form', () => {
         pass2.value = 'aaa';
 
         TestUtils.Simulate.change(pass2);
@@ -1208,11 +1210,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isTrue(handleSubmit.calledOnce);
 
-        assert.containSubset(
-          store.getState().testForm.$form,
-          {
-            submitFailed: false,
-          });
+        assert.isFalse(store.getState().testForm.$form.submitFailed);
 
         assert.ok(store.getState().testForm.$form.valid);
       });
@@ -1574,16 +1572,14 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    describe('submitting after invalid', () => {
+    describe('submit after field invalid', () => {
       const initialState = getInitialState({ username: '' });
       const store = testCreateStore({
         login: modelReducer('login', initialState),
         loginForm: formReducer('login', initialState),
       });
-      let timesCalled = 0;
-      const handleSubmit = () => {
-        timesCalled++;
-      };
+      const handleSubmit = sinon.spy((val) => val);
+
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Form
@@ -1605,6 +1601,8 @@ Object.keys(testContexts).forEach((testKey) => {
       it('should be invalid after initial submit', () => {
         TestUtils.Simulate.submit(formNode);
 
+        assert.isTrue(handleSubmit.callCount === 0);
+
         assert.isFalse(store.getState().loginForm.$form.valid);
         assert.isFalse(store.getState().loginForm.username.valid);
       });
@@ -1622,12 +1620,12 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(store.getState().loginForm.$form.valid);
         assert.isTrue(store.getState().loginForm.username.valid);
 
-        assert.equal(timesCalled, 1);
+        assert.isTrue(handleSubmit.calledOnce);
       });
     });
   });
 
-  describe('form-wide validation with no validators', () => {
+  describe('form-wide validation with no form validators', () => {
     const initialState = getInitialState({ foo: '', bar: '' });
 
     const store = testCreateStore({
