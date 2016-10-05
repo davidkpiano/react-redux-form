@@ -5,7 +5,9 @@ import { createModelActions } from './actions/model-actions';
 import { createControlPropsMap } from './constants/control-props-map';
 import { createFormCombiner } from './reducers/forms-reducer';
 import { createControlClass } from './components/control-component';
+import { createFormClass } from './components/form-component';
 import { createFieldActions } from './actions/field-actions';
+import batch from './actions/batch-actions';
 import getValue from './utils/get-value';
 import getForm from './utils/get-form';
 import toPath from './utils/to-path';
@@ -14,7 +16,6 @@ import Immutable from 'immutable';
 import {
   initialFieldState,
   actionTypes,
-  Form,
   Errors,
   createFieldClass,
   batched,
@@ -95,10 +96,17 @@ function immutableFormReducer(model, initialState = new Immutable.Map(), options
   });
 }
 
-const immutableModelReducer = createModeler(immutableStrategy);
-const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
 const immutableModelActions = createModelActions(immutableStrategy);
 const immutableFieldActions = createFieldActions(immutableStrategy);
+
+const immutableActions = {
+  ...immutableModelActions,
+  ...immutableFieldActions,
+  batch,
+};
+
+const immutableModelReducer = createModeler(immutableStrategy);
+const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
 const immutableControlPropsMap = createControlPropsMap(immutableStrategy);
 const ImmutableField = createFieldClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
@@ -107,6 +115,10 @@ const ImmutableField = createFieldClass(immutableControlPropsMap, {
 const ImmutableControl = createControlClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
   changeAction: immutableModelActions.change,
+});
+const ImmutableForm = createFormClass({
+  ...immutableStrategy,
+  actions: immutableActions,
 });
 
 const immutableCombineForms = createFormCombiner({
@@ -117,11 +129,6 @@ const immutableCombineForms = createFormCombiner({
     ? val.toJS()
     : val),
 });
-
-const immutableActions = {
-  ...immutableModelActions,
-  ...immutableFieldActions,
-};
 
 export {
   // Reducers
@@ -138,7 +145,7 @@ export {
   // Components
   ImmutableField as Field,
   ImmutableControl as Control,
-  Form,
+  ImmutableForm as Form,
   Errors,
 
   // Factories

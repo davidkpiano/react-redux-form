@@ -249,12 +249,12 @@ function createFieldActions(s = defaultStrategies) {
 
   const validateFields =
     (model, fieldValidators, options = {}) => (dispatch, getState) => {
-      const value = s.get(getState(), model);
+      const modelValue = s.get(getState(), model);
 
       const fieldsValidity = mapValues(fieldValidators, (validator, field) => {
         const fieldValue = field
-          ? s.get(value, field)
-          : value;
+          ? s.get(modelValue, field)
+          : modelValue;
 
         const fieldValidity = getValidity(validator, fieldValue);
 
