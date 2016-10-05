@@ -227,20 +227,27 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
       return changeAction(model, getValue(value));
     }
 
-    getValidateAction(value) {
+    getValidateAction(value, eventName) {
       const {
         validators,
         errors,
         model,
+        modelValue,
+        updateOn,
         fieldValue,
       } = this.props;
 
       const nodeErrors = this.getNodeErrors();
 
+      // If it is not a change event, use the model value.
+      const valueToValidate = containsEvent(updateOn, eventName)
+        ? value
+        : modelValue;
+
       if (validators || errors) {
-        const fieldValidity = getValidity(validators, value);
+        const fieldValidity = getValidity(validators, valueToValidate);
         const fieldErrors = merge(
-          getValidity(errors, value),
+          getValidity(errors, valueToValidate),
           nodeErrors);
 
         const mergedErrors = validators
@@ -257,16 +264,23 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
       return false;
     }
 
-    getAsyncValidateAction(value) {
+    getAsyncValidateAction(value, eventName) {
       const {
         asyncValidators,
         fieldValue,
         model,
+        modelValue,
+        updateOn,
       } = this.props;
 
       // If there are no async validators,
       // do not run async validation
       if (!asyncValidators) return false;
+
+      // If it is not a change event, use the model value.
+      const valueToValidate = containsEvent(updateOn, eventName)
+        ? value
+        : modelValue;
 
       // If any sync validity is invalid,
       // do not run async validation
@@ -290,12 +304,12 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
                 done(validity);
               };
 
-              validator(getValue(value), outerDone);
+              validator(getValue(valueToValidate), outerDone);
             })
           )
         );
 
-        return value;
+        return valueToValidate;
       };
     }
 
@@ -419,11 +433,11 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
 
         if (containsEvent(validateOn, eventName)) {
           eventActions.push(
-            this.getValidateAction(persistedEvent));
+            this.getValidateAction(persistedEvent, eventName));
         }
 
         if (containsEvent(asyncValidateOn, eventName)) {
-          eventActions.push(this.getAsyncValidateAction(persistedEvent));
+          eventActions.push(this.getAsyncValidateAction(persistedEvent, eventName));
         }
 
         if (containsEvent(updateOn, eventName)) {

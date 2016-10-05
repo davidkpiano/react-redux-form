@@ -283,6 +283,8 @@ describe('custom <Control /> components', () => {
 
     const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
     input.value = 'testing';
+
+    TestUtils.Simulate.change(input);
     TestUtils.Simulate.blur(input);
   });
 

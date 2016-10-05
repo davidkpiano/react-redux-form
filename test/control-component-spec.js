@@ -682,6 +682,43 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('validateOn != updateOn', () => {
+      const initialState = {
+        foo: 'one',
+      };
+
+      const radioStore = testCreateStore({
+        testForm: formReducer('test', initialState),
+        test: modelReducer('test', initialState),
+      });
+
+      const app = TestUtils.renderIntoDocument(
+        <Provider store={radioStore}>
+          <Control.radio
+            model="test.foo"
+            value="two"
+            validateOn="focus"
+            validators={{
+              isOne: (val) => val === 'one',
+            }}
+          />
+        </Provider>
+      );
+
+      const input = TestUtils.findRenderedDOMComponentWithTag(app, 'input');
+
+      it('should initially be valid', () => {
+        assert.isTrue(radioStore.getState().testForm.foo.valid);
+      });
+
+      it('should still be valid after focusing', () => {
+        TestUtils.Simulate.focus(input);
+
+        assert.isTrue(radioStore.getState().testForm.foo.valid);
+        assert.isTrue(radioStore.getState().testForm.foo.focus);
+      });
+    });
+
     describe('asyncValidators and asyncValidateOn property', () => {
       const reducer = formReducer('test');
       const store = testCreateStore({

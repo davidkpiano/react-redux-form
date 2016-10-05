@@ -365,6 +365,7 @@ describe('custom <Field /> components with createFieldClass()', () => {
 
     const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
     input.value = 'testing';
+    TestUtils.Simulate.change(input);
     TestUtils.Simulate.blur(input);
   });
 });
