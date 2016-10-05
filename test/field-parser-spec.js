@@ -86,4 +86,35 @@ describe('<Field parser={...} />', () => {
 
     assert.equal(store.getState().test.foo, 'INITIAL');
   });
+
+  it('should update the viewValue with only the data returned by parser', () => {
+    const initial = { foo: '0123456789' };
+    const expected = '0123';
+
+    const store = createStore(combineReducers({
+      test: modelReducer('test', initial),
+      testForm: formReducer('test', initial),
+    }));
+
+    const parseValue = val => val.substring(0, 4);
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Field
+          model="test.foo"
+          parser={parseValue}
+        >
+          <input type="text" />
+        </Field>
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+    input.value = '012345678912341268374612837';
+    TestUtils.Simulate.change(input);
+
+    assert.equal(input.value, expected);
+
+    assert.equal(store.getState().test.foo, expected);
+  });
 });
