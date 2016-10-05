@@ -4,11 +4,8 @@ import React from 'react';
 import TestUtils from 'react-addons-test-utils';
 import { combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-import _get from 'lodash/get';
-import i from 'icepick';
-import Immutable from 'immutable';
 
-import { testCreateStore } from './utils';
+import { testCreateStore, defaultTestContexts } from './utils';
 
 import {
   Form as _Form,
@@ -19,6 +16,7 @@ import {
   actions as _actions
 } from '../src';
 import {
+  Form as immutableForm,
   modelReducer as immutableModelReducer,
   formReducer as immutableFormReducer,
   Field as ImmutableField,
@@ -28,35 +26,23 @@ import {
 
 const testContexts = {
   standard: {
+    ...defaultTestContexts.standard,
     Form: _Form,
     modelReducer: _modelReducer,
     formReducer: _formReducer,
     Field: _Field,
     Errors: _Errors,
     actions: _actions,
-    object: {},
-    get: _get,
-    set: (state, path, value) => i.setIn(state, path, value),
-    getInitialState: (state) => state
-   },
-   immutable: {
-     modelReducer: immutableModelReducer,
-     formReducer: immutableFormReducer,
-     Field: ImmutableField,
-     Errors: ImmutableErrors,
-     actions: immutableActions,
-     object: new Immutable.Map(),
-     get: (value, path) => {
-       const result = value.getIn(toPath(path));
-       try {
-         return result.toJS();
-       } catch (e) {
-         return result;
-       }
-     },
-     set: (state, path, value) => state.setIn(path, value),
-     getInitialState: (state) => Immutable.fromJS(state)
-   }
+  },
+  immutable: {
+    ...defaultTestContexts.immutable,
+    Form: immutableForm,
+    modelReducer: immutableModelReducer,
+    formReducer: immutableFormReducer,
+    Field: ImmutableField,
+    Errors: ImmutableErrors,
+    actions: immutableActions,
+  }
 };
 
 Object.keys(testContexts).forEach((testKey) => {
@@ -69,10 +55,9 @@ Object.keys(testContexts).forEach((testKey) => {
   const actions = testContext.actions;
   const object = testContext.object;
   const get = testContext.get;
-  const set = testContext.set;
   const getInitialState = testContext.getInitialState;
 
-  describe('<Errors /> (' + testKey + ' context) ' + testKey, () => {
+  describe(`<Errors /> component (${testKey} context)`, () => {
     it('should exist', () => {
       assert.ok(Errors);
     });
@@ -191,7 +176,7 @@ Object.keys(testContexts).forEach((testKey) => {
         <Provider store={store}>
           <Form model="test"
             validators={{
-              '': { foo: ({ foo }) => foo && foo.length },
+              '': { foo: (model) => get(model, 'foo') && get(model, 'foo').length },
             }}
           >
             <Errors model="test"
