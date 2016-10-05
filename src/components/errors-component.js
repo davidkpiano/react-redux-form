@@ -169,7 +169,7 @@ function createErrorsClass(s = defaultStrategy) {
   function mapStateToProps(state, { model }) {
     const modelString = getModel(model, state);
 
-    const formValue = getForm(state, modelString).$form;
+    const formValue = s.getForm(state, modelString).$form;
     const fieldValue = getFieldFromState(state, modelString)
       || initialFieldState;
 
