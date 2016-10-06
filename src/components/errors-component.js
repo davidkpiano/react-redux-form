@@ -14,6 +14,7 @@ import getModel from '../utils/get-model';
 import isValid from '../form/is-valid';
 import resolveModel from '../utils/resolve-model';
 import initialFieldState from '../constants/initial-field-state';
+import shallowEqual from '../utils/shallow-equal';
 
 function showErrors(field, form, show = true) {
   if (typeof show === 'function') {
@@ -30,7 +31,14 @@ function showErrors(field, form, show = true) {
 }
 
 class Errors extends Component {
-  shouldComponentUpdate({ fieldValue, formValue }) {
+  shouldComponentUpdate(nextProps) {
+    const { fieldValue, formValue } = nextProps;
+    const { dynamic } = this.props;
+
+    if (dynamic) {
+      return !shallowEqual(this.props, nextProps);
+    }
+
     return fieldValue !== this.props.fieldValue
       || formValue !== this.props.formValue;
   }
@@ -151,6 +159,10 @@ Errors.propTypes = {
     PropTypes.element,
   ]),
   dispatch: PropTypes.func,
+  dynamic: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
 };
 
 Errors.defaultProps = {
@@ -158,6 +170,7 @@ Errors.defaultProps = {
   component: 'span',
   messages: {},
   show: true,
+  dynamic: true,
 };
 
 function mapStateToProps(state, { model }) {
