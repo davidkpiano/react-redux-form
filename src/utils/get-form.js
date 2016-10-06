@@ -1,4 +1,4 @@
-import get from '../utils/get';
+import defaultGet from '../utils/get';
 import isPlainObject from 'lodash/isPlainObject';
 import pathStartsWith from '../utils/path-starts-with';
 
@@ -80,7 +80,7 @@ const getFormStateKeyCached = (() => (state, modelString) => {
   return result;
 })();
 
-function getForm(state, modelString) {
+function getForm(state, modelString, get = defaultGet) {
   const formStateKey = getFormStateKeyCached(state, modelString);
 
   if (!formStateKey) {
