@@ -1,9 +1,9 @@
 // ./store.js
 import {
   createStore,
-  combineReducers,
   applyMiddleware,
 } from 'redux';
+import { combineReducers } from 'redux-immutable';
 import {
   modelReducer,
   formReducer,

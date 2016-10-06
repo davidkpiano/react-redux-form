@@ -20,7 +20,7 @@ class UserForm extends React.Component {
     // etc.
     const somePromise = new Promise((resolve) => {
       /* eslint-disable no-console */
-      console.log(user);
+      console.log(user.toJS());
       /* eslint-enable no-console */
       setTimeout(() => { resolve(true); }, 1000);
     });

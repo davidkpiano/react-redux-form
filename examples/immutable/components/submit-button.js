@@ -11,7 +11,7 @@ SubmitButton.propTypes = {
   user: React.PropTypes.instanceOf(Immutable.Map).isRequired,
 };
 
-const mapStateToProps = ({ user }) => ({ user });
+const mapStateToProps = (state) => ({ user: state.get('user') });
 
 export default connect(mapStateToProps)(SubmitButton);
 
