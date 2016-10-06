@@ -1,7 +1,7 @@
 import invertValidators from '../src/utils/invert-validators';
 import getValidity from '../src/utils/get-validity';
 import isValidityInvalid from '../src/utils/is-validity-invalid';
-import _getForm, { getFormStateKey as _getFormStateKey, clearGetFormCache } from '../src/utils/get-form';
+import { getFormStateKey as _getFormStateKey, clearGetFormCache } from '../src/utils/get-form';
 import getFieldFromState from '../src/utils/get-field-from-state';
 import { createStore, applyMiddleware, combineReducers as _combineReducers } from 'redux';
 import { combineReducers as combineReducersImmutable } from 'redux-immutable';
@@ -22,7 +22,6 @@ import {
 import {
   actions as immutableActions,
   formReducer as immutableFormReducer,
-  getForm as immutableGetForm,
   getFormStateKey as immutableGetFormStateKey,
 } from '../src/immutable';
 
@@ -32,7 +31,6 @@ const testContexts = {
     actions: _actions,
     formReducer: _formReducer,
     combineReducers: _combineReducers,
-    getForm: _getForm,
     getFormStateKey: _getFormStateKey,
   },
   immutable: {
@@ -40,7 +38,6 @@ const testContexts = {
     actions: immutableActions,
     formReducer: immutableFormReducer,
     combineReducers: combineReducersImmutable,
-    getForm: immutableGetForm,
     getFormStateKey: immutableGetFormStateKey,
   },
 };
@@ -50,7 +47,6 @@ Object.keys(testContexts).forEach((testKey) => {
   const actions = testContext.actions;
   const formReducer = testContext.formReducer;
   const combineReducers = testContext.combineReducers;
-  const getForm = testContext.getForm;
   const getFormStateKey = testContext.getFormStateKey;
 
   describe(`utils (${testKey} context)`, () => {

@@ -77,7 +77,8 @@ export function getFormStateKey(state, model, s = defaultStrategy, currentPath =
 
 let formStateKeyCache = {};
 
-export const clearGetFormCache = () => formStateKeyCache = {}; // eslint-disable-line no-return-assign
+export const clearGetFormCache =
+  () => formStateKeyCache = {}; // eslint-disable-line no-return-assign
 
 const getFormStateKeyCached = (() => (state, modelString, s = defaultStrategy) => {
   if (formStateKeyCache[modelString]) return formStateKeyCache[modelString];
