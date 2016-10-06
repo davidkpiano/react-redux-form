@@ -1,10 +1,10 @@
 import { assert } from 'chai';
-import getForm from '../src/utils/get-form';
+import getForm, { clearGetFormCache } from '../src/utils/get-form';
 import { combineReducers } from 'redux';
 import { modelReducer, combineForms, actions } from '../src';
 
 describe('combineForms()', () => {
-  beforeEach(() => getForm.clearCache());
+  beforeEach(() => clearGetFormCache());
 
   context('standard combined reducer', () => {
     const reducer = combineForms({
