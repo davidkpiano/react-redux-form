@@ -97,7 +97,7 @@ describe('combineForms()', () => {
 });
 
 describe('createForms()', () => {
-  beforeEach(() => getForm.clearCache());
+  beforeEach(() => clearGetFormCache());
 
   it('exists as a function', () => {
     assert.isFunction(createForms);
