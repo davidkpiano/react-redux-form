@@ -4,7 +4,7 @@ export default function immutableGetFromState(state, modelString) {
   const path = toPath(modelString);
 
   return path.reduce((subState, subPath) => {
-    if (!subState) return subState;
+    if (!subState || typeof subState === 'string') return subState;
 
     // Current subState is immutable
     if ('get' in subState) {
