@@ -25,7 +25,7 @@ const defaultStrategy = {
 };
 
 function createFormCombiner(strategy = defaultStrategy) {
-  function combineForms(forms, model = '', options = {}) {
+  function createForms(forms, model = '', options = {}) {
     const formKeys = Object.keys(forms);
     const modelReducers = {};
     const initialFormState = {};
@@ -58,14 +58,31 @@ function createFormCombiner(strategy = defaultStrategy) {
       }
     });
 
-    return combineReducers({
+    return {
       ...modelReducers,
       [key]: strategy.formReducer(model, initialFormState, { plugins }),
-    });
+    };
   }
 
-  return combineForms;
+  function combineForms(forms, model = '', options = {}) {
+    const mappedReducers = createForms(forms, model, options);
+
+    return combineReducers(mappedReducers);
+  }
+
+  return {
+    createForms,
+    combineForms,
+  };
 }
 
-export default createFormCombiner();
-export { createFormCombiner };
+const {
+  combineForms: defaultCombineForms,
+  createForms: defaultCreateForms,
+} = createFormCombiner();
+
+export default defaultCombineForms;
+export {
+  createFormCombiner,
+  defaultCreateForms as createForms,
+};

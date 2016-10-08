@@ -386,6 +386,33 @@ describe('formReducer() (V1)', () => {
           form.deep.foo.errors === true
           && form.deep.bar.errors === true,
       },
+      {
+        label: 'form-wide boolean validity',
+        action: actions.setFieldsValidity,
+        model: 'user',
+        args: [{ '': false }],
+        expectedForm: (form) =>
+          form.$form.errors === true
+          && form.$form.valid === false,
+      },
+      {
+        label: 'form-wide object errors validity',
+        action: actions.setFieldsValidity,
+        model: 'user',
+        initialState: {
+          $form: initialFieldState,
+          name: {
+            ...initialFieldState,
+            valid: false,
+            validity: false,
+            errors: true,
+          },
+        },
+        args: [{ '': { passMatch: true } }],
+        expectedForm: (form) =>
+          form.$form.validity.passMatch === true
+          && form.$form.valid === false,
+      },
     ],
     [actionTypes.SET_SUBMITTED]: [
       {
@@ -522,6 +549,7 @@ describe('formReducer() (V1)', () => {
     it('parent form should remain invalid if only grandchild is valid', () => {
       assert.isFalse(invalidFooValidBar.$form.valid);
       assert.isFalse(invalidFooValidBar.foo.valid);
+      assert.isTrue(invalidFooValidBar.meta.$form.valid);
       assert.isTrue(invalidFooValidBar.meta.bar.valid);
     });
 
@@ -529,9 +557,10 @@ describe('formReducer() (V1)', () => {
       actions.setValidity('test.foo', true));
 
     it('parent form should be valid if all descendants are valid', () => {
-      assert.isTrue(validFooValidBar.$form.valid);
       assert.isTrue(validFooValidBar.foo.valid);
+      assert.isTrue(validFooValidBar.meta.$form.valid);
       assert.isTrue(validFooValidBar.meta.bar.valid);
+      assert.isTrue(validFooValidBar.$form.valid);
     });
   });
 

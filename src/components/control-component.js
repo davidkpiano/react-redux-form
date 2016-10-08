@@ -341,11 +341,17 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     }
 
     setViewValue(viewValue, props = this.props) {
-      const { parser = (v) => v } = this.props;
-
       if (!isReadOnlyValue(props.controlProps)) {
-        this.setState({ viewValue: parser(viewValue) });
+        this.setState({ viewValue: this.parse(viewValue) });
       }
+    }
+
+    parse(value) {
+      const { parser } = this.props;
+
+      return parser
+        ? parser(value)
+        : value;
     }
 
     handleChange(event) {
@@ -354,8 +360,12 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     }
 
     handleKeyPress(event) {
+      // Get the value from the event
+      // in case updateOn="blur" (or something other than "change")
+      const parsedValue = this.parse(getValue(event));
+
       if (event.key === 'Enter') {
-        this.handleSubmit(event);
+        this.handleSubmit(parsedValue);
       }
     }
 

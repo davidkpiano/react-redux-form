@@ -131,7 +131,7 @@ const immutableCombineForms = createFormCombiner({
   toJS: (val) => ((val && val.toJS)
     ? val.toJS()
     : val),
-});
+}).combineForms;
 
 export {
   // Reducers
