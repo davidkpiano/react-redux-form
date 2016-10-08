@@ -340,20 +340,18 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
       return nodeErrors;
     }
 
+    setViewValue(viewValue, props = this.props) {
+      if (!isReadOnlyValue(props.controlProps)) {
+        this.setState({ viewValue: this.parse(viewValue) });
+      }
+    }
+
     parse(value) {
       const { parser } = this.props;
 
       return parser
         ? parser(value)
         : value;
-    }
-
-    setViewValue(viewValue, props = this.props) {
-      const { parser } = this.props;
-
-      if (!isReadOnlyValue(props.controlProps)) {
-        this.setState({ viewValue: this.parse(viewValue) });
-      }
     }
 
     handleChange(event) {
