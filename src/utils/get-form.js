@@ -1,11 +1,9 @@
 import defaultGet from '../utils/get';
 import isPlainObject from 'lodash/isPlainObject';
-import pathStartsWith from '../utils/path-starts-with';
+import pathStartsWith, { pathDifference } from '../utils/path-starts-with';
 
-function joinPaths(firstPath, secondPath) {
-  if (!firstPath || !firstPath.length) return secondPath;
-
-  return `${firstPath}.${secondPath}`;
+function joinPaths(...paths) {
+  return paths.filter(path => !!path && path.length).join('.');
 }
 
 export function getFormStateKey(state, model, currentPath = '') {
@@ -16,30 +14,24 @@ export function getFormStateKey(state, model, currentPath = '') {
     const subState = state[key];
 
     if (subState && subState.$form) {
-      if (subState.$form.model === '') {
-        return Object.keys(subState).some((formKey) => {
-          const formState = subState[formKey];
+      if (pathStartsWith(model, subState.$form.model) || subState.$form.model === '') {
+        const localPath = pathDifference(model, subState.$form.model);
 
-          if (formKey === '$form') return false;
+        const resultPath = [currentPath, key];
+        let currentState = subState;
 
-          if (!formState.$form) return false;
-
-          if (pathStartsWith(model, joinPaths(currentPath, formState.$form.model))) {
-            result = currentPath
-              ? [currentPath, key, formKey].join('.')
-              : [key, formKey].join('.');
+        localPath.every((segment) => {
+          if (currentState[segment] && currentState[segment].$form) {
+            currentState = currentState[segment];
+            resultPath.push(segment);
 
             return true;
           }
 
           return false;
         });
-      }
 
-      if (pathStartsWith(model, subState.$form.model)) {
-        result = currentPath
-          ? [currentPath, key].join('.')
-          : key;
+        result = joinPaths(...resultPath);
 
         return true;
       }
@@ -57,8 +49,7 @@ export function getFormStateKey(state, model, currentPath = '') {
   if (result) return result;
 
   deepCandidateKeys.some((key) => {
-    result = getFormStateKey(state[key], model,
-      currentPath ? [currentPath, key].join('.') : key);
+    result = getFormStateKey(state[key], model, joinPaths(currentPath, key));
 
     return !!result;
   });
