@@ -122,20 +122,24 @@ const ImmutableForm = createFormClass({
   actions: immutableActions,
 });
 
-const immutableCombineForms = createFormCombiner({
+const immutableFormCombiner = createFormCombiner({
   modelReducer: immutableModelReducer,
   formReducer: immutableFormReducer,
   modeled: immutableModelReducerEnhancer,
   toJS: (val) => ((val && val.toJS)
     ? val.toJS()
     : val),
-}).combineForms;
+});
+
+const immutableCombineForms = immutableFormCombiner.combineForms;
+const immutableCreateForms = immutableFormCombiner.createForms;
 
 export {
   // Reducers
   immutableFormReducer as formReducer,
   immutableModelReducer as modelReducer,
   immutableCombineForms as combineForms,
+  immutableCreateForms as createForms,
 
   // Constants
   initialFieldState,

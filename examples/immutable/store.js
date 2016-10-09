@@ -4,10 +4,7 @@ import {
   combineReducers,
   applyMiddleware,
 } from 'redux';
-import {
-  modelReducer,
-  formReducer,
-} from 'react-redux-form/immutable';
+import { createForms } from 'react-redux-form/immutable';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
 
@@ -18,8 +15,9 @@ const initialUserState = Immutable.fromJS({
 });
 
 const store = applyMiddleware(thunk)(createStore)(combineReducers({
-  user: modelReducer('user', initialUserState),
-  userForm: formReducer('user', initialUserState),
+  ...createForms({
+    user: initialUserState,
+  })
 }));
 
 export default store;
