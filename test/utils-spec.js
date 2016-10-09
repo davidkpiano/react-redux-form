@@ -123,7 +123,9 @@ describe('utils', () => {
     const store = applyMiddleware(thunk)(createStore)(combineReducers({
       firstForm: formReducer('first'),
       deep: combineReducers({
-        secondForm: formReducer('second'),
+        secondForm: formReducer('second', {
+          nested: {foo: 'bar'},
+        }),
         deeper: combineReducers({
           thirdForm: formReducer('third'),
         }),
@@ -164,6 +166,12 @@ describe('utils', () => {
       assert.equal(
         getFormStateKey(store.getState(), 'third.anything'),
         'deep.deeper.thirdForm');
+    });
+
+    it('should find a nested form reducer', () => {
+      assert.equal(
+        getFormStateKey(store.getState(), 'second.nested.foo'),
+        'deep.secondForm.nested');
     });
   });
 
