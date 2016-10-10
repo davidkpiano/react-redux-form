@@ -48,6 +48,7 @@ Object.keys(testContexts).forEach((testKey) => {
   const formReducer = testContext.formReducer;
   const combineReducers = testContext.combineReducers;
   const getFormStateKey = testContext.getFormStateKey;
+  const getInitialState = testContext.getInitialState;
 
   describe(`utils (${testKey} context)`, () => {
     describe('invertValidators()', () => {
@@ -156,9 +157,9 @@ Object.keys(testContexts).forEach((testKey) => {
         const store = applyMiddleware(thunk)(createStore)(combineReducers({
           firstForm: formReducer('first'),
           deep: combineReducers({
-            secondForm: formReducer('second', {
+            secondForm: formReducer('second', getInitialState({
               nested: { foo: 'bar' },
-            }),
+            })),
             deeper: combineReducers({
               thirdForm: formReducer('third'),
             }),

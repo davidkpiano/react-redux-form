@@ -19,16 +19,18 @@ export function getFormStateKey(state, model, s = defaultStrategy, currentPath =
   s.keys(state).some((key) => {
     const subState = s.get(state, key);
 
-    if (subState && subState.$form) {
-      if (pathStartsWith(model, subState.$form.model) || subState.$form.model === '') {
-        const localPath = pathDifference(model, subState.$form.model);
+    if (subState && s.get(subState, '$form')) {
+      const subStateModel = s.get(subState, '$form.model');
+
+      if (pathStartsWith(model, subStateModel) || subStateModel === '') {
+        const localPath = pathDifference(model, subStateModel);
 
         const resultPath = [currentPath, key];
         let currentState = subState;
 
         localPath.every((segment) => {
-          if (currentState[segment] && currentState[segment].$form) {
-            currentState = currentState[segment];
+          if (s.get(currentState, segment) && s.get(currentState, `${segment}.$form`)) {
+            currentState = s.get(currentState, segment);
             resultPath.push(segment);
 
             return true;
@@ -55,7 +57,7 @@ export function getFormStateKey(state, model, s = defaultStrategy, currentPath =
   if (result) return result;
 
   deepCandidateKeys.some((key) => {
-    result = getFormStateKey(state[key], model, joinPaths(currentPath, key));
+    result = getFormStateKey(s.get(state, key), model, s, joinPaths(currentPath, key));
 
     return !!result;
   });
