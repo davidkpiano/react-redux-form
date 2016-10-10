@@ -642,6 +642,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
       mapProps={{
         ...controlPropsMap.checkbox,
         ...props.mapProps,
+        changeAction: props.changeAction || controlPropsMap.checkbox.changeAction,
       }}
       {...omit(props, 'mapProps')}
     />

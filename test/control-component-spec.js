@@ -1250,7 +1250,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('changeAction prop', () => {
-      const initialState = getInitialState({ foo: '' });
+      const initialState = getInitialState({
+        foo: '',
+        checked: false,
+      });
       const reducer = modelReducer('test', initialState);
       const store = testCreateStore({
         test: reducer,
@@ -1283,6 +1286,27 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.equal(
           get(store.getState().test, 'foo'),
           'testing');
+      });
+
+      it('should execute the custom change action (checkbox)', () => {
+        let customChanged = false;
+
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.checkbox
+              model="test.checked"
+              changeAction={() => {
+                customChanged = true;
+              }}
+            />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        TestUtils.Simulate.change(control);
+
+        assert.isTrue(customChanged);
       });
     });
 
