@@ -152,50 +152,116 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('getFormStateKey()', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
-        firstForm: formReducer('first'),
-        deep: combineReducers({
-          secondForm: formReducer('second'),
-          deeper: combineReducers({
-            thirdForm: formReducer('third'),
+      context('explicit formReducers', () => {
+        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+          firstForm: formReducer('first'),
+          deep: combineReducers({
+            secondForm: formReducer('second', {
+              nested: { foo: 'bar' },
+            }),
+            deeper: combineReducers({
+              thirdForm: formReducer('third'),
+            }),
           }),
-        }),
-      }));
+        }));
 
-      it('should find a shallow form reducer state key', () => {
-        assert.equal(
-          getFormStateKey(store.getState(), 'first'),
-          'firstForm');
+        it('should find a shallow form reducer state key', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'first'),
+            'firstForm');
+        });
+
+        it('should find a shallow form reducer state key with deep model', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'first.anything'),
+            'firstForm');
+        });
+
+        it('should find a deep form reducer state key', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'second'),
+            'deep.secondForm');
+        });
+
+        it('should find a deep form reducer state key with deep model', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'second.anything'),
+            'deep.secondForm');
+        });
+
+        it('should find a deeper form reducer state key', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'third'),
+            'deep.deeper.thirdForm');
+        });
+
+        it('should find a deeper form reducer state key with deep model', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'third.anything'),
+            'deep.deeper.thirdForm');
+        });
+
+        it('should find a nested form reducer', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'second.nested.foo'),
+            'deep.secondForm.nested');
+        });
       });
 
-      it('should find a shallow form reducer state key with deep model', () => {
-        assert.equal(
-          getFormStateKey(store.getState(), 'first.anything'),
-          'firstForm');
-      });
+      context('combined formReducer', () => {
+        const store = applyMiddleware(thunk)(createStore)(combineForms({
+          first: {},
+          deep: {
+            second: {
+              nested: { foo: 'bar' },
+            },
+            deeper: {
+              third: {},
+            },
+          },
+        }));
 
-      it('should find a deep form reducer state key', () => {
-        assert.equal(
-          getFormStateKey(store.getState(), 'second'),
-          'deep.secondForm');
-      });
+        it('should find a shallow form reducer state key', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'first'),
+            'forms.first');
+        });
 
-      it('should find a deep form reducer state key with deep model', () => {
-        assert.equal(
-          getFormStateKey(store.getState(), 'second.anything'),
-          'deep.secondForm');
-      });
+        it('should find a shallow form reducer state key with deep model', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'first.anything'),
+            'forms.first');
+        });
 
-      it('should find a deeper form reducer state key', () => {
-        assert.equal(
-          getFormStateKey(store.getState(), 'third'),
-          'deep.deeper.thirdForm');
-      });
+        it('should find a deep form reducer state key', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'deep.second'),
+            'forms.deep.second');
+        });
 
-      it('should find a deeper form reducer state key with deep model', () => {
-        assert.equal(
-          getFormStateKey(store.getState(), 'third.anything'),
-          'deep.deeper.thirdForm');
+        it('should find a deep form reducer state key with deep model', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'deep.second.anything'),
+            'forms.deep.second');
+        });
+
+        it('should find a deeper form reducer state key', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'deep.deeper.third'),
+            'forms.deep.deeper.third');
+        });
+
+        it('should find a deeper form reducer state key with deep model', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'deep.deeper.third.anything'),
+            'forms.deep.deeper.third');
+        });
+
+        it('should find a nested form reducer', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'deep.second.nested.foo'),
+            'forms.deep.second.nested');
+        });
       });
     });
 
