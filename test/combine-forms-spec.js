@@ -1,10 +1,10 @@
 import { assert } from 'chai';
-import getForm from '../src/utils/get-form';
+import getForm, { clearGetFormCache } from '../src/utils/get-form';
 import { combineReducers } from 'redux';
 import { modelReducer, combineForms, createForms, actions } from '../src';
 
 describe('combineForms()', () => {
-  beforeEach(() => getForm.clearCache());
+  beforeEach(() => clearGetFormCache());
 
   context('standard combined reducer', () => {
     const reducer = combineForms({
@@ -97,7 +97,7 @@ describe('combineForms()', () => {
 });
 
 describe('createForms()', () => {
-  beforeEach(() => getForm.clearCache());
+  beforeEach(() => clearGetFormCache());
 
   it('exists as a function', () => {
     assert.isFunction(createForms);

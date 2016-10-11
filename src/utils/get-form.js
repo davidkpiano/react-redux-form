@@ -1,28 +1,36 @@
-import defaultGet from '../utils/get';
+import get from '../utils/get';
 import isPlainObject from 'lodash/isPlainObject';
 import pathStartsWith, { pathDifference } from '../utils/path-starts-with';
+
+const defaultStrategy = {
+  get,
+  keys: (state) => Object.keys(state),
+  isObject: (state) => isPlainObject(state),
+};
 
 function joinPaths(...paths) {
   return paths.filter(path => !!path && path.length).join('.');
 }
 
-export function getFormStateKey(state, model, currentPath = '') {
+export function getFormStateKey(state, model, s = defaultStrategy, currentPath = '') {
   const deepCandidateKeys = [];
   let result = null;
 
-  Object.keys(state).some((key) => {
-    const subState = state[key];
+  s.keys(state).some((key) => {
+    const subState = s.get(state, key);
 
-    if (subState && subState.$form) {
-      if (pathStartsWith(model, subState.$form.model) || subState.$form.model === '') {
-        const localPath = pathDifference(model, subState.$form.model);
+    if (subState && s.get(subState, '$form')) {
+      const subStateModel = s.get(subState, '$form.model');
+
+      if (pathStartsWith(model, subStateModel) || subStateModel === '') {
+        const localPath = pathDifference(model, subStateModel);
 
         const resultPath = [currentPath, key];
         let currentState = subState;
 
         localPath.every((segment) => {
-          if (currentState[segment] && currentState[segment].$form) {
-            currentState = currentState[segment];
+          if (s.get(currentState, segment) && s.get(currentState, `${segment}.$form`)) {
+            currentState = s.get(currentState, segment);
             resultPath.push(segment);
 
             return true;
@@ -39,7 +47,7 @@ export function getFormStateKey(state, model, currentPath = '') {
       return false;
     }
 
-    if (isPlainObject(subState)) {
+    if (s.isObject(subState)) {
       deepCandidateKeys.push(key);
     }
 
@@ -49,7 +57,7 @@ export function getFormStateKey(state, model, currentPath = '') {
   if (result) return result;
 
   deepCandidateKeys.some((key) => {
-    result = getFormStateKey(state[key], model, joinPaths(currentPath, key));
+    result = getFormStateKey(s.get(state, key), model, s, joinPaths(currentPath, key));
 
     return !!result;
   });
@@ -61,26 +69,27 @@ export function getFormStateKey(state, model, currentPath = '') {
 
 let formStateKeyCache = {};
 
-const getFormStateKeyCached = (() => (state, modelString) => {
+export const clearGetFormCache =
+  () => formStateKeyCache = {}; // eslint-disable-line no-return-assign
+
+const getFormStateKeyCached = (() => (state, modelString, s = defaultStrategy) => {
   if (formStateKeyCache[modelString]) return formStateKeyCache[modelString];
 
-  const result = getFormStateKey(state, modelString);
+  const result = getFormStateKey(state, modelString, s);
 
   formStateKeyCache[modelString] = result; // eslint-disable-line no-return-assign
 
   return result;
 })();
 
-function getForm(state, modelString, get = defaultGet) {
-  const formStateKey = getFormStateKeyCached(state, modelString);
+function getForm(state, modelString, s = defaultStrategy) {
+  const formStateKey = getFormStateKeyCached(state, modelString, s);
 
   if (!formStateKey) {
     return null;
   }
 
-  return get(state, formStateKey);
+  return s.get(state, formStateKey);
 }
-
-getForm.clearCache = () => formStateKeyCache = {}; // eslint-disable-line no-return-assign
 
 export default getForm;

@@ -207,6 +207,8 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     changeAction: actions.change,
     dynamic: true,
     component: 'div',
+    getter: _get,
+    getFieldFromState,
     ...defaultProps,
   };
 

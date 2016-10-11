@@ -561,6 +561,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     parser: identity,
     controlProps: emptyControlProps,
     getter: _get,
+    getFieldFromState,
     ignore: [],
     dynamic: false,
     mapProps: controlPropsMap.default,
