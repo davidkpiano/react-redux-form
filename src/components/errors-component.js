@@ -19,6 +19,7 @@ import shallowEqual from '../utils/shallow-equal';
 const defaultStrategy = {
   get: _get,
   getForm,
+  getFieldFromState,
 };
 
 function showErrors(field, form, show = true) {
@@ -183,7 +184,7 @@ function createErrorsClass(s = defaultStrategy) {
     const modelString = getModel(model, state);
 
     const formValue = s.getForm(state, modelString).$form;
-    const fieldValue = getFieldFromState(state, modelString)
+    const fieldValue = s.getFieldFromState(state, modelString)
       || initialFieldState;
 
     return {

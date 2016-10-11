@@ -64,9 +64,14 @@ function immutableGetFormStateKey(state, model) {
   return getFormStateKey(state, model, baseStrategy);
 }
 
+function immutableGetFieldFromState(state, modelString) {
+  return getField(state, modelString, { getForm: immutableGetForm });
+}
+
 const immutableStrategy = {
   ...baseStrategy,
   getForm: immutableGetForm,
+  getFieldFromState: immutableGetFieldFromState,
 };
 
 function transformAction(action) {
@@ -112,11 +117,13 @@ const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelR
 const immutableControlPropsMap = createControlPropsMap(immutableStrategy);
 const ImmutableField = createFieldClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
+  getFieldFromState: immutableGetFieldFromState,
   changeAction: immutableModelActions.change,
 });
 const ImmutableErrors = createErrorsClass(immutableStrategy);
 const ImmutableControl = createControlClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
+  getFieldFromState: immutableGetFieldFromState,
   changeAction: immutableModelActions.change,
 });
 const ImmutableForm = createFormClass({
@@ -166,7 +173,7 @@ export {
   form,
 
   // Utilities
-  getField,
+  immutableGetFieldFromState as getField,
   immutableGetForm as getForm,
   immutableGetFormStateKey as getFormStateKey,
   track,

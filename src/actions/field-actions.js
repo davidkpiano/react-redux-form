@@ -16,6 +16,8 @@ import omit from 'lodash/omit';
 
 const defaultStrategies = {
   get: _get,
+  getForm,
+  getFieldFromState,
 };
 
 function createFieldActions(s = defaultStrategies) {
@@ -73,7 +75,7 @@ function createFieldActions(s = defaultStrategies) {
     }
 
     return (dispatch, getState) => {
-      const field = getFieldFromState(getState(), model);
+      const field = s.getFieldFromState(getState(), model);
 
       if (!field) {
         dispatch(NULL_ACTION);
@@ -148,7 +150,7 @@ function createFieldActions(s = defaultStrategies) {
 
   const submit = (model, promise, options = {}) => (dispatch, getState) => {
     if (options.validate) {
-      const form = getForm(getState(), model);
+      const form = s.getForm(getState(), model);
 
       if (!form.$form.valid) {
         return dispatch(NULL_ACTION);
@@ -265,7 +267,7 @@ function createFieldActions(s = defaultStrategies) {
       const invalidCB = options.onInvalid;
 
       if (validCB || invalidCB) {
-        const form = getForm(getState(), model);
+        const form = s.getForm(getState(), model);
         const formValid = (form && !fieldsValidity.hasOwnProperty(''))
           ? isFormValidWithoutFields(form, fieldsValidity)
           : true;
