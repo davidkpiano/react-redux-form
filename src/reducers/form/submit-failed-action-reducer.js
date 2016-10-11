@@ -12,5 +12,11 @@ export default function submitFailedActionReducer(state, action, localPath) {
     submitFailed: !!action.submitFailed,
     touched: true,
     retouched: false,
+  }), (_, fieldState) => ({
+    pending: false,
+    submitted: fieldState.submitted && !action.submitFailed,
+    submitFailed: !!action.submitFailed,
+    touched: true,
+    retouched: false,
   }));
 }

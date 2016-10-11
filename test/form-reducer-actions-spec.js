@@ -440,6 +440,13 @@ describe('formReducer() (V1)', () => {
           touched: true,
           retouched: false,
         },
+        expectedSubField: {
+          pending: false,
+          submitted: false,
+          submitFailed: true,
+          touched: true,
+          retouched: false,
+        },
       },
     ],
   };
