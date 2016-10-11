@@ -65,7 +65,10 @@ function updateFieldValue(field, action) {
     const subField = field[index] || createInitialState(`${model}.${index}`, subValue);
 
     if (Object.hasOwnProperty.call(subField, '$form')) {
-      return updateFieldValue(subField, subValue);
+      return updateFieldValue(subField, {
+        model: index,
+        value: subValue,
+      });
     }
 
     if (shallowEqual(subValue, subField.value)) {
