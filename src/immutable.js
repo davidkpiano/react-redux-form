@@ -10,8 +10,9 @@ import { createFormClass } from './components/form-component';
 import { createFieldActions } from './actions/field-actions';
 import batch from './actions/batch-actions';
 import getValue from './utils/get-value';
-import getForm from './utils/get-form';
-import toPath from './utils/to-path';
+import immutableGetFromState from './utils/get-from-immutable-state';
+import getForm, { getFormStateKey } from './utils/get-form';
+import isPlainObject from 'lodash/isPlainObject';
 import Immutable from 'immutable';
 
 import {
@@ -33,31 +34,18 @@ function immutableSet(state, path, value) {
   }
 }
 
-function immutableGetFromState(state, modelString) {
-  const path = toPath(modelString);
-
-  return path.reduce((subState, subPath) => {
-    if (!subState) return subState;
-
-    // Current subState is immutable
-    if ('get' in subState) {
-      return subState.get(subPath);
-    }
-
-    // Current subState is a plain object/array
-    return subState[subPath];
-  }, state);
+function immutableKeys(state) {
+  if (Immutable.Map.isMap(state)) {
+    return state.keySeq();
+  }
+  return Object.keys(state);
 }
 
-function immutableGetForm(state, modelString) {
-  return getForm(state, modelString, immutableGetFromState);
-}
-
-const immutableStrategy = {
+const baseStrategy = {
   get: immutableGetFromState,
   set: immutableSet,
   getValue,
-  getForm: immutableGetForm,
+  keys: immutableKeys,
   splice: (list, ...args) => list.splice(...args),
   merge: (map, ...args) => map.merge(...args),
   remove: (map, ...args) => map.remove(...args),
@@ -65,6 +53,25 @@ const immutableStrategy = {
   length: (list) => list.size,
   object: new Immutable.Map(),
   array: new Immutable.List(),
+  isObject: (state) => (isPlainObject(state) || Immutable.Map.isMap(state)),
+};
+
+function immutableGetForm(state, modelString) {
+  return getForm(state, modelString, baseStrategy);
+}
+
+function immutableGetFormStateKey(state, model) {
+  return getFormStateKey(state, model, baseStrategy);
+}
+
+function immutableGetFieldFromState(state, modelString) {
+  return getField(state, modelString, { getForm: immutableGetForm });
+}
+
+const immutableStrategy = {
+  ...baseStrategy,
+  getForm: immutableGetForm,
+  getFieldFromState: immutableGetFieldFromState,
 };
 
 function transformAction(action) {
@@ -110,11 +117,13 @@ const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelR
 const immutableControlPropsMap = createControlPropsMap(immutableStrategy);
 const ImmutableField = createFieldClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
+  getFieldFromState: immutableGetFieldFromState,
   changeAction: immutableModelActions.change,
 });
 const ImmutableErrors = createErrorsClass(immutableStrategy);
 const ImmutableControl = createControlClass(immutableControlPropsMap, {
   getter: immutableGetFromState,
+  getFieldFromState: immutableGetFieldFromState,
   changeAction: immutableModelActions.change,
 });
 const ImmutableForm = createFormClass({
@@ -164,6 +173,8 @@ export {
   form,
 
   // Utilities
-  getField,
+  immutableGetFieldFromState as getField,
+  immutableGetForm as getForm,
+  immutableGetFormStateKey as getFormStateKey,
   track,
 };
