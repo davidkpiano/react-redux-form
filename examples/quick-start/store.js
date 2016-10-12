@@ -18,7 +18,7 @@ const initialUserState = {
 const store = createStore(combineForms({
   user: initialUserState,
 }), applyMiddleware(
-  createLogger(),
+  // createLogger(),
   thunk));
 
 export default store;

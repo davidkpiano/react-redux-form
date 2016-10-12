@@ -7,7 +7,7 @@ import compact from 'lodash/compact';
 import mapValues from '../../utils/map-values';
 import { createInitialState } from '../form-reducer';
 import initialFieldState from '../../constants/initial-field-state';
-
+import updateParentForms from '../../utils/update-parent-forms';
 
 function updateFieldValue(field, action) {
   const { value, removeKeys, silent, model } = action;
@@ -24,7 +24,12 @@ function updateFieldValue(field, action) {
     return i.merge(field, changedFieldProps);
   }
 
-  if (silent) return i.set(field, 'value', value);
+  if (silent) {
+    return i.merge(field, {
+      value,
+      initialValue: value,
+    });
+  }
 
   if (removeKeys) {
     const valueIsArray = Array.isArray(field.$form.value);
@@ -87,6 +92,20 @@ function updateFieldValue(field, action) {
     i.set(dirtyFormState, 'value', value));
 }
 
+function getFormValue(form) {
+  if (!form.$form) return form.initialValue;
+
+  const result = mapValues(form, (field, key) => {
+    if (key === '$form') return undefined;
+
+    return getFormValue(field);
+  });
+
+  delete result.$form;
+
+  return result;
+}
+
 export default function changeActionReducer(state, action, localPath) {
   if (action.type !== actionTypes.CHANGE) return state;
 
@@ -96,5 +115,18 @@ export default function changeActionReducer(state, action, localPath) {
 
   if (!localPath.length) return updatedField;
 
-  return i.setIn(state, localPath, updatedField);
+  const updatedState = i.setIn(state, localPath, updatedField);
+
+  if (action.silent) {
+    return updateParentForms(updatedState, localPath, (form) => {
+      const formValue = getFormValue(form);
+
+      return {
+        value: formValue,
+        initialValue: formValue,
+      };
+    });
+  }
+
+  return updatedState;
 }

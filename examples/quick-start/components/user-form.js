@@ -4,6 +4,15 @@ import { connect } from 'react-redux';
 
 const required = (val) => !!(val && val.length);
 
+        function hasToBeTrue(value) {
+    if (value === false || typeof value !== 'boolean') {
+        return false;
+    }
+    return true;
+}
+
+// control
+
 class UserForm extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +36,7 @@ class UserForm extends React.Component {
   render() {
     const { forms: { user } } = this.props;
 
-    console.log(user.$form.valid);
+    console.log('check me', user.checkMe && user.checkMe.valid);
 
     return (
       <Form model="user" onSubmit={v => console.log(v)}>
@@ -54,6 +63,13 @@ class UserForm extends React.Component {
             <span>Plastic</span>
           </label>
         </Field>
+
+<Control.checkbox
+    model={'user.checkMe'}
+    validators={{ hasToBeTrue }}
+
+    validateOn={'change'}
+/>
         <button type="submit" disabled={!user.$form.valid}>
           Finish registration!
         </button>
