@@ -283,6 +283,41 @@ describe('formReducer() (V1)', () => {
         },
       },
     ],
+    [actionTypes.RESET_VALIDITY]: [
+      {
+        action: actions.resetValidity,
+        model: 'user',
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            valid: false,
+            validity: { foo: false },
+            errors: { foo: true },
+          },
+          name: {
+            ...initialFieldState,
+            valid: false,
+            validity: { required: false },
+            errors: { required: true },
+          },
+        },
+        expectedField: {
+          validity: {},
+          errors: {},
+          valid: true,
+        },
+        expectedForm: {
+          validity: {},
+          errors: {},
+          valid: true,
+        },
+        expectedSubField: {
+          validity: {},
+          errors: {},
+          valid: true,
+        },
+      },
+    ],
     [actionTypes.SET_ERRORS]: [
       {
         label: '1',
