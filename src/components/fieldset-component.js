@@ -26,7 +26,7 @@ Fieldset.childContextTypes = {
 Fieldset.propTypes = {
   model: PropTypes.string.isRequired,
   component: PropTypes.any,
-  dispatch: PropTypes.func
+  dispatch: PropTypes.func,
 };
 
 Fieldset.defaultProps = {
