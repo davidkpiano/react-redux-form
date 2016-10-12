@@ -25,6 +25,9 @@ describe('formReducer() (V1)', () => {
           validated: false,
           value: 'foo',
         },
+        expectedForm: {
+          pristine: false,
+        },
       },
       {
         action: actions.change,
@@ -35,6 +38,9 @@ describe('formReducer() (V1)', () => {
             validated: false,
             value: { foo: 'bar' },
           },
+        },
+        expectedForm: {
+          pristine: false,
         },
       },
       {
@@ -47,6 +53,9 @@ describe('formReducer() (V1)', () => {
             value: [1, 2, 3],
           },
         },
+        expectedForm: {
+          pristine: false,
+        },
       },
       {
         action: actions.change,
@@ -55,6 +64,9 @@ describe('formReducer() (V1)', () => {
           pristine: true,
           value: 'string',
           initialValue: 'string',
+        },
+        expectedForm: {
+          pristine: true,
         },
       },
       {
@@ -65,6 +77,9 @@ describe('formReducer() (V1)', () => {
           value: 42,
           initialValue: 42,
         },
+        expectedForm: {
+          pristine: true,
+        },
       },
       {
         action: actions.change,
@@ -73,6 +88,9 @@ describe('formReducer() (V1)', () => {
           pristine: true,
           value: { foo: 'bar' },
           initialValue: { foo: 'bar' },
+        },
+        expectedForm: {
+          pristine: true,
         },
       },
     ],

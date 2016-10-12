@@ -13,7 +13,6 @@ function updateFieldValue(field, action) {
   const { value, removeKeys, silent, model } = action;
 
   const changedFieldProps = {
-    pristine: false,
     validated: false,
     retouched: field.submitted
       ? true
