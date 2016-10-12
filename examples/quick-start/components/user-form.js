@@ -68,7 +68,7 @@ class UserForm extends React.Component {
     model={'user.checkMe'}
     validators={{ hasToBeTrue }}
 
-    validateOn={'change'}
+    validateOn={['change', 'blur']}
 />
         <button type="submit" disabled={!user.$form.valid}>
           Finish registration!

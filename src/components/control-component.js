@@ -157,7 +157,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
       if ((validators || errors)
         && fieldValue
         && !fieldValue.validated
-        && validateOn === 'change'
+        && containsEvent(validateOn, 'change')
       ) {
         this.validate();
       }
