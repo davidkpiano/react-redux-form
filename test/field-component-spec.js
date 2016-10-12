@@ -654,7 +654,7 @@ Object.keys(testContexts).forEach((testKey) => {
           'four');
       });
     });
-    
+
     describe('with <select> (defaultValue)', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         testForm: formReducer('test'),
@@ -683,7 +683,8 @@ Object.keys(testContexts).forEach((testKey) => {
       const select = TestUtils.findRenderedDOMComponentWithTag(field, 'select');
       const options = TestUtils.scryRenderedDOMComponentsWithTag(field, 'option');
 
-      it('should select the option that matches the defaultValue attr if no initial value is provided', () => {
+      it('should select the option that matches the defaultValue attr'
+        + 'if no initial value is provided', () => {
         assert.isFalse(options[0].selected);
         assert.isTrue(options[1].selected);
         assert.equal(select.value, 'two');
