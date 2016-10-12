@@ -654,6 +654,47 @@ Object.keys(testContexts).forEach((testKey) => {
           'four');
       });
     });
+    
+    describe('with <select> (defaultValue)', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        testForm: formReducer('test'),
+        test: modelReducer('test', {
+          foo: undefined,
+        }),
+      }));
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field model="test.foo">
+            <select defaultValue="two">
+              <option value="one" />
+              <option value="two" />
+              <option value="three" />
+              <optgroup>
+                <option value="four" />
+                <option value="five" />
+                <option value="six" />
+              </optgroup>
+            </select>
+          </Field>
+        </Provider>
+      );
+
+      const select = TestUtils.findRenderedDOMComponentWithTag(field, 'select');
+      const options = TestUtils.scryRenderedDOMComponentsWithTag(field, 'option');
+
+      it('should select the option that matches the defaultValue attr if no initial value is provided', () => {
+        assert.isFalse(options[0].selected);
+        assert.isTrue(options[1].selected);
+        assert.equal(select.value, 'two');
+      });
+
+      it('the store should have the correct initial value', () => {
+        assert.equal(
+          get(store.getState().test, 'foo'),
+          'two');
+      });
+    });
 
     describe('validators and validateOn property', () => {
       const reducer = formReducer('test');
