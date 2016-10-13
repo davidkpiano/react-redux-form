@@ -29,6 +29,8 @@ const findDOMNode = !isNative
   ? require('react-dom').findDOMNode
   : null;
 
+const disallowedProps = ['changeAction'];
+
 function containsEvent(events, event) {
   if (typeof events === 'string') {
     return events === event;
@@ -526,7 +528,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         control,
       } = this.props;
 
-      const mappedProps = this.getMappedProps();
+      const mappedProps = omit(this.getMappedProps(), disallowedProps);
 
       // If there is an existing control, clone it
       if (control) {
