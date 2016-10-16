@@ -3,7 +3,11 @@ import {
   createStore,
   applyMiddleware,
 } from 'redux';
-import { combineReducers } from 'redux-immutable';
+
+// Enable one of the two:
+import { combineReducers } from 'redux';
+//import { combineReducers } from 'redux-immutable';
+
 import { createForms } from 'react-redux-form/immutable';
 import thunk from 'redux-thunk';
 import Immutable from 'immutable';
