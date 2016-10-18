@@ -7,6 +7,7 @@ import iteratee from '../utils/iteratee';
 import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
 import omit from 'lodash/omit';
+import invariant from 'invariant';
 
 import getForm from '../utils/get-form';
 import getFieldFromState from '../utils/get-field-from-state';
@@ -183,7 +184,11 @@ function createErrorsClass(s = defaultStrategy) {
   function mapStateToProps(state, { model }) {
     const modelString = getModel(model, state);
 
-    const formValue = s.getForm(state, modelString).$form;
+    const form = s.getForm(state, modelString);
+    invariant(form, `Could not find form state for '${modelString}' model. `
+      + `Please make sure it exists in the store.`)
+
+    const formValue = form.$form;
     const fieldValue = s.getFieldFromState(state, modelString)
       || initialFieldState;
 
