@@ -29,7 +29,7 @@ const findDOMNode = !isNative
   ? require('react-dom').findDOMNode
   : null;
 
-const disallowedProps = ['changeAction'];
+const disallowedProps = ['changeAction', 'getFieldFromState'];
 
 function containsEvent(events, event) {
   if (typeof events === 'string') {

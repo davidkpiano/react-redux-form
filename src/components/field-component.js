@@ -60,6 +60,9 @@ const fieldPropTypes = {
 
   // Calculated props
   fieldValue: PropTypes.object,
+
+  // TODO: refactor
+  getFieldFromState: PropTypes.func,
 };
 
 function mapStateToProps(state, props) {
