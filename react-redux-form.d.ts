@@ -319,3 +319,7 @@ declare namespace ReactReduxForm {
         function xor(model: any, ...args: any[]): any;
     }
 }
+
+declare module 'react-redux-form' {
+    export = ReactReduxForm;
+}
