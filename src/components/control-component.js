@@ -552,9 +552,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     }
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    Control.propTypes = propTypes;
-  }
+  Control.propTypes = propTypes;
 
   Control.defaultProps = {
     changeAction: actions.change,
