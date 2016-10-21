@@ -6,6 +6,7 @@ import omit from 'lodash/omit';
 import isPlainObject from 'lodash/isPlainObject';
 import pick from 'lodash/pick';
 import { connect } from 'react-redux';
+import invariant from 'invariant';
 
 import actions from '../actions';
 import Control from './control-component';
@@ -177,25 +178,31 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     }
 
     render() {
-      const { props } = this;
       const {
         component,
         children, // eslint-disable-line react/prop-types
         fieldValue,
-      } = props;
+      } = this.props;
 
 
-      const allowedProps = omit(props, Object.keys(fieldPropTypes));
+      const allowedProps = omit(this.props, Object.keys(fieldPropTypes));
       const renderableChildren = typeof children === 'function'
         ? children(fieldValue)
         : children;
 
+      if (!component) {
+        invariant(React.Children.count(renderableChildren) === 1,
+          'Empty wrapper components for <Field> are only possible'
+          + 'when there is a single child. Please check the children'
+          + `passed into <Field model="${this.props.model}">.`);
+
+        return this.createControlComponent(renderableChildren);
+      }
+
       return React.createElement(
         component,
         allowedProps,
-        React.Children.map(
-          renderableChildren,
-          (child) => this.createControlComponent(child)));
+        this.mapChildrenToControl(renderableChildren));
     }
   }
 

@@ -117,6 +117,24 @@ Object.keys(testContexts).forEach((testKey) => {
       assert.ok(TestUtils.findRenderedDOMComponentWithTag(field, 'input'));
     });
 
+    it('should not wrap child components if only one child and null component', () => {
+      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        test: modelReducer('test', { foo: 'bar' }),
+        testForm: formReducer('test'),
+      }));
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Field model="test.foo" component={null}>
+            <input />
+          </Field>
+        </Provider>
+      );
+
+      assert.throws(() => TestUtils.findRenderedDOMComponentWithTag(field, 'div'));
+
+      assert.ok(TestUtils.findRenderedDOMComponentWithTag(field, 'input'));
+    });
+
     it('should recursively handle nested control components', () => {
       const store = applyMiddleware(thunk)(createStore)(combineReducers({
         test: modelReducer('test', { foo: 'bar' }),
