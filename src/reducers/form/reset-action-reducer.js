@@ -13,7 +13,10 @@ export default function resetActionReducer(state, action, localPath) {
   const resetFieldState = (field) => {
     if (field.$form) return mapValues(field, resetFieldState);
 
-    return i.set(initialFieldState, 'value', field.initialValue);
+    return i.merge(initialFieldState, {
+      value: field.initialValue,
+      model: field.model,
+    });
   };
 
   return updateField(state, localPath, resetFieldState, resetFieldState);

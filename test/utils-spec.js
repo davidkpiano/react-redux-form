@@ -220,6 +220,10 @@ Object.keys(testContexts).forEach((testKey) => {
               third: {},
             },
           },
+          array: {
+            simple: [1, 2, 3],
+            empty: [],
+          },
         }));
 
         it('should find a shallow form reducer state key', () => {
@@ -262,6 +266,12 @@ Object.keys(testContexts).forEach((testKey) => {
           assert.equal(
             getFormStateKey(store.getState(), 'deep.second.nested.foo'),
             'forms.deep.second.nested');
+        });
+
+        it('should find an array form reducer state key', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'array.simple[0]'),
+            'forms.array.simple');
         });
       });
     });

@@ -2,8 +2,9 @@ import actionTypes from '../../action-types';
 import updateField from '../../utils/update-field';
 import isPristine from '../../form/is-pristine';
 import updateParentForms from '../../utils/update-parent-forms';
+import updateSubFields from '../../utils/update-sub-fields';
 
-export default function setValidityActionReducer(state, action, localPath) {
+export default function setDirtyActionReducer(state, action, localPath) {
   if (action.type !== actionTypes.SET_DIRTY && action.type !== actionTypes.CHANGE) {
     return state;
   }
@@ -12,13 +13,15 @@ export default function setValidityActionReducer(state, action, localPath) {
     return state;
   }
 
-  const newState = updateField(state, localPath, {
-    pristine: false,
-  }, {
+  const updatedField = updateField(state, localPath, {
     pristine: false,
   });
 
-  return updateParentForms(newState, localPath, (form) => ({
+  const updatedSubFields = updateSubFields(updatedField, localPath, {
+    pristine: false,
+  });
+
+  return updateParentForms(updatedSubFields, localPath, (form) => ({
     pristine: isPristine(form),
   }));
 }
