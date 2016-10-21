@@ -186,7 +186,7 @@ function createErrorsClass(s = defaultStrategy) {
 
     const form = s.getForm(state, modelString);
     invariant(form, `Could not find form state for '${modelString}' model. `
-      + `Please make sure it exists in the store.`)
+      + 'Please make sure it exists in the store.');
 
     const formValue = form.$form;
     const fieldValue = s.getFieldFromState(state, modelString)
