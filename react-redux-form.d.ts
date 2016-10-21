@@ -173,7 +173,26 @@ export class Field extends React.Component<FieldProps, {}> {
 
 }
 
+interface MapPropsProps {
+  onChange: (event: any) => void;
+  onBlur: (event: any) => void;
+  onFocus: (event: any) => void;
+  fieldValue: FieldState;
+  modelValue: any;
+  viewValue: any;
+}
+
+type MapPropsFunc = (props: MapPropsProps) => any;
+type MapPropsObject = { [key: string]: (props: MapPropsProps) => any };
+
+type MapProps = MapPropsFunc | MapPropsObject;
+
 export interface ControlProps extends FieldProps {
+    /**
+     * A mapping of control-specific property keys to prop-getter functions that taken in the original props and return the result prop.
+     * See {@link https://davidkpiano.github.io/react-redux-form/docs/guides/custom-controls.html the documentation on custom controls} for more information.
+     */
+    mapProps?: MapProps;
     controlProps?: any;
 }
 
@@ -217,6 +236,17 @@ export interface FormProps {
      * * If you need validators to run on submit, this is the place to put them.
      */
     validators?: Validators | FormValidators;
+
+    /**
+     * An object representing the error validators for the fields inside the form, where:
+     * * the keys are the field model names (e.g. 'email' for user.email)
+     * * the values are error validator(s) for the field model. They can be:
+     *   * an error validator function, which receives the field model value, or
+     *   * an error validator object, with validation keys and error validator functions as values, also receiving the field model value.
+     *
+     * Its behavior is identical to the validators={{...}} prop, with the exception that an error validator that returns anything truthy is interpreted as an error. See the validation guide for more info.
+     */
+    errors?: ValidationErrors | ErrorValidators;
     /**
      * A string that indicates when validators or errors (for error validators) should run.
      * By default, validators will only run whenever a field changes, and
@@ -480,6 +510,7 @@ interface ControlPropsMap {
 
 export const controls: ControlPropsMap;
 
+export function getModel<TObject, TResult>(object: TObject, path: string | number | Array<string>, defaultValue?: TResult): TResult;
 /**
  * Returns a model reducer that only responds to change() and reset() actions on the model or model's child values.
  *
@@ -892,6 +923,21 @@ export var actionTypes: ActionTypes;
  *     // => 'users.1'
  */
 export function track(model: string, predicate: any): ModelGetterFn;
+
+export const initialFieldState: {
+  focus: false,
+  pending: false,
+  pristine: true,
+  submitted: false,
+  submitFailed: false,
+  retouched: false,
+  touched: false,
+  valid: true,
+  validating: false,
+  validated: false,
+  validity: {},
+  errors: {},
+};
 
 export function combineForms(data: any, deep?: string): any;
 
