@@ -12,7 +12,6 @@ import i from 'icepick';
 import Immutable from 'immutable';
 
 import { testCreateStore, testRender } from './utils';
-import handleFocus from '../src/utils/handle-focus';
 
 import {
   controls as _controls,
@@ -1586,10 +1585,6 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('manual focus/blur', () => {
-      beforeEach(() => {
-        handleFocus.clearCache();
-      });
-
       const initialState = getInitialState({ foo: 'bar' });
       const store = testCreateStore({
         test: modelReducer('test', initialState),

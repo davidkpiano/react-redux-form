@@ -21,9 +21,15 @@ const defaultStrategies = {
 };
 
 function createFieldActions(s = defaultStrategies) {
-  const focus = (model) => ({
+  const focus = (model, value, options = {}) => ({
     type: actionTypes.FOCUS,
     model,
+    value,
+    ...options,
+  });
+
+  const silentFocus = (model, value) => focus(model, value, {
+    silent: true,
   });
 
   const blur = (model) => ({
@@ -296,9 +302,17 @@ function createFieldActions(s = defaultStrategies) {
       errors: true,
     });
 
+  const clearIntents = (model, intents, options = {}) => ({
+    type: actionTypes.CLEAR_INTENTS,
+    model,
+    intents,
+    options,
+  });
+
   return mapValues({
     blur,
     focus,
+    silentFocus,
     submit,
     submitFields,
     validSubmit,
@@ -322,6 +336,7 @@ function createFieldActions(s = defaultStrategies) {
     validateFields,
     validateFieldsErrors,
     asyncSetValidity,
+    clearIntents,
   }, trackable);
 }
 

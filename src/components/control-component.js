@@ -9,7 +9,7 @@ import mapValues from '../utils/map-values';
 import isPlainObject from 'lodash/isPlainObject';
 import i from 'icepick';
 import omit from 'lodash/omit';
-import handleFocus from '../utils/handle-focus';
+import actionTypes from '../action-types';
 
 import getValue from '../utils/get-value';
 import getValidity from '../utils/get-validity';
@@ -164,8 +164,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         this.validate();
       }
 
-      // Manually focus/blur node
-      handleFocus(fieldValue, this.node);
+      this.handleIntents();
     }
 
     componentWillUnmount() {
@@ -348,6 +347,44 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
       }
     }
 
+    handleIntents() {
+      const {
+        model,
+        fieldValue,
+        fieldValue: { intents },
+        controlProps,
+        dispatch,
+      } = this.props;
+
+      if (!intents.length) return;
+
+      intents.forEach((intent) => {
+        switch (intent.type) {
+          case actionTypes.FOCUS: {
+            if (isNative) return;
+
+            const readOnlyValue = isReadOnlyValue(controlProps);
+            const focused = fieldValue.focus;
+
+            if ((focused && this.node.focus)
+              && (
+                !readOnlyValue
+                || typeof intent.value === 'undefined'
+                || intent.value === controlProps.value
+              )) {
+              this.node.focus();
+
+              dispatch(actions.clearIntents(model, intent));
+            }
+
+            return;
+          }
+          default:
+            return;
+        }
+      });
+    }
+
     parse(value) {
       const { parser } = this.props;
 
@@ -430,7 +467,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
       } = this.props;
 
       const eventAction = {
-        focus: actions.focus,
+        focus: actions.silentFocus,
         blur: actions.blur,
       }[eventName];
 

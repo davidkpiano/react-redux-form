@@ -35,7 +35,7 @@ class UserForm extends React.Component {
     dispatch(actions.submit('user', somePromise));
   }
   render() {
-    const { forms: { user } } = this.props;
+    const { forms: { user }, dispatch } = this.props;
 
     return (
       <Form model="user" onSubmit={this.handleSubmit.bind(this)}>
@@ -54,12 +54,12 @@ class UserForm extends React.Component {
 
         <Field model="user.bag">
           <label>
-            <input type="radio" value="paper" />
-            <span>Paper</span>
-          </label>
-          <label>
             <input type="radio" value="plastic" />
             <span>Plastic</span>
+          </label>
+          <label>
+            <input type="radio" value="paper" />
+            <span>Paper</span>
           </label>
         </Field>
 
