@@ -23,14 +23,6 @@ function tempInitialState(path) {
   };
 }
 
-export function getFieldState(state, path) {
-  const field = get(state, path);
-
-  if (field && field.$form) return field.$form;
-
-  return field;
-}
-
 export default function updateField(state, path, newState, newSubState, updater) {
   let field = get(state, path);
   let fullState = state;
