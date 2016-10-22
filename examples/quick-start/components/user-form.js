@@ -31,15 +31,14 @@ class UserForm extends React.Component {
       /* eslint-enable no-console */
       setTimeout(() => { resolve(true); }, 1000);
     });
+
     dispatch(actions.submit('user', somePromise));
   }
   render() {
     const { forms: { user } } = this.props;
 
-    console.log('check me', user.checkMe && user.checkMe.valid);
-
     return (
-      <Form model="user" onSubmit={v => console.log(v)}>
+      <Form model="user" onSubmit={this.handleSubmit.bind(this)}>
         <div>
           <label>First name:</label>
           <Control.text model="user.firstName" validators={{len: (val) => val.length > 8}} />
@@ -64,12 +63,6 @@ class UserForm extends React.Component {
           </label>
         </Field>
 
-<Control.checkbox
-    model={'user.checkMe'}
-    validators={{ hasToBeTrue }}
-
-    validateOn={['change', 'blur']}
-/>
         <button type="submit" disabled={!user.$form.valid}>
           Finish registration!
         </button>
