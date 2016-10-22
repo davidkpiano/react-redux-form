@@ -488,6 +488,15 @@ describe('formReducer() (V1)', () => {
         action: actions.setSubmitFailed,
         model: 'user',
         args: [],
+        initialState: {
+          $form: initialFieldState,
+          name: initialFieldState,
+          deep: {
+            $form: initialFieldState,
+            foo: initialFieldState,
+            bar: initialFieldState,
+          },
+        },
         expectedForm: (form) => selectForm(form).touched,
         expectedField: {
           pending: false,
@@ -545,13 +554,21 @@ describe('formReducer() (V1)', () => {
             ? get(updatedState, localFieldsPath)
             : updatedState;
 
-          mapValues(updatedFieldsState, (field, key) => {
-            if (key === '$form') return;
+          function checkSubFields(subFields) {
+            mapValues(subFields, (subField, key) => {
+              if (key === '$form') return;
 
-            assert.containSubset(
-              field,
-              expectedSubField);
-          });
+              if (subField.$form) {
+                checkSubFields(subField);
+              } else {
+                assert.containSubset(
+                  subField,
+                  expectedSubField);
+              }
+            });
+          }
+
+          checkSubFields(updatedFieldsState);
         });
       }
 
