@@ -83,7 +83,6 @@ const propTypes = {
   component: PropTypes.any,
   dispatch: PropTypes.func,
   parser: PropTypes.func,
-  getter: PropTypes.func,
   ignore: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.string),
     PropTypes.string,
@@ -91,7 +90,13 @@ const propTypes = {
   dynamic: PropTypes.bool,
 };
 
-function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
+const defaultStrategy = {
+  get: _get,
+  getFieldFromState,
+  actions,
+};
+
+function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
   const controlPropsMap = {
     ...defaultControlPropsMap,
     ...customControlPropsMap,
@@ -592,34 +597,30 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
   Control.propTypes = propTypes;
 
   Control.defaultProps = {
-    changeAction: actions.change,
+    changeAction: s.actions.change,
     updateOn: 'change',
     asyncValidateOn: 'blur',
     parser: identity,
     controlProps: emptyControlProps,
-    getter: _get,
-    getFieldFromState,
     ignore: [],
     dynamic: false,
     mapProps: controlPropsMap.default,
     component: 'input',
-    ...defaultProps,
   };
 
   function mapStateToProps(state, props) {
     const {
       model,
-      getter = Control.defaultProps.getter,
       controlProps = omit(props, Object.keys(propTypes)),
     } = props;
 
     const modelString = getModel(model, state);
-    const fieldValue = getFieldFromState(state, modelString)
+    const fieldValue = s.getFieldFromState(state, modelString)
       || initialFieldState;
 
     return {
       model: modelString,
-      modelValue: getter(state, modelString),
+      modelValue: s.get(state, modelString),
       fieldValue,
       controlProps,
     };

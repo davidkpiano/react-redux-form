@@ -57,29 +57,10 @@ const fieldPropTypes = {
   componentMap: PropTypes.object,
   dynamic: PropTypes.bool,
   dispatch: PropTypes.func,
-  getter: PropTypes.func,
 
   // Calculated props
   fieldValue: PropTypes.object,
-
-  // TODO: refactor
-  getFieldFromState: PropTypes.func,
 };
-
-function mapStateToProps(state, props) {
-  const {
-    model,
-  } = props;
-
-  const modelString = getModel(model, state);
-  const fieldValue = getFieldFromState(state, modelString)
-    || initialFieldState;
-
-  return {
-    model: modelString,
-    fieldValue,
-  };
-}
 
 function getControlType(control, props, options) {
   const { controlPropsMap: _controlPropsMap } = options;
@@ -113,7 +94,27 @@ function getControlType(control, props, options) {
   }
 }
 
-function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
+const defaultStrategy = {
+  Control,
+  getFieldFromState,
+};
+
+function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
+  function mapStateToProps(state, props) {
+    const {
+      model,
+    } = props;
+
+    const modelString = getModel(model, state);
+    const fieldValue = s.getFieldFromState(state, modelString)
+      || initialFieldState;
+
+    return {
+      model: modelString,
+      fieldValue,
+    };
+  }
+
   const options = {
     controlPropsMap: {
       ...controlPropsMap,
@@ -156,15 +157,15 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
         );
       }
 
-      return (
-        <Control
-          {...controlProps}
-          control={control}
-          controlProps={control.props}
-          component={control.type}
-          mapProps={mapProps}
-        />
-      );
+      return React.createElement(
+        s.Control,
+        {
+          ...controlProps,
+          control,
+          controlProps: control.props,
+          component: control.type,
+          mapProps,
+        });
     }
 
     mapChildrenToControl(children) {
@@ -217,9 +218,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     changeAction: actions.change,
     dynamic: true,
     component: 'div',
-    getter: _get,
-    getFieldFromState,
-    ...defaultProps,
   };
 
   return resolveModel(connect(mapStateToProps)(Field));

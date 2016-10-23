@@ -115,17 +115,18 @@ const immutableActions = {
 const immutableModelReducer = createModeler(immutableStrategy);
 const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
 const immutableControlPropsMap = createControlPropsMap(immutableStrategy);
+const ImmutableControl = createControlClass(immutableControlPropsMap, {
+  get: immutableGetFromState,
+  getFieldFromState: immutableGetFieldFromState,
+  actions: immutableModelActions,
+});
 const ImmutableField = createFieldClass(immutableControlPropsMap, {
+  Control: ImmutableControl,
   getter: immutableGetFromState,
   getFieldFromState: immutableGetFieldFromState,
   changeAction: immutableModelActions.change,
 });
 const ImmutableErrors = createErrorsClass(immutableStrategy);
-const ImmutableControl = createControlClass(immutableControlPropsMap, {
-  getter: immutableGetFromState,
-  getFieldFromState: immutableGetFieldFromState,
-  changeAction: immutableModelActions.change,
-});
 const ImmutableForm = createFormClass({
   ...immutableStrategy,
   actions: immutableActions,
