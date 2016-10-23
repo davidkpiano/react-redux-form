@@ -39,6 +39,22 @@ function containsEvent(events, event) {
   return !!~events.indexOf(event);
 }
 
+function getReadOnlyValue(props) {
+  const { modelValue, controlProps } = props;
+
+  switch (controlProps.type) {
+    case 'checkbox':
+      return typeof controlProps.value !== 'undefined'
+        ? controlProps.value
+        : !modelValue; // simple checkbox
+
+    case 'radio':
+    default:
+      return controlProps.value;
+  }
+}
+
+
 const propTypes = {
   model: PropTypes.oneOfType([
     PropTypes.func,
@@ -227,7 +243,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         changeAction = this.props.changeAction,
       } = this.getMappedProps();
       const value = isReadOnlyValue(controlProps)
-        ? controlProps.value
+        ? getReadOnlyValue(this.props)
         : event;
 
       return changeAction(model, getValue(value));
@@ -681,8 +697,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       mapProps={{
         ...controlPropsMap.checkbox,
         ...props.mapProps,
-        changeAction: props.changeAction || controlPropsMap.checkbox.changeAction,
       }}
+      changeAction={props.changeAction || s.actions.check}
       {...omit(props, 'mapProps')}
     />
   );

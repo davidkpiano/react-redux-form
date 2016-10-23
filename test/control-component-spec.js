@@ -1307,6 +1307,25 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isTrue(customChanged);
       });
+
+      it('should provide the inverse of the model value (checkbox)', (done) => {
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.checkbox
+              model="test.customChecked"
+              changeAction={(model, value) => {
+                assert.equal(model, 'test.customChecked');
+                assert.equal(value, true); // initial value is false
+                done();
+              }}
+            />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        TestUtils.Simulate.change(control);
+      });
     });
 
     describe('event handlers on control', () => {

@@ -97,6 +97,7 @@ function getControlType(control, props, options) {
 const defaultStrategy = {
   Control,
   getFieldFromState,
+  actions,
 };
 
 function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
@@ -119,6 +120,13 @@ function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
     controlPropsMap: {
       ...controlPropsMap,
       ...customControlPropsMap,
+    },
+  };
+
+  // TODO: refactor
+  const defaultControlPropsMap = {
+    checkbox: {
+      changeAction: s.actions.check,
     },
   };
 
@@ -165,6 +173,7 @@ function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
           controlProps: control.props,
           component: control.type,
           mapProps,
+          ...(defaultControlPropsMap[controlType] || {}),
         });
     }
 

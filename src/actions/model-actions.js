@@ -85,6 +85,23 @@ export function createModelActions(s = defaultStrategies) {
 
   const toggle = createModifierAction((value) => !value, undefined, 1);
 
+  const check = (model, value) => (dispatch, getState) => {
+    const modelValue = s.get(getState(), model);
+
+    if (isMulti(model)) {
+      const valueWithItem = modelValue || s.array;
+      const valueWithoutItem = (valueWithItem || s.array)
+        .filter(item => item !== value);
+      const multiValue = (s.length(valueWithoutItem) === s.length(valueWithItem))
+        ? s.push(valueWithItem, value)
+        : valueWithoutItem;
+
+      dispatch(change(model, multiValue));
+    } else {
+      dispatch(change(model, !modelValue));
+    }
+  };
+
   const filter = createModifierAction((value, iteratee) => value.filter(iteratee), s.array, 2);
 
   const reset = (model) => ({
@@ -132,6 +149,7 @@ export function createModelActions(s = defaultStrategies) {
     xor,
     push,
     toggle,
+    check,
     filter,
     reset,
     map,
