@@ -1,5 +1,4 @@
 import isMulti from '../utils/is-multi';
-import i from 'icepick';
 import actions from '../actions';
 
 function createControlPropsMap() {
