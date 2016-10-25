@@ -3,8 +3,10 @@ import actions from '../actions';
 
 function createControlPropsMap() {
   function getTextValue(value) {
-    if (typeof value === 'string' || typeof value === 'number') {
+    if (typeof value === 'string') {
       return `${value}`;
+    } else if (typeof value === 'number') {
+      return value;
     }
 
     return '';
