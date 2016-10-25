@@ -23,6 +23,37 @@ const defaultStrategy = {
   getFieldFromState,
 };
 
+const propTypes = {
+  // Computed props
+  modelValue: PropTypes.any,
+  formValue: PropTypes.object,
+  fieldValue: PropTypes.object,
+
+  // Provided props
+  model: PropTypes.string.isRequired,
+  messages: PropTypes.objectOf(PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+    PropTypes.bool,
+  ])),
+  show: PropTypes.any,
+  wrapper: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+    PropTypes.element,
+  ]),
+  component: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.func,
+    PropTypes.element,
+  ]),
+  dispatch: PropTypes.func,
+  dynamic: PropTypes.oneOfType([
+    PropTypes.bool,
+    PropTypes.arrayOf(PropTypes.string),
+  ]),
+};
+
 function showErrors(field, form, show = true) {
   if (typeof show === 'function') {
     return show(field, form);
@@ -123,7 +154,7 @@ function createErrorsClass(s = defaultStrategy) {
 
       const allowedProps = typeof wrapper === 'function'
         ? this.props
-        : omit(this.props, Object.keys(Errors.propTypes));
+        : omit(this.props, Object.keys(propTypes));
 
       if (!showErrors(fieldValue, formValue, show)) {
         return null;
@@ -142,36 +173,7 @@ function createErrorsClass(s = defaultStrategy) {
     }
   }
 
-  Errors.propTypes = {
-    // Computed props
-    modelValue: PropTypes.any,
-    formValue: PropTypes.object,
-    fieldValue: PropTypes.object,
-
-    // Provided props
-    model: PropTypes.string.isRequired,
-    messages: PropTypes.objectOf(PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func,
-      PropTypes.bool,
-    ])),
-    show: PropTypes.any,
-    wrapper: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func,
-      PropTypes.element,
-    ]),
-    component: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.func,
-      PropTypes.element,
-    ]),
-    dispatch: PropTypes.func,
-    dynamic: PropTypes.oneOfType([
-      PropTypes.bool,
-      PropTypes.arrayOf(PropTypes.string),
-    ]),
-  };
+  Errors.propTypes = propTypes;
 
   Errors.defaultProps = {
     wrapper: 'div',
