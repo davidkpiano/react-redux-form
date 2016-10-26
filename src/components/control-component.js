@@ -440,7 +440,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         changeAction,
         parser,
       } = this.props;
-      const loadActions = [];
       let defaultValue = undefined;
 
       if (controlProps.hasOwnProperty('defaultValue')) {
@@ -449,12 +448,11 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         defaultValue = controlProps.defaultChecked;
       }
 
+      const loadActions = [this.getValidateAction(defaultValue)];
+
       if (typeof defaultValue !== 'undefined') {
-        loadActions.push(this.getValidateAction(defaultValue));
         loadActions.push(changeAction(model, defaultValue));
       } else {
-        loadActions.push(this.getValidateAction(modelValue));
-
         if (parser) {
           const parsedValue = parser(modelValue);
 
@@ -528,7 +526,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
             : event;
         }
 
-
         if (isReadOnlyValue(controlProps)) {
           return compose(
             dispatchBatchActions,
@@ -592,10 +589,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       if (control) {
         return cloneElement(
           control,
-          {
-            ...mappedProps,
-            onKeyPress: this.handleKeyPress,
-          },
+          mappedProps,
           controlProps.children);
       }
 
@@ -604,9 +598,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         {
           ...controlProps,
           ...mappedProps,
-          onKeyPress: this.handleKeyPress,
-        },
-        controlProps.children);
+        });
     }
   }
 

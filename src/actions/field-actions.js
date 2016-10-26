@@ -13,6 +13,7 @@ import getFieldFromState from '../utils/get-field-from-state';
 import isValid from '../form/is-valid';
 import NULL_ACTION from '../constants/null-action';
 import omit from 'lodash/omit';
+import isNative from '../utils/is-native';
 
 const defaultStrategies = {
   get: _get,
@@ -198,7 +199,8 @@ function createFieldActions(s = defaultStrategies) {
         setValidity(model, response),
       ]));
     }).catch(error => {
-      console.error(error);
+      if (!isNative) console.error(error);
+
       dispatch(batch(model, [
         setSubmitFailed(model),
         errorsAction(model, error),
