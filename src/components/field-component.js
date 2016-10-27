@@ -6,6 +6,7 @@ import omit from 'lodash/omit';
 import isPlainObject from 'lodash/isPlainObject';
 import pick from 'lodash/pick';
 import { connect } from 'react-redux';
+import invariant from 'invariant';
 
 import actions from '../actions';
 import Control from './control-component';
@@ -56,26 +57,10 @@ const fieldPropTypes = {
   componentMap: PropTypes.object,
   dynamic: PropTypes.bool,
   dispatch: PropTypes.func,
-  getter: PropTypes.func,
 
   // Calculated props
   fieldValue: PropTypes.object,
 };
-
-function mapStateToProps(state, props) {
-  const {
-    model,
-  } = props;
-
-  const modelString = getModel(model, state);
-  const fieldValue = getFieldFromState(state, modelString)
-    || initialFieldState;
-
-  return {
-    model: modelString,
-    fieldValue,
-  };
-}
 
 function getControlType(control, props, options) {
   const { controlPropsMap: _controlPropsMap } = options;
@@ -109,11 +94,39 @@ function getControlType(control, props, options) {
   }
 }
 
-function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
+const defaultStrategy = {
+  Control,
+  getFieldFromState,
+  actions,
+};
+
+function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
+  function mapStateToProps(state, props) {
+    const {
+      model,
+    } = props;
+
+    const modelString = getModel(model, state);
+    const fieldValue = s.getFieldFromState(state, modelString)
+      || initialFieldState;
+
+    return {
+      model: modelString,
+      fieldValue,
+    };
+  }
+
   const options = {
     controlPropsMap: {
       ...controlPropsMap,
       ...customControlPropsMap,
+    },
+  };
+
+  // TODO: refactor
+  const defaultControlPropsMap = {
+    checkbox: {
+      changeAction: s.actions.check,
     },
   };
 
@@ -152,15 +165,16 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
         );
       }
 
-      return (
-        <Control
-          {...controlProps}
-          control={control}
-          controlProps={control.props}
-          component={control.type}
-          mapProps={mapProps}
-        />
-      );
+      return React.createElement(
+        s.Control,
+        {
+          ...controlProps,
+          control,
+          controlProps: control.props,
+          component: control.type,
+          mapProps,
+          ...(defaultControlPropsMap[controlType] || {}),
+        });
     }
 
     mapChildrenToControl(children) {
@@ -174,25 +188,31 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     }
 
     render() {
-      const { props } = this;
       const {
         component,
         children, // eslint-disable-line react/prop-types
         fieldValue,
-      } = props;
+      } = this.props;
 
 
-      const allowedProps = omit(props, Object.keys(fieldPropTypes));
+      const allowedProps = omit(this.props, Object.keys(fieldPropTypes));
       const renderableChildren = typeof children === 'function'
         ? children(fieldValue)
         : children;
 
+      if (!component) {
+        invariant(React.Children.count(renderableChildren) === 1,
+          'Empty wrapper components for <Field> are only possible'
+          + 'when there is a single child. Please check the children'
+          + `passed into <Field model="${this.props.model}">.`);
+
+        return this.createControlComponent(renderableChildren);
+      }
+
       return React.createElement(
         component,
         allowedProps,
-        React.Children.map(
-          renderableChildren,
-          (child) => this.createControlComponent(child)));
+        this.mapChildrenToControl(renderableChildren));
     }
   }
 
@@ -207,7 +227,6 @@ function createFieldClass(customControlPropsMap = {}, defaultProps = {}) {
     changeAction: actions.change,
     dynamic: true,
     component: 'div',
-    ...defaultProps,
   };
 
   return resolveModel(connect(mapStateToProps)(Field));

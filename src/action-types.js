@@ -20,6 +20,7 @@ const actionTypes = {
   RESET_VALIDITY: 'rrf/resetValidity',
   BATCH: 'rrf/batch',
   NULL: null,
+  CLEAR_INTENTS: 'rrf/clearIntents',
 };
 
 export default actionTypes;
