@@ -25,9 +25,6 @@ describe('formReducer() (V1)', () => {
           validated: false,
           value: 'foo',
         },
-        expectedForm: {
-          pristine: false,
-        },
       },
       {
         action: actions.change,
@@ -38,9 +35,6 @@ describe('formReducer() (V1)', () => {
             validated: false,
             value: { foo: 'bar' },
           },
-        },
-        expectedForm: {
-          pristine: false,
         },
       },
       {
@@ -53,9 +47,6 @@ describe('formReducer() (V1)', () => {
             value: [1, 2, 3],
           },
         },
-        expectedForm: {
-          pristine: false,
-        },
       },
       {
         action: actions.change,
@@ -63,10 +54,6 @@ describe('formReducer() (V1)', () => {
         expectedField: {
           pristine: true,
           value: 'string',
-          initialValue: 'string',
-        },
-        expectedForm: {
-          pristine: true,
         },
       },
       {
@@ -75,10 +62,6 @@ describe('formReducer() (V1)', () => {
         expectedField: {
           pristine: true,
           value: 42,
-          initialValue: 42,
-        },
-        expectedForm: {
-          pristine: true,
         },
       },
       {
@@ -87,10 +70,6 @@ describe('formReducer() (V1)', () => {
         expectedField: {
           pristine: true,
           value: { foo: 'bar' },
-          initialValue: { foo: 'bar' },
-        },
-        expectedForm: {
-          pristine: true,
         },
       },
     ],
@@ -301,41 +280,6 @@ describe('formReducer() (V1)', () => {
         },
       },
     ],
-    [actionTypes.RESET_VALIDITY]: [
-      {
-        action: actions.resetValidity,
-        model: 'user',
-        initialState: {
-          $form: {
-            ...initialFieldState,
-            valid: false,
-            validity: { foo: false },
-            errors: { foo: true },
-          },
-          name: {
-            ...initialFieldState,
-            valid: false,
-            validity: { required: false },
-            errors: { required: true },
-          },
-        },
-        expectedField: {
-          validity: {},
-          errors: {},
-          valid: true,
-        },
-        expectedForm: {
-          validity: {},
-          errors: {},
-          valid: true,
-        },
-        expectedSubField: {
-          validity: {},
-          errors: {},
-          valid: true,
-        },
-      },
-    ],
     [actionTypes.SET_ERRORS]: [
       {
         label: '1',
@@ -442,33 +386,6 @@ describe('formReducer() (V1)', () => {
           form.deep.foo.errors === true
           && form.deep.bar.errors === true,
       },
-      {
-        label: 'form-wide boolean validity',
-        action: actions.setFieldsValidity,
-        model: 'user',
-        args: [{ '': false }],
-        expectedForm: (form) =>
-          form.$form.errors === true
-          && form.$form.valid === false,
-      },
-      {
-        label: 'form-wide object errors validity',
-        action: actions.setFieldsValidity,
-        model: 'user',
-        initialState: {
-          $form: initialFieldState,
-          name: {
-            ...initialFieldState,
-            valid: false,
-            validity: false,
-            errors: true,
-          },
-        },
-        args: [{ '': { passMatch: true } }],
-        expectedForm: (form) =>
-          form.$form.validity.passMatch === true
-          && form.$form.valid === false,
-      },
     ],
     [actionTypes.SET_SUBMITTED]: [
       {
@@ -488,24 +405,8 @@ describe('formReducer() (V1)', () => {
         action: actions.setSubmitFailed,
         model: 'user',
         args: [],
-        initialState: {
-          $form: initialFieldState,
-          name: initialFieldState,
-          deep: {
-            $form: initialFieldState,
-            foo: initialFieldState,
-            bar: initialFieldState,
-          },
-        },
         expectedForm: (form) => selectForm(form).touched,
         expectedField: {
-          pending: false,
-          submitted: false,
-          submitFailed: true,
-          touched: true,
-          retouched: false,
-        },
-        expectedSubField: {
           pending: false,
           submitted: false,
           submitFailed: true,
@@ -554,21 +455,13 @@ describe('formReducer() (V1)', () => {
             ? get(updatedState, localFieldsPath)
             : updatedState;
 
-          function checkSubFields(subFields) {
-            mapValues(subFields, (subField, key) => {
-              if (key === '$form') return;
+          mapValues(updatedFieldsState, (field, key) => {
+            if (key === '$form') return;
 
-              if (subField.$form) {
-                checkSubFields(subField);
-              } else {
-                assert.containSubset(
-                  subField,
-                  expectedSubField);
-              }
-            });
-          }
-
-          checkSubFields(updatedFieldsState);
+            assert.containSubset(
+              field,
+              expectedSubField);
+          });
         });
       }
 
@@ -629,7 +522,6 @@ describe('formReducer() (V1)', () => {
     it('parent form should remain invalid if only grandchild is valid', () => {
       assert.isFalse(invalidFooValidBar.$form.valid);
       assert.isFalse(invalidFooValidBar.foo.valid);
-      assert.isTrue(invalidFooValidBar.meta.$form.valid);
       assert.isTrue(invalidFooValidBar.meta.bar.valid);
     });
 
@@ -637,10 +529,9 @@ describe('formReducer() (V1)', () => {
       actions.setValidity('test.foo', true));
 
     it('parent form should be valid if all descendants are valid', () => {
-      assert.isTrue(validFooValidBar.foo.valid);
-      assert.isTrue(validFooValidBar.meta.$form.valid);
-      assert.isTrue(validFooValidBar.meta.bar.valid);
       assert.isTrue(validFooValidBar.$form.valid);
+      assert.isTrue(validFooValidBar.foo.valid);
+      assert.isTrue(validFooValidBar.meta.bar.valid);
     });
   });
 
@@ -662,32 +553,6 @@ describe('formReducer() (V1)', () => {
 
       assert.equal(resetState.foo.value, '');
       assert.equal(resetState.meta.bar.value, '');
-    });
-  });
-
-  describe('resetting after load', () => {
-    const reducer = formReducer('test', {
-      foo: '',
-    });
-
-    const loadedState = reducer(undefined,
-      actions.load('test.foo', 'new initial'));
-
-    it('should change the initial value for the field', () => {
-      assert.equal(loadedState.foo.initialValue, 'new initial');
-      assert.equal(loadedState.foo.value, 'new initial');
-    });
-
-    it('should change the initial value for the form', () => {
-      assert.deepEqual(loadedState.$form.initialValue, { foo: 'new initial' });
-      assert.deepEqual(loadedState.$form.value, { foo: 'new initial' });
-    });
-
-    it('resetting a parent field should reset child fields in form', () => {
-      const resetState = reducer(loadedState, actions.reset('test'));
-
-      assert.deepEqual(resetState.$form.value, { foo: 'new initial' });
-      assert.equal(resetState.foo.value, 'new initial');
     });
   });
 });

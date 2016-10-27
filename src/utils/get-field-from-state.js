@@ -3,14 +3,10 @@ import toPath from './to-path';
 import getForm from './get-form';
 import isPlainObject from 'lodash/isPlainObject';
 
-const defaultStrategy = {
-  getForm,
-};
-
-export default function getFieldFromState(state, modelString, s = defaultStrategy) {
+export default function getFieldFromState(state, modelString) {
   const form = (state && '$form' in state)
     ? state
-    : s.getForm(state, modelString);
+    : getForm(state, modelString);
 
   if (!form) return null;
 

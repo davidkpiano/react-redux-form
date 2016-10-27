@@ -21,7 +21,6 @@ import pendingActionReducer from './form/pending-action-reducer';
 import submittedActionReducer from './form/submitted-action-reducer';
 import submitFailedActionReducer from './form/submit-failed-action-reducer';
 import resetActionReducer from './form/reset-action-reducer';
-import intentsActionReducer from './form/intents-action-reducer';
 
 function getSubModelString(model, subModel) {
   if (!model) return subModel;
@@ -83,7 +82,6 @@ const defaultPlugins = [
   submittedActionReducer,
   submitFailedActionReducer,
   resetActionReducer,
-  intentsActionReducer,
 ];
 
 export default function createFormReducer(

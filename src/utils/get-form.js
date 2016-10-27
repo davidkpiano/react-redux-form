@@ -1,45 +1,45 @@
 import get from '../utils/get';
 import isPlainObject from 'lodash/isPlainObject';
-import pathStartsWith, { pathDifference } from '../utils/path-starts-with';
+import pathStartsWith from '../utils/path-starts-with';
 
-const defaultStrategy = {
-  get,
-  keys: (state) => Object.keys(state),
-  isObject: (state) => isPlainObject(state),
-};
+function joinPaths(firstPath, secondPath) {
+  if (!firstPath || !firstPath.length) return secondPath;
 
-function joinPaths(...paths) {
-  return paths.filter(path => !!path && path.length).join('.');
+  return `${firstPath}.${secondPath}`;
 }
 
-export function getFormStateKey(state, model, s = defaultStrategy, currentPath = '') {
+export function getFormStateKey(state, model, currentPath = '') {
   const deepCandidateKeys = [];
   let result = null;
 
-  s.keys(state).some((key) => {
-    const subState = s.get(state, key);
+  Object.keys(state).some((key) => {
+    const subState = state[key];
 
-    if (subState && s.get(subState, '$form')) {
-      const subStateModel = s.get(subState, '$form.model');
+    if (subState && subState.$form) {
+      if (subState.$form.model === '') {
+        return Object.keys(subState).some((formKey) => {
+          const formState = subState[formKey];
 
-      if (pathStartsWith(model, subStateModel) || subStateModel === '') {
-        const localPath = pathDifference(model, subStateModel);
+          if (formKey === '$form') return false;
 
-        const resultPath = [currentPath, key];
-        let currentState = subState;
+          if (!formState.$form) return false;
 
-        localPath.every((segment) => {
-          if (s.get(currentState, segment) && s.get(currentState, `${segment}.$form`)) {
-            currentState = s.get(currentState, segment);
-            resultPath.push(segment);
+          if (pathStartsWith(model, joinPaths(currentPath, formState.$form.model))) {
+            result = currentPath
+              ? [currentPath, key, formKey].join('.')
+              : [key, formKey].join('.');
 
             return true;
           }
 
           return false;
         });
+      }
 
-        result = joinPaths(...resultPath);
+      if (pathStartsWith(model, subState.$form.model)) {
+        result = currentPath
+          ? [currentPath, key].join('.')
+          : key;
 
         return true;
       }
@@ -47,7 +47,7 @@ export function getFormStateKey(state, model, s = defaultStrategy, currentPath =
       return false;
     }
 
-    if (s.isObject(subState)) {
+    if (isPlainObject(subState)) {
       deepCandidateKeys.push(key);
     }
 
@@ -57,7 +57,8 @@ export function getFormStateKey(state, model, s = defaultStrategy, currentPath =
   if (result) return result;
 
   deepCandidateKeys.some((key) => {
-    result = getFormStateKey(s.get(state, key), model, s, joinPaths(currentPath, key));
+    result = getFormStateKey(state[key], model,
+      currentPath ? [currentPath, key].join('.') : key);
 
     return !!result;
   });
@@ -69,27 +70,26 @@ export function getFormStateKey(state, model, s = defaultStrategy, currentPath =
 
 let formStateKeyCache = {};
 
-export const clearGetFormCache =
-  () => formStateKeyCache = {}; // eslint-disable-line no-return-assign
-
-const getFormStateKeyCached = (() => (state, modelString, s = defaultStrategy) => {
+const getFormStateKeyCached = (() => (state, modelString) => {
   if (formStateKeyCache[modelString]) return formStateKeyCache[modelString];
 
-  const result = getFormStateKey(state, modelString, s);
+  const result = getFormStateKey(state, modelString);
 
   formStateKeyCache[modelString] = result; // eslint-disable-line no-return-assign
 
   return result;
 })();
 
-function getForm(state, modelString, s = defaultStrategy) {
-  const formStateKey = getFormStateKeyCached(state, modelString, s);
+function getForm(state, modelString) {
+  const formStateKey = getFormStateKeyCached(state, modelString);
 
   if (!formStateKey) {
     return null;
   }
 
-  return s.get(state, formStateKey);
+  return get(state, formStateKey);
 }
+
+getForm.clearCache = () => formStateKeyCache = {}; // eslint-disable-line no-return-assign
 
 export default getForm;

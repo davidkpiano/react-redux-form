@@ -1,10 +1,10 @@
 import { assert } from 'chai';
-import getForm, { clearGetFormCache } from '../src/utils/get-form';
+import getForm from '../src/utils/get-form';
 import { combineReducers } from 'redux';
-import { modelReducer, combineForms, createForms, actions } from '../src';
+import { modelReducer, combineForms, actions } from '../src';
 
 describe('combineForms()', () => {
-  beforeEach(() => clearGetFormCache());
+  beforeEach(() => getForm.clearCache());
 
   context('standard combined reducer', () => {
     const reducer = combineForms({
@@ -92,75 +92,6 @@ describe('combineForms()', () => {
       const state = reducer(undefined, { type: null });
 
       assert.ok(getForm(state, 'deep.foo'));
-    });
-  });
-});
-
-describe('createForms()', () => {
-  beforeEach(() => clearGetFormCache());
-
-  it('exists as a function', () => {
-    assert.isFunction(createForms);
-  });
-
-  context('standard mapped reducers', () => {
-    const forms = createForms({
-      foo: modelReducer('foo', { one: 'two' }),
-      bar: modelReducer('bar', { three: 'four' }),
-    });
-
-    it('should create a map of object keys to reducers', () => {
-      assert.isFunction(forms.foo);
-      assert.isFunction(forms.bar);
-    });
-
-    it('should create the form reducer at .forms', () => {
-      assert.isFunction(forms.forms);
-    });
-  });
-
-  context('reducers mapped from initial state', () => {
-    const forms = createForms({
-      foo: { one: 'two' },
-      bar: { three: 'four' },
-    });
-
-    it('should create a map of object keys to reducers', () => {
-      assert.isFunction(forms.foo);
-      assert.isFunction(forms.bar);
-    });
-
-    it('should create the form reducer at .forms', () => {
-      assert.isFunction(forms.forms);
-    });
-  });
-
-  context('setting the "key" option', () => {
-    const forms = createForms({
-      foo: { one: 'two' },
-      bar: { three: 'four' },
-    }, '', { key: 'myForms' });
-
-    it('should create the form reducer at .myForms', () => {
-      assert.isFunction(forms.myForms);
-    });
-  });
-
-  context('deep forms', () => {
-    const reducers = {
-      deep: createForms({
-        foo: { one: 'two' },
-        bar: { three: 'four' },
-      }, 'deep'),
-    };
-
-    it('should create a map of object keys to reducers', () => {
-      assert.isFunction(reducers.deep.foo);
-      assert.isFunction(reducers.deep.bar);
-    });
-
-    it('should create the form reducer at .forms', () => {
-      assert.isFunction(reducers.deep.forms);
     });
   });
 });

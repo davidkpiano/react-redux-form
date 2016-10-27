@@ -6,12 +6,7 @@ export default function setFocusActionReducer(state, action, localPath) {
     return state;
   }
 
-  if (action.silent) {
-    return updateField(state, localPath, { focus: true });
-  }
-
   return updateField(state, localPath, {
     focus: true,
-    intents: [action],
   });
 }

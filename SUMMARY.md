@@ -18,7 +18,6 @@
   * [modelReducer](docs/api/modelReducer.md)
   * [formReducer](docs/api/formReducer.md)
   * [combineForms](docs/api/combineForms.md)
-  * [createForms](docs/api/createForms.md)
   * [action creators](docs/api/actions.md)
 * [Recipes and Examples](docs/recipes/README.md)
   * [Quick Start](docs/recipes/quickstart.md)

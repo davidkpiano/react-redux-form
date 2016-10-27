@@ -1317,7 +1317,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.renderIntoDocument(
           <Provider store={store}>
-            <Form model="test">
+            <Form model="user">
               <Field
                 model="test.foo"
                 validators={{ required }}

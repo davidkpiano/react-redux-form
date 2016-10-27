@@ -1,6 +1,6 @@
 {
   "name": "react-redux-form",
-  "version": "1.0.14",
+  "version": "1.0.7",
   "description": "Create Forms Easily with React and Redux",
   "main": "lib/index.js",
   "typings": "react-redux-form.d.ts",
@@ -51,7 +51,6 @@
     "babel-eslint": "^6.0.0",
     "babel-loader": "^6.2.4",
     "babel-plugin-lodash": "^3.1.4",
-    "babel-plugin-transform-react-remove-prop-types": "~0.2.10",
     "babel-preset-es2015": "^6.5.0",
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-2": "^6.5.0",
@@ -76,7 +75,6 @@
     "react-dom": "^15.0.1",
     "react-redux": "^4.4.0",
     "redux": "^3.3.1",
-    "redux-immutable": "^3.0.8",
     "redux-logger": "~2.6.1",
     "redux-mock-store": "0.0.6",
     "redux-test-store": "^0.4.0",
@@ -89,7 +87,6 @@
   },
   "dependencies": {
     "icepick": "^1.1.0",
-    "invariant": "~2.2.1",
     "lodash": "^4.10.0"
   },
   "peerDependencies": {

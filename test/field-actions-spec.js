@@ -1793,32 +1793,4 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
   });
-
-  describe('submit() (thunk)', () => {
-    it('should set the submitted state to true when submitted', (done) => {
-      const store = createTestStore(testCreateStore({
-        testForm: formReducer('test'),
-      }), done);
-
-      store.when(actionTypes.SET_PENDING, () => true);
-
-      store.when(actionTypes.SET_SUBMITTED, (state) => {
-        assert.containSubset(state.testForm.$form, {
-          submitted: true,
-          pending: false,
-        });
-      });
-
-      store.when(actionTypes.SET_VALIDITY, (state) => {
-        assert.containSubset(state.testForm.$form, {
-          submitted: true,
-          pending: false,
-        });
-      });
-
-      const action = actions.submit('test', new Promise((r) => setTimeout(() => { r(true); }, 1)));
-
-      store.dispatch(action);
-    });
-  });
 });

@@ -368,7 +368,7 @@ The "touched" state indicates that this model has been interacted with.
 
 <h2 id="actions-setUntouched"></h2>
 ## `actions.setUntouched(model)`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.touched` state to `false`.
+Returns an action that, when handled by a [`formReducer`](TODO), changes the `.touched` state to `true`.
 
 An "untouched" field indicates that this model has not been interacted with yet.
 

@@ -270,7 +270,9 @@ function createFormClass(s = defaultStrategy) {
     }
   }
 
-  Form.propTypes = propTypes;
+  if (process.env.NODE_ENV !== 'production') {
+    Form.propTypes = propTypes;
+  }
 
   Form.defaultProps = {
     validateOn: 'change',

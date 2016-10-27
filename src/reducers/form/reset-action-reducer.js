@@ -1,6 +1,5 @@
 import actionTypes from '../../action-types';
 import updateField from '../../utils/update-field';
-import mapValues from '../../utils/map-values';
 import initialFieldState from '../../constants/initial-field-state';
 import i from 'icepick';
 
@@ -10,14 +9,8 @@ export default function resetActionReducer(state, action, localPath) {
     return state;
   }
 
-  const resetFieldState = (field) => {
-    if (field.$form) return mapValues(field, resetFieldState);
-
-    return i.merge(initialFieldState, {
-      value: field.initialValue,
-      model: field.model,
-    });
-  };
+  const resetFieldState = (field) =>
+    i.set(initialFieldState, 'value', field.initialValue);
 
   return updateField(state, localPath, resetFieldState, resetFieldState);
 }

@@ -8,11 +8,9 @@ export default function resetValidityActionReducer(state, action, localPath) {
   }
 
   return updateField(state, localPath, {
-    valid: initialFieldState.valid,
     validity: initialFieldState.validity,
     errors: initialFieldState.errors,
   }, {
-    valid: initialFieldState.valid,
     validity: initialFieldState.validity,
     errors: initialFieldState.errors,
   });

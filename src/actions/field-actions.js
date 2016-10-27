@@ -13,24 +13,15 @@ import getFieldFromState from '../utils/get-field-from-state';
 import isValid from '../form/is-valid';
 import NULL_ACTION from '../constants/null-action';
 import omit from 'lodash/omit';
-import isNative from '../utils/is-native';
 
 const defaultStrategies = {
   get: _get,
-  getForm,
-  getFieldFromState,
 };
 
 function createFieldActions(s = defaultStrategies) {
-  const focus = (model, value, options = {}) => ({
+  const focus = (model) => ({
     type: actionTypes.FOCUS,
     model,
-    value,
-    ...options,
-  });
-
-  const silentFocus = (model, value) => focus(model, value, {
-    silent: true,
   });
 
   const blur = (model) => ({
@@ -82,7 +73,7 @@ function createFieldActions(s = defaultStrategies) {
     }
 
     return (dispatch, getState) => {
-      const field = s.getFieldFromState(getState(), model);
+      const field = getFieldFromState(getState(), model);
 
       if (!field) {
         dispatch(NULL_ACTION);
@@ -157,7 +148,7 @@ function createFieldActions(s = defaultStrategies) {
 
   const submit = (model, promise, options = {}) => (dispatch, getState) => {
     if (options.validate) {
-      const form = s.getForm(getState(), model);
+      const form = getForm(getState(), model);
 
       if (!form.$form.valid) {
         return dispatch(NULL_ACTION);
@@ -199,8 +190,7 @@ function createFieldActions(s = defaultStrategies) {
         setValidity(model, response),
       ]));
     }).catch(error => {
-      if (!isNative) console.error(error);
-
+      console.error(error);
       dispatch(batch(model, [
         setSubmitFailed(model),
         errorsAction(model, error),
@@ -275,7 +265,7 @@ function createFieldActions(s = defaultStrategies) {
       const invalidCB = options.onInvalid;
 
       if (validCB || invalidCB) {
-        const form = s.getForm(getState(), model);
+        const form = getForm(getState(), model);
         const formValid = (form && !fieldsValidity.hasOwnProperty(''))
           ? isFormValidWithoutFields(form, fieldsValidity)
           : true;
@@ -304,17 +294,9 @@ function createFieldActions(s = defaultStrategies) {
       errors: true,
     });
 
-  const clearIntents = (model, intents, options = {}) => ({
-    type: actionTypes.CLEAR_INTENTS,
-    model,
-    intents,
-    options,
-  });
-
   return mapValues({
     blur,
     focus,
-    silentFocus,
     submit,
     submitFields,
     validSubmit,
@@ -338,7 +320,6 @@ function createFieldActions(s = defaultStrategies) {
     validateFields,
     validateFieldsErrors,
     asyncSetValidity,
-    clearIntents,
   }, trackable);
 }
 

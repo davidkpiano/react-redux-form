@@ -11,7 +11,6 @@ const initialFieldState = {
   validated: false,
   validity: {},
   errors: {},
-  intents: [],
 };
 
 export default initialFieldState;

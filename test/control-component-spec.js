@@ -12,6 +12,7 @@ import i from 'icepick';
 import Immutable from 'immutable';
 
 import { testCreateStore, testRender } from './utils';
+import handleFocus from '../src/utils/handle-focus';
 
 import {
   controls as _controls,
@@ -1249,10 +1250,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('changeAction prop', () => {
-      const initialState = getInitialState({
-        foo: '',
-        checked: false,
-      });
+      const initialState = getInitialState({ foo: '' });
       const reducer = modelReducer('test', initialState);
       const store = testCreateStore({
         test: reducer,
@@ -1285,46 +1283,6 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.equal(
           get(store.getState().test, 'foo'),
           'testing');
-      });
-
-      it('should execute the custom change action (checkbox)', () => {
-        let customChanged = false;
-
-        const field = TestUtils.renderIntoDocument(
-          <Provider store={store}>
-            <Control.checkbox
-              model="test.checked"
-              changeAction={() => {
-                customChanged = true;
-              }}
-            />
-          </Provider>
-        );
-
-        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
-
-        TestUtils.Simulate.change(control);
-
-        assert.isTrue(customChanged);
-      });
-
-      it('should provide the inverse of the model value (checkbox)', (done) => {
-        const field = TestUtils.renderIntoDocument(
-          <Provider store={store}>
-            <Control.checkbox
-              model="test.customChecked"
-              changeAction={(model, value) => {
-                assert.equal(model, 'test.customChecked');
-                assert.equal(value, true); // initial value is false
-                done();
-              }}
-            />
-          </Provider>
-        );
-
-        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
-
-        TestUtils.Simulate.change(control);
       });
     });
 
@@ -1604,6 +1562,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('manual focus/blur', () => {
+      beforeEach(() => {
+        handleFocus.clearCache();
+      });
+
       const initialState = getInitialState({ foo: 'bar' });
       const store = testCreateStore({
         test: modelReducer('test', initialState),

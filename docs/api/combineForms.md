@@ -1,6 +1,6 @@
 # `combineForms(forms, [model], [options])`
 
-Similar to [`combineReducers()`](http://redux.js.org/docs/api/combineReducers.html) in `redux`, the `combineForms()` helper function takes a `forms` object where:
+Similar to [`combineReducers()`](TODO) in `redux`, the `combineForms()` helper function takes a `forms` object where:
 
 - each key is a string model path
 - each value is either:
@@ -10,7 +10,7 @@ Similar to [`combineReducers()`](http://redux.js.org/docs/api/combineReducers.ht
 and turns it into a single reducing function (using `combineReducers()` internally) where essentially:
 
 - each key/value pair is a `modelReducer()`
-- a `'forms'` key on the same object is a single `formReducer()` that handles all forms for all models. (configurable in `options`)
+- a `'forms'` key on the same object is a single `formReducer()` that handles all forms for all models.
 
 ### Arguments
 

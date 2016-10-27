@@ -4,15 +4,6 @@ import { connect } from 'react-redux';
 
 const required = (val) => !!(val && val.length);
 
-        function hasToBeTrue(value) {
-    if (value === false || typeof value !== 'boolean') {
-        return false;
-    }
-    return true;
-}
-
-// control
-
 class UserForm extends React.Component {
   constructor(props) {
     super(props);
@@ -31,14 +22,15 @@ class UserForm extends React.Component {
       /* eslint-enable no-console */
       setTimeout(() => { resolve(true); }, 1000);
     });
-
     dispatch(actions.submit('user', somePromise));
   }
   render() {
-    const { forms: { user }, dispatch } = this.props;
+    const { forms: { user } } = this.props;
+
+    console.log(user.$form.valid);
 
     return (
-      <Form model="user" onSubmit={this.handleSubmit.bind(this)}>
+      <Form model="user" onSubmit={v => console.log(v)}>
         <div>
           <label>First name:</label>
           <Control.text model="user.firstName" validators={{len: (val) => val.length > 8}} />
@@ -54,15 +46,14 @@ class UserForm extends React.Component {
 
         <Field model="user.bag">
           <label>
-            <input type="radio" value="plastic" />
-            <span>Plastic</span>
-          </label>
-          <label>
             <input type="radio" value="paper" />
             <span>Paper</span>
           </label>
+          <label>
+            <input type="radio" value="plastic" />
+            <span>Plastic</span>
+          </label>
         </Field>
-
         <button type="submit" disabled={!user.$form.valid}>
           Finish registration!
         </button>

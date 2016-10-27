@@ -29,7 +29,6 @@ describe('batched actions', () => {
           {
             model: 'test.foo',
             type: 'rrf/focus',
-            value: undefined,
           },
         ],
       },

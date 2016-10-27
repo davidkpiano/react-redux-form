@@ -1,12 +1,18 @@
 import isMulti from '../utils/is-multi';
+import i from 'icepick';
 import actions from '../actions';
 
-function createControlPropsMap() {
+const defaultStrategies = {
+  array: [],
+  object: {},
+  length: (val) => val.length,
+  push: i.push,
+};
+
+function createControlPropsMap(s = defaultStrategies) {
   function getTextValue(value) {
-    if (typeof value === 'string') {
+    if (typeof value === 'string' || typeof value === 'number') {
       return `${value}`;
-    } else if (typeof value === 'number') {
-      return value;
     }
 
     return '';
@@ -41,6 +47,22 @@ function createControlPropsMap() {
       checked: (props) => (props.defaultChecked
         ? props.checked
         : isChecked(props)),
+      changeAction: (props) => (model) => {
+        const { modelValue, value } = props;
+
+        if (isMulti(model)) {
+          const valueWithItem = modelValue || s.array;
+          const valueWithoutItem = (valueWithItem || s.array)
+            .filter(item => item !== value);
+          const multiValue = (s.length(valueWithoutItem) === s.length(valueWithItem))
+            ? s.push(valueWithItem, value)
+            : valueWithoutItem;
+
+          return actions.change(model, multiValue);
+        }
+
+        return actions.change(model, !modelValue);
+      },
       onChange: ({ onChange }) => onChange,
       onBlur: ({ onBlur }) => onBlur,
       onFocus: ({ onFocus }) => onFocus,
