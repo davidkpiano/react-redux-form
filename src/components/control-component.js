@@ -9,7 +9,7 @@ import mapValues from '../utils/map-values';
 import isPlainObject from 'lodash/isPlainObject';
 import i from 'icepick';
 import omit from 'lodash/omit';
-import handleFocus from '../utils/handle-focus';
+import actionTypes from '../action-types';
 
 import getValue from '../utils/get-value';
 import getValidity from '../utils/get-validity';
@@ -29,6 +29,8 @@ const findDOMNode = !isNative
   ? require('react-dom').findDOMNode
   : null;
 
+const disallowedProps = ['changeAction', 'getFieldFromState'];
+
 function containsEvent(events, event) {
   if (typeof events === 'string') {
     return events === event;
@@ -36,6 +38,22 @@ function containsEvent(events, event) {
 
   return !!~events.indexOf(event);
 }
+
+function getReadOnlyValue(props) {
+  const { modelValue, controlProps } = props;
+
+  switch (controlProps.type) {
+    case 'checkbox':
+      return typeof controlProps.value !== 'undefined'
+        ? controlProps.value
+        : !modelValue; // simple checkbox
+
+    case 'radio':
+    default:
+      return controlProps.value;
+  }
+}
+
 
 const propTypes = {
   model: PropTypes.oneOfType([
@@ -81,7 +99,6 @@ const propTypes = {
   component: PropTypes.any,
   dispatch: PropTypes.func,
   parser: PropTypes.func,
-  getter: PropTypes.func,
   ignore: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.string),
     PropTypes.string,
@@ -89,7 +106,13 @@ const propTypes = {
   dynamic: PropTypes.bool,
 };
 
-function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
+const defaultStrategy = {
+  get: _get,
+  getFieldFromState,
+  actions,
+};
+
+function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
   const controlPropsMap = {
     ...defaultControlPropsMap,
     ...customControlPropsMap,
@@ -157,13 +180,12 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
       if ((validators || errors)
         && fieldValue
         && !fieldValue.validated
-        && validateOn === 'change'
+        && containsEvent(validateOn, 'change')
       ) {
         this.validate();
       }
 
-      // Manually focus/blur node
-      handleFocus(fieldValue, this.node);
+      this.handleIntents();
     }
 
     componentWillUnmount() {
@@ -221,7 +243,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         changeAction = this.props.changeAction,
       } = this.getMappedProps();
       const value = isReadOnlyValue(controlProps)
-        ? controlProps.value
+        ? getReadOnlyValue(this.props)
         : event;
 
       return changeAction(model, getValue(value));
@@ -341,11 +363,55 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     }
 
     setViewValue(viewValue, props = this.props) {
-      const { parser = (v) => v } = this.props;
-
       if (!isReadOnlyValue(props.controlProps)) {
-        this.setState({ viewValue: parser(viewValue) });
+        this.setState({ viewValue: this.parse(viewValue) });
       }
+    }
+
+    handleIntents() {
+      const {
+        model,
+        fieldValue,
+        fieldValue: { intents },
+        controlProps,
+        dispatch,
+      } = this.props;
+
+      if (!intents.length) return;
+
+      intents.forEach((intent) => {
+        switch (intent.type) {
+          case actionTypes.FOCUS: {
+            if (isNative) return;
+
+            const readOnlyValue = isReadOnlyValue(controlProps);
+            const focused = fieldValue.focus;
+
+            if ((focused && this.node.focus)
+              && (
+                !readOnlyValue
+                || typeof intent.value === 'undefined'
+                || intent.value === controlProps.value
+              )) {
+              this.node.focus();
+
+              dispatch(actions.clearIntents(model, intent));
+            }
+
+            return;
+          }
+          default:
+            return;
+        }
+      });
+    }
+
+    parse(value) {
+      const { parser } = this.props;
+
+      return parser
+        ? parser(value)
+        : value;
     }
 
     handleChange(event) {
@@ -354,8 +420,12 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
     }
 
     handleKeyPress(event) {
+      // Get the value from the event
+      // in case updateOn="blur" (or something other than "change")
+      const parsedValue = this.parse(getValue(event));
+
       if (event.key === 'Enter') {
-        this.handleSubmit(event);
+        this.handleSubmit(parsedValue);
       }
     }
 
@@ -370,7 +440,6 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         changeAction,
         parser,
       } = this.props;
-      const loadActions = [];
       let defaultValue = undefined;
 
       if (controlProps.hasOwnProperty('defaultValue')) {
@@ -379,12 +448,11 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         defaultValue = controlProps.defaultChecked;
       }
 
+      const loadActions = [this.getValidateAction(defaultValue)];
+
       if (typeof defaultValue !== 'undefined') {
-        loadActions.push(this.getValidateAction(defaultValue));
         loadActions.push(changeAction(model, defaultValue));
       } else {
-        loadActions.push(this.getValidateAction(modelValue));
-
         if (parser) {
           const parsedValue = parser(modelValue);
 
@@ -418,7 +486,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
       } = this.props;
 
       const eventAction = {
-        focus: actions.focus,
+        focus: actions.silentFocus,
         blur: actions.blur,
       }[eventName];
 
@@ -457,7 +525,6 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
             ? controlEventHandler(event)
             : event;
         }
-
 
         if (isReadOnlyValue(controlProps)) {
           return compose(
@@ -516,16 +583,13 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         control,
       } = this.props;
 
-      const mappedProps = this.getMappedProps();
+      const mappedProps = omit(this.getMappedProps(), disallowedProps);
 
       // If there is an existing control, clone it
       if (control) {
         return cloneElement(
           control,
-          {
-            ...mappedProps,
-            onKeyPress: this.handleKeyPress,
-          },
+          mappedProps,
           controlProps.children);
       }
 
@@ -534,44 +598,37 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         {
           ...controlProps,
           ...mappedProps,
-          onKeyPress: this.handleKeyPress,
-        },
-        controlProps.children);
+        });
     }
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    Control.propTypes = propTypes;
-  }
+  Control.propTypes = propTypes;
 
   Control.defaultProps = {
-    changeAction: actions.change,
+    changeAction: s.actions.change,
     updateOn: 'change',
     asyncValidateOn: 'blur',
     parser: identity,
     controlProps: emptyControlProps,
-    getter: _get,
     ignore: [],
     dynamic: false,
     mapProps: controlPropsMap.default,
     component: 'input',
-    ...defaultProps,
   };
 
   function mapStateToProps(state, props) {
     const {
       model,
-      getter = Control.defaultProps.getter,
       controlProps = omit(props, Object.keys(propTypes)),
     } = props;
 
     const modelString = getModel(model, state);
-    const fieldValue = getFieldFromState(state, modelString)
+    const fieldValue = s.getFieldFromState(state, modelString)
       || initialFieldState;
 
     return {
       model: modelString,
-      modelValue: getter(state, modelString),
+      modelValue: s.get(state, modelString),
       fieldValue,
       controlProps,
     };
@@ -633,6 +690,7 @@ function createControlClass(customControlPropsMap = {}, defaultProps = {}) {
         ...controlPropsMap.checkbox,
         ...props.mapProps,
       }}
+      changeAction={props.changeAction || s.actions.check}
       {...omit(props, 'mapProps')}
     />
   );

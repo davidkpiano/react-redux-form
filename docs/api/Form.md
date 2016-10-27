@@ -146,3 +146,6 @@ _(Any)_ The `component` that the `<Form>` should be rendered to (default: `"form
 
 ### Notes
 - For React Native, the `View` component is used to render the form, if you `import { Form } from 'react-redux-form/native'`.
+- In HTML, you are not allowed to nest forms. If you do want to nest forms, you will have to do one of the following:
+  - If you want a nested form that doesn't submit, you can set the nested form's component to something other than `'form'`, like `<Form component="div" ...>`
+  - If you _do_ want a "form" inside a form that does submit, you'll have to set the component and submit manually by dispatching `actions.validSubmit(model, promise)`.

@@ -311,7 +311,7 @@ describe('model action creators', () => {
   });
 });
 
-describe('RSF field action creators', () => {
+describe('field action creators', () => {
   describe('actions.focus()', () => {
     it('should return an action', () => {
       assert.deepEqual(
@@ -319,6 +319,7 @@ describe('RSF field action creators', () => {
         {
           type: actionTypes.FOCUS,
           model: 'foo.bar',
+          value: undefined,
         });
     });
   });

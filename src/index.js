@@ -14,7 +14,7 @@ import batched from './enhancers/batched-enhancer';
 
 import formReducer from './reducers/form-reducer';
 import initialFieldState from './constants/initial-field-state';
-import combineForms from './reducers/forms-reducer';
+import combineForms, { createForms } from './reducers/forms-reducer';
 
 import modelReducer from './reducers/model-reducer';
 
@@ -29,6 +29,7 @@ export {
   formReducer,
   modelReducer,
   combineForms,
+  createForms,
 
   // Constants
   initialFieldState,
