@@ -1,4 +1,4 @@
-# React Redux Form
+# React Redux Form 🎃
 
 [![Join the chat at https://gitter.im/react-redux-form/Lobby](https://badges.gitter.im/react-redux-form/Lobby.svg)](https://gitter.im/react-redux-form/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/davidkpiano/react-redux-form.svg?branch=master)](https://travis-ci.org/davidkpiano/react-redux-form) [![npm version](https://badge.fury.io/js/react-redux-form.svg)](https://badge.fury.io/js/react-redux-form)
@@ -61,7 +61,7 @@ class MyForm extends React.Component {
     // Do anything you want with the form value
     console.log(val);
   }
-  
+
   render() {
     return (
       <Form model="user" onSubmit={(val) => this.handleSubmit(val)}>
