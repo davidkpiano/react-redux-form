@@ -3,7 +3,7 @@ import i from 'icepick';
 
 function updateSubField(subField, newSubState) {
   // Form
-  if (subField.$form) {
+  if (subField && subField.$form) {
     // intermediate value - not mutated outside function
     const result = {};
 
