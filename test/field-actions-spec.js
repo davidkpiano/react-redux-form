@@ -87,6 +87,29 @@ Object.keys(testContexts).forEach((testKey) => {
             retouched: true,
           }, 'field retouched after submit');
       });
+
+      it('should be able to set change an object to null without throwing an error', () => {
+        // this is a weird one, but because $form is now
+        // stuffed into the store in each model that is an object
+        // the sub fields updater expects to find it.
+        // so if it is studdenly changed to null,
+        // the .$form breaks. in the code, we just added
+        // a condition like subField && subField.$form.
+        // this test will ensure that condition stays functioning
+        const reducer = formReducer('foo', { a: {} });
+        let didThrow = false;
+
+        try {
+          reducer(
+            undefined,
+            actions.change('foo.a', null)
+          );
+        } catch (e) {
+          didThrow = true;
+        }
+
+        assert.isFalse(didThrow);
+      });
     });
 
     describe('reset()', () => {
