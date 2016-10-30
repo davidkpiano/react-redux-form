@@ -152,20 +152,15 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     componentWillReceiveProps(nextProps) {
-      const { modelValue } = nextProps;
-
-      if (modelValue !== this.props.modelValue) {
-        this.setViewValue(modelValue, nextProps);
+      if (nextProps.modelValue !== this.props.modelValue) {
+        this.setViewValue(nextProps.modelValue);
       }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-      const result =
-        !shallowEqual(this.props, nextProps, ['controlProps', 'mapProps'])
+      return !shallowEqual(this.props, nextProps, ['controlProps', 'mapProps'])
         || !shallowEqual(this.props.controlProps, nextProps.controlProps)
         || !shallowEqual(this.state.viewValue, nextState.viewValue);
-
-      return result;
     }
 
     componentDidUpdate() {
@@ -238,10 +233,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       const {
         model,
         controlProps,
+        changeAction,
       } = this.props;
-      const {
-        changeAction = this.props.changeAction,
-      } = this.getMappedProps();
       const value = isReadOnlyValue(controlProps)
         ? getReadOnlyValue(this.props)
         : event;
@@ -362,8 +355,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       return nodeErrors;
     }
 
-    setViewValue(viewValue, props = this.props) {
-      if (!isReadOnlyValue(props.controlProps)) {
+    setViewValue(viewValue) {
+      if (!isReadOnlyValue(this.props.controlProps)) {
         this.setState({ viewValue: this.parse(viewValue) });
       }
     }
@@ -497,22 +490,15 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       }[eventName];
 
       const dispatchBatchActions = (persistedEvent) => {
-        const eventActions = eventAction
-          ? [eventAction(model)]
-          : [];
-
-        if (containsEvent(validateOn, eventName)) {
-          eventActions.push(
-            this.getValidateAction(persistedEvent, eventName));
-        }
-
-        if (containsEvent(asyncValidateOn, eventName)) {
-          eventActions.push(this.getAsyncValidateAction(persistedEvent, eventName));
-        }
-
-        if (containsEvent(updateOn, eventName)) {
-          eventActions.push(this.getChangeAction(persistedEvent));
-        }
+        const eventActions = [
+          eventAction && eventAction(model),
+          containsEvent(validateOn, eventName)
+            && this.getValidateAction(persistedEvent, eventName),
+          containsEvent(asyncValidateOn, eventName)
+            && this.getAsyncValidateAction(persistedEvent, eventName),
+          containsEvent(updateOn, eventName)
+            && this.getChangeAction(persistedEvent),
+        ];
 
         dispatchBatchIfNeeded(model, eventActions, dispatch);
 
