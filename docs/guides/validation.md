@@ -118,7 +118,7 @@ import { actions } from 'react-redux-form';
 // wherever validation occurs...
 const { user, dispatch } = this.props;
 
-dispatch(actions.setAsyncValidity('user.username', (value, done) => {
+dispatch(actions.asyncSetValidity('user.username', (value, done) => {
   asyncCheckUsername(value)
     .then((response) => done({ available: response.available });
 }));
