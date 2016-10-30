@@ -24,20 +24,13 @@ import { dispatchBatchIfNeeded } from '../actions/batch-actions';
 import resolveModel from '../utils/resolve-model';
 import isNative from '../utils/is-native';
 import initialFieldState from '../constants/initial-field-state';
+import containsEvent from '../utils/contains-event';
 
 const findDOMNode = !isNative
   ? require('react-dom').findDOMNode
   : null;
 
 const disallowedProps = ['changeAction', 'getFieldFromState'];
-
-function containsEvent(events, event) {
-  if (typeof events === 'string') {
-    return events === event;
-  }
-
-  return !!~events.indexOf(event);
-}
 
 function getReadOnlyValue(props) {
   const { modelValue, controlProps } = props;
@@ -53,7 +46,6 @@ function getReadOnlyValue(props) {
       return controlProps.value;
   }
 }
-
 
 const propTypes = {
   model: PropTypes.oneOfType([
