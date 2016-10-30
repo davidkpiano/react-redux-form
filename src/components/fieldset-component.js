@@ -3,6 +3,12 @@ import { connect } from 'react-redux';
 import getModel from '../utils/get-model';
 import omit from 'lodash/omit';
 
+const propTypes = {
+  model: PropTypes.string.isRequired,
+  component: PropTypes.any,
+  dispatch: PropTypes.func,
+};
+
 class Fieldset extends Component {
   getChildContext() {
     return { model: this.props.model };
@@ -11,7 +17,7 @@ class Fieldset extends Component {
   render() {
     const { component } = this.props;
 
-    const allowedProps = omit(this.props, Object.keys(Fieldset.propTypes));
+    const allowedProps = omit(this.props, Object.keys(propTypes));
 
     return React.createElement(
       component,
@@ -23,11 +29,7 @@ Fieldset.childContextTypes = {
   model: PropTypes.any,
 };
 
-Fieldset.propTypes = {
-  model: PropTypes.string.isRequired,
-  component: PropTypes.any,
-  dispatch: PropTypes.func,
-};
+Fieldset.propTypes = propTypes;
 
 Fieldset.defaultProps = {
   component: 'div',
