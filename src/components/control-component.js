@@ -156,22 +156,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     componentDidUpdate() {
-      const {
-        fieldValue,
-        updateOn,
-        validateOn = updateOn,
-        validators,
-        errors,
-      } = this.props;
-
-      if ((validators || errors)
-        && fieldValue
-        && !fieldValue.validated
-        && containsEvent(validateOn, 'change')
-      ) {
-        this.validate();
-      }
-
       this.handleIntents();
     }
 
@@ -360,6 +344,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         fieldValue: { intents },
         controlProps,
         dispatch,
+        updateOn,
+        validateOn = updateOn,
       } = this.props;
 
       if (!intents.length) return;
@@ -385,6 +371,12 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
             return;
           }
+          case 'validate':
+            if (containsEvent(validateOn, 'change')) {
+              dispatch(actions.clearIntents(model, intent));
+              this.validate();
+            }
+            return;
           default:
             return;
         }
@@ -539,6 +531,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       } = this.props;
 
       if (!validators && !errorValidators) return modelValue;
+      // if (!fieldValue) return modelValue;
 
       const fieldValidity = getValidity(validators, modelValue);
       const fieldErrors = getValidity(errorValidators, modelValue);
