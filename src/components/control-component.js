@@ -132,6 +132,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       this.handleLoad = this.handleLoad.bind(this);
       this.getMappedProps = this.getMappedProps.bind(this);
       this.attachNode = this.attachNode.bind(this);
+      this.readOnlyValue = isReadOnlyValue(props.controlProps);
 
       this.state = {
         viewValue: props.modelValue,
@@ -168,9 +169,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         errors = {},
       } = this.props;
 
-      if (!fieldValue) return;
-
-      if (!fieldValue.valid) {
+      if (fieldValue && !fieldValue.valid) {
         const keys = Object.keys(validators)
           .concat(Object.keys(errors));
 
@@ -208,10 +207,9 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     getChangeAction(event) {
       const {
         model,
-        controlProps,
         changeAction,
       } = this.props;
-      const value = isReadOnlyValue(controlProps)
+      const value = this.readOnlyValue
         ? getReadOnlyValue(this.props)
         : event;
 
@@ -227,6 +225,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         updateOn,
         fieldValue,
       } = this.props;
+
+      if (!validators && !errors && isNative) return false;
 
       const nodeErrors = this.getNodeErrors();
 
@@ -384,10 +384,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     parse(value) {
-      const { parser } = this.props;
-
-      return parser
-        ? parser(value)
+      return this.props.parser
+        ? this.props.parser(value)
         : value;
     }
 
@@ -402,7 +400,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       const parsedValue = this.parse(getValue(event));
 
       if (event.key === 'Enter') {
-        this.handleSubmit(parsedValue);
+        this.props.dispatch(this.getChangeAction(parsedValue));
       }
     }
 
@@ -442,12 +440,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       dispatchBatchIfNeeded(model, loadActions, dispatch);
 
       if (onLoad) onLoad(modelValue, fieldValue, this.node);
-    }
-
-    handleSubmit(event) {
-      const { dispatch } = this.props;
-
-      dispatch(this.getChangeAction(event));
     }
 
     createEventHandler(eventName) {
@@ -513,9 +505,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     attachNode() {
-      if (!findDOMNode) return;
-
-      const node = findDOMNode(this);
+      const node = findDOMNode && findDOMNode(this);
 
       if (node) this.node = node;
     }
@@ -531,7 +521,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       } = this.props;
 
       if (!validators && !errorValidators) return modelValue;
-      // if (!fieldValue) return modelValue;
+      if (!fieldValue) return modelValue;
 
       const fieldValidity = getValidity(validators, modelValue);
       const fieldErrors = getValidity(errorValidators, modelValue);
