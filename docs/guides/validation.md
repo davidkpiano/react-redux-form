@@ -224,13 +224,13 @@ import { Field, Control } from 'react-redux-form';
 />
 ```
 
-If you want to disable HTML5 validation for a form, add a `novalidate` attribute to the form element:
+If you want to disable HTML5 validation for a form, add a `noValidate` attribute to the form element:
 
 ```jsx
 import { Form } from 'react-redux-form';
 
 // email input will not be validated
-<Form model="user" novalidate>
+<Form model="user" noValidate>
   <Control.email />
 </Form>
 ```
