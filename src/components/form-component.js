@@ -4,7 +4,6 @@ import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import mapValues from '../utils/map-values';
 import merge from '../utils/merge';
-import identity from 'lodash/identity';
 import omit from 'lodash/omit';
 
 import actions from '../actions';
@@ -16,6 +15,7 @@ import getModel from '../utils/get-model';
 import getField from '../utils/get-field';
 import { fieldsValid } from '../form/is-valid';
 import deepCompareChildren from '../utils/deep-compare-children';
+import containsEvent from '../utils/contains-event';
 
 const propTypes = {
   component: PropTypes.any,
@@ -56,15 +56,13 @@ function createFormClass(s = defaultStrategy) {
     }
 
     componentDidMount() {
-      if (this.props.validateOn !== 'change') return;
+      if (!containsEvent(this.props.validateOn, 'change')) return;
 
       this.validate(this.props, true);
     }
 
     componentWillReceiveProps(nextProps) {
-      const { validateOn } = this.props;
-
-      if (validateOn !== 'change') return;
+      if (!containsEvent(nextProps.validateOn, 'change')) return;
 
       this.validate(nextProps);
     }
@@ -180,32 +178,22 @@ function createFormClass(s = defaultStrategy) {
         dispatch,
         model,
         modelValue,
-        onSubmit = identity,
+        onSubmit,
       } = this.props;
 
       dispatch(s.actions.setPending(model));
 
-      return onSubmit(modelValue);
+      if (onSubmit) onSubmit(modelValue);
     }
 
     handleInvalidSubmit() {
-      const {
-        dispatch,
-        model,
-      } = this.props;
-
-      dispatch(s.actions.setSubmitFailed(model));
+      this.props.dispatch(s.actions.setSubmitFailed(this.props.model));
     }
 
     handleReset(e) {
       if (e) e.preventDefault();
 
-      const {
-        model,
-        dispatch,
-      } = this.props;
-
-      dispatch(s.actions.reset(model));
+      this.props.dispatch(s.actions.reset(this.props.model));
     }
 
     handleSubmit(e) {
@@ -231,11 +219,6 @@ function createFormClass(s = defaultStrategy) {
         return modelValue;
       }
 
-      const validationOptions = {
-        onValid: this.handleValidSubmit,
-        onInvalid: this.handleInvalidSubmit,
-      };
-
       const finalErrorValidators = validators
         ? merge(invertValidators(validators), errorValidators)
         : errorValidators;
@@ -243,7 +226,10 @@ function createFormClass(s = defaultStrategy) {
       dispatch(s.actions.validateFieldsErrors(
         model,
         finalErrorValidators,
-        validationOptions));
+        {
+          onValid: this.handleValidSubmit,
+          onInvalid: this.handleInvalidSubmit,
+        }));
 
       return modelValue;
     }

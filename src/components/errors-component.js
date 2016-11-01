@@ -2,9 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import _get from '../utils/get';
 import map from '../utils/map';
-import compact from 'lodash/compact';
 import iteratee from '../utils/iteratee';
-import isArray from 'lodash/isArray';
 import isPlainObject from 'lodash/isPlainObject';
 import omit from 'lodash/omit';
 import invariant from 'invariant';
@@ -59,7 +57,7 @@ function showErrors(field, form, show = true) {
     return show(field, form);
   }
 
-  if (!isArray(show)
+  if (!Array.isArray(show)
     && typeof show !== 'object'
     && typeof show !== 'string') {
     return !!show;
@@ -91,25 +89,19 @@ function createErrorsClass(s = defaultStrategy) {
 
       if (!errors) return null;
 
-      const mappedErrors = compact(map(errors, (error, key) => {
+      return map(errors, (error, key) => {
         const message = messages[key];
 
         if (error) {
-          if (message) {
-            return this.renderError(message, key);
-          } else if (typeof error === 'string') {
-            return this.renderError(error, key);
+          if (message || typeof error === 'string') {
+            return this.renderError(message || error, key);
           } else if (isPlainObject(error)) {
             return this.mapErrorMessages(error);
           }
         }
 
         return false;
-      })).reduce((a, b) => a.concat(b), []);
-
-      if (!mappedErrors.length) return null;
-
-      return mappedErrors;
+      }).reduce((a, b) => (b ? a.concat(b) : a), []);
     }
 
     renderError(message, key) {

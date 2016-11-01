@@ -15,8 +15,6 @@ import resetValidityActionReducer from './form/reset-validity-action-reducer';
 import focusActionReducer from './form/focus-action-reducer';
 import setPristineActionReducer from './form/set-pristine-action-reducer';
 import setDirtyActionReducer from './form/set-dirty-action-reducer';
-import blurTouchActionReducer from './form/blur-touch-action-reducer';
-import untouchActionReducer from './form/untouch-action-reducer';
 import pendingActionReducer from './form/pending-action-reducer';
 import submittedActionReducer from './form/submitted-action-reducer';
 import submitFailedActionReducer from './form/submit-failed-action-reducer';
@@ -72,8 +70,6 @@ function wrapFormReducer(plugin, modelPath, initialState) {
 
 const defaultPlugins = [
   focusActionReducer,
-  blurTouchActionReducer,
-  untouchActionReducer,
   setPristineActionReducer,
   setDirtyActionReducer,
   changeActionReducer,

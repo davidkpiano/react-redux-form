@@ -24,20 +24,13 @@ import { dispatchBatchIfNeeded } from '../actions/batch-actions';
 import resolveModel from '../utils/resolve-model';
 import isNative from '../utils/is-native';
 import initialFieldState from '../constants/initial-field-state';
+import containsEvent from '../utils/contains-event';
 
 const findDOMNode = !isNative
   ? require('react-dom').findDOMNode
   : null;
 
 const disallowedProps = ['changeAction', 'getFieldFromState'];
-
-function containsEvent(events, event) {
-  if (typeof events === 'string') {
-    return events === event;
-  }
-
-  return !!~events.indexOf(event);
-}
 
 function getReadOnlyValue(props) {
   const { modelValue, controlProps } = props;
@@ -53,7 +46,6 @@ function getReadOnlyValue(props) {
       return controlProps.value;
   }
 }
-
 
 const propTypes = {
   model: PropTypes.oneOfType([
@@ -140,6 +132,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       this.handleLoad = this.handleLoad.bind(this);
       this.getMappedProps = this.getMappedProps.bind(this);
       this.attachNode = this.attachNode.bind(this);
+      this.readOnlyValue = isReadOnlyValue(props.controlProps);
 
       this.state = {
         viewValue: props.modelValue,
@@ -152,39 +145,18 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     componentWillReceiveProps(nextProps) {
-      const { modelValue } = nextProps;
-
-      if (modelValue !== this.props.modelValue) {
-        this.setViewValue(modelValue, nextProps);
+      if (nextProps.modelValue !== this.props.modelValue) {
+        this.setViewValue(nextProps.modelValue);
       }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-      const result =
-        !shallowEqual(this.props, nextProps, ['controlProps', 'mapProps'])
+      return !shallowEqual(this.props, nextProps, ['controlProps', 'mapProps'])
         || !shallowEqual(this.props.controlProps, nextProps.controlProps)
         || !shallowEqual(this.state.viewValue, nextState.viewValue);
-
-      return result;
     }
 
     componentDidUpdate() {
-      const {
-        fieldValue,
-        updateOn,
-        validateOn = updateOn,
-        validators,
-        errors,
-      } = this.props;
-
-      if ((validators || errors)
-        && fieldValue
-        && !fieldValue.validated
-        && containsEvent(validateOn, 'change')
-      ) {
-        this.validate();
-      }
-
       this.handleIntents();
     }
 
@@ -197,9 +169,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         errors = {},
       } = this.props;
 
-      if (!fieldValue) return;
-
-      if (!fieldValue.valid) {
+      if (fieldValue && !fieldValue.valid) {
         const keys = Object.keys(validators)
           .concat(Object.keys(errors));
 
@@ -237,12 +207,9 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     getChangeAction(event) {
       const {
         model,
-        controlProps,
+        changeAction,
       } = this.props;
-      const {
-        changeAction = this.props.changeAction,
-      } = this.getMappedProps();
-      const value = isReadOnlyValue(controlProps)
+      const value = this.readOnlyValue
         ? getReadOnlyValue(this.props)
         : event;
 
@@ -258,6 +225,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         updateOn,
         fieldValue,
       } = this.props;
+
+      if (!validators && !errors && isNative) return false;
 
       const nodeErrors = this.getNodeErrors();
 
@@ -362,8 +331,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       return nodeErrors;
     }
 
-    setViewValue(viewValue, props = this.props) {
-      if (!isReadOnlyValue(props.controlProps)) {
+    setViewValue(viewValue) {
+      if (!isReadOnlyValue(this.props.controlProps)) {
         this.setState({ viewValue: this.parse(viewValue) });
       }
     }
@@ -375,6 +344,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         fieldValue: { intents },
         controlProps,
         dispatch,
+        updateOn,
+        validateOn = updateOn,
       } = this.props;
 
       if (!intents.length) return;
@@ -400,6 +371,12 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
             return;
           }
+          case 'validate':
+            if (containsEvent(validateOn, 'change')) {
+              dispatch(actions.clearIntents(model, intent));
+              this.validate();
+            }
+            return;
           default:
             return;
         }
@@ -407,10 +384,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     parse(value) {
-      const { parser } = this.props;
-
-      return parser
-        ? parser(value)
+      return this.props.parser
+        ? this.props.parser(value)
         : value;
     }
 
@@ -425,7 +400,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       const parsedValue = this.parse(getValue(event));
 
       if (event.key === 'Enter') {
-        this.handleSubmit(parsedValue);
+        this.props.dispatch(this.getChangeAction(parsedValue));
       }
     }
 
@@ -467,12 +442,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       if (onLoad) onLoad(modelValue, fieldValue, this.node);
     }
 
-    handleSubmit(event) {
-      const { dispatch } = this.props;
-
-      dispatch(this.getChangeAction(event));
-    }
-
     createEventHandler(eventName) {
       const {
         dispatch,
@@ -497,22 +466,15 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       }[eventName];
 
       const dispatchBatchActions = (persistedEvent) => {
-        const eventActions = eventAction
-          ? [eventAction(model)]
-          : [];
-
-        if (containsEvent(validateOn, eventName)) {
-          eventActions.push(
-            this.getValidateAction(persistedEvent, eventName));
-        }
-
-        if (containsEvent(asyncValidateOn, eventName)) {
-          eventActions.push(this.getAsyncValidateAction(persistedEvent, eventName));
-        }
-
-        if (containsEvent(updateOn, eventName)) {
-          eventActions.push(this.getChangeAction(persistedEvent));
-        }
+        const eventActions = [
+          eventAction && eventAction(model),
+          containsEvent(validateOn, eventName)
+            && this.getValidateAction(persistedEvent, eventName),
+          containsEvent(asyncValidateOn, eventName)
+            && this.getAsyncValidateAction(persistedEvent, eventName),
+          containsEvent(updateOn, eventName)
+            && this.getChangeAction(persistedEvent),
+        ];
 
         dispatchBatchIfNeeded(model, eventActions, dispatch);
 
@@ -543,9 +505,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     attachNode() {
-      if (!findDOMNode) return;
-
-      const node = findDOMNode(this);
+      const node = findDOMNode && findDOMNode(this);
 
       if (node) this.node = node;
     }
@@ -561,6 +521,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       } = this.props;
 
       if (!validators && !errorValidators) return modelValue;
+      if (!fieldValue) return modelValue;
 
       const fieldValidity = getValidity(validators, modelValue);
       const fieldErrors = getValidity(errorValidators, modelValue);

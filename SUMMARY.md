@@ -10,6 +10,7 @@
   * [React Native](docs/guides/react-native.md)
   * [Partial Models](docs/guides/partial-models.md)
   * [Compare to Redux-Form](docs/guides/compare-redux-form.md)
+  * [Immutable.js](docs/guides/immutable.md)
 * [API Reference](docs/api/README.md)
   * [Control component](docs/api/Control.md)
   * [Form component](docs/api/Form.md)

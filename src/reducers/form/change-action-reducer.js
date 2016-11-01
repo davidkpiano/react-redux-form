@@ -17,6 +17,7 @@ function updateFieldValue(field, action) {
     retouched: field.submitted
       ? true
       : field.retouched,
+    intents: [{ type: 'validate' }],
   };
 
   if (shallowEqual(field.value, value)) {

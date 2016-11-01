@@ -23,17 +23,23 @@ function tempInitialState(path) {
   };
 }
 
-export default function updateField(state, path, newState, newSubState, updater) {
-  let field = get(state, path);
-  let fullState = state;
+export function getFieldAndForm(formState, modelPath) {
+  let field = get(formState, modelPath);
+  let form = formState;
 
   if (!field) {
-    fullState = i.merge(createInitialState(
-      state.$form.model,
-      tempInitialState(path)), state);
+    form = i.merge(createInitialState(
+      formState.$form.model,
+      tempInitialState(modelPath)), formState);
 
-    field = get(fullState, path);
+    field = get(form, modelPath);
   }
+
+  return [field, form];
+}
+
+export default function updateField(state, path, newState, newSubState, updater) {
+  const [field, fullState] = getFieldAndForm(state, path);
 
   const isForm = field.hasOwnProperty('$form');
   const fieldPath = isForm
