@@ -201,6 +201,14 @@ export default function setFocusActionReducer(state, action, localPath) {
       break;
     }
 
+    case actionTypes.ADD_INTENT: {
+      Object.assign(fieldUpdates, {
+        intents: [action.intent],
+      });
+
+      break;
+    }
+
     default:
       return state;
   }

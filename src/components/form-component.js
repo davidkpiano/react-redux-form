@@ -71,6 +71,10 @@ function createFormClass(s = defaultStrategy) {
       return deepCompareChildren(this, nextProps);
     }
 
+    componentDidUpdate() {
+      this.handleIntents();
+    }
+
     attachNode(node) {
       if (!node) return;
 
@@ -196,6 +200,33 @@ function createFormClass(s = defaultStrategy) {
       this.props.dispatch(s.actions.reset(this.props.model));
     }
 
+    handleIntents() {
+      const {
+        model,
+        formValue,
+        dispatch,
+      } = this.props;
+
+      formValue.$form.intents.forEach((intent) => {
+        switch (intent.type) {
+          case 'submit': {
+            dispatch(s.actions.clearIntents(model, intent));
+
+            if (formValue.$form.valid) {
+              this.handleValidSubmit();
+            } else {
+              this.handleInvalidSubmit();
+            }
+
+            return;
+          }
+
+          default:
+            return;
+        }
+      });
+    }
+
     handleSubmit(e) {
       if (e) e.preventDefault();
 
@@ -223,13 +254,13 @@ function createFormClass(s = defaultStrategy) {
         ? merge(invertValidators(validators), errorValidators)
         : errorValidators;
 
-      dispatch(s.actions.validateFieldsErrors(
-        model,
-        finalErrorValidators,
-        {
-          onValid: this.handleValidSubmit,
-          onInvalid: this.handleInvalidSubmit,
-        }));
+      dispatch(s.actions.batch(model, [
+        s.actions.validateFieldsErrors(
+          model,
+          finalErrorValidators
+        ),
+        s.actions.addIntent(model, { type: 'submit' }),
+      ]));
 
       return modelValue;
     }

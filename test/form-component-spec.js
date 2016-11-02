@@ -870,6 +870,50 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('onSubmit() mixing form and field validation', () => {
+      it('should NOT call onSubmit if any form subfield is invalid', () => {
+        const initialState = getInitialState({
+          foo: '',
+        });
+        const store = testCreateStore({
+          testForm: formReducer('test'),
+          test: modelReducer('test', initialState),
+        });
+
+        let submitValue = null;
+
+        const form = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Form
+              model="test"
+              validators={{
+                '': () => true,
+              }}
+              onSubmit={(val) => {
+                submitValue = val;
+                return true;
+              }}
+            >
+              <Field
+                model="test.foo"
+                validators={{ fieldLevel: () => false }}
+              >
+                <input type="text" />
+              </Field>
+            </Form>
+          </Provider>
+        );
+
+        const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+        TestUtils.Simulate.submit(formElement);
+
+        assert.isNull(submitValue);
+
+        assert.isFalse(store.getState().testForm.$form.submitted);
+      });
+    });
+
     describe('validation of form itself', () => {
       const initialState = getInitialState({
         foo: '',

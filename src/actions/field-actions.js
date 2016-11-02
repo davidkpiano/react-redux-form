@@ -304,6 +304,12 @@ function createFieldActions(s = defaultStrategies) {
       errors: true,
     });
 
+  const addIntent = (model, intent) => ({
+    type: actionTypes.ADD_INTENT,
+    model,
+    intent,
+  });
+
   const clearIntents = (model, intents, options = {}) => ({
     type: actionTypes.CLEAR_INTENTS,
     model,
@@ -338,6 +344,7 @@ function createFieldActions(s = defaultStrategies) {
     validateFields,
     validateFieldsErrors,
     asyncSetValidity,
+    addIntent,
     clearIntents,
   }, trackable);
 }
