@@ -11,8 +11,6 @@ import initialFieldState from '../constants/initial-field-state';
 
 import changeActionReducer from './form/change-action-reducer';
 import focusActionReducer from './form/focus-action-reducer';
-import submittedActionReducer from './form/submitted-action-reducer';
-import submitFailedActionReducer from './form/submit-failed-action-reducer';
 import resetActionReducer from './form/reset-action-reducer';
 import intentsActionReducer from './form/intents-action-reducer';
 
@@ -66,8 +64,6 @@ function wrapFormReducer(plugin, modelPath, initialState) {
 const defaultPlugins = [
   focusActionReducer,
   changeActionReducer,
-  submittedActionReducer,
-  submitFailedActionReducer,
   resetActionReducer,
   intentsActionReducer,
 ];

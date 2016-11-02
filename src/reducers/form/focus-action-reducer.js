@@ -17,6 +17,9 @@ import initialFieldState from '../../constants/initial-field-state';
 
 export default function setFocusActionReducer(state, action, localPath) {
   const [field] = getFieldAndForm(state, localPath);
+  const fieldState = field && field.$form
+    ? field.$form
+    : field;
 
   const fieldUpdates = {};
   const subFieldUpdates = {};
@@ -150,6 +153,50 @@ export default function setFocusActionReducer(state, action, localPath) {
       });
 
       parentFormUpdates = { pending: action.pending };
+
+      break;
+    }
+
+    case actionTypes.SET_SUBMITTED: {
+      const submitted = !!action.submitted;
+
+      Object.assign(fieldUpdates, {
+        pending: false,
+        submitted,
+        submitFailed: submitted
+          ? false
+          : fieldState && fieldState.submitFailed,
+        touched: true,
+        retouched: false,
+      });
+
+      Object.assign(subFieldUpdates, {
+        submitted,
+        submitFailed: submitted
+          ? false
+          : fieldUpdates.submitFailed,
+        retouched: false,
+      });
+
+      break;
+    }
+
+    case actionTypes.SET_SUBMIT_FAILED: {
+      Object.assign(fieldUpdates, {
+        pending: false,
+        submitted: fieldState.submitted && !action.submitFailed,
+        submitFailed: !!action.submitFailed,
+        touched: true,
+        retouched: false,
+      });
+
+      Object.assign(subFieldUpdates, {
+        pending: false,
+        submitted: !action.submitFailed,
+        submitFailed: !!action.submitFailed,
+        touched: true,
+        retouched: false,
+      });
 
       break;
     }

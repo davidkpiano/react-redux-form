@@ -1,5 +1,6 @@
 import actionTypes from '../../action-types';
 import updateField from '../../utils/update-field';
+import updateSubFields from '../../utils/update-sub-fields';
 
 export default function submittedActionReducer(state, action, localPath) {
   if (action.type !== actionTypes.SET_SUBMITTED) {
@@ -8,7 +9,7 @@ export default function submittedActionReducer(state, action, localPath) {
 
   const submitted = !!action.submitted;
 
-  return updateField(state, localPath,
+  const updatedField = updateField(state, localPath,
     (fieldState) => ({
       pending: false,
       submitted,
@@ -17,12 +18,13 @@ export default function submittedActionReducer(state, action, localPath) {
         : fieldState.submitFailed,
       touched: true,
       retouched: false,
-    }),
-    (subFieldState, updatedFieldState) => ({
-      submitted,
-      submitFailed: submitted
-        ? false
-        : updatedFieldState.submitFailed,
-      retouched: false,
     }));
+
+  return updateSubFields(updatedField, localPath, (subFieldState, updatedFieldState) => ({
+    submitted,
+    submitFailed: submitted
+          ? false
+          : updatedFieldState.submitFailed,
+    retouched: false,
+  }));
 }
