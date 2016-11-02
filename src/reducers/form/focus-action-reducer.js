@@ -4,14 +4,23 @@ import updateParentForms from '../../utils/update-parent-forms';
 import updateSubFields from '../../utils/update-sub-fields';
 import getFieldForm from '../../utils/get-field-form';
 import isPristine from '../../form/is-pristine';
-import { compose } from 'redux';
+import map from '../../utils/map';
+import isPlainObject from 'lodash/isPlainObject';
+import mapValues from '../../utils/map-values';
+import inverse from '../../utils/inverse';
+import isValid, { fieldsValid } from '../../form/is-valid';
+import isValidityValid from '../../utils/is-validity-valid';
+import isValidityInvalid from '../../utils/is-validity-invalid';
+import fieldActions from '../../actions/field-actions';
+import toPath from '../../utils/to-path';
+import initialFieldState from '../../constants/initial-field-state';
 
 export default function setFocusActionReducer(state, action, localPath) {
   const [field] = getFieldAndForm(state, localPath);
 
   const fieldUpdates = {};
   const subFieldUpdates = {};
-  const parentFormUpdates = [];
+  let parentFormUpdates;
 
   switch (action.type) {
     case actionTypes.FOCUS: {
@@ -63,7 +72,84 @@ export default function setFocusActionReducer(state, action, localPath) {
         pristine,
       });
 
-      parentFormUpdates.push((form) => ({ pristine: isPristine(form) }));
+      parentFormUpdates = (form) => ({ pristine: isPristine(form) });
+
+      break;
+    }
+
+    case actionTypes.SET_VALIDATING: {
+      Object.assign(fieldUpdates, {
+        validating: action.validating,
+        validated: !action.validating,
+      });
+
+      break;
+    }
+
+    case actionTypes.SET_VALIDITY:
+    case actionTypes.SET_ERRORS: {
+      const isErrors = action.type === actionTypes.SET_ERRORS;
+      const validity = isErrors ? action.errors : action.validity;
+
+      const inverseValidity = isPlainObject(validity)
+        ? mapValues(validity, inverse)
+        : !validity;
+
+      // If the field is a form, its validity is
+      // also based on whether its fields are all valid.
+      const areFieldsValid = (field && field.$form)
+        ? fieldsValid(field)
+        : true;
+
+      Object.assign(fieldUpdates, {
+        [isErrors ? 'errors' : 'validity']: validity,
+        [isErrors ? 'validity' : 'errors']: inverseValidity,
+        validating: false,
+        validated: true,
+        valid: areFieldsValid && (isErrors
+          ? !isValidityInvalid(validity)
+          : isValidityValid(validity)),
+      });
+
+      parentFormUpdates = (form) => ({ valid: isValid(form) });
+
+      break;
+    }
+
+    case actionTypes.SET_FIELDS_VALIDITY: {
+      return map(action.fieldsValidity, (fieldValidity, subField) =>
+          fieldActions.setValidity(subField, fieldValidity, action.options)
+        ).reduce((accState, subAction) => setFocusActionReducer(
+          accState,
+          subAction,
+          localPath.concat(toPath(subAction.model))), state);
+    }
+
+    case actionTypes.RESET_VALIDITY: {
+      Object.assign(fieldUpdates, {
+        valid: initialFieldState.valid,
+        validity: initialFieldState.validity,
+        errors: initialFieldState.errors,
+      });
+
+      Object.assign(subFieldUpdates, {
+        valid: initialFieldState.valid,
+        validity: initialFieldState.validity,
+        errors: initialFieldState.errors,
+      });
+
+      break;
+    }
+
+    case actionTypes.SET_PENDING: {
+      Object.assign(fieldUpdates, {
+        pending: action.pending,
+        submitted: false,
+        submitFailed: false,
+        retouched: false,
+      });
+
+      parentFormUpdates = { pending: action.pending };
 
       break;
     }
@@ -76,8 +162,8 @@ export default function setFocusActionReducer(state, action, localPath) {
   const updatedSubFields = Object.keys(subFieldUpdates).length
     ? updateSubFields(updatedField, localPath, subFieldUpdates)
     : updatedField;
-  const updatedParentForms = parentFormUpdates.length
-    ? updateParentForms(updatedSubFields, localPath, compose(...parentFormUpdates))
+  const updatedParentForms = parentFormUpdates
+    ? updateParentForms(updatedSubFields, localPath, parentFormUpdates)
     : updatedSubFields;
 
   return updatedParentForms;

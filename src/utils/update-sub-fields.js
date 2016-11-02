@@ -9,7 +9,7 @@ function updateSubField(subField, newSubState) {
 
     Object.keys(subField).forEach((key) => {
       if (key === '$form') {
-        result.$form = i.merge(subField.$form, newSubState);
+        result.$form = i.assign(subField.$form, newSubState);
       } else {
         result[key] = updateSubField(subField[key], newSubState);
       }
@@ -19,7 +19,7 @@ function updateSubField(subField, newSubState) {
   }
 
   // Field
-  return i.merge(subField, newSubState);
+  return i.assign(subField, newSubState);
 }
 
 export default function updateSubFields(state, localPath, newState) {

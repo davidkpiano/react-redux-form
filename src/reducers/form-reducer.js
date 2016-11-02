@@ -10,10 +10,7 @@ import createBatchReducer from '../enhancers/batched-enhancer';
 import initialFieldState from '../constants/initial-field-state';
 
 import changeActionReducer from './form/change-action-reducer';
-import setValidityActionReducer from './form/set-validity-action-reducer';
-import resetValidityActionReducer from './form/reset-validity-action-reducer';
 import focusActionReducer from './form/focus-action-reducer';
-import pendingActionReducer from './form/pending-action-reducer';
 import submittedActionReducer from './form/submitted-action-reducer';
 import submitFailedActionReducer from './form/submit-failed-action-reducer';
 import resetActionReducer from './form/reset-action-reducer';
@@ -69,9 +66,6 @@ function wrapFormReducer(plugin, modelPath, initialState) {
 const defaultPlugins = [
   focusActionReducer,
   changeActionReducer,
-  setValidityActionReducer,
-  resetValidityActionReducer,
-  pendingActionReducer,
   submittedActionReducer,
   submitFailedActionReducer,
   resetActionReducer,
