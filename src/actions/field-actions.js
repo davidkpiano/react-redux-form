@@ -10,7 +10,6 @@ import invertValidity from '../utils/invert-validity';
 import { trackable } from '../utils/track';
 import getForm from '../utils/get-form';
 import getFieldFromState from '../utils/get-field-from-state';
-import isValid from '../form/is-valid';
 import NULL_ACTION from '../constants/null-action';
 import omit from 'lodash/omit';
 import isNative from '../utils/is-native';
@@ -236,27 +235,6 @@ function createFieldActions(s = defaultStrategies) {
     dispatch(setValidity(model, errors, { errors: true }));
   };
 
-  function isFormValidWithoutFields(form, fieldsValidity) {
-    if (Object.keys(form.$form.validity).length
-      && !isValidityValid(form.$form.validity)) {
-      return false;
-    }
-
-    // TODO: map through form keys without $form
-    const valid = Object.keys(form)
-      .every((fieldKey) => {
-        if (fieldKey === '$form') return true;
-
-        if (fieldsValidity.hasOwnProperty(fieldKey)) {
-          return true;
-        }
-
-        return isValid(form[fieldKey]);
-      });
-
-    return valid;
-  }
-
   const validateFields =
     (model, fieldValidators, options = {}) => (dispatch, getState) => {
       const modelValue = s.get(getState(), model);
@@ -270,26 +248,6 @@ function createFieldActions(s = defaultStrategies) {
 
         return fieldValidity;
       });
-
-      const validCB = options.onValid;
-      const invalidCB = options.onInvalid;
-
-      if (validCB || invalidCB) {
-        const form = s.getForm(getState(), model);
-        const formValid = (form && !fieldsValidity.hasOwnProperty(''))
-          ? isFormValidWithoutFields(form, fieldsValidity)
-          : true;
-
-        const fieldsValid = options.errors
-          ? !isValidityInvalid(fieldsValidity)
-          : isValidityValid(fieldsValidity);
-
-        if (validCB && formValid && fieldsValid) {
-          validCB();
-        } else if (invalidCB) {
-          invalidCB();
-        }
-      }
 
       const fieldsValiditySetter = options.errors
         ? setFieldsErrors

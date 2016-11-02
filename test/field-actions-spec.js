@@ -2,7 +2,6 @@ import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
 import createTestStore from 'redux-test-store';
 import thunk from 'redux-thunk';
-import sinon from 'sinon';
 import _get from 'lodash/get';
 import toPath from 'lodash/toPath';
 import i from 'icepick';
@@ -1602,64 +1601,6 @@ Object.keys(testContexts).forEach((testKey) => {
 
         store.dispatch(action);
       });
-
-      it('should call a callback if validation passes', (done) => {
-        const callback = sinon.spy((val) => val);
-
-        const validationOptions = {
-          onValid: callback,
-        };
-
-        const store = mockStore(
-          () => ({ test: { foo: 'bar' } }),
-          [{
-            model: 'test',
-            type: actionTypes.SET_FIELDS_VALIDITY,
-            fieldsValidity: {
-              foo: true,
-            },
-            options: {},
-          }],
-          () => {
-            assert.isTrue(callback.calledOnce);
-            done();
-          });
-
-        const action = actions.validateFields('test', {
-          foo: (val) => val === 'bar',
-        }, validationOptions);
-
-        store.dispatch(action);
-      });
-
-      it('should NOT call a callback if validation fails', (done) => {
-        const callback = sinon.spy((val) => val);
-
-        const validationOptions = {
-          onValid: callback,
-        };
-
-        const store = mockStore(
-          () => ({ test: { foo: 'bar' } }),
-          [{
-            model: 'test',
-            type: actionTypes.SET_FIELDS_VALIDITY,
-            fieldsValidity: {
-              foo: false,
-            },
-            options: {},
-          }],
-          () => {
-            assert.isTrue(callback.notCalled);
-            done();
-          });
-
-        const action = actions.validateFields('test', {
-          foo: (val) => val === 'invalid',
-        }, validationOptions);
-
-        store.dispatch(action);
-      });
     });
 
     describe('validateFieldsErrors() (thunk)', () => {
@@ -1699,68 +1640,6 @@ Object.keys(testContexts).forEach((testKey) => {
             key_invalid: () => 'key_invalid is invalid',
           },
         });
-
-        store.dispatch(action);
-      });
-
-      it('should call a callback if validation passes', (done) => {
-        const callback = sinon.spy((val) => val);
-
-        const validationOptions = {
-          onValid: callback,
-        };
-
-        const store = mockStore(
-          () => ({ test: { foo: 'valid' } }),
-          [{
-            model: 'test',
-            type: actionTypes.SET_FIELDS_VALIDITY,
-            fieldsValidity: {
-              foo: false, // false = not an error
-            },
-            options: {
-              errors: true,
-            },
-          }],
-          () => {
-            assert.isTrue(callback.calledOnce);
-            done();
-          });
-
-        const action = actions.validateFieldsErrors('test', {
-          foo: (val) => val === 'invalid',
-        }, validationOptions);
-
-        store.dispatch(action);
-      });
-
-      it('should NOT call a callback if validation fails', (done) => {
-        const callback = sinon.spy((val) => val);
-
-        const validationOptions = {
-          onValid: callback,
-        };
-
-        const store = mockStore(
-          () => ({ test: { foo: 'invalid' } }),
-          [{
-            model: 'test',
-            type: actionTypes.SET_FIELDS_VALIDITY,
-            fieldsValidity: {
-              foo: true, // true = error
-            },
-            options: {
-              errors: true,
-            },
-          }],
-          () => {
-            assert.isTrue(callback.notCalled);
-            done();
-          });
-
-        const action = actions.validateFieldsErrors('test', {
-          foo: (val) => val === 'invalid',
-        }, validationOptions);
 
         store.dispatch(action);
       });
