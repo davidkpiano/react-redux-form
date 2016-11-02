@@ -18,6 +18,7 @@ function updateFieldValue(field, action) {
       ? true
       : field.retouched,
     intents: [{ type: 'validate' }],
+    pristine: false,
   };
 
   if (shallowEqual(field.value, value)) {
@@ -128,5 +129,5 @@ export default function changeActionReducer(state, action, localPath) {
     });
   }
 
-  return updatedState;
+  return updateParentForms(updatedState, localPath, { pristine: false });
 }
