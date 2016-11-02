@@ -2,9 +2,12 @@ import actionTypes from '../../action-types';
 import updateField from '../../utils/update-field';
 import mapValues from '../../utils/map-values';
 import initialFieldState from '../../constants/initial-field-state';
+import isPlainObject from 'lodash/isPlainObject';
 import i from 'icepick';
 
-const resetFieldState = (field) => {
+const resetFieldState = (field, key) => {
+  if (!isPlainObject(field) || key === '$form') return field;
+
   if (field.$form) return mapValues(field, resetFieldState);
 
   return i.merge(initialFieldState, {
