@@ -10,9 +10,7 @@ import createBatchReducer from '../enhancers/batched-enhancer';
 import initialFieldState from '../constants/initial-field-state';
 
 import changeActionReducer from './form/change-action-reducer';
-import focusActionReducer from './form/focus-action-reducer';
-import resetActionReducer from './form/reset-action-reducer';
-import intentsActionReducer from './form/intents-action-reducer';
+import formActionsReducer from './form-actions-reducer';
 
 function getSubModelString(model, subModel) {
   if (!model) return subModel;
@@ -62,10 +60,8 @@ function wrapFormReducer(plugin, modelPath, initialState) {
 }
 
 const defaultPlugins = [
-  focusActionReducer,
+  formActionsReducer,
   changeActionReducer,
-  resetActionReducer,
-  intentsActionReducer,
 ];
 
 export default function createFormReducer(

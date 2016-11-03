@@ -1,19 +1,32 @@
-import actionTypes from '../../action-types';
-import updateField, { getFieldAndForm } from '../../utils/update-field';
-import updateParentForms from '../../utils/update-parent-forms';
-import updateSubFields from '../../utils/update-sub-fields';
-import getFieldForm from '../../utils/get-field-form';
-import isPristine from '../../form/is-pristine';
-import map from '../../utils/map';
+import actionTypes from '../action-types';
+import updateField, { getFieldAndForm } from '../utils/update-field';
+import updateParentForms from '../utils/update-parent-forms';
+import updateSubFields from '../utils/update-sub-fields';
+import getFieldForm from '../utils/get-field-form';
+import isPristine from '../form/is-pristine';
+import map from '../utils/map';
 import isPlainObject from 'lodash/isPlainObject';
-import mapValues from '../../utils/map-values';
-import inverse from '../../utils/inverse';
-import isValid, { fieldsValid } from '../../form/is-valid';
-import isValidityValid from '../../utils/is-validity-valid';
-import isValidityInvalid from '../../utils/is-validity-invalid';
-import fieldActions from '../../actions/field-actions';
-import toPath from '../../utils/to-path';
-import initialFieldState from '../../constants/initial-field-state';
+import mapValues from '../utils/map-values';
+import inverse from '../utils/inverse';
+import isValid, { fieldsValid } from '../form/is-valid';
+import isValidityValid from '../utils/is-validity-valid';
+import isValidityInvalid from '../utils/is-validity-invalid';
+import fieldActions from '../actions/field-actions';
+import toPath from '../utils/to-path';
+import initialFieldState from '../constants/initial-field-state';
+import i from 'icepick';
+
+const resetFieldState = (field, key) => {
+  if (!isPlainObject(field) || key === '$form') return field;
+
+  if (field.$form) return mapValues(field, resetFieldState);
+
+  return i.merge(initialFieldState, {
+    value: field.initialValue,
+    model: field.model,
+    intents: [{ type: 'validate' }],
+  });
+};
 
 export default function setFocusActionReducer(state, action, localPath) {
   const [field] = getFieldAndForm(state, localPath);
@@ -21,18 +34,18 @@ export default function setFocusActionReducer(state, action, localPath) {
     ? field.$form
     : field;
 
-  const fieldUpdates = {};
-  const subFieldUpdates = {};
+  let fieldUpdates = {};
+  let subFieldUpdates = {};
   let parentFormUpdates;
 
   switch (action.type) {
     case actionTypes.FOCUS: {
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         focus: true,
         intents: action.silent
           ? []
           : [action],
-      });
+      };
 
       break;
     }
@@ -41,7 +54,7 @@ export default function setFocusActionReducer(state, action, localPath) {
     case actionTypes.SET_TOUCHED: {
       const fieldForm = getFieldForm(state, localPath).$form;
 
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         focus: action.type === actionTypes.BLUR
           ? false
           : field.focus,
@@ -49,16 +62,16 @@ export default function setFocusActionReducer(state, action, localPath) {
         retouched: fieldForm
           ? !!(fieldForm.submitted || fieldForm.submitFailed)
           : false,
-      });
+      };
 
       break;
     }
 
     case actionTypes.SET_UNTOUCHED: {
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         focus: false,
         touched: false,
-      });
+      };
 
       break;
     }
@@ -67,13 +80,13 @@ export default function setFocusActionReducer(state, action, localPath) {
     case actionTypes.SET_DIRTY: {
       const pristine = action.type === actionTypes.SET_PRISTINE;
 
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         pristine,
-      });
+      };
 
-      Object.assign(subFieldUpdates, {
+      subFieldUpdates = {
         pristine,
-      });
+      };
 
       parentFormUpdates = (form) => ({ pristine: isPristine(form) });
 
@@ -81,10 +94,10 @@ export default function setFocusActionReducer(state, action, localPath) {
     }
 
     case actionTypes.SET_VALIDATING: {
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         validating: action.validating,
         validated: !action.validating,
-      });
+      };
 
       break;
     }
@@ -104,7 +117,7 @@ export default function setFocusActionReducer(state, action, localPath) {
         ? fieldsValid(field)
         : true;
 
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         [isErrors ? 'errors' : 'validity']: validity,
         [isErrors ? 'validity' : 'errors']: inverseValidity,
         validating: false,
@@ -112,7 +125,7 @@ export default function setFocusActionReducer(state, action, localPath) {
         valid: areFieldsValid && (isErrors
           ? !isValidityInvalid(validity)
           : isValidityValid(validity)),
-      });
+      };
 
       parentFormUpdates = (form) => ({ valid: isValid(form) });
 
@@ -129,28 +142,28 @@ export default function setFocusActionReducer(state, action, localPath) {
     }
 
     case actionTypes.RESET_VALIDITY: {
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         valid: initialFieldState.valid,
         validity: initialFieldState.validity,
         errors: initialFieldState.errors,
-      });
+      };
 
-      Object.assign(subFieldUpdates, {
+      subFieldUpdates = {
         valid: initialFieldState.valid,
         validity: initialFieldState.validity,
         errors: initialFieldState.errors,
-      });
+      };
 
       break;
     }
 
     case actionTypes.SET_PENDING: {
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         pending: action.pending,
         submitted: false,
         submitFailed: false,
         retouched: false,
-      });
+      };
 
       parentFormUpdates = { pending: action.pending };
 
@@ -160,7 +173,7 @@ export default function setFocusActionReducer(state, action, localPath) {
     case actionTypes.SET_SUBMITTED: {
       const submitted = !!action.submitted;
 
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         pending: false,
         submitted,
         submitFailed: submitted
@@ -168,43 +181,56 @@ export default function setFocusActionReducer(state, action, localPath) {
           : fieldState && fieldState.submitFailed,
         touched: true,
         retouched: false,
-      });
+      };
 
-      Object.assign(subFieldUpdates, {
+      subFieldUpdates = {
         submitted,
         submitFailed: submitted
           ? false
           : fieldUpdates.submitFailed,
         retouched: false,
-      });
+      };
 
       break;
     }
 
     case actionTypes.SET_SUBMIT_FAILED: {
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         pending: false,
         submitted: fieldState.submitted && !action.submitFailed,
         submitFailed: !!action.submitFailed,
         touched: true,
         retouched: false,
-      });
+      };
 
-      Object.assign(subFieldUpdates, {
+      subFieldUpdates = {
         pending: false,
         submitted: !action.submitFailed,
         submitFailed: !!action.submitFailed,
         touched: true,
         retouched: false,
-      });
+      };
 
       break;
     }
 
+    case actionTypes.RESET:
+    case actionTypes.SET_INITIAL: {
+      return updateField(state, localPath, resetFieldState, resetFieldState);
+    }
+
     case actionTypes.ADD_INTENT: {
-      Object.assign(fieldUpdates, {
+      fieldUpdates = {
         intents: [action.intent],
-      });
+      };
+
+      break;
+    }
+
+    case actionTypes.CLEAR_INTENTS: {
+      fieldUpdates = {
+        intents: [],
+      };
 
       break;
     }
