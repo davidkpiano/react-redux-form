@@ -697,4 +697,21 @@ describe('formReducer() (V1)', () => {
       assert.equal(resetState.foo.value, 'new initial');
     });
   });
+
+  describe('resetting to null', () => {
+    it('should work and not cause an infinite loop', () => {
+      assert.doesNotThrow(() => {
+        const reducer = formReducer('foo', null);
+
+        const state = reducer(
+           undefined,
+           actions.reset('foo')
+        );
+
+        assert.containSubset(state, {
+          value: null,
+        });
+      });
+    });
+  })
 });

@@ -21,7 +21,7 @@ const resetFieldState = (field, key) => {
 
   if (field.$form) return mapValues(field, resetFieldState);
 
-  return i.merge(initialFieldState, {
+  return i.assign(initialFieldState, {
     value: field.initialValue,
     model: field.model,
     intents: [{ type: 'validate' }],

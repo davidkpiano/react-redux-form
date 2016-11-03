@@ -4,6 +4,7 @@ import mapValues from './map-values';
 import { createInitialState } from '../reducers/form-reducer';
 
 function assocIn(state, path, value, fn) {
+  if (!path.length) return i.assign(state, value);
   if (!fn) return i.assocIn(state, path, value);
 
   const key0 = path[0];
