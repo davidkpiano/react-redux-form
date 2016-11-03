@@ -142,6 +142,7 @@ export function createModelActions(s = defaultStrategies) {
 
   const load = (model, values) => change(model, values, {
     silent: true,
+    load: true,
   });
 
   return mapValues({

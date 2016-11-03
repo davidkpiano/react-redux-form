@@ -10,26 +10,28 @@ import initialFieldState from '../../constants/initial-field-state';
 import updateParentForms from '../../utils/update-parent-forms';
 
 function updateFieldValue(field, action) {
-  const { value, removeKeys, silent, model } = action;
+  const { value, removeKeys, silent, load, model } = action;
+
+  const fieldState = (field && field.$form)
+    ? field.$form
+    : field;
 
   const changedFieldProps = {
     validated: false,
-    retouched: field.submitted
+    retouched: fieldState.submitted
       ? true
-      : field.retouched,
+      : fieldState.retouched,
     intents: [{ type: 'validate' }],
-    pristine: false,
+    pristine: silent
+      ? fieldState.pristine
+      : false,
+    initialValue: load
+      ? value
+      : fieldState.initialValue,
   };
 
   if (shallowEqual(field.value, value)) {
     return i.merge(field, changedFieldProps);
-  }
-
-  if (silent) {
-    return i.merge(field, {
-      value,
-      initialValue: value,
-    });
   }
 
   if (removeKeys) {
@@ -81,7 +83,12 @@ function updateFieldValue(field, action) {
       return subField;
     }
 
-    return i.merge(subField, i.set(changedFieldProps, 'value', subValue));
+    return i.merge(subField, i.assign(changedFieldProps, {
+      value: subValue,
+      initialValue: load
+        ? subValue
+        : subField.initialValue,
+    }));
   });
 
   const dirtyFormState = i.merge(field.$form || initialFieldState,

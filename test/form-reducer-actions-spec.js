@@ -58,8 +58,8 @@ describe('formReducer() (V1)', () => {
         },
       },
       {
-        action: actions.change,
-        args: ['string', { silent: true }],
+        action: actions.load,
+        args: ['string'],
         expectedField: {
           pristine: true,
           value: 'string',
@@ -70,8 +70,8 @@ describe('formReducer() (V1)', () => {
         },
       },
       {
-        action: actions.change,
-        args: [42, { silent: true }],
+        action: actions.load,
+        args: [42],
         expectedField: {
           pristine: true,
           value: 42,
@@ -82,12 +82,19 @@ describe('formReducer() (V1)', () => {
         },
       },
       {
-        action: actions.change,
-        args: [{ foo: 'bar' }, { silent: true }],
+        action: actions.load,
+        args: [{ foo: 'bar' }],
         expectedField: {
-          pristine: true,
-          value: { foo: 'bar' },
-          initialValue: { foo: 'bar' },
+          $form: {
+            pristine: true,
+            value: { foo: 'bar' },
+            initialValue: { foo: 'bar' },
+          },
+          foo: {
+            pristine: true,
+            value: 'bar',
+            initialValue: 'bar',
+          },
         },
         expectedForm: {
           pristine: true,
