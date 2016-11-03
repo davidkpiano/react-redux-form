@@ -21,6 +21,7 @@ export default function wrapWithModelResolver(WrappedComponent) {
       super(props, context);
 
       this.model = context.model;
+      this.store = context.localStore;
     }
     shouldComponentUpdate(nextProps) {
       return !shallowEqual(this.props, nextProps);
@@ -30,7 +31,11 @@ export default function wrapWithModelResolver(WrappedComponent) {
         this.props.model,
         this.model);
 
-      return <WrappedComponent {...this.props} model={resolvedModel} />;
+      return (<WrappedComponent
+        {...this.props}
+        model={resolvedModel}
+        store={this.store || undefined}
+      />);
     }
   }
 
@@ -40,6 +45,11 @@ export default function wrapWithModelResolver(WrappedComponent) {
 
   ResolvedModelWrapper.contextTypes = {
     model: PropTypes.any,
+    localStore: PropTypes.shape({
+      subscribe: PropTypes.func,
+      dispatch: PropTypes.func,
+      getState: PropTypes.func,
+    }),
   };
 
   return ResolvedModelWrapper;

@@ -31,6 +31,11 @@ const propTypes = {
   onSubmit: PropTypes.func,
   dispatch: PropTypes.func,
   children: PropTypes.node,
+  store: PropTypes.shape({
+    subscribe: PropTypes.func,
+    dispatch: PropTypes.func,
+    getState: PropTypes.func,
+  }),
 };
 
 const defaultStrategy = {
@@ -52,7 +57,10 @@ function createFormClass(s = defaultStrategy) {
     }
 
     getChildContext() {
-      return { model: this.props.model };
+      return {
+        model: this.props.model,
+        localStore: this.props.store,
+      };
     }
 
     componentDidMount() {
@@ -296,6 +304,11 @@ function createFormClass(s = defaultStrategy) {
 
   Form.childContextTypes = {
     model: PropTypes.any,
+    localStore: PropTypes.shape({
+      subscribe: PropTypes.func,
+      dispatch: PropTypes.func,
+      getState: PropTypes.func,
+    }),
   };
 
   function mapStateToProps(state, { model }) {
