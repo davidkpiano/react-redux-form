@@ -7,7 +7,7 @@ export default function immutableGetFromState(state, modelString) {
     if (!subState || typeof subState === 'string') return subState;
 
     // Current subState is immutable
-    if ('get' in subState) {
+    if (typeof subState === 'object' && 'get' in subState) {
       return subState.get(subPath);
     }
 
