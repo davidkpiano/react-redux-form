@@ -85,8 +85,11 @@ function createFormClass(s = defaultStrategy) {
     }
 
     componentDidUpdate(prevProps) {
-      this.handleUpdate();
       this.handleIntents();
+
+      if (!shallowEqual(prevProps.formValue, this.props.formValue)) {
+        this.handleUpdate();
+      }
 
       if (!shallowEqual(prevProps.modelValue, this.props.modelValue)) {
         this.handleChange();

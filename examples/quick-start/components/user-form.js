@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, actions, Control, Field, Errors } from 'react-redux-form';
+import { LocalForm, Form, actions, Control, Field, Errors } from 'react-redux-form';
 import { connect } from 'react-redux';
 
 const required = (val) => !!(val && val.length);
@@ -36,6 +36,12 @@ class UserForm extends React.Component {
   }
   render() {
     const { forms: { user }, dispatch } = this.props;
+
+    return (
+      <LocalForm onSubmit={v=>console.log(v)}>
+        <Control.text model=".username" />
+      </LocalForm>
+    )
 
     return (
       <Form model="user" onSubmit={this.handleSubmit.bind(this)}>
