@@ -50,6 +50,11 @@ const propTypes = {
     PropTypes.bool,
     PropTypes.arrayOf(PropTypes.string),
   ]),
+  store: PropTypes.shape({
+    subscribe: PropTypes.func,
+    dispatch: PropTypes.func,
+    getState: PropTypes.func,
+  }),
 };
 
 function showErrors(field, form, show = true) {

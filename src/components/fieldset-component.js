@@ -7,6 +7,11 @@ const propTypes = {
   model: PropTypes.string.isRequired,
   component: PropTypes.any,
   dispatch: PropTypes.func,
+  store: PropTypes.shape({
+    subscribe: PropTypes.func,
+    dispatch: PropTypes.func,
+    getState: PropTypes.func,
+  }),
 };
 
 class Fieldset extends Component {

@@ -60,6 +60,11 @@ const fieldPropTypes = {
 
   // Calculated props
   fieldValue: PropTypes.object,
+  store: PropTypes.shape({
+    subscribe: PropTypes.func,
+    dispatch: PropTypes.func,
+    getState: PropTypes.func,
+  }),
 };
 
 function getControlType(control, props, options) {
