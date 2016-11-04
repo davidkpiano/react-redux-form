@@ -41,7 +41,7 @@
 
 All model and field action creators can be imported via `import { actions } from 'react-redux-form'`. The action thunk creators require [redux-thunk middleware](https://github.com/gaearon/redux-thunk) to work, as they use thunks to get the current model state.
 
-Also, all action creators are **trackable**, which means that the `model` argument can be a function, such as [`track()`](TODO), that returns a string model path given the store's state. For example:
+Also, all action creators are **trackable**, which means that the `model` argument can be a function, such as [`track()`](../guides/tracking.md), that returns a string model path given the store's state. For example:
 
 ```jsx
 import { track, actions } from 'react-redux-form';
@@ -58,7 +58,7 @@ dispatch(actions.change(
 
 Returns an action that, when handled by a `modelReducer`, changes the value of the `model` to the `value`.
 
-When the change action is handled by a [`formReducer`](TODO), the field model's `.dirty` state is set to `true` and its corresponding `.pristine` state is set to `false`.
+When the change action is handled by a [`formReducer`](./formReducer), the field model's `.dirty` state is set to `true` and its corresponding `.pristine` state is set to `false`.
 
 ### Arguments
 - `model` _(String | Function)_: the model whose value will be changed
@@ -277,7 +277,7 @@ All model and field actions can be imported via `import { actions } from 'react-
 
 <h2 id="actions-focus"></h2>
 ## `actions.focus(model)`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.focus` state of the field model in the form to `true`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.focus` state of the field model in the form to `true`.
 
 The "focus" state indicates that the field model is the currently focused field in the form.
 
@@ -308,7 +308,7 @@ const Newsletter = (props) => {
 
 <h2 id="actions-blur"></h2>
 ## `actions.blur(model)`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.focus` state to `false`. It also indicates that the field model has been `.touched`, and will set that state to `true`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.focus` state to `false`. It also indicates that the field model has been `.touched`, and will set that state to `true`.
 
 A "blurred" field indicates that the field model control is not currently focused.
 
@@ -317,7 +317,7 @@ A "blurred" field indicates that the field model control is not currently focuse
 
 <h2 id="actions-setPristine"></h2>
 ## `actions.setPristine(model)`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.pristine` state of the field model in the form to `true`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.pristine` state of the field model in the form to `true`.
 
 The "pristine" state indicates that the user has not interacted with this field model yet.
 
@@ -331,7 +331,7 @@ The "pristine" state indicates that the user has not interacted with this field 
 
 <h2 id="actions-setDirty"></h2>
 ## `actions.setDirty(model)`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.pristine` state to `false`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.pristine` state to `false`.
 
 A "dirty" field indicates that the model value has been changed, and is no longer pristine.
 
@@ -343,7 +343,7 @@ A "dirty" field indicates that the model value has been changed, and is no longe
 
 <h2 id="actions-setPending"></h2>
 ## `actions.setPending(model, [pending])`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.pending` state of the field model in the form to `true`. It simultaneously sets the `.submitted` state to `false`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.pending` state of the field model in the form to `true`. It simultaneously sets the `.submitted` state to `false`.
 
 ### Arguments
 - `model` _(String | Function)_: the model indicated as pending
@@ -355,7 +355,7 @@ Returns an action that, when handled by a [`formReducer`](TODO), changes the `.p
 
 <h2 id="actions-setTouched"></h2>
 ## `actions.setTouched(model)`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.touched` state of the field model in the form to `true`. It simultaneously sets the `.untouched` state to `false`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.touched` state of the field model in the form to `true`. It simultaneously sets the `.untouched` state to `false`.
 
 The "touched" state indicates that this model has been interacted with.
 
@@ -368,7 +368,7 @@ The "touched" state indicates that this model has been interacted with.
 
 <h2 id="actions-setUntouched"></h2>
 ## `actions.setUntouched(model)`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.touched` state to `false`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.touched` state to `false`.
 
 An "untouched" field indicates that this model has not been interacted with yet.
 
@@ -459,7 +459,7 @@ dispatch(actions.submitFields('user', postUser));
 
 <h2 id="actions-setSubmitted"></h2>
 ## `actions.setSubmitted(model, [submitted])`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.submitted` state of the field model in the form to `submitted` (`true` or `false`). It simultaneously sets the `.pending` state to the inverse of `submitted`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.submitted` state of the field model in the form to `submitted` (`true` or `false`). It simultaneously sets the `.pending` state to the inverse of `submitted`.
 
 The "submitted" state indicates that this model has been "sent off," or an action has been completed for the model.
 
@@ -491,7 +491,7 @@ export default function submitUser(data) {
 
 <h2 id="actions-setSubmitFailed"></h2>
 ## `actions.setSubmitFailed(model)`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.submitFailed` state of the field model in the form to `true`. It simultaneously sets the `.pending` state to `false`, and the `.retouched` state to `false`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.submitFailed` state of the field model in the form to `true`. It simultaneously sets the `.pending` state to `false`, and the `.retouched` state to `false`.
 
 ### Arguments
 - `model` _(String | Function)_: the model indicated as having failed a submit
@@ -505,7 +505,7 @@ Returns an action that, when handled by a [`formReducer`](TODO), changes the `.s
 
 <h2 id="actions-setInitial"></h2>
 ## `actions.setInitial(model)`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the state of the field model in the form to its initial state.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the state of the field model in the form to its initial state.
 
 Here is the default initial field state:
 
@@ -534,7 +534,7 @@ const initialFieldState = {
 
 <h2 id="actions-setValidity"></h2>
 ## `actions.setValidity(model, validity, [options])`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.valid` state of the field model in the form to `true` or `false`, based on the `validity` (see below). It will also set the `.validity` state of the field model to the `validity`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.valid` state of the field model in the form to `true` or `false`, based on the `validity` (see below). It will also set the `.validity` state of the field model to the `validity`.
 
 It also sets the `.errors` on the field model to the inverse of the `validity`.
 
@@ -581,7 +581,7 @@ dispatch(actions.setValidity('user.password', {
 
 <h2 id="actions-setFieldsValidity"></h2>
 ## `actions.setFieldsValidity(model, fieldsValidity)`
-Returns an action that, when handled by a [`formReducer`](TODO), sets the `.validity` state of each sub-model key in the `fieldsValidity` object to that key's value.
+Returns an action that, when handled by a [`formReducer`](./formReducer), sets the `.validity` state of each sub-model key in the `fieldsValidity` object to that key's value.
 
 It simultaneously sets the `.errors` on each sub-model to the inverse of its validity.
 
@@ -654,7 +654,7 @@ dispatch(actions.asyncSetValidity('user.email', isEmailAvailable));
 
 <h2 id="actions-setErrors"></h2>
 ## `actions.setErrors(model, errors)`
-Returns an action that, when handled by a [`formReducer`](TODO), changes the `.valid` state of the field model in the form to `true` or `false`, based on the `errors` (see below). It will also set the `.errors` state of the field model to the `errors`.
+Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.valid` state of the field model in the form to `true` or `false`, based on the `errors` (see below). It will also set the `.errors` state of the field model to the `errors`.
 
 It simultaneously sets the `.validity` on the field model to the inverse of the `errors`.
 
@@ -705,7 +705,7 @@ dispatch(actions.setErrors('user.password', {
 
 <h2 id="actions-setFieldsErrors"></h2>
 ## `actions.setFieldsErrors(model, fieldsErrors)`
-Returns an action that, when handled by a [`formReducer`](TODO), sets the `.errors` state of each sub-model key in the `fieldsErrors` object to that key's value.
+Returns an action that, when handled by a [`formReducer`](./formReducer), sets the `.errors` state of each sub-model key in the `fieldsErrors` object to that key's value.
 
 It simultaneously sets the `.validity` on each sub-model to the inverse of its errors.
 

@@ -155,12 +155,12 @@ _(Any)_ The `component` that the `<Form>` should be rendered to (default: `"form
 _(Function)_ The handler function that is called with the form state whenever the form state is updated.
 
 ### Notes
-- This is an optional but useful property, especially if you are using [local forms](TODO).
+- This is an optional but useful property, especially if you are using [local forms](../guides/local.md).
 - Remember: the _form state_ is the state related to the form and its fields, such as whether it's valid, focused, pristine, etc.
 
 ## `onChange={(modelValue) => ...}`
 _(Function)_ The handler function that is called with the form's model value whenever the model value is updated.
 
 ### Notes
-- This is also an optional but useful property, especially if you are using [local forms](TODO).
+- This is also an optional but useful property, especially if you are using [local forms](../guides/local.md).
 - Remember: the _model value_ is the value of the form's model, specified by the `model="..."` prop. The entire model value will be passed in.
