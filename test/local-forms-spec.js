@@ -1,7 +1,6 @@
 /* eslint no-return-assign:0 */
 import React from 'react';
-import { Control } from '../src';
-import LocalForm from '../src/local';
+import { Control, LocalForm } from '../src';
 import TestUtils from 'react-addons-test-utils';
 import { assert } from 'chai';
 

@@ -5,6 +5,7 @@ import Field, { createFieldClass } from './components/field-component';
 import Fieldset from './components/fieldset-component';
 import Control from './components/control-component';
 import Form from './components/form-component';
+import LocalForm from './components/local-form-component';
 import Errors from './components/errors-component';
 
 import controlPropsMap from './constants/control-props-map';
@@ -41,6 +42,7 @@ export {
   Field,
   Control,
   Form,
+  LocalForm,
   Errors,
   Fieldset,
 

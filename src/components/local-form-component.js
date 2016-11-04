@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
-import Form from './components/form-component';
-import combineForms from './reducers/forms-reducer';
+import Form from './form-component';
+import combineForms from '../reducers/forms-reducer';
 import { createStore } from 'redux';
 
 class LocalForm extends React.Component {
