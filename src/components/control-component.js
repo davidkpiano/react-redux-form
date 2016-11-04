@@ -30,7 +30,7 @@ const findDOMNode = !isNative
   ? require('react-dom').findDOMNode
   : null;
 
-const disallowedProps = ['changeAction', 'getFieldFromState'];
+const disallowedProps = ['changeAction', 'getFieldFromState', 'store'];
 
 function getReadOnlyValue(props) {
   const { modelValue, controlProps } = props;
@@ -96,6 +96,11 @@ const propTypes = {
     PropTypes.string,
   ]),
   dynamic: PropTypes.bool,
+  store: PropTypes.shape({
+    subscribe: PropTypes.func,
+    dispatch: PropTypes.func,
+    getState: PropTypes.func,
+  }),
 };
 
 const defaultStrategy = {

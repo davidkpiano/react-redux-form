@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import Form from './form-component';
 import combineForms from '../reducers/forms-reducer';
 import { createStore } from 'redux';
+import omit from 'lodash/omit';
 
 class LocalForm extends React.Component {
   constructor(props) {
@@ -13,8 +14,10 @@ class LocalForm extends React.Component {
   }
 
   render() {
+    const allowedProps = omit(this.props, ['store', 'initialState']);
+
     return (
-      <Form store={this.store} {...this.props} component="div" />
+      <Form store={this.store} {...allowedProps} />
     );
   }
 }
