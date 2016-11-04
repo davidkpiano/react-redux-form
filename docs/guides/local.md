@@ -1,6 +1,6 @@
 # Local Forms
 
-As of version `1.1.1`, React Redux Form supports **local forms**. What does this mean? Here's an example:
+As of version `1.2.0`, React Redux Form supports **local forms**. What does this mean? Here's an example:
 
 ```jsx
 import React from 'react';
