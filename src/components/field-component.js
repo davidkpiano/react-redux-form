@@ -126,7 +126,7 @@ function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
   // TODO: refactor
   const defaultControlPropsMap = {
     checkbox: {
-      changeAction: s.actions.check,
+      changeAction: s.actions.checkWithValue,
     },
   };
 

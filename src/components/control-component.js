@@ -173,7 +173,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         const keys = Object.keys(validators)
           .concat(Object.keys(errors));
 
-        dispatch(actions.resetValidity(model, keys));
+        dispatch(actions.setValidity(model, omit(fieldValue.validity, keys)));
       }
     }
 
@@ -207,13 +207,14 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     getChangeAction(event) {
       const {
         model,
+        modelValue,
         changeAction,
       } = this.props;
       const value = this.readOnlyValue
         ? getReadOnlyValue(this.props)
         : event;
 
-      return changeAction(model, getValue(value));
+      return changeAction(model, getValue(value), modelValue);
     }
 
     getValidateAction(value, eventName) {
@@ -651,7 +652,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         ...controlPropsMap.checkbox,
         ...props.mapProps,
       }}
-      changeAction={props.changeAction || s.actions.check}
+      changeAction={props.changeAction || s.actions.checkWithValue}
       {...omit(props, 'mapProps')}
     />
   );

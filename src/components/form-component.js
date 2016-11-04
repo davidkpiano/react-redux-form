@@ -284,10 +284,20 @@ function createFormClass(s = defaultStrategy) {
         ? merge(invertValidators(validators), errorValidators)
         : errorValidators;
 
+      const fieldsValidity = mapValues(finalErrorValidators, (validator, field) => {
+        const fieldValue = field
+          ? s.get(modelValue, field)
+          : modelValue;
+
+        const fieldValidity = getValidity(validator, fieldValue);
+
+        return fieldValidity;
+      });
+
       dispatch(s.actions.batch(model, [
-        s.actions.validateFieldsErrors(
+        s.actions.setFieldsErrors(
           model,
-          finalErrorValidators
+          fieldsValidity
         ),
         s.actions.addIntent(model, { type: 'submit' }),
       ]));
