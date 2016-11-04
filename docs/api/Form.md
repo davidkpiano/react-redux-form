@@ -149,3 +149,18 @@ _(Any)_ The `component` that the `<Form>` should be rendered to (default: `"form
 - In HTML, you are not allowed to nest forms. If you do want to nest forms, you will have to do one of the following:
   - If you want a nested form that doesn't submit, you can set the nested form's component to something other than `'form'`, like `<Form component="div" ...>`
   - If you _do_ want a "form" inside a form that does submit, you'll have to set the component and submit manually by dispatching `actions.validSubmit(model, promise)`.
+
+
+## `onUpdate={(formValue) => ...}`
+_(Function)_ The handler function that is called with the form state whenever the form state is updated.
+
+### Notes
+- This is an optional but useful property, especially if you are using [local forms](TODO).
+- Remember: the _form state_ is the state related to the form and its fields, such as whether it's valid, focused, pristine, etc.
+
+## `onChange={(modelValue) => ...}`
+_(Function)_ The handler function that is called with the form's model value whenever the model value is updated.
+
+### Notes
+- This is also an optional but useful property, especially if you are using [local forms](TODO).
+- Remember: the _model value_ is the value of the form's model, specified by the `model="..."` prop. The entire model value will be passed in.
