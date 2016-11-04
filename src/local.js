@@ -8,13 +8,13 @@ class LocalForm extends React.Component {
     super(props);
 
     this.store = props.store || createStore(combineForms({
-      local: {},
+      [props.model]: props.initialState,
     }));
   }
 
   render() {
     return (
-      <Form model="local" store={this.store} {...this.props} />
+      <Form store={this.store} {...this.props} component="div" />
     );
   }
 }
@@ -25,6 +25,15 @@ LocalForm.propTypes = {
     dispatch: PropTypes.func,
     getState: PropTypes.func,
   }),
+
+  // provided props
+  initialState: PropTypes.any,
+  model: PropTypes.string.isRequired,
+};
+
+LocalForm.defaultProps = {
+  initialState: {},
+  model: 'local',
 };
 
 export default LocalForm;

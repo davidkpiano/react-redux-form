@@ -36,6 +36,8 @@ const propTypes = {
     dispatch: PropTypes.func,
     getState: PropTypes.func,
   }),
+  onUpdate: PropTypes.func,
+  onChange: PropTypes.func,
 };
 
 const defaultStrategy = {
@@ -64,23 +66,43 @@ function createFormClass(s = defaultStrategy) {
     }
 
     componentDidMount() {
-      if (!containsEvent(this.props.validateOn, 'change')) return;
+      this.handleUpdate();
+      this.handleChange();
 
-      this.validate(this.props, true);
+      if (containsEvent(this.props.validateOn, 'change')) {
+        this.validate(this.props, true);
+      }
     }
 
     componentWillReceiveProps(nextProps) {
-      if (!containsEvent(nextProps.validateOn, 'change')) return;
-
-      this.validate(nextProps);
+      if (containsEvent(nextProps.validateOn, 'change')) {
+        this.validate(nextProps);
+      }
     }
 
     shouldComponentUpdate(nextProps) {
       return deepCompareChildren(this, nextProps);
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
+      this.handleUpdate();
       this.handleIntents();
+
+      if (!shallowEqual(prevProps.modelValue, this.props.modelValue)) {
+        this.handleChange();
+      }
+    }
+
+    handleUpdate() {
+      if (this.props.onUpdate) {
+        this.props.onUpdate(this.props.formValue);
+      }
+    }
+
+    handleChange() {
+      if (this.props.onChange) {
+        this.props.onChange(this.props.modelValue);
+      }
     }
 
     attachNode(node) {
