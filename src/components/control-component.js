@@ -565,14 +565,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
   Control.propTypes = propTypes;
 
-  Control.contextTypes = {
-    localStore: PropTypes.shape({
-      subscribe: PropTypes.func,
-      dispatch: PropTypes.func,
-      getState: PropTypes.func,
-    }),
-  };
-
   Control.defaultProps = {
     changeAction: s.actions.change,
     updateOn: 'change',
