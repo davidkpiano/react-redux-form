@@ -30,7 +30,10 @@ const propTypes = {
   formValue: PropTypes.object,
   onSubmit: PropTypes.func,
   dispatch: PropTypes.func,
-  children: PropTypes.node,
+  children: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.node,
+  ]),
   store: PropTypes.shape({
     subscribe: PropTypes.func,
     dispatch: PropTypes.func,
