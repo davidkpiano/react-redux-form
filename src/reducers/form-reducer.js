@@ -18,12 +18,17 @@ function getSubModelString(model, subModel) {
   return `${model}.${subModel}`;
 }
 
-export function createInitialState(model, state, customInitialFieldState = {}) {
+export function createInitialState(model, state, customInitialFieldState = {}, options = {}) {
   let initialState;
+  const {
+    lazy = false,
+  } = options;
 
   if (isArray(state) || isPlainObject(state)) {
-    initialState = mapValues(state, (subState, subModel) =>
-      createInitialState(getSubModelString(model, subModel), subState, customInitialFieldState));
+    initialState = lazy
+      ? {}
+      : mapValues(state, (subState, subModel) =>
+        createInitialState(getSubModelString(model, subModel), subState, customInitialFieldState));
   } else {
     return i.merge(initialFieldState, {
       initialValue: state,
@@ -75,7 +80,8 @@ export default function createFormReducer(
     transformAction = null,
   } = options;
   const modelPath = toPath(model);
-  const initialFormState = createInitialState(model, initialState, customInitialFieldState);
+  const initialFormState = createInitialState(model, initialState,
+    customInitialFieldState, options);
 
   const wrappedPlugins = plugins
     .concat(defaultPlugins)

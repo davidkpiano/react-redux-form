@@ -16,11 +16,11 @@ function assocIn(state, path, value, fn) {
   return fn(i.assoc(state, key0, assocIn(state[key0] || {}, path.slice(1), value, fn)));
 }
 
-function tempInitialState(path) {
-  if (path.length === 1) return { [path[0]]: null };
+function tempInitialState(path, initialValue = null) {
+  if (path.length === 1) return { [path[0]]: initialValue };
 
   return {
-    [path[0]]: tempInitialState(path.slice(1)),
+    [path[0]]: tempInitialState(path.slice(1), initialValue),
   };
 }
 
@@ -29,9 +29,11 @@ export function getFieldAndForm(formState, modelPath) {
   let form = formState;
 
   if (!field) {
+    const initialValue = get(formState.$form.initialValue, modelPath);
+
     form = i.merge(createInitialState(
       formState.$form.model,
-      tempInitialState(modelPath)), formState);
+      tempInitialState(modelPath, initialValue)), formState);
 
     field = get(form, modelPath);
   }

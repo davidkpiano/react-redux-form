@@ -49,6 +49,14 @@ If provided an `initialState`, the form reducer will initialize its fields based
 ### Arguments
 - `model` _(String)_: the model whose form and field states the reducer will update.
 - `initialState` _(any)_: the initial state of the model
+_ `options` _(Object)_: an object containing options for the form reducer:
+
+### Options
+- `plugins` _(Array<Function>)_: an array of reducers that can be used to customize the return value of the form reducer. Each plugin is run _after_ the default form reducer, and takes in two arguments:
+  - `state` _(any)_: the entire form state
+  - `action` _(Object)_: the Redux action passed into the reducer
+- `initialFieldState` _(Object)_: the default initial field state to use for the form reducer
+- `lazy` _(Boolean)_: whether the subforms/fields should be created in advance (`lazy = false`) or deferred until each form/field is interacted with (`lazy = true`). Default: `false`
 
 ### Example
 

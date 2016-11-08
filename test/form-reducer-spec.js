@@ -256,4 +256,39 @@ describe('formReducer()', () => {
       });
     });
   });
+
+  describe('lazy form initialization', () => {
+    const initialState = { foo: '', bar: 'initial', baz: '' };
+    const reducer = formReducer('test', initialState, {
+      lazy: true,
+    });
+
+    it('should not initially create subfields', () => {
+      assert.notProperty(reducer(undefined, { type: 'ANY' }), 'foo');
+      assert.notProperty(reducer(undefined, { type: 'ANY' }), 'bar');
+      assert.notProperty(reducer(undefined, { type: 'ANY' }), 'baz');
+    });
+
+    it('should still have the initial state', () => {
+      assert.deepEqual(reducer(undefined, { type: 'ANY' }).$form.initialValue,
+        initialState);
+    });
+
+    it('should create the fields only when interacted with', () => {
+      const action = actions.setTouched('test.foo');
+      const touchedState = reducer(undefined, action);
+
+      assert.property(touchedState, 'foo');
+      assert.isTrue(touchedState.foo.touched);
+      assert.notProperty(touchedState, 'bar');
+      assert.notProperty(touchedState, 'baz');
+    });
+
+    it('should lazily set the initial value when the field is created', () => {
+      const action = actions.setTouched('test.bar');
+      const touchedState = reducer(undefined, action);
+
+      assert.equal(touchedState.bar.initialValue, 'initial');
+    });
+  });
 });
