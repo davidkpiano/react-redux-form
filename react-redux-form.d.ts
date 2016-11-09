@@ -1,8 +1,9 @@
-// Type definitions for react-redux-form v1.0.11
+// Type definitions for react-redux-form v1.2.2
 // Project: https://github.com/davidkpiano/react-redux-form
 // Definitions by: Robert Parker (Flavorus) <https://github.com/hsrobflavorus>, Flavorus <http://www.flavorus.com>, Alexey Svetliakov (@asvetliakov), Zach Waggoner <https://github.com/zach-waggoner>
 
 import * as React from 'react';
+import * as Redux from 'redux';
 
 interface Action {
     type: any;
@@ -207,20 +208,11 @@ export class Control extends React.Component<ControlProps, {}> {
     static reset: React.ComponentClass<ControlProps>;
 }
 
-export interface FormProps {
+interface BaseFormProps {
     /**
      * CSS Class Name(s)
      */
     className?: string;
-    /**
-     * The string representing the model of the form in the store.
-     * OR
-     * A function that, when called with state, will return the first full model string (with the sub-model) that matches the predicate iteratee.
-     *
-     * Typically, the <Field> components nested inside <Form> would be members of the form model;
-     * e.g. user.email and user.password are members of the user model.
-     */
-    model: string | ModelGetterFn;
     /**
      * An object representing the validators for the fields inside the form, where:
      * * The keys are the field model names (e.g. 'email' for user.email)
@@ -274,13 +266,57 @@ export interface FormProps {
      */
     onSubmit?: (formModelData: any) => void;
     /**
+     * The handler function that is called with the form state whenever the form state is updated.
+     *
+     * Notes
+     * * This is an optional but useful property, especially if you are using local forms.
+     * * Remember: the form state is the state related to the form and its fields, such as whether it's valid, focused, pristine, etc.
+     * @param formValue
+     */
+    onUpdate?: (formValue: any) => void;
+    /**
+     * The handler function that is called with the form's model value whenever the model value is updated.
+     *
+     * Notes
+     * * This is also an optional but useful property, especially if you are using local forms.
+     * * Remember: the model value is the value of the form's model, specified by the model="..." prop. The entire model value will be passed in.
+     * @param modelValue
+     */
+    onChange?: (modelValue: any) => void;
+    /**
      * The component that the <Form> should be rendered to (default: "form".)
      *
      * * For React Native, it is important that you specify the component to avoid any rendering errors. For most use cases, component={View} will work.
      */
     component?: React.ComponentClass<any> | string;
 }
+export interface FormProps extends BaseFormProps {
+    /**
+     * The string representing the model value of the entire form in the store.
+     * OR
+     * A function that, when called with state, will return the first full model string (with the sub-model) that matches the predicate iteratee.
+     *
+     * Typically, the <Control> (and/or <Field>) components nested inside <Form> would be members of the form model;
+     * e.g. user.email and user.password are members of the user model.
+     *
+     * You can also use partial models for <Control>, <Field>, and <Errors> components inside of <Form> - they will be resolved to the form's model.
+     */
+    model: string | ModelGetterFn;
+}
 export class Form extends React.Component<FormProps, {}> { }
+
+interface LocalFormProps extends BaseFormProps {
+    store?: Redux.Store<any>;
+    /**
+     *  The initial state of the model (default: {})
+     */
+    initialState?: any;
+    /**
+     * The name of the model in the internal state. This is completely optional, as the model is not related to any external Redux store (default: "local")
+     */
+    model?: string;
+}
+export class LocalForm extends React.Component<LocalFormProps, void> { }
 
 export interface ErrorsProps {
     /**
