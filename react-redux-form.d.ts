@@ -10,7 +10,7 @@ interface Action {
 type Reducer<S> = <A extends Action>(state: S, action: A) => S;
 
 interface AsyncValidatorFn {
-    (val: any, done: Function): boolean;
+    (val: any, done: Function): void;
 }
 interface AsyncValidators {
     [key: string]: AsyncValidatorFn;
@@ -756,6 +756,21 @@ interface Actions {
      * @param promise The promise that the submit action will wait to be resolved or rejected
      */
     submit: (model: string, promise: Promise<any>) => ActionThunk;
+
+    /**
+     * Waits for a submission promise to be completed, then, if successful:
+     * * Sets .submitted property of form for model to true
+     * * Each key in the response, which represents a sub-model (e.g., "name" for users.name) will have its .validity set to its value.
+     *
+     * If the promise fails, the action will:
+     *
+     * * set .submitFailed property of form for model to true
+     * * Each key in the response, which represents a sub-model (e.g., "name" for users.name) will have its .errors set to its value. (See example)
+     *
+     * @param model (String | Function): the model to be submitted
+     * @param promise (Promise): the promise that the submit action will wait to be resolved or rejected
+     */
+    submitFields: (model: string, promise: Promise<any>) => ActionThunk;
 
     /* -------------------------------- */
     /* ------ Validation Actions ------ */
