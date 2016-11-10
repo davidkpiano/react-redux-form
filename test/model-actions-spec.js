@@ -26,21 +26,33 @@ describe('model actions', () => {
       const reducer = combineForms({
         user: {
           username: '',
-          items: [{name: 'item 1'}]
+          items: [{name: 'item 1', subitems: [{name: 'subitem 1'}]}]
         },
       })
       const DATA = {
         username: 'loaded',
-        items: [{name: 'item 1'}, {name: 'item 2'}],
+        items: [{name: 'item 1', subitems: [{name: 'subitem 1'}, {name: 'subitem 2'}]}, {name: 'item 2', subitems: [{name: 'subitem 1'}]}],
       };
       const initial = reducer(undefined, {});
       const actual = reducer({}, actions.load('user', DATA));
 
       assert.equal(actual.forms.user.items.$form.model, "user.items");
+
       assert.equal(actual.forms.user.items[0].$form.model, "user.items.0");
       assert.equal(actual.forms.user.items[0].name.model, "user.items.0.name");
+      assert.equal(actual.forms.user.items[0].subitems.$form.model, "user.items.0.subitems");
+
+      // assert.equal(actual.forms.user.items[0].subitems, "user.items.0.subitems.0");
+      assert.equal(actual.forms.user.items[0].subitems[0].$form.model, "user.items.0.subitems.0");
+      assert.equal(actual.forms.user.items[0].subitems[0].name.model, "user.items.0.subitems.0.name");
+      assert.equal(actual.forms.user.items[0].subitems[1].$form.model, "user.items.0.subitems.1");
+      assert.equal(actual.forms.user.items[0].subitems[1].name.model, "user.items.0.subitems.1.name");
+
       assert.equal(actual.forms.user.items[1].$form.model, "user.items.1");
       assert.equal(actual.forms.user.items[1].name.model, "user.items.1.name");
+      assert.equal(actual.forms.user.items[1].subitems.$form.model, "user.items.1.subitems");
+      assert.equal(actual.forms.user.items[1].subitems[0].$form.model, "user.items.1.subitems.0");
+      assert.equal(actual.forms.user.items[1].subitems[0].name.model, "user.items.1.subitems.0.name");
     });
 
     it('should load model and form stay untouched', () => {
