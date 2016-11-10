@@ -1,6 +1,6 @@
 # Immutable.js
 
-React Redux Form, as of the latest version, has support for Immutable.JS. To use it, just import the parts you need from `react-redux-form/lib/immutable`:
+React Redux Form, as of the latest version, has support for Immutable.JS. To use it, just import the parts you need from `react-redux-form/immutable`:
 
 ```jsx
 import Immutable from 'immutable';
@@ -9,7 +9,7 @@ import {
   Control,
   actions,
   // ... etc.
-} from 'react-redux-form/lib/immutable';
+} from 'react-redux-form/immutable';
 // ... other imports
 
 class MyForm extends Component {

@@ -10,7 +10,7 @@ import { actions, formReducer } from '../src';
 import {
   modelReducer as immutableModelReducer,
   Field as ImmutableField,
-} from '../src/immutable';
+} from '../immutable';
 
 describe('<Field> with Immutable.js', () => {
   const reducer = immutableModelReducer('test',

@@ -27,7 +27,7 @@ import {
   Field as ImmutableField,
   Control as ImmutableControl,
   actions as immutableActions,
-} from '../src/immutable';
+} from '../immutable';
 
 const testContexts = {
   standard: {

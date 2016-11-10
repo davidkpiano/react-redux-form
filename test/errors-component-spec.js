@@ -22,7 +22,7 @@ import {
   Field as ImmutableField,
   Errors as ImmutableErrors,
   actions as immutableActions
-} from '../src/immutable';
+} from '../immutable';
 
 const testContexts = {
   standard: {

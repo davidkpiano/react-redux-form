@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import Immutable from 'immutable';
 
 import { actions, actionTypes } from '../src';
-import { modeled } from '../src/immutable';
+import { modeled } from '../immutable';
 
 describe('immutable modeled() reducer enhancer', () => {
   const initialState = Immutable.fromJS({

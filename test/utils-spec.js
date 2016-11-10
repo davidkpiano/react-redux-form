@@ -23,7 +23,7 @@ import {
   actions as immutableActions,
   formReducer as immutableFormReducer,
   getFormStateKey as immutableGetFormStateKey,
-} from '../src/immutable';
+} from '../immutable';
 
 const testContexts = {
   standard: {

@@ -28,7 +28,7 @@ import {
   actions as immutableActions,
   modelReducer as immutableModelReducer,
   formReducer as immutableFormReducer,
-} from '../src/immutable';
+} from '../immutable';
 import isValid from '../src/form/is-valid';
 
 const testContexts = {

@@ -5,7 +5,7 @@ import { actions, modelReducer, formReducer, track } from '../src';
 import {
   actions as immutableActions,
   modelReducer as immutableModelReducer,
-} from '../src/immutable';
+} from '../immutable';
 
 describe('model actions', () => {
   const testItems = [

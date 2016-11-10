@@ -2,7 +2,7 @@ import { assert } from 'chai';
 import Immutable from 'immutable';
 
 import { actions } from '../src';
-import { modelReducer as immutableModelReducer } from '../src/immutable';
+import { modelReducer as immutableModelReducer } from '../immutable';
 
 describe('immutable modelReducer()', () => {
   it('should create a reducer given a model', () => {
