@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import { combineReducers } from 'redux';
 import Immutable from 'immutable';
-import { actions, modelReducer, formReducer, track } from '../src';
+import { actions, modelReducer, formReducer, track, combineForms } from '../src';
 import {
   actions as immutableActions,
   modelReducer as immutableModelReducer,
@@ -20,6 +20,27 @@ describe('model actions', () => {
 
       const actual = reducer({}, actions.load('foo', { bar: 'string' }));
       assert.deepEqual(actual, { bar: 'string' });
+    });
+
+    it('should load array values and form values', () => {
+      const reducer = combineForms({
+        user: {
+          username: '',
+          items: [{name: 'item 1'}]
+        },
+      })
+      const DATA = {
+        username: 'loaded',
+        items: [{name: 'item 1'}, {name: 'item 2'}],
+      };
+      const initial = reducer(undefined, {});
+      const actual = reducer({}, actions.load('user', DATA));
+
+      assert.equal(actual.forms.user.items.$form.model, "user.items");
+      assert.equal(actual.forms.user.items[0].$form.model, "user.items.0");
+      assert.equal(actual.forms.user.items[0].name.model, "user.items.0.name");
+      assert.equal(actual.forms.user.items[1].$form.model, "user.items.1");
+      assert.equal(actual.forms.user.items[1].name.model, "user.items.1.name");
     });
 
     it('should load model and form stay untouched', () => {
