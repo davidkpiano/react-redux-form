@@ -17,7 +17,7 @@
     "build:lib": "babel src --out-dir lib",
     "analyze": "webpack src/index.js dist/index.js --config webpack.config.prod.js --json > stats.json",
     "preversion": "npm run test && npm run lint",
-    "prepublish": "npm run build:lib && npm test && npm run lint && npm run build:umd && npm run tsdef",
+    "prepublish": "npm test && npm run lint && npm run build && npm run tsdef",
     "postversion": "git push && git push --tags",
     "publish:beta": "npm publish --tag beta",
     "tsdef": "cp -f immutable.d.ts lib/",

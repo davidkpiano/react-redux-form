@@ -172,6 +172,19 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.deepEqual(stateAfterReset.$form.errors, {});
       });
+
+      it('should intend to revalidate the field and subfields', () => {
+        const reducer = formReducer('test', {
+          button: {},
+        });
+
+        const resetState = reducer(undefined, actions.reset('test'));
+
+        assert.include(resetState.$form.intents, { type: 'validate' });
+
+        assert.include(resetState.button.$form.intents, { type: 'validate' },
+          'should intend to revalidate subfields');
+      });
     });
 
     describe('focus()', () => {

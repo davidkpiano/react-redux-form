@@ -17,7 +17,15 @@ import initialFieldState from '../constants/initial-field-state';
 import i from 'icepick';
 
 const resetFieldState = (field, key) => {
-  if (!isPlainObject(field) || key === '$form') return field;
+  if (!isPlainObject(field)) return field;
+
+  if (key === '$form') {
+    return i.assign(initialFieldState, {
+      value: field.initialValue,
+      model: field.model,
+      intents: [{ type: 'validate' }],
+    });
+  }
 
   if (field.$form) return mapValues(field, resetFieldState);
 
@@ -28,7 +36,7 @@ const resetFieldState = (field, key) => {
   });
 };
 
-export default function setFocusActionReducer(state, action, localPath) {
+export default function formActionsReducer(state, action, localPath) {
   const [field] = getFieldAndForm(state, localPath);
   const fieldState = field && field.$form
     ? field.$form
@@ -135,7 +143,7 @@ export default function setFocusActionReducer(state, action, localPath) {
     case actionTypes.SET_FIELDS_VALIDITY: {
       return map(action.fieldsValidity, (fieldValidity, subField) =>
           fieldActions.setValidity(subField, fieldValidity, action.options)
-        ).reduce((accState, subAction) => setFocusActionReducer(
+        ).reduce((accState, subAction) => formActionsReducer(
           accState,
           subAction,
           localPath.concat(toPath(subAction.model))), state);
