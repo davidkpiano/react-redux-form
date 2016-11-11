@@ -23,7 +23,10 @@ const resetFieldState = (field, key) => {
     return i.assign(initialFieldState, {
       value: field.initialValue,
       model: field.model,
-      intents: [{ type: 'validate' }],
+      intents: [
+        { type: 'validate' },
+        { type: 'load', value: field.initialValue },
+      ],
     });
   }
 
@@ -32,7 +35,10 @@ const resetFieldState = (field, key) => {
   return i.assign(initialFieldState, {
     value: field.initialValue,
     model: field.model,
-    intents: [{ type: 'validate' }],
+    intents: [
+      { type: 'validate' },
+      { type: 'load', value: field.initialValue },
+    ],
   });
 };
 

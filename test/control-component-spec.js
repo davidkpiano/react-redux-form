@@ -915,6 +915,30 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('initial value after reset', () => {
+      const initialState = getInitialState({ foo: '' });
+      const reducer = formReducer('test');
+      const store = testCreateStore({
+        testForm: reducer,
+        test: modelReducer('test', initialState),
+      });
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.text
+            model="test.foo"
+          />
+        </Provider>
+      );
+
+      it('should reset the control to the last loaded value', () => {
+        store.dispatch(actions.load('test.foo', 'new foo'));
+        store.dispatch(actions.reset('test.foo'));
+
+        assert.equal(get(store.getState().test, 'foo'), 'new foo');
+      });
+    });
+
     describe('errors property', () => {
       const reducer = formReducer('test');
 

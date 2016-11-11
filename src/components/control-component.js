@@ -346,6 +346,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     handleIntents() {
       const {
         model,
+        modelValue,
         fieldValue,
         fieldValue: { intents },
         controlProps,
@@ -383,6 +384,14 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
               this.validate();
             }
             return;
+
+          case 'load':
+            if (!shallowEqual(modelValue, intent.value)) {
+              dispatch(actions.clearIntents(model, intent));
+              dispatch(actions.load(model, intent.value));
+            }
+            return;
+
           default:
             return;
         }
