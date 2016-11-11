@@ -9,7 +9,7 @@ import { createInitialState } from '../form-reducer';
 import initialFieldState from '../../constants/initial-field-state';
 import updateParentForms from '../../utils/update-parent-forms';
 
-function updateFieldValue(field, action) {
+function updateFieldValue(field, action, parentModel = undefined) {
   const { value, removeKeys, silent, load, model } = action;
 
   const fieldState = (field && field.$form)
@@ -70,13 +70,13 @@ function updateFieldValue(field, action) {
   }
 
   const updatedField = mapValues(value, (subValue, index) => {
-    const subField = field[index] || createInitialState(`${model}.${index}`, subValue);
+    const subField = field[index] || createInitialState(`${(parentModel ? parentModel + '.' : '') + model}.${index}`, subValue);
 
     if (Object.hasOwnProperty.call(subField, '$form')) {
       return updateFieldValue(subField, {
         model: index,
         value: subValue,
-      });
+      }, (parentModel ? parentModel + '.' : '') + model);
     }
 
     if (shallowEqual(subValue, subField.value)) {
