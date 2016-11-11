@@ -70,13 +70,18 @@ function updateFieldValue(field, action, parentModel = undefined) {
   }
 
   const updatedField = mapValues(value, (subValue, index) => {
-    const subField = field[index] || createInitialState(`${(parentModel ? parentModel + '.' : '') + model}.${index}`, subValue);
+    // TODO: refactor
+    const subField = field[index]
+      || createInitialState(`${`${(parentModel
+        ? `${parentModel}.`
+        : '')
+      }${model}`}.${index}`, subValue);
 
     if (Object.hasOwnProperty.call(subField, '$form')) {
       return updateFieldValue(subField, {
         model: index,
         value: subValue,
-      }, (parentModel ? parentModel + '.' : '') + model);
+      }, parentModel ? `${parentModel}.${model}` : model);
     }
 
     if (shallowEqual(subValue, subField.value)) {
