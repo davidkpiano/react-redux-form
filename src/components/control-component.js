@@ -219,7 +219,9 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         ? getReadOnlyValue(this.props)
         : event;
 
-      return changeAction(model, getValue(value), modelValue);
+      return changeAction(model, getValue(value), {
+        currentValue: modelValue,
+      });
     }
 
     getValidateAction(value, eventName) {

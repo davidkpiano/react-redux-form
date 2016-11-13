@@ -85,9 +85,11 @@ export function createModelActions(s = defaultStrategies) {
 
   const toggle = createModifierAction((value) => !value, undefined, 1);
 
-  const checkWithValue = (model, value, modelValue) => {
+  const checkWithValue = (model, value, options = {}) => {
+    const { currentValue } = options;
+
     if (isMulti(model)) {
-      const valueWithItem = modelValue || s.array;
+      const valueWithItem = currentValue || s.array;
       const valueWithoutItem = (valueWithItem || s.array)
         .filter(item => item !== value);
       const multiValue = (s.length(valueWithoutItem) === s.length(valueWithItem))
@@ -97,13 +99,15 @@ export function createModelActions(s = defaultStrategies) {
       return change(model, multiValue);
     }
 
-    return change(model, !modelValue);
+    return change(model, !currentValue);
   };
 
   const check = (model, value) => (dispatch, getState) => {
     const modelValue = s.get(getState(), model);
 
-    const action = checkWithValue(model, value, modelValue);
+    const action = checkWithValue(model, value, {
+      currentValue: modelValue,
+    });
 
     dispatch(action);
   };
