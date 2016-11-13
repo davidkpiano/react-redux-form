@@ -44,6 +44,8 @@ export function getFieldAndForm(formState, modelPath) {
 export default function updateField(state, path, newState, newSubState, updater) {
   const [field, fullState] = getFieldAndForm(state, path);
 
+  if (!field) return state;
+
   const isForm = field.hasOwnProperty('$form');
   const fieldPath = isForm
     ? i.push(path, '$form')

@@ -8,6 +8,8 @@ export default function updateParentForms(state, localPath, updater) {
     ? get(state, parentLocalPath)
     : state;
 
+  if (!value) return state;
+
   const form = value.$form;
 
   const updatedValue = typeof updater === 'function'
