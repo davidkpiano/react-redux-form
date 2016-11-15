@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import Form from './form-component';
 import combineForms from '../reducers/forms-reducer';
 import { createStore } from 'redux';
-import omit from 'lodash/omit';
+import omit from '../utils/omit';
 
 class LocalForm extends React.Component {
   constructor(props) {

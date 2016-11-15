@@ -4,7 +4,7 @@ import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import mapValues from '../utils/map-values';
 import merge from '../utils/merge';
-import omit from 'lodash/omit';
+import omit from '../utils/omit';
 
 import actions from '../actions';
 import getValidity from '../utils/get-validity';

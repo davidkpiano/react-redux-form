@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import getModel from '../utils/get-model';
-import omit from 'lodash/omit';
+import omit from '../utils/omit';
 
 const propTypes = {
   model: PropTypes.string.isRequired,

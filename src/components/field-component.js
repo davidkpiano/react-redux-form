@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 import _get from '../utils/get';
 import identity from 'lodash/identity';
-import omit from 'lodash/omit';
+import omit from '../utils/omit';
 import isPlainObject from 'lodash/isPlainObject';
 import pick from 'lodash/pick';
 import { connect } from 'react-redux';

@@ -11,7 +11,7 @@ import { trackable } from '../utils/track';
 import getForm from '../utils/get-form';
 import getFieldFromState from '../utils/get-field-from-state';
 import NULL_ACTION from '../constants/null-action';
-import omit from 'lodash/omit';
+import omit from '../utils/omit';
 import isNative from '../utils/is-native';
 
 const defaultStrategies = {

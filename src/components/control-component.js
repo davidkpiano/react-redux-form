@@ -8,7 +8,7 @@ import merge from '../utils/merge';
 import mapValues from '../utils/map-values';
 import isPlainObject from 'lodash/isPlainObject';
 import i from 'icepick';
-import omit from 'lodash/omit';
+import omit from '../utils/omit';
 import actionTypes from '../action-types';
 
 import getValue from '../utils/get-value';

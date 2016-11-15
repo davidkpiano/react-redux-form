@@ -4,7 +4,7 @@ import _get from '../utils/get';
 import map from '../utils/map';
 import iteratee from '../utils/iteratee';
 import isPlainObject from 'lodash/isPlainObject';
-import omit from 'lodash/omit';
+import omit from '../utils/omit';
 import invariant from 'invariant';
 
 import getForm from '../utils/get-form';
