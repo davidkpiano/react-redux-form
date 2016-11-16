@@ -235,6 +235,47 @@ import { Form } from 'react-redux-form';
 </Form>
 ```
 
+## Deep Model Validation in `<Form>`
+
+As of RRF version 1.2.4, you can have deep validators in the `<Form validators={{...}}>` prop. Here's what it looks like:
+
+```jsx
+// Suppose you have a store with this 'user' model:
+// {
+//   name: 'Bob',
+//   phones: [
+//     { type: 'home', number: '5551231234' },
+//     { type: 'cell', number: '5550980987' },
+//   ],
+// }
+
+// You can validate each individual phone number like so:
+<Form
+  model="user"
+  validators={{
+    'phones[].number': (value) => value && value.length === 10,
+  }}
+>
+  {/* etc. */}
+</Form>
+````
+
+The empty brackets in the validator key `'phones[].number'` tell RRF to validate the `.number` property for each `phone` in the `user.phones[]` array.
+
+Alternatively, you can just set this validator directly on each control; e.g.:
+
+```jsx
+{user.phones.map((phone, i) =>
+  <Control
+    model={`phones[${i}].number`}
+    validators={{
+      validNumber: (value) => value && value.length === 10,
+    }}
+  />
+)}
+```
+
+
 ## Custom Error Messages
 
 Similar to how the `validators` prop and `setValidity()` action works, you can use the `errors` prop and `setErrors()` action to indicate errors. Keep in mind, these should express the _inverse_ validity state of the model. This means that anything _truthy_ indicates an error.

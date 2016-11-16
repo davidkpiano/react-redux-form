@@ -1616,6 +1616,53 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('validation of nested/deep model values', () => {
+      const initialState = getInitialState({
+        items: [
+          { name: 'one' },
+          { name: 'two' },
+        ],
+      });
+      const store = testCreateStore({
+        testForm: formReducer('test', initialState),
+        test: modelReducer('test', initialState),
+      });
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form
+            model="test"
+            validators={{
+              'items[].name': (name) => name && name.length,
+            }}
+          >
+          {get(initialState, 'items').map((item, i) =>
+            <Control model={`test.items[${i}].name`} />
+          )}
+          </Form>
+        </Provider>
+      );
+
+      const [_, input2] = TestUtils
+        .scryRenderedDOMComponentsWithTag(form, 'input');
+
+      it('should initially validate each item', () => {
+        const { $form, items } = store.getState().testForm;
+        assert.isTrue(items[0].name.valid);
+        assert.isTrue(items[1].name.valid);
+        assert.isTrue($form.valid);
+      });
+
+      it('should check validity of each item on change', () => {
+        input2.value = '';
+        TestUtils.Simulate.change(input2);
+        const { $form, items } = store.getState().testForm;
+
+        assert.isTrue(items[0].name.valid);
+        assert.isFalse(items[1].name.valid);
+        assert.isFalse($form.valid);
+      });
+    });
+
     describe('submit after field invalid', () => {
       const initialState = getInitialState({ username: '' });
       const store = testCreateStore({

@@ -153,30 +153,47 @@ function createFormClass(s = defaultStrategy) {
         : errors;
 
       let validityChanged = false;
+      const fieldsErrors = {};
 
-      const fieldsErrors = mapValues(errorValidators, (errorValidator, field) => {
-        const nextValue = field
-          ? s.get(nextProps.modelValue, field)
-          : nextProps.modelValue;
+      // this is (internally) mutative for performance reasons.
+      const validateField = (errorValidator, field) => {
+        if (!!~field.indexOf('[]')) {
+          const [parentModel, childModel] = field.split('[]');
 
-        const currentValue = field
-          ? s.get(modelValue, field)
-          : modelValue;
+          const nextValue = parentModel
+            ? s.get(nextProps.modelValue, parentModel)
+            : nextProps.modelValue;
 
-        const currentErrors = getField(formValue, field).errors;
+          nextValue.forEach((subValue, index) => {
+            validateField(errorValidator, `${parentModel}[${index}]${childModel}`);
+          });
+        } else {
+          const nextValue = field
+            ? s.get(nextProps.modelValue, field)
+            : nextProps.modelValue;
 
-        if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
-          return getField(formValue, field).errors;
+          const currentValue = field
+            ? s.get(modelValue, field)
+            : modelValue;
+
+          const currentErrors = getField(formValue, field).errors;
+
+          // If the validators didn't change, the validity didn't change.
+          if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
+            fieldsErrors[field] = getField(formValue, field).errors;
+          } else {
+            const fieldErrors = getValidity(errorValidator, nextValue);
+
+            if (!validityChanged && !shallowEqual(fieldErrors, currentErrors)) {
+              validityChanged = true;
+            }
+
+            fieldsErrors[field] = fieldErrors;
+          }
         }
+      };
 
-        const fieldErrors = getValidity(errorValidator, nextValue);
-
-        if (!shallowEqual(fieldErrors, currentErrors)) {
-          validityChanged = true;
-        }
-
-        return fieldErrors;
-      });
+      mapValues(errorValidators, validateField);
 
       // Compute form-level validity
       if (!fieldsErrors.hasOwnProperty('')) {
