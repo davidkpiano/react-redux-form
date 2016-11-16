@@ -8,8 +8,8 @@ import omit from '../utils/omit';
 
 import actions from '../actions';
 import getValidity from '../utils/get-validity';
-import invertValidity from '../utils/invert-validity';
 import invertValidators from '../utils/invert-validators';
+import isValidityInvalid from '../utils/is-validity-invalid';
 import getForm from '../utils/get-form';
 import getModel from '../utils/get-model';
 import getField from '../utils/get-field';
@@ -148,33 +148,13 @@ function createFormClass(s = defaultStrategy) {
       const validatorsChanged = validators !== this.props.validators
         || errors !== this.props.errors;
 
+      const errorValidators = validators
+        ? merge(invertValidators(validators), errors)
+        : errors;
+
       let validityChanged = false;
 
-      const fieldsValidity = mapValues(validators, (validator, field) => {
-        const nextValue = field
-          ? s.get(nextProps.modelValue, field)
-          : nextProps.modelValue;
-
-        const currentValue = field
-          ? s.get(modelValue, field)
-          : modelValue;
-
-        const currentValidity = getField(formValue, field).validity;
-
-        if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
-          return currentValidity;
-        }
-
-        const fieldValidity = getValidity(validator, nextValue);
-
-        if (!shallowEqual(fieldValidity, currentValidity)) {
-          validityChanged = true;
-        }
-
-        return fieldValidity;
-      });
-
-      const fieldsErrorsValidity = mapValues(errors, (errorValidator, field) => {
+      const fieldsErrors = mapValues(errorValidators, (errorValidator, field) => {
         const nextValue = field
           ? s.get(nextProps.modelValue, field)
           : nextProps.modelValue;
@@ -198,14 +178,11 @@ function createFormClass(s = defaultStrategy) {
         return fieldErrors;
       });
 
-      const fieldsErrors = merge(
-        invertValidity(fieldsValidity),
-        fieldsErrorsValidity
-      );
-
       // Compute form-level validity
-      if (!fieldsValidity.hasOwnProperty('') && !fieldsErrorsValidity.hasOwnProperty('')) {
+      if (!fieldsErrors.hasOwnProperty('')) {
         fieldsErrors[''] = false;
+        validityChanged = validityChanged
+          || isValidityInvalid(formValue.$form.errors);
       }
 
       if (validityChanged) {

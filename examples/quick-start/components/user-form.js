@@ -38,16 +38,18 @@ class UserForm extends React.Component {
     const { forms: { user }, dispatch } = this.props;
 
     return (
-      <LocalForm onSubmit={v=>console.log(v)}>
-        <Control.text model=".username" />
-      </LocalForm>
-    )
-
-    return (
       <Form model="user" onSubmit={this.handleSubmit.bind(this)}>
         <div>
           <label>First name:</label>
-          <Control.text model="user.firstName" validators={{len: (val) => val.length > 8}} />
+          <Control.text
+            model="user.firstName"
+            validators={{len: (val) => val.length > 8}}
+            mapProps={{
+              className: ({fieldValue}) => fieldValue.focus
+                ? 'focused'
+                : ''
+            }}
+          />
           <Errors model=".firstName" messages={{
             len: 'len must be > 8'
           }} />
