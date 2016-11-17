@@ -284,15 +284,42 @@ function createFormClass(s = defaultStrategy) {
         ? merge(invertValidators(validators), errorValidators)
         : errorValidators;
 
-      const fieldsValidity = mapValues(finalErrorValidators, (validator, field) => {
-        const fieldValue = field
-          ? s.get(modelValue, field)
-          : modelValue;
+      const fieldsValidity = {};
 
-        const fieldValidity = getValidity(validator, fieldValue);
+      // this is (internally) mutative for performance reasons.
+      const validateField = (validator, field) => {
+        if (!!~field.indexOf('[]')) {
+          const [parentModel, childModel] = field.split('[]');
 
-        return fieldValidity;
-      });
+          const fieldValue = parentModel
+            ? s.get(modelValue, parentModel)
+            : modelValue;
+
+          fieldValue.forEach((subValue, index) => {
+            validateField(validator, `${parentModel}[${index}]${childModel}`);
+          });
+        } else {
+          const fieldValue = field
+            ? s.get(modelValue, field)
+            : modelValue;
+
+          const fieldValidity = getValidity(validator, fieldValue);
+
+          fieldsValidity[field] = fieldValidity;
+        }
+      };
+
+      mapValues(finalErrorValidators, validateField);
+
+      // const fieldsValidity = mapValues(finalErrorValidators, (validator, field) => {
+      //   const fieldValue = field
+      //     ? s.get(modelValue, field)
+      //     : modelValue;
+
+      //   const fieldValidity = getValidity(validator, fieldValue);
+
+      //   return fieldValidity;
+      // });
 
       dispatch(s.actions.batch(model, [
         s.actions.setFieldsErrors(
