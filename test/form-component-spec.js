@@ -1641,12 +1641,22 @@ Object.keys(testContexts).forEach((testKey) => {
           </Form>
         </Provider>
       );
+      const formElement = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
 
       const [_, input2] = TestUtils
         .scryRenderedDOMComponentsWithTag(form, 'input');
 
       it('should initially validate each item', () => {
         const { $form, items } = store.getState().testForm;
+        assert.isTrue(items[0].name.valid);
+        assert.isTrue(items[1].name.valid);
+        assert.isTrue($form.valid);
+      });
+
+      it('after submit should stay valid', () => {
+        TestUtils.Simulate.submit(formElement);
+        const { $form, items } = store.getState().testForm;
+
         assert.isTrue(items[0].name.valid);
         assert.isTrue(items[1].name.valid);
         assert.isTrue($form.valid);
