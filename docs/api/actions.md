@@ -11,7 +11,7 @@
   - [`actions.remove()`](#actions-remove)
   - [`actions.move()`](#actions-move)
   - [`actions.load()`](#actions-load)
-  - [`actions.load()`](#actions-omit)
+  - [`actions.omit()`](#actions-omit)
 - [Field Action Creators](#field-action-creators)
   - [`actions.focus()`](#actions-focus)
   - [`actions.blur()`](#actions-blur)
