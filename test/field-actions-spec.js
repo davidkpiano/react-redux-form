@@ -1093,6 +1093,22 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('setInitial()', () => {
+      it('should set to initial field state without changing model value', () => {
+        const reducer = formReducer('test', { foo: 'bar' });
+
+        const changedState = reducer(undefined, actions.change('test.foo', 'changed'));
+
+        assert.containSubset(
+          reducer(changedState, actions.setInitial('test.foo'))
+            .foo,
+          {
+            ...initialFieldState,
+            value: 'changed',
+          });
+      });
+    });
+
     describe('resetValidity() and resetErrors()', () => {
       const reducer = formReducer('test');
 

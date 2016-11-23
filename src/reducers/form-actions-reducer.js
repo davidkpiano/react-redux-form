@@ -42,6 +42,24 @@ const resetFieldState = (field, key) => {
   });
 };
 
+const setInitialFieldState = (field, key) => {
+  if (!isPlainObject(field)) return field;
+
+  if (key === '$form') {
+    return i.assign(initialFieldState, {
+      value: field.value,
+      model: field.model,
+    });
+  }
+
+  if (field.$form) return mapValues(field, resetFieldState);
+
+  return i.assign(initialFieldState, {
+    value: field.value,
+    model: field.model,
+  });
+};
+
 export default function formActionsReducer(state, action, localPath) {
   const [field] = getFieldAndForm(state, localPath);
   const fieldState = field && field.$form
@@ -228,9 +246,12 @@ export default function formActionsReducer(state, action, localPath) {
       break;
     }
 
-    case actionTypes.RESET:
-    case actionTypes.SET_INITIAL: {
+    case actionTypes.RESET: {
       return updateField(state, localPath, resetFieldState, resetFieldState);
+    }
+
+    case actionTypes.SET_INITIAL: {
+      return updateField(state, localPath, setInitialFieldState, setInitialFieldState);
     }
 
     case actionTypes.ADD_INTENT: {
