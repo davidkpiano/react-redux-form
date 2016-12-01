@@ -29,7 +29,7 @@ function is(x, y) {
  * when any key has values which are not strictly equal between the arguments.
  * Returns true when the values of all keys are strictly equal.
  */
-function shallowEqual(objA, objB, omitKeys = []) {
+function shallowEqual(objA, objB, options = {}) {
   if (is(objA, objB)) {
     return true;
   }
@@ -45,12 +45,22 @@ function shallowEqual(objA, objB, omitKeys = []) {
     return false;
   }
 
+  const {
+    omitKeys,
+    deepKeys,
+  } = options;
+
   // Test for A's keys different from B.
   for (let i = 0; i < keysA.length; i++) {
     // if key is an omitted key, skip comparison
-    if (omitKeys.length && ~omitKeys.indexOf(keysA[i])) continue;
+    if (omitKeys && omitKeys.length && ~omitKeys.indexOf(keysA[i])) continue;
 
-    if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
+
+    if (deepKeys && deepKeys.length && ~deepKeys.indexOf(keysA[i])) {
+      const result = shallowEqual(objA[keysA[i]], objB[keysA[i]]);
+
+      if (!result) return false;
+    } else if (!hasOwnProperty.call(objB, keysA[i]) || !is(objA[keysA[i]], objB[keysA[i]])) {
       return false;
     }
   }

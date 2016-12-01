@@ -156,8 +156,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-      return !shallowEqual(this.props, nextProps, ['controlProps', 'mapProps'])
-        || !shallowEqual(this.props.controlProps, nextProps.controlProps)
+      return !shallowEqual(this.props, nextProps, {
+        deepKeys: ['controlProps'],
+        omitKeys: ['mapProps'],
+      })
         || !shallowEqual(this.state.viewValue, nextState.viewValue);
     }
 

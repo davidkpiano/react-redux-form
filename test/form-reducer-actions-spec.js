@@ -186,6 +186,9 @@ describe('formReducer() (V1)', () => {
           focus: false,
           touched: true,
         },
+        expectedForm: {
+          touched: true,
+        },
       },
       {
         label: 'after submitted',
@@ -206,6 +209,10 @@ describe('formReducer() (V1)', () => {
           touched: true,
           retouched: true,
         },
+        expectedForm: {
+          touched: true,
+          retouched: true,
+        },
       },
     ],
     [actionTypes.SET_UNTOUCHED]: [
@@ -220,6 +227,7 @@ describe('formReducer() (V1)', () => {
         action: actions.setTouched,
         args: [],
         expectedField: { touched: true },
+        expectedForm: { touched: true },
       },
     ],
     [actionTypes.SET_PENDING]: [

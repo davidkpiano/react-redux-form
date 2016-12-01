@@ -96,6 +96,11 @@ export default function formActionsReducer(state, action, localPath) {
           : false,
       };
 
+      parentFormUpdates = {
+        touched: true,
+        retouched: fieldUpdates.retouched,
+      };
+
       break;
     }
 
