@@ -1488,6 +1488,23 @@ Object.keys(testContexts).forEach((testKey) => {
 
         store.dispatch(action);
       });
+
+      it('should add an intent to submit if no promise if given', (done) => {
+        const store = createTestStore(testCreateStore({
+          testForm: formReducer('test'),
+        }), done);
+
+        store.when(actionTypes.ADD_INTENT, (_, action) => {
+          assert.containSubset(action, {
+            model: 'test',
+            intent: { type: 'submit' },
+          });
+        });
+
+        const action = actions.submit('test');
+
+        store.dispatch(action);
+      });
     });
 
     describe('validate() (thunk)', () => {

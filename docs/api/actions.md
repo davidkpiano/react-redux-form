@@ -379,7 +379,7 @@ An "untouched" field indicates that this model has not been interacted with yet.
 - This action is useful for conditionally displaying error messages based on whether the field has been touched.
 
 <h2 id="actions-submit"></h2>
-## `actions.submit(model, promise)`
+## `actions.submit(model, [promise])`
 
 Waits for a submission `promise` to be completed, then, if successful:
 - Sets `.submitted` property of form for `model` to `true`
@@ -389,9 +389,12 @@ If the promise fails, the action will:
 - set `.submitFailed` property of form for `model` to `true`
 - set `.errors` property of form for `model` to the response
 
+If a promise is not provided, e.g.: `actions.submit('user')`, then dispatching the action will trigger a `<Form>` with the specified `model` to submit itself.
+
 ### Arguments
 - `model` _(String | Function)_: the model to be submitted
 - `promise` _(Promise)_: the promise that the submit action will wait to be resolved or rejected
+  - default: `undefined` - will trigger a submit in the `<Form>` component with the specified `model`.
 - `options` _(Object)_: submit options:
 
 ### Options

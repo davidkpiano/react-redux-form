@@ -311,16 +311,6 @@ function createFormClass(s = defaultStrategy) {
 
       mapValues(finalErrorValidators, validateField);
 
-      // const fieldsValidity = mapValues(finalErrorValidators, (validator, field) => {
-      //   const fieldValue = field
-      //     ? s.get(modelValue, field)
-      //     : modelValue;
-
-      //   const fieldValidity = getValidity(validator, fieldValue);
-
-      //   return fieldValidity;
-      // });
-
       dispatch(s.actions.batch(model, [
         s.actions.setFieldsErrors(
           model,

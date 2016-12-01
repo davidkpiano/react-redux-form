@@ -21,6 +21,19 @@ const defaultStrategies = {
 };
 
 function createFieldActions(s = defaultStrategies) {
+  const addIntent = (model, intent) => ({
+    type: actionTypes.ADD_INTENT,
+    model,
+    intent,
+  });
+
+  const clearIntents = (model, intents, options = {}) => ({
+    type: actionTypes.CLEAR_INTENTS,
+    model,
+    intents,
+    options,
+  });
+
   const focus = (model, value, options = {}) => ({
     type: actionTypes.FOCUS,
     model,
@@ -155,6 +168,10 @@ function createFieldActions(s = defaultStrategies) {
   });
 
   const submit = (model, promise, options = {}) => (dispatch, getState) => {
+    if (typeof promise === 'undefined') {
+      return dispatch(addIntent(model, { type: 'submit' }));
+    }
+
     if (options.validate) {
       const form = s.getForm(getState(), model);
 
@@ -261,19 +278,6 @@ function createFieldActions(s = defaultStrategies) {
       ...options,
       errors: true,
     });
-
-  const addIntent = (model, intent) => ({
-    type: actionTypes.ADD_INTENT,
-    model,
-    intent,
-  });
-
-  const clearIntents = (model, intents, options = {}) => ({
-    type: actionTypes.CLEAR_INTENTS,
-    model,
-    intents,
-    options,
-  });
 
   return mapValues({
     blur,

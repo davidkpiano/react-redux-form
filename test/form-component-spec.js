@@ -1809,5 +1809,33 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isFalse(store.getState().testForm.$form.submitFailed);
       });
     });
+
+    describe('triggering a submit remotely', () => {
+      const initialState = getInitialState({ foo: '' });
+
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
+
+      const handleSubmit = sinon.spy((val) => val);
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form
+            model="test"
+            onSubmit={handleSubmit}
+          >
+            <Control model=".foo" />
+          </Form>
+        </Provider>
+      );
+
+      it('should call onSubmit() prop when submit intent is remotely triggered', () => {
+        store.dispatch(actions.submit('test'));
+
+        assert.isTrue(handleSubmit.calledOnce);
+      });
+    });
   });
 });
