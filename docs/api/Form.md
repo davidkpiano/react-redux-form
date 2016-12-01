@@ -140,6 +140,50 @@ export default connect(null)(MyForm);
 
 ### Notes
 - You can do anything in `onSubmit`; including firing off custom actions or handling (async) validation yourself.
+- `onSubmit` can also be triggered remotely by dispatching `actions.submit(model)` where `model` is the model of the form and no other arguments are provided. It will be called if the form is valid and able to be submitted.
+
+## `onSubmitFailed={...}`
+_(Function)_: The handler function called when the form fails to submit. This happens when:
+- attempting to submit an invalid form
+- submitting a valid form that later becomes invalid (due to async server/API validation, etc.)
+
+The callback function provided to `onSubmitFailed` will be called with one argument: the entire `formState` for the form's `model`.
+
+### Example
+```jsx
+import React from 'react';
+import { connect } from 'react-redux';
+import { Form, Control, actions } from 'react-redux-form';
+
+class MyForm extends React.Component {
+  handleSubmitFailed(userForm) {
+    // logs form-level errors
+    console.log(userForm.$form.errors);
+
+    // logs errors for user.email
+    console.log(userForm.email.errors);
+  }
+  
+  render() {
+    return (
+      <Form
+        model="user"
+        validators={{...}}
+        onSubmit={...}
+        onSubmitFailed={ (userForm) => this.handleSubmitFailed(userForm) }
+      >
+        <Control type="email" model=".email" />
+      </Form>
+    );
+  }
+}
+
+export default connect(null)(MyForm);
+```
+
+### Notes
+- This can also be used (and is extremely useful) with `<LocalForm>`.
+- Remotely triggering a submit on the form by dispatching `actions.submit(model)` will also call this callback if the form submission fails.
 
 ## `component={...}`
 _(Any)_ The `component` that the `<Form>` should be rendered to (default: `"form"`).

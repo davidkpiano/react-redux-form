@@ -60,11 +60,24 @@ const setInitialFieldState = (field, key) => {
   });
 };
 
+const addIntent = (intents, newIntent) => {
+  if (!intents) return [newIntent];
+  if (intents.some(intent => intent.type === newIntent.type)) return intents;
+
+  return intents.concat(newIntent);
+};
+
+const clearIntents = (intents, oldIntent) => {
+  if (!intents || typeof oldIntent === 'undefined') return [];
+  return intents.filter(intent => intent.type !== oldIntent.type);
+};
+
 export default function formActionsReducer(state, action, localPath) {
   const [field] = getFieldAndForm(state, localPath);
   const fieldState = field && field.$form
     ? field.$form
     : field;
+  const { intents } = fieldState;
 
   let fieldUpdates = {};
   let subFieldUpdates = {};
@@ -75,8 +88,8 @@ export default function formActionsReducer(state, action, localPath) {
       fieldUpdates = {
         focus: true,
         intents: action.silent
-          ? []
-          : [action],
+          ? intents
+          : addIntent(intents, action),
       };
 
       break;
@@ -261,7 +274,7 @@ export default function formActionsReducer(state, action, localPath) {
 
     case actionTypes.ADD_INTENT: {
       fieldUpdates = {
-        intents: [action.intent],
+        intents: addIntent(intents, action.intent),
       };
 
       break;
@@ -269,7 +282,7 @@ export default function formActionsReducer(state, action, localPath) {
 
     case actionTypes.CLEAR_INTENTS: {
       fieldUpdates = {
-        intents: [],
+        intents: clearIntents(intents, action.intent),
       };
 
       break;

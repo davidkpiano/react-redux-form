@@ -1837,5 +1837,55 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(handleSubmit.calledOnce);
       });
     });
+
+    describe('onSubmitFailed() prop', () => {
+      it('should call onSubmitFailed() prop if submit attempted with invalid form', () => {
+        const initialState = getInitialState({ foo: '' });
+
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        let handleSubmitFailedCalledWith = null;
+
+        function handleSubmitFailed(val) {
+          handleSubmitFailedCalledWith = val;
+        }
+
+        const form = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Form
+              model="test"
+              onSubmitFailed={handleSubmitFailed}
+              validators={{
+                foo: (val) => val.length,
+              }}
+            >
+              <Control model=".foo" />
+            </Form>
+          </Provider>
+        );
+
+        const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+        TestUtils.Simulate.submit(formNode);
+
+        assert.containSubset(handleSubmitFailedCalledWith, {
+          $form: {
+            model: 'test',
+            valid: false,
+          },
+          foo: {
+            model: 'test.foo',
+            valid: false,
+            errors: true,
+          },
+        });
+
+        assert.isFalse(store.getState().testForm.$form.pending);
+        assert.isTrue(store.getState().testForm.$form.submitFailed);
+      });
+    });
   });
 });
