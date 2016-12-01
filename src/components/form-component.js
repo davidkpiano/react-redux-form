@@ -29,6 +29,7 @@ const propTypes = {
   modelValue: PropTypes.any,
   formValue: PropTypes.object,
   onSubmit: PropTypes.func,
+  onSubmitFailed: PropTypes.func,
   dispatch: PropTypes.func,
   children: PropTypes.oneOfType([
     PropTypes.func,
@@ -221,7 +222,15 @@ function createFormClass(s = defaultStrategy) {
     }
 
     handleInvalidSubmit() {
-      this.props.dispatch(s.actions.setSubmitFailed(this.props.model));
+      const {
+        dispatch,
+        model,
+        onSubmitFailed,
+      } = this.props;
+
+      dispatch(s.actions.setSubmitFailed(model));
+
+      if (onSubmitFailed) onSubmitFailed();
     }
 
     handleReset(e) {
@@ -265,6 +274,7 @@ function createFormClass(s = defaultStrategy) {
         modelValue,
         formValue,
         onSubmit,
+        onSubmitFailed,
         dispatch,
         validators,
         errors: errorValidators,
@@ -328,6 +338,8 @@ function createFormClass(s = defaultStrategy) {
         ),
         s.actions.addIntent(model, { type: 'submit' }),
       ]));
+
+      if (onSubmitFailed) onSubmitFailed();
 
       return modelValue;
     }
