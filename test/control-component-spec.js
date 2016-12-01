@@ -212,6 +212,12 @@ Object.keys(testContexts).forEach((testKey) => {
             get(store.getState().test, 'foo'),
             'testing again');
         });
+
+        if (controlType === 'text') {
+          it('should have a type="text"', () => {
+            assert.equal(node.getAttribute('type'), 'text');
+          });
+        }
       });
     });
 

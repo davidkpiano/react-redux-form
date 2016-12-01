@@ -65,7 +65,10 @@ function createControlPropsMap() {
       onFocus: ({ onFocus }) => onFocus,
       onKeyPress: ({ onKeyPress }) => onKeyPress,
     },
-    text: textPropsMap,
+    text: {
+      ...textPropsMap,
+      type: 'text',
+    },
     textarea: textPropsMap,
     file: {
       name: (props) => props.name || props.model,
