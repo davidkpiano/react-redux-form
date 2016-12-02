@@ -167,63 +167,65 @@ function createFieldActions(s = defaultStrategies) {
     submitFailed,
   });
 
-  const submit = (model, promise, options = {}) => (dispatch, getState) => {
+  const submit = (model, promise, options = {}) => {
     if (typeof promise === 'undefined') {
-      return dispatch(addIntent(model, { type: 'submit' }));
+      return addIntent(model, { type: 'submit' });
     }
 
-    if (options.validate) {
-      const form = s.getForm(getState(), model);
+    return (dispatch, getState) => {
+      if (options.validate) {
+        const form = s.getForm(getState(), model);
 
-      if (!form.$form.valid) {
-        return dispatch(NULL_ACTION);
+        if (!form.$form.valid) {
+          return dispatch(NULL_ACTION);
+        }
+
+        dispatch(setPending(model, true));
+      } else if (options.validators || options.errors) {
+        const validators = options.validators || options.errors;
+        const isErrors = options.errors;
+        const value = s.get(getState(), model);
+        const validity = getValidity(validators, value);
+        const valid = options.errors
+          ? !isValidityInvalid(validity)
+          : isValidityValid(validity);
+
+        if (!valid) {
+          return dispatch(isErrors
+            ? setErrors(model, validity)
+            : setValidity(model, validity));
+        }
+
+        dispatch(batch(model, [
+          setValidity(model, isErrors
+            ? invertValidity(validity)
+            : validity),
+          setPending(model, true),
+        ]));
+      } else {
+        dispatch(setPending(model, true));
       }
 
-      dispatch(setPending(model, true));
-    } else if (options.validators || options.errors) {
-      const validators = options.validators || options.errors;
-      const isErrors = options.errors;
-      const value = s.get(getState(), model);
-      const validity = getValidity(validators, value);
-      const valid = options.errors
-        ? !isValidityInvalid(validity)
-        : isValidityValid(validity);
+      const errorsAction = options.fields
+        ? setFieldsErrors
+        : setErrors;
 
-      if (!valid) {
-        return dispatch(isErrors
-          ? setErrors(model, validity)
-          : setValidity(model, validity));
-      }
+      promise.then(response => {
+        dispatch(batch(model, [
+          setSubmitted(model, true),
+          setValidity(model, response),
+        ]));
+      }).catch(error => {
+        if (!isNative) console.error(error);
 
-      dispatch(batch(model, [
-        setValidity(model, isErrors
-          ? invertValidity(validity)
-          : validity),
-        setPending(model, true),
-      ]));
-    } else {
-      dispatch(setPending(model, true));
-    }
+        dispatch(batch(model, [
+          setSubmitFailed(model),
+          errorsAction(model, error),
+        ]));
+      });
 
-    const errorsAction = options.fields
-      ? setFieldsErrors
-      : setErrors;
-
-    promise.then(response => {
-      dispatch(batch(model, [
-        setSubmitted(model, true),
-        setValidity(model, response),
-      ]));
-    }).catch(error => {
-      if (!isNative) console.error(error);
-
-      dispatch(batch(model, [
-        setSubmitFailed(model),
-        errorsAction(model, error),
-      ]));
-    });
-
-    return promise;
+      return promise;
+    };
   };
 
   const submitFields = (model, promise, options = {}) =>

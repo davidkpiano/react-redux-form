@@ -5,9 +5,8 @@ import thunk from 'redux-thunk';
 import { modelReducer, formReducer, actions, actionTypes } from '../src';
 
 describe('batched actions', () => {
-  const mockStore = configureMockStore([thunk]);
-
   it('should batch actions', (done) => {
+    const mockStore = configureMockStore([thunk]);
     const action = actions.batch('test.foo', [
       actions.change('test.foo', 'testing'),
       actions.focus('test.foo'),
@@ -48,6 +47,39 @@ describe('batched actions', () => {
     store.dispatch(action);
   });
 
+  it('should batch actions without requiring thunk', (done) => {
+    const mockStore = configureMockStore();
+    const action = actions.batch('test.foo', [
+      actions.change('test.foo', 'testing'),
+      actions.focus('test.foo'),
+    ]);
+
+    const expectedActions = [
+      {
+        type: actionTypes.BATCH,
+        model: 'test.foo',
+        actions: [
+          {
+            model: 'test.foo',
+            multi: false,
+            silent: false,
+            type: 'rrf/change',
+            value: 'testing',
+          },
+          {
+            model: 'test.foo',
+            type: 'rrf/focus',
+            value: undefined,
+          },
+        ],
+      },
+    ];
+
+    const store = mockStore({}, expectedActions, done);
+
+    store.dispatch(action);
+  });
+
   it('should update the form reducer with each action', () => {
     const reducer = formReducer('test');
 
@@ -80,6 +112,7 @@ describe('batched actions', () => {
   });
 
   it('should dispatch a null action if all actions are falsey', (done) => {
+    const mockStore = configureMockStore([thunk]);
     const testAction = actions.batch('test.foo', [
       false,
       null,

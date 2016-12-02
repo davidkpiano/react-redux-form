@@ -1380,7 +1380,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isFalse(store.getState().testForm.$form.valid);
 
-        store.dispatch(actions.merge('test', {
+        store.dispatch(actions.change('test', {
           foo: 'foo valid',
           bar: 'bar valid',
         }));

@@ -272,6 +272,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         model,
         modelValue,
         updateOn,
+        dispatch,
       } = this.props;
 
       // If there are no async validators,
@@ -295,23 +296,19 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
       if (!syncValid) return false;
 
-      return (dispatch) => {
-        mapValues(asyncValidators,
-          (validator, key) => dispatch(actions.asyncSetValidity(model,
-            (_, done) => {
-              const outerDone = (valid) => {
-                const validity = i.merge(fieldValue.validity, { [key]: valid });
+      dispatch(actions.setValidating(model, true));
 
-                done(validity);
-              };
+      mapValues(asyncValidators, (validator, key) => {
+        const outerDone = (valid) => {
+          const validity = i.merge(fieldValue.validity, { [key]: valid });
 
-              validator(getValue(valueToValidate), outerDone);
-            })
-          )
-        );
+          dispatch(actions.setValidity(model, validity));
+        };
 
-        return valueToValidate;
-      };
+        validator(getValue(valueToValidate), outerDone);
+      });
+
+      return valueToValidate;
     }
 
     getNodeErrors() {
@@ -489,8 +486,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           eventAction && eventAction(model),
           containsEvent(validateOn, eventName)
             && this.getValidateAction(persistedEvent, eventName),
-          containsEvent(asyncValidateOn, eventName)
-            && this.getAsyncValidateAction(persistedEvent, eventName),
           containsEvent(updateOn, eventName)
             && this.getChangeAction(persistedEvent),
         ];
@@ -514,7 +509,15 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           )(event);
         }
 
+
         return compose(
+          (e) => {
+            if (containsEvent(asyncValidateOn, eventName)) {
+              this.getAsyncValidateAction(e, eventName);
+            }
+
+            return e;
+          },
           dispatchBatchActions,
           parser,
           getValue,

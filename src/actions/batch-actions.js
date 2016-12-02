@@ -22,10 +22,22 @@ const batch = trackable((model, actions) => {
     };
   }
 
-  return (dispatch) => {
-    const [plainActions, actionThunks] = partition(dispatchableActions,
-      (action) => typeof action !== 'function');
+  const [plainActions, actionThunks] = partition(dispatchableActions,
+    (action) => typeof action !== 'function');
 
+  if (!actionThunks.length) {
+    if (plainActions.length > 1) {
+      return {
+        type: actionTypes.BATCH,
+        model,
+        actions: plainActions,
+      };
+    } else if (plainActions.length === 1) {
+      return plainActions[0];
+    }
+  }
+
+  return (dispatch) => {
     if (plainActions.length > 1) {
       dispatch({
         type: actionTypes.BATCH,
@@ -35,7 +47,6 @@ const batch = trackable((model, actions) => {
     } else if (plainActions.length === 1) {
       dispatch(plainActions[0]);
     }
-
     actionThunks.forEach(dispatch);
   };
 });

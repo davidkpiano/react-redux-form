@@ -43,8 +43,12 @@ export const defaultTestContexts = {
   },
 };
 
-export function testCreateStore(reducers) {
-  return applyMiddleware(thunk)(createStore)(combineReducers(reducers));
+export function testCreateStore(reducers, thunk = false) {
+  if (thunk) {
+    return applyMiddleware(thunk)(createStore)(combineReducers(reducers));
+  }
+
+  return createStore(combineReducers(reducers));
 }
 
 export function testRender(component, store) {
