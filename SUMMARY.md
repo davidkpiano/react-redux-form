@@ -12,6 +12,7 @@
   * [Compare to Redux-Form](docs/guides/compare-redux-form.md)
   * [Immutable.js](docs/guides/immutable.md)
   * [Local Forms](docs/guides/local.md)
+  * [FAQs](docs/guides/faqs.md)
 * [API Reference](docs/api/README.md)
   * [Control component](docs/api/Control.md)
   * [Form component](docs/api/Form.md)
