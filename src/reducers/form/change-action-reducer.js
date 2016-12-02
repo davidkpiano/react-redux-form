@@ -51,7 +51,7 @@ function updateFieldValue(field, action, parentModel = undefined) {
         result[key] = field[key];
       });
 
-      return i.set(compact(result), '$form', field.$form);
+      return { ...i.set(compact(result), '$form', field.$form) };
     }
 
     result = { ...field };

@@ -1,6 +1,9 @@
 import React from 'react';
 import { LocalForm, Form, actions, Control, Field, Errors } from 'react-redux-form';
 import { connect } from 'react-redux';
+import icepick from 'icepick';
+
+window.i = icepick;
 
 const required = (val) => !!(val && val.length);
 

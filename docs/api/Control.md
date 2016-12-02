@@ -14,6 +14,7 @@
 - [`controlProps`](#prop-controlProps)
 - [`component`](#prop-component)
 - [`ignore`](#prop-ignore)
+- [`disabled`](#disabled)
 
 ## `<Control>`
 
