@@ -106,7 +106,7 @@ function updateFieldValue(field, action, parentModel = undefined) {
 }
 
 function getFormValue(form) {
-  if (!form.$form) return form.initialValue;
+  if (form && !form.$form) return form.initialValue;
 
   const result = mapValues(form, (field, key) => {
     if (key === '$form') return undefined;
