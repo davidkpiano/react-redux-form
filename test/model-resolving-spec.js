@@ -1,11 +1,6 @@
 import { assert } from 'chai';
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
-// import { applyMiddleware, combineReducers, createStore } from 'redux';
-// import { Provider } from 'react-redux';
-// import thunk from 'redux-thunk';
-// import sinon from 'sinon';
-// import capitalize from 'lodash/capitalize';
 
 import {
   // controls,

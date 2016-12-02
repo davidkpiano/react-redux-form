@@ -3,9 +3,8 @@ import getValidity from '../src/utils/get-validity';
 import isValidityInvalid from '../src/utils/is-validity-invalid';
 import { getFormStateKey as _getFormStateKey, clearGetFormCache } from '../src/utils/get-form';
 import getFieldFromState from '../src/utils/get-field-from-state';
-import { createStore, applyMiddleware, combineReducers as _combineReducers } from 'redux';
+import { createStore, combineReducers as _combineReducers } from 'redux';
 import { combineReducers as combineReducersImmutable } from 'redux-immutable';
-import thunk from 'redux-thunk';
 import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
 import { assert } from 'chai';
@@ -154,7 +153,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('getFormStateKey()', () => {
       context('explicit formReducers', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = createStore(combineReducers({
           firstForm: formReducer('first'),
           deep: combineReducers({
             secondForm: formReducer('second', getInitialState({
@@ -210,7 +209,7 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       context('combined formReducer', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineForms({
+        const store = createStore(combineForms({
           first: {},
           deep: {
             second: {

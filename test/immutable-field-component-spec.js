@@ -1,9 +1,8 @@
 import React from 'react';
 import { assert } from 'chai';
 import Immutable from 'immutable';
-import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
 import { actions, formReducer } from '../src';
@@ -19,7 +18,7 @@ describe('<Field> with Immutable.js', () => {
   const store = createStore(combineReducers({
     test: reducer,
     testForm: formReducer('test', { foo: 'bar' }),
-  }), applyMiddleware(thunk));
+  }));
 
   const field = TestUtils.renderIntoDocument(
     <Provider store={store}>
