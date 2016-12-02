@@ -309,7 +309,7 @@ For instance, if you don't care whether a `<Control>` is focused or blurred:
 ### `disabled={...}`
 _(Any)_: The `disabled` prop works just like you'd expect for controls that support the HTML5 `disabled` attribute.
 
-However, in `<Control>`, it can be a boolean, or a function, string, or object as a [Lodash iteratee](https://lodash.com/docs#iteratee). 
+However, in `<Control>`, it can be a boolean, or a function, string, or object as a [Lodash iteratee](https://lodash.com/docs#iteratee).
 
 ```jsx
 // Disable the submit button when the form is invalid
@@ -327,4 +327,4 @@ For example:
 - `disabled={{ valid: false, touched: true }}` will disable if the field is both `touched` and not `valid`
 - `disabled={(fieldValue) => !fieldValue.valid}` will call the function provided with the `fieldValue` to determine its `disabled` state.
 
-(since: version 1.2.6)
+(since: version 1.3.0)

@@ -15,7 +15,7 @@ Check out the above links if you need any help with those prerequisites.
 - `npm install redux react-redux --save`
 - `npm install react-redux-form --save`
 
-**Note:** - `redux-thunk` is no longer required for versions 1.2.6 and higher. If you are using a previous version, make sure to install it as well.
+**Note:** - `redux-thunk` is no longer required for versions 1.3.0 and higher. If you are using a previous version, make sure to install it as well.
 
 ### 2. Setup your app.
 
@@ -70,7 +70,7 @@ const store = createStore(combineForms({
 export default store;
 ```
 
-**Note:** `redux-thunk` is no longer required for RRF versions 1.2.6 and higher. If you are using a previous version, make sure to configure your store to use `redux-thunk`.
+**Note:** `redux-thunk` is no longer required for RRF versions 1.3.0 and higher. If you are using a previous version, make sure to configure your store to use `redux-thunk`.
 
 ### 4. Setup your form!
 

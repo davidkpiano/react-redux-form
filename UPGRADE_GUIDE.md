@@ -9,7 +9,7 @@
 - **Flexibility**
 - **Features**
 
-### Quick Start - v0.x to v1.2.6+
+### Quick Start - v0.x to v1.3.0+
 
 **Creating the store - version 0.x:**
 _Note:_ This way will still work in v1.0!
