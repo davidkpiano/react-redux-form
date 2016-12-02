@@ -20,13 +20,12 @@ To set up your app's models for RRF, it's recommended to use [`combineForms()`](
 
 ```jsx
 import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk'
 import { combineForms } from 'react-redux-form';
 
 const store = createStore(combineForms({
   user: initialUser,
   goat: initialGoat,
-}), applyMiddleware(thunk));
+}));
 
 export default store;
 ```
@@ -54,7 +53,7 @@ For example, given this state:
 
 ```jsx
 const state = {
-  user: {  
+  user: {
     firstName: 'John',
     lastName: 'Smith',
     phones: [
@@ -88,7 +87,7 @@ const store = createStore(combineForms({
   user: initialUser,
   goat: initialGoat,
   custom: myCustomReducer, // <= will be modeled()
-}), applyMiddleware(thunk));
+}));
 // ...
 ```
 

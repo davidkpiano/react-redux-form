@@ -9,21 +9,20 @@
 - **Flexibility**
 - **Features**
 
-### Quick Start - v0.x to v1
+### Quick Start - v0.x to v1.2.6+
 
 **Creating the store - version 0.x:**
 _Note:_ This way will still work in v1.0!
 ```js
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { modelReducer, formReducer } from 'react-redux-form';
-import thunk from 'redux-thunk';
 
 const initialUserState = {
   firstName: '',
   lastName: ''
 };
 
-const store = applyMiddleware(thunk)(createStore)(combineReducers({
+const store = createStore(combineReducers({
   user: modelReducer('user', initialUserState),
   userForm: formReducer('user', initialUserState)
 }));
@@ -43,7 +42,7 @@ const initialUserState = {
 
 const store = createStore(combineForms({
   user: initialUserState,
-}), applyMiddleware(thunk));
+}));
 
 export default store;
 ```
