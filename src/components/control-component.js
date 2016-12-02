@@ -698,6 +698,17 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
+  ConnectedControl.button = (props) => (
+    <ConnectedControl
+      component="button"
+      mapProps={{
+        ...controlPropsMap.button,
+        ...props.mapProps,
+      }}
+      {...omit(props, 'mapProps')}
+    />
+  );
+
   ConnectedControl.reset = (props) => (
     <ConnectedControl
       component="button"

@@ -28,3 +28,17 @@ export default function iteratee(value) {
 
   return propChecker(value);
 }
+
+export function iterateeValue(data, value) {
+  if (typeof value === 'function') {
+    return value(data);
+  }
+
+  if (!Array.isArray(value)
+    && typeof value !== 'object'
+    && typeof value !== 'string') {
+    return !!value;
+  }
+
+  return iteratee(value)(data);
+}

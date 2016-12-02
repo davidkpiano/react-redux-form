@@ -25,5 +25,6 @@
   * [action creators](docs/api/actions.md)
 * [Recipes and Examples](docs/recipes/README.md)
   * [Quick Start](docs/recipes/quickstart.md)
+  * [Redux Form Examples](docs/recipes/redux-form.md)
   * [Simple Form](docs/recipes/simple.md)
   * [Sync Validation](docs/recipes/sync-validation.md)

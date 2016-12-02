@@ -1,4 +1,5 @@
 import isMulti from '../utils/is-multi';
+import { iterateeValue } from '../utils/iteratee';
 import actions from '../actions';
 
 function createControlPropsMap() {
@@ -76,6 +77,9 @@ function createControlPropsMap() {
       onBlur: ({ onBlur }) => onBlur,
       onFocus: ({ onFocus }) => onFocus,
       onKeyPress: ({ onKeyPress }) => onKeyPress,
+    },
+    button: {
+      disabled: ({ fieldValue, disabled }) => iterateeValue(fieldValue, disabled),
     },
     reset: {
       onClick: (props) => (event) => {

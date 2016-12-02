@@ -71,9 +71,9 @@ class UserForm extends React.Component {
           </label>
         </Field>
 
-        <button type="submit" disabled={!user.$form.valid}>
+        <Control.submit model="user" disabled={{ valid: false }}>
           Finish registration!
-        </button>
+        </Control.submit>
         <input type="reset" value="Reset" title="reset"/>
       </Form>
     );

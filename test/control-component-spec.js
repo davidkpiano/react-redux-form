@@ -1633,6 +1633,43 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('with <Control.button>', () => {
+      it('should exist', () => {
+        assert.isFunction(Control.button);
+      });
+
+      const disabledProps = [
+        true,
+        { valid: false },
+        (fieldValue) => !fieldValue.valid,
+      ];
+
+      disabledProps.forEach((disabled) => {
+        it(`should be disabled with ${typeof disabled} as disabled prop value`, () => {
+          const initialState = getInitialState({ foo: '' });
+          const store = testCreateStore({
+            testForm: formReducer('test', initialState),
+          });
+
+          const field = testRender(
+            <Control.button model="test" disabled={disabled} />,
+            store);
+
+          const button = TestUtils.findRenderedDOMComponentWithTag(field, 'button');
+
+          store.dispatch(actions.setValidity('test', false));
+
+          assert.isTrue(button.disabled);
+
+          if (disabled !== true) {
+            store.dispatch(actions.setValidity('test', true));
+
+            assert.isFalse(button.disabled);
+          }
+        });
+      });
+    });
+
     describe('manual focus/blur', () => {
       const initialState = getInitialState({ foo: 'bar' });
       const store = testCreateStore({
