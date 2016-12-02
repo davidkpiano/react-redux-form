@@ -35,8 +35,6 @@ class UserForm extends React.Component {
     dispatch(actions.submit('user', somePromise));
   }
   render() {
-    const { forms: { user }, dispatch } = this.props;
-
     return (
       <Form model="user" onSubmit={this.handleSubmit.bind(this)}>
         <div>
@@ -71,9 +69,9 @@ class UserForm extends React.Component {
           </label>
         </Field>
 
-        <Control.submit model="user" disabled={{ valid: false }}>
+        <Control.button model="user" disabled={{ valid: false }}>
           Finish registration!
-        </Control.submit>
+        </Control.button>
         <input type="reset" value="Reset" title="reset"/>
       </Form>
     );

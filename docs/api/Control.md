@@ -29,6 +29,7 @@ The following pre-defined `<Control>`s are available:
 - `<Control.checkbox>` for `<input type="checkbox" />`
 - `<Control.file>` for `<input type="file" />`
 - `<Control.select>` for `<select></select>`
+- `<Control.button>` for `<button></button>`
 
 For making custom controls that work with React Redux Form, see the [custom controls documentation](../guides/custom-controls.md).
 
@@ -304,3 +305,26 @@ For instance, if you don't care whether a `<Control>` is focused or blurred:
   ignore={['focus', 'blur']}
 />
 ```
+
+### `disabled={...}`
+_(Any)_: The `disabled` prop works just like you'd expect for controls that support the HTML5 `disabled` attribute.
+
+However, in `<Control>`, it can be a boolean, or a function, string, or object as a [Lodash iteratee](https://lodash.com/docs#iteratee). 
+
+```jsx
+// Disable the submit button when the form is invalid
+<Control.button
+  model="user"
+  disabled={{ valid: false }}
+>
+  Submit!
+</Control.button>
+```
+
+For example:
+- `disabled={true}` or `disabled={false}` will disable or enable the control respectively, as will any other primitive value, such as `undefined`, `null`, or a number
+- `disabled="touched"` will disable if the field is `touched` (works with any property on the field)
+- `disabled={{ valid: false, touched: true }}` will disable if the field is both `touched` and not `valid`
+- `disabled={(fieldValue) => !fieldValue.valid}` will call the function provided with the `fieldValue` to determine its `disabled` state.
+
+(since: version 1.2.6)

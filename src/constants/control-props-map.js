@@ -24,70 +24,54 @@ function createControlPropsMap() {
     return !!props.modelValue;
   }
 
-  const textPropsMap = {
-    value: (props) => ((!props.defaultValue && !props.hasOwnProperty('value'))
-      ? getTextValue(props.viewValue)
-      : props.value),
+  const standardPropsMap = {
     name: (props) => props.name || props.model,
+    disabled: ({ fieldValue, disabled }) => iterateeValue(fieldValue, disabled),
     onChange: ({ onChange }) => onChange,
     onBlur: ({ onBlur }) => onBlur,
     onFocus: ({ onFocus }) => onFocus,
     onKeyPress: ({ onKeyPress }) => onKeyPress,
   };
 
+  const textPropsMap = {
+    ...standardPropsMap,
+    value: (props) => ((!props.defaultValue && !props.hasOwnProperty('value'))
+      ? getTextValue(props.viewValue)
+      : props.value),
+  };
+
   return {
     default: textPropsMap,
     checkbox: {
-      name: (props) => props.name || props.model,
+      ...standardPropsMap,
       checked: (props) => (props.defaultChecked
         ? props.checked
         : isChecked(props)),
-      onChange: ({ onChange }) => onChange,
-      onBlur: ({ onBlur }) => onBlur,
-      onFocus: ({ onFocus }) => onFocus,
-      onKeyPress: ({ onKeyPress }) => onKeyPress,
     },
     radio: {
-      name: (props) => props.name || props.model,
+      ...standardPropsMap,
       checked: (props) => (props.defaultChecked
         ? props.checked
         : props.modelValue === props.value),
       value: (props) => props.value,
-      onChange: ({ onChange }) => onChange,
-      onBlur: ({ onBlur }) => onBlur,
-      onFocus: ({ onFocus }) => onFocus,
-      onKeyPress: ({ onKeyPress }) => onKeyPress,
     },
     select: {
-      name: (props) => (props.name || props.model),
+      ...standardPropsMap,
       value: (props) => (props.modelValue),
-      onChange: ({ onChange }) => onChange,
-      onBlur: ({ onBlur }) => onBlur,
-      onFocus: ({ onFocus }) => onFocus,
-      onKeyPress: ({ onKeyPress }) => onKeyPress,
     },
     text: {
       ...textPropsMap,
       type: 'text',
     },
     textarea: textPropsMap,
-    file: {
-      name: (props) => props.name || props.model,
-      onChange: ({ onChange }) => onChange,
-      onBlur: ({ onBlur }) => onBlur,
-      onFocus: ({ onFocus }) => onFocus,
-      onKeyPress: ({ onKeyPress }) => onKeyPress,
-    },
-    button: {
-      disabled: ({ fieldValue, disabled }) => iterateeValue(fieldValue, disabled),
-    },
+    file: standardPropsMap,
+    button: standardPropsMap,
     reset: {
+      ...standardPropsMap,
       onClick: (props) => (event) => {
         event.preventDefault();
         props.dispatch(actions.reset(props.model));
       },
-      onFocus: ({ onFocus }) => onFocus,
-      onBlur: ({ onBlur }) => onBlur,
     },
   };
 }
