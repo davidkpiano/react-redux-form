@@ -636,6 +636,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       component="input"
       mapProps={{
         ...controlPropsMap.text,
+        type: 'text',
         ...props.mapProps,
       }}
       {...omit(props, 'mapProps')}

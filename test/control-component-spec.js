@@ -217,6 +217,10 @@ Object.keys(testContexts).forEach((testKey) => {
           it('should have a type="text"', () => {
             assert.equal(node.getAttribute('type'), 'text');
           });
+        } else {
+          it('should have the appropriate type attribute', () => {
+            assert.equal(node.getAttribute('type'), type);
+          });
         }
       });
     });

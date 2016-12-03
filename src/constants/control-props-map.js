@@ -59,10 +59,7 @@ function createControlPropsMap() {
       ...standardPropsMap,
       value: (props) => (props.modelValue),
     },
-    text: {
-      ...textPropsMap,
-      type: 'text',
-    },
+    text: textPropsMap,
     textarea: textPropsMap,
     file: standardPropsMap,
     button: standardPropsMap,

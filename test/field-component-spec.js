@@ -291,6 +291,10 @@ Object.keys(testContexts).forEach((testKey) => {
             get(store.getState().test, 'foo'),
             'testing again');
         });
+
+        it('should have the appropriate type attribute', () => {
+          assert.equal(node.getAttribute('type'), type);
+        });
       });
 
       describe(`with a controlled <${element} ${type ? `type="${type}"` : ''} /> component`, () => {
