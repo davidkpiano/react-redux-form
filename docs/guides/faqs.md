@@ -62,6 +62,8 @@ Use `getRef={(node) => ...}` in place of `ref`. This is due to the fact that Rea
 
 You can use `getRef` on `<Field>`, `<Control>`, `<Form>`, or `<LocalForm>` components.
 
+(since: version 1.3.1)
+
 ```jsx
 <Control.text
   model="user.name"
