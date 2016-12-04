@@ -41,6 +41,8 @@ export default function wrapWithModelResolver(WrappedComponent) {
     }
   }
 
+  ResolvedModelWrapper.displayName = `Modeled(${WrappedComponent.displayName})`;
+
   ResolvedModelWrapper.propTypes = {
     model: PropTypes.any,
   };

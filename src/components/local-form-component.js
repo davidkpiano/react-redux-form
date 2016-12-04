@@ -22,6 +22,8 @@ class LocalForm extends React.Component {
   }
 }
 
+LocalForm.displayName = 'LocalForm';
+
 LocalForm.propTypes = {
   store: PropTypes.shape({
     subscribe: PropTypes.func,

@@ -57,6 +57,7 @@ const fieldPropTypes = {
   componentMap: PropTypes.object,
   dynamic: PropTypes.bool,
   dispatch: PropTypes.func,
+  getRef: PropTypes.func,
 
   // Calculated props
   fieldValue: PropTypes.object,

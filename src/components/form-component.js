@@ -42,6 +42,7 @@ const propTypes = {
   }),
   onUpdate: PropTypes.func,
   onChange: PropTypes.func,
+  getRef: PropTypes.func,
 };
 
 const defaultStrategy = {
@@ -118,6 +119,7 @@ function createFormClass(s = defaultStrategy) {
       this._node = node;
 
       this._node.submit = this.handleSubmit;
+      if (this.props.getRef) this.props.getRef(node);
     }
 
     validate(nextProps, initial = false) {

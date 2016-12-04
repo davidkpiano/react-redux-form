@@ -101,6 +101,7 @@ const propTypes = {
     dispatch: PropTypes.func,
     getState: PropTypes.func,
   }),
+  getRef: PropTypes.func,
 };
 
 const defaultStrategy = {
@@ -564,9 +565,14 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         controlProps = emptyControlProps,
         component,
         control,
+        getRef,
       } = this.props;
 
       const mappedProps = omit(this.getMappedProps(), disallowedProps);
+
+      if (getRef) {
+        mappedProps.ref = getRef;
+      }
 
       // If there is an existing control, clone it
       if (control) {
@@ -584,6 +590,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         });
     }
   }
+
+  Control.displayName = 'Control';
 
   Control.propTypes = propTypes;
 
