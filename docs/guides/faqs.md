@@ -50,9 +50,21 @@ const BirthDate = ({forModel}) => (
     <Control model=".day" placeholder="Day" />
     <Control model=".month" placeholder="Month" />
     <Control model=".year" placeholder="Year" />
-  </Form> 
+  </Form>
 );
 
 export default BirthDate;
 ```
 
+### How do I get the component instance? `ref={...}` doesn't work.
+
+Use `getRef={(node) => ...}` in place of `ref`. This is due to the fact that React treats the `ref` prop as a "magic" prop that doesn't get propagated down through wrapped components.
+
+You can use `getRef` on `<Field>`, `<Control>`, `<Form>`, or `<LocalForm>` components.
+
+```jsx
+<Control.text
+  model="user.name"
+  getRef={(node) => this.attach(node)}
+/>
+```

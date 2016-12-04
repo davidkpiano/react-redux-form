@@ -25,7 +25,7 @@ const passwordsMatch = ({ password, confirmPassword }) => {
     type="email"
     model=".email"
   />
-  
+
   <Control
     type="password"
     model=".password"
@@ -116,10 +116,10 @@ class MyForm extends React.Component {
     .then((res) => {
       // ...
     });
-    
+
     dispatch(actions.submit('user', userPromise));
   }
-  
+
   render() {
     return (
       <Form
@@ -163,7 +163,7 @@ class MyForm extends React.Component {
     // logs errors for user.email
     console.log(userForm.email.errors);
   }
-  
+
   render() {
     return (
       <Form
@@ -208,3 +208,13 @@ _(Function)_ The handler function that is called with the form's model value whe
 ### Notes
 - This is also an optional but useful property, especially if you are using [local forms](../guides/local.md).
 - Remember: the _model value_ is the value of the form's model, specified by the `model="..."` prop. The entire model value will be passed in.
+
+## `getRef={() => ...}`
+_(Function)_: Calls the callback provided to the `getRef` prop with the node instance. Similar to `ref`.
+
+```jsx
+<Control.text
+  model="user.name"
+  getRef={(node) => this.attach(node)}
+/>
+```
