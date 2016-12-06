@@ -1282,6 +1282,40 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('handling onKeyPress', () => {
+      const eventData = {
+        key: 'a',
+        keyCode: 65,
+        which: 65,
+      };
+
+      const reducer = modelReducer('test');
+      const store = testCreateStore({
+        test: reducer,
+        testForm: formReducer('test'),
+      });
+
+      it('should pass keyPress events to onKeyPress', (done) => {
+        function handleKeyPress(event) {
+          assert.containSubset(event, eventData);
+          done();
+        }
+
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.text
+              model="test.foo"
+              onKeyPress={handleKeyPress}
+            />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        TestUtils.Simulate.keyPress(control, eventData);
+      });
+    });
+
     describe('changeAction prop', () => {
       const initialState = getInitialState({
         foo: '',

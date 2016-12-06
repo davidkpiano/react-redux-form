@@ -412,13 +412,20 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     handleKeyPress(event) {
+      const {
+        controlProps: { onKeyPress },
+        dispatch,
+      } = this.props;
+
       // Get the value from the event
       // in case updateOn="blur" (or something other than "change")
       const parsedValue = this.parse(getValue(event));
 
       if (event.key === 'Enter') {
-        this.props.dispatch(this.getChangeAction(parsedValue));
+        dispatch(this.getChangeAction(parsedValue));
       }
+
+      if (onKeyPress) onKeyPress(event);
     }
 
     handleLoad() {
