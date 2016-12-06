@@ -32,6 +32,9 @@ The following pre-defined `<Control>`s are available:
 - `<Control.select>` for `<select></select>`
 - `<Control.button>` for `<button></button>`
 
+You can add your own types to the basic `<Control>` component as an attribute:
+`<Control type="password">`
+
 For making custom controls that work with React Redux Form, see the [custom controls documentation](../guides/custom-controls.md).
 
 ```jsx
