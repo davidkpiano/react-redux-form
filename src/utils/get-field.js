@@ -1,18 +1,27 @@
 import isPlainObject from 'lodash/isPlainObject';
 import get from './get';
 import initialFieldState from '../constants/initial-field-state';
+import Immutable from 'immutable';
 
-export default function getField(state, path) {
-  if (process.env.NODE_ENV !== 'production') {
-    if (!isPlainObject(state)) {
-      throw new Error(`Could not retrieve field '${path}' `
-        + 'from an invalid/empty form state.');
-    }
-  }
+const defaultStrategies = {
+	get,
+};
 
-  const result = get(state, path, initialFieldState);
+export function createGetField(s = defaultStrategies) {
+	return function getField(state, path) {
+	  if (process.env.NODE_ENV !== 'production') {
+	    if (!isPlainObject(state) && !Immutable.Iterable.isIterable(state)) {
+	      throw new Error(`Could not retrieve field '${path}' `
+	        + 'from an invalid/empty form state.');
+	    }
+	  }
 
-  if ('$form' in result) return result.$form;
+	  const result = s.get(state, path, initialFieldState);
+	  const $form = s.get(result, '$form');
 
-  return result;
+	  return $form ? $form : result;
+	}
 }
+
+const getField = createGetField();
+export default getField;

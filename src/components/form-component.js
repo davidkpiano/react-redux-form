@@ -13,7 +13,7 @@ import isValidityInvalid from '../utils/is-validity-invalid';
 import getForm from '../utils/get-form';
 import getModel from '../utils/get-model';
 import getField from '../utils/get-field';
-import { fieldsValid } from '../form/is-valid';
+import { fieldsValid as _fieldsValid } from '../form/is-valid';
 import deepCompareChildren from '../utils/deep-compare-children';
 import containsEvent from '../utils/contains-event';
 
@@ -46,7 +46,9 @@ const propTypes = {
 const defaultStrategy = {
   get: _get,
   getForm,
+  getField,
   actions,
+  fieldsValid: _fieldsValid,
 };
 
 function createFormClass(s = defaultStrategy) {
@@ -138,7 +140,7 @@ function createFormClass(s = defaultStrategy) {
         // If the form is invalid (due to async validity)
         // but its fields are valid and the value has changed,
         // the form should be "valid" again.
-        if (!formValue.$form.valid && fieldsValid(formValue)) {
+        if (!s.get(formValue, ['$form', 'valid']) && s.fieldsValid(formValue)) {
           dispatch(s.actions.setValidity(model, true));
         }
 
@@ -176,11 +178,11 @@ function createFormClass(s = defaultStrategy) {
             ? s.get(modelValue, field)
             : modelValue;
 
-          const currentErrors = getField(formValue, field).errors;
+          const currentErrors = s.getField(formValue, field).errors;
 
           // If the validators didn't change, the validity didn't change.
           if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
-            fieldsErrors[field] = getField(formValue, field).errors;
+            fieldsErrors[field] = s.getField(formValue, field).errors;
           } else {
             const fieldErrors = getValidity(errorValidator, nextValue);
 
@@ -199,7 +201,7 @@ function createFormClass(s = defaultStrategy) {
       if (!fieldsErrors.hasOwnProperty('')) {
         fieldsErrors[''] = false;
         validityChanged = validityChanged
-          || isValidityInvalid(formValue.$form.errors);
+          || isValidityInvalid(s.get(formValue, ['$form', 'errors']));
       }
 
       if (validityChanged) {
@@ -237,12 +239,12 @@ function createFormClass(s = defaultStrategy) {
         dispatch,
       } = this.props;
 
-      formValue.$form.intents.forEach((intent) => {
+      s.get(formValue, ['$form', 'intents']).forEach((intent) => {
         switch (intent.type) {
           case 'submit': {
             dispatch(s.actions.clearIntents(model, intent));
 
-            if (formValue.$form.valid) {
+            if (s.get(formValue, ['$form', 'valid'])) {
               this.handleValidSubmit();
             } else {
               this.handleInvalidSubmit();
@@ -271,7 +273,7 @@ function createFormClass(s = defaultStrategy) {
       } = this.props;
 
       const formValid = formValue
-        ? formValue.$form.valid
+        ? s.get(formValue, ['$form', 'valid'])
         : true;
 
       if (!validators && onSubmit && formValid) {

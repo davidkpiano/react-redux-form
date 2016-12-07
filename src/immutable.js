@@ -10,10 +10,18 @@ import { createFormClass } from './components/form-component';
 import { createFieldActions } from './actions/field-actions';
 import batch from './actions/batch-actions';
 import getValue from './utils/get-value';
+import {immutableMapValues} from './utils/map-values';
 import immutableGetFromState from './utils/get-from-immutable-state';
 import getForm, { getFormStateKey } from './utils/get-form';
 import isPlainObject from 'lodash/isPlainObject';
 import Immutable from 'immutable';
+import { createGetField } from './utils/get-field';
+import {create as createIsValid} from '../src/form/is-valid';
+import {create as createIsPristine} from '../src/form/is-pristine';
+import {create as createIsRetouched} from '../src/form/is-retouched';
+
+import {createChangeActionReducer} from './reducers/form/change-action-reducer';
+import {createFormActionReducer} from './reducers/form-actions-reducer';
 
 import {
   initialFieldState,
@@ -25,7 +33,9 @@ import {
   track,
 } from './index';
 
-function immutableSet(state, path, value) {
+const immutableInitialFieldState = Immutable.fromJS(initialFieldState);
+
+function immutableSetIn(state, path, value) {
   try {
     return state.setIn(path, value);
   } catch (error) {
@@ -41,19 +51,27 @@ function immutableKeys(state) {
   return Object.keys(state);
 }
 
+const merge = (map, ...args) => (map ? map.merge(...args) : map);
+
 const baseStrategy = {
   get: immutableGetFromState,
-  set: immutableSet,
+  set: (state, ...args) => state.set(...args),
+  setIn: immutableSetIn,
   getValue,
   keys: immutableKeys,
   splice: (list, ...args) => list.splice(...args),
-  merge: (map, ...args) => map.merge(...args),
+  merge: merge,
+  mergeDeep: merge,
   remove: (map, ...args) => map.remove(...args),
   push: (list, ...args) => list.push(...args),
   length: (list) => list.size,
   object: new Immutable.Map(),
   array: new Immutable.List(),
   isObject: (state) => (isPlainObject(state) || Immutable.Map.isMap(state)),
+  fromJS: Immutable.fromJS,
+  toJS: (obj) => obj ? obj.toJS() : {},
+  mapValues: immutableMapValues,
+  map: (obj, fn) => obj.map(fn).toSet(),
 };
 
 function immutableGetForm(state, modelString) {
@@ -65,41 +83,54 @@ function immutableGetFormStateKey(state, model) {
 }
 
 function immutableGetFieldFromState(state, modelString) {
-  return getField(state, modelString, { getForm: immutableGetForm });
+  return getField(state, modelString, { getForm: immutableGetForm, ...baseStrategy });
 }
+
+const isValid = createIsValid(baseStrategy).isValid;
+const fieldsValid = createIsValid(baseStrategy).fieldsValid;
+const isPristine = createIsPristine(baseStrategy);
+const isRetouched = createIsRetouched(baseStrategy);
 
 const immutableStrategy = {
   ...baseStrategy,
   getForm: immutableGetForm,
   getFieldFromState: immutableGetFieldFromState,
+  initialFieldState: immutableInitialFieldState,
+  getField: createGetField(baseStrategy),
+  isValid,
+  fieldsValid,
+  isPristine,
+  isRetouched,
 };
 
-function transformAction(action) {
-  if (action.value && action.value.toJS) {
-    return {
-      ...action,
-      value: action.value.toJS(),
-    };
-  }
+// function transformAction(action) {
+//   if (action.value && action.value.toJS) {
+//     return {
+//       ...action,
+//       value: action.value.toJS(),
+//     };
+//   }
 
-  if (action.actions) {
-    return {
-      ...action,
-      actions: action.actions.map(transformAction),
-    };
-  }
+//   if (action.actions) {
+//     return {
+//       ...action,
+//       actions: action.actions.map(transformAction),
+//     };
+//   }
 
-  return action;
-}
+//   return action;
+// }
 
 function immutableFormReducer(model, initialState = new Immutable.Map(), options = {}) {
-  const _initialState = initialState && initialState.toJS
-    ? initialState.toJS()
-    : initialState;
-
-  return formReducer(model, _initialState, {
+  return formReducer(model, initialState, {
     ...options,
-    transformAction,
+    // transformAction,
+  }, {
+    defaultPlugins: [
+      createChangeActionReducer(immutableStrategy),
+      createFormActionReducer(immutableStrategy),
+    ],
+    ...immutableStrategy
   });
 }
 
@@ -116,8 +147,7 @@ const immutableModelReducer = createModeler(immutableStrategy);
 const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
 const immutableControlPropsMap = createControlPropsMap();
 const ImmutableControl = createControlClass(immutableControlPropsMap, {
-  get: immutableGetFromState,
-  getFieldFromState: immutableGetFieldFromState,
+  ...immutableStrategy,
   actions: immutableModelActions,
 });
 const ImmutableField = createFieldClass(immutableControlPropsMap, {
@@ -126,6 +156,7 @@ const ImmutableField = createFieldClass(immutableControlPropsMap, {
   getFieldFromState: immutableGetFieldFromState,
   changeAction: immutableModelActions.change,
   actions: immutableModelActions,
+  fromJS: immutableStrategy.fromJS
 });
 const ImmutableErrors = createErrorsClass(immutableStrategy);
 const ImmutableForm = createFormClass({
@@ -137,9 +168,7 @@ const immutableFormCombiner = createFormCombiner({
   modelReducer: immutableModelReducer,
   formReducer: immutableFormReducer,
   modeled: immutableModelReducerEnhancer,
-  toJS: (val) => ((val && val.toJS)
-    ? val.toJS()
-    : val),
+  ...immutableStrategy
 });
 
 const immutableCombineForms = immutableFormCombiner.combineForms;
@@ -153,7 +182,7 @@ export {
   immutableCreateForms as createForms,
 
   // Constants
-  initialFieldState,
+  immutableInitialFieldState as initialFieldState,
   immutableActions as actions,
   actionTypes,
   immutableControlPropsMap as controls,
@@ -173,10 +202,15 @@ export {
 
   // Selectors
   form,
+  isValid,
+  isPristine,
+  isRetouched,
 
   // Utilities
   immutableGetFieldFromState as getField,
   immutableGetForm as getForm,
   immutableGetFormStateKey as getFormStateKey,
   track,
+
+  immutableStrategy as strategy,
 };

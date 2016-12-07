@@ -1,16 +1,39 @@
 import _get from '../utils/get';
+import Immutable from 'immutable';
 import i from 'icepick';
 import arraysEqual from '../utils/arrays-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import isArray from 'lodash/isArray';
-import mapValues from '../utils/map-values';
+import identity from 'lodash/identity';
+import _mapValues from '../utils/map-values';
 import toPath from '../utils/to-path';
 import composeReducers from '../utils/compose-reducers';
 import createBatchReducer from '../enhancers/batched-enhancer';
-import initialFieldState from '../constants/initial-field-state';
+import _initialFieldState from '../constants/initial-field-state';
+import isValid, { fieldsValid } from '../form/is-valid';
+import isPristine from '../form/is-pristine';
+import _changeActionReducer from './form/change-action-reducer';
+import _formActionsReducer from './form-actions-reducer';
 
-import changeActionReducer from './form/change-action-reducer';
-import formActionsReducer from './form-actions-reducer';
+const defaultStrategies = {
+  defaultPlugins: [
+    _changeActionReducer,
+    _formActionsReducer,
+  ],
+  get: _get,
+  set: i.set,
+  isValid,
+  isPristine,
+  fieldsValid,
+  keys: Object.keys,
+  setIn: i.setIn,
+  initialFieldState: _initialFieldState,
+  fromJS: identity,
+  toJS: identity,
+  merge: i.assign,
+  mergeDeep: i.merge,
+  mapValues: _mapValues,
+};
 
 function getSubModelString(model, subModel) {
   if (!model) return subModel;
@@ -18,37 +41,37 @@ function getSubModelString(model, subModel) {
   return `${model}.${subModel}`;
 }
 
-export function createInitialState(model, state, customInitialFieldState = {}, options = {}) {
+export function createInitialState(model, state, customInitialFieldState = {}, options = {}, s = defaultStrategies) {
   let initialState;
+
   const {
     lazy = false,
   } = options;
 
-  if (isArray(state) || isPlainObject(state)) {
+  if (isArray(state) || isPlainObject(state) || Immutable.Iterable.isIterable(state)) {
     initialState = lazy
-      ? {}
-      : mapValues(state, (subState, subModel) =>
-        createInitialState(getSubModelString(model, subModel), subState, customInitialFieldState));
+      ? s.fromJS({})
+      : s.mapValues(state, (subState, subModel) => createInitialState(getSubModelString(model, subModel), subState, s.fromJS(customInitialFieldState), undefined, s));
   } else {
-    return i.merge(initialFieldState, {
+    return s.merge(s.initialFieldState, s.fromJS({
       initialValue: state,
       value: state,
       model,
       ...customInitialFieldState,
-    });
+    }));
   }
 
-  const initialForm = i.merge(initialFieldState, {
+  const initialForm = s.merge(s.initialFieldState, s.fromJS({
     initialValue: state,
     value: state,
     model,
     ...customInitialFieldState,
-  });
+  }));
 
-  return i.set(initialState, '$form', initialForm);
+  return s.set(initialState, '$form', initialForm);
 }
 
-function wrapFormReducer(plugin, modelPath, initialState) {
+function wrapFormReducer(plugin, modelPath, initialState, strategies) {
   return (state = initialState, action) => {
     if (!action.model) return state;
 
@@ -60,19 +83,15 @@ function wrapFormReducer(plugin, modelPath, initialState) {
 
     const localPath = path.slice(modelPath.length);
 
-    return plugin(state, action, localPath);
+    return plugin(state, action, localPath, strategies);
   };
 }
-
-const defaultPlugins = [
-  formActionsReducer,
-  changeActionReducer,
-];
 
 export default function createFormReducer(
   model,
   initialState = {},
   options = {},
+  s = defaultStrategies
 ) {
   const {
     plugins = [],
@@ -81,11 +100,11 @@ export default function createFormReducer(
   } = options;
   const modelPath = toPath(model);
   const initialFormState = createInitialState(model, initialState,
-    customInitialFieldState, options);
+    customInitialFieldState, options, s);
 
   const wrappedPlugins = plugins
-    .concat(defaultPlugins)
-    .map((plugin) => wrapFormReducer(plugin, modelPath, initialFormState));
+    .concat(s.defaultPlugins)
+    .map((plugin) => wrapFormReducer(plugin, modelPath, initialFormState, s));
 
   return createBatchReducer(composeReducers(...wrappedPlugins), undefined, {
     transformAction,

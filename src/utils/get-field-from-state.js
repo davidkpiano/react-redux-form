@@ -5,10 +5,13 @@ import isPlainObject from 'lodash/isPlainObject';
 
 const defaultStrategy = {
   getForm,
+  get,
+  isObject: isPlainObject
 };
 
 export default function getFieldFromState(state, modelString, s = defaultStrategy) {
-  const form = (state && '$form' in state)
+  let stateForm = s.get(state, '$form');
+  const form = (state && stateForm)
     ? state
     : s.getForm(state, modelString);
 
@@ -16,12 +19,14 @@ export default function getFieldFromState(state, modelString, s = defaultStrateg
 
   if (!modelString.length) return form;
 
-  const formPath = toPath(form.$form.model);
+  const formPath = toPath(s.get(form, ['$form', 'model']));
   const fieldPath = toPath(modelString).slice(formPath.length);
-  const field = get(form, fieldPath);
+  const field = s.get(form, fieldPath);
 
   if (!field) return null;
-  if (isPlainObject(field) && '$form' in field) return field.$form;
+
+  let fieldForm = s.get(field, '$form');
+  if (s.isObject(field) && fieldForm) return fieldForm;
 
   return field;
 }

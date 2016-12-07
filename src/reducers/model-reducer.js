@@ -6,20 +6,16 @@ import toPath from '../utils/to-path';
 import actionTypes from '../action-types';
 import createBatchReducer from '../enhancers/batched-enhancer';
 
-function icepickSet(state, path, value) {
-  return i.setIn(state, path, value);
-}
-
 const defaultStrategy = {
   get: _get,
-  set: icepickSet,
+  setIn: i.setIn,
   object: {},
 };
 
 function createModeler(strategy = defaultStrategy) {
   const {
     get: getter,
-    set: setter,
+    setIn: setter,
     object,
   } = strategy;
 

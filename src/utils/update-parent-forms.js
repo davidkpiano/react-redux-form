@@ -1,24 +1,30 @@
 import i from 'icepick';
 import get from './get';
 
-export default function updateParentForms(state, localPath, updater) {
+const defaultStrategies = {
+  get,
+  setIn: i.setIn,
+  mergeDeep: i.merge,
+};
+
+export default function updateParentForms(state, localPath, updater, s = defaultStrategies) {
   const parentLocalPath = localPath.slice(0, -1);
 
   const value = parentLocalPath.length
-    ? get(state, parentLocalPath)
+    ? s.get(state, parentLocalPath)
     : state;
 
   if (!value) return state;
 
-  const form = value.$form;
+  const form = s.get(value, '$form');
 
   const updatedValue = typeof updater === 'function'
     ? updater(value)
     : updater;
 
-  const newState = i.setIn(state, [...parentLocalPath, '$form'], i.merge(form, updatedValue));
+  const newState = s.setIn(state, [...parentLocalPath, '$form'], s.mergeDeep(form, updatedValue));
 
   if (!parentLocalPath.length) return newState;
 
-  return updateParentForms(newState, parentLocalPath, updater);
+  return updateParentForms(newState, parentLocalPath, updater, s);
 }

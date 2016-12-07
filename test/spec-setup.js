@@ -1,6 +1,9 @@
-import jsdom from 'jsdom';
-import chai from 'chai';
-import chaiSubset from 'chai-subset';
+require('babel-register')({
+});
+
+var jsdom = require('jsdom');
+var chai = require('chai');
+var chaiSubset = require('chai-subset');
 
 chai.use(chaiSubset);
 

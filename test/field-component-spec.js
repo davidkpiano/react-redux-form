@@ -10,6 +10,7 @@ import capitalize from 'lodash/capitalize';
 import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
 import toPath from 'lodash/toPath';
+import identity from 'lodash/identity';
 import sinon from 'sinon';
 import createTestStore from 'redux-test-store';
 import { testCreateStore, testRender } from './utils';
@@ -28,6 +29,7 @@ import {
   actions as immutableActions,
   modelReducer as immutableModelReducer,
   formReducer as immutableFormReducer,
+  strategy as immutableStrategy
 } from '../immutable';
 import isValid from '../src/form/is-valid';
 
@@ -39,6 +41,9 @@ const testContexts = {
     formReducer: _formReducer,
     get: _get,
     length: (value) => value.length,
+    isValid: isValid,
+    toJS: identity,
+    getInitialState: (state) => state,
   },
   immutable: {
     Field: ImmutableField,
@@ -46,15 +51,12 @@ const testContexts = {
     modelReducer: (model, initialState) =>
       immutableModelReducer(model, Immutable.fromJS(initialState)),
     formReducer: immutableFormReducer,
-    get: (value, path) => {
-      const result = value.getIn(toPath(path));
-      try {
-        return result.toJS();
-      } catch (e) {
-        return result;
-      }
-    },
+    get: (value, path) => value.getIn(toPath(path)),
     length: (value) => value.size,
+    isValid: immutableStrategy.isValid,
+    s: immutableStrategy,
+    toJS: (obj) => obj.toJS(),
+    getInitialState: (state) => Immutable.fromJS(state),
   },
 };
 
@@ -66,6 +68,10 @@ Object.keys(testContexts).forEach((testKey) => {
   const formReducer = testContext.formReducer;
   const get = testContext.get;
   const length = testContext.length;
+  const s = testContext.s;
+  const isValid = testContext.isValid;
+  const toJS = testContext.toJS;
+  const getInitialState = testContext.getInitialState;
 
   describe('<Field /> component', () => {
     const textFieldElements = [
@@ -262,17 +268,13 @@ Object.keys(testContexts).forEach((testKey) => {
         it('should dispatch a focus event when focused', () => {
           TestUtils.Simulate.focus(node);
 
-          assert.containSubset(
-            store.getState().testForm.foo,
-            { focus: true });
+          assert.equal(get(store.getState().testForm, ['foo', 'focus']), true);
         });
 
         it('should dispatch a blur event when blurred', () => {
           TestUtils.Simulate.blur(node);
 
-          assert.containSubset(
-            store.getState().testForm.foo,
-            { focus: false });
+          assert.equal(get(store.getState().testForm, ['foo', 'focus']), false);
         });
 
         it('should dispatch a change event when changed', () => {
@@ -510,31 +512,31 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.change(checkboxes[0]);
 
         assert.sameMembers(
-          get(store.getState().test, 'foo'),
+          toJS(get(store.getState().test, 'foo')),
           [], 'all unchecked');
 
         TestUtils.Simulate.change(checkboxes[1]);
 
         assert.sameMembers(
-          get(store.getState().test, 'foo'),
+          toJS(get(store.getState().test, 'foo')),
           [2], 'one checked');
 
         TestUtils.Simulate.change(checkboxes[0]);
 
         assert.sameMembers(
-          get(store.getState().test, 'foo'),
+          toJS(get(store.getState().test, 'foo')),
           [1, 2], 'two checked');
 
         TestUtils.Simulate.change(checkboxes[2]);
 
         assert.sameMembers(
-          get(store.getState().test, 'foo'),
+          toJS(get(store.getState().test, 'foo')),
           [1, 2, 3], 'all checked');
 
         TestUtils.Simulate.change(checkboxes[0]);
 
         assert.sameMembers(
-          get(store.getState().test, 'foo'),
+          toJS(get(store.getState().test, 'foo')),
           [2, 3], 'one unchecked');
       });
 
@@ -749,7 +751,7 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.change(control);
 
         assert.deepEqual(
-          store.getState().testForm.foo.errors,
+          toJS(store.getState().testForm).foo.errors,
           {
             good: false,
             bad: true,
@@ -761,7 +763,7 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.change(control);
 
         assert.deepEqual(
-          store.getState().testForm.foo.errors,
+          toJS(store.getState().testForm).foo.errors,
           {
             good: false,
             bad: true,
@@ -871,26 +873,20 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.Simulate.change(checkboxes[0]);
 
-        assert.isTrue(store.getState().testForm.items.$form.valid);
-        assert.isTrue(
-          store.getState().testForm.items.$form.validity.required);
+        assert.isTrue(get(store.getState().testForm, ['items','$form','valid']));
+        assert.isTrue(get(store.getState().testForm, ['items','$form','validity','required']));
 
         TestUtils.Simulate.change(checkboxes[1]);
-        assert.isTrue(
-          store.getState().testForm.items.$form.validity.required);
-        assert.isTrue(
-          store.getState().testForm.items.$form.validity.values);
+        assert.isTrue(get(store.getState().testForm, ['items','$form','validity','required']));
+        assert.isTrue(get(store.getState().testForm, ['items','$form','validity','values']));
 
         TestUtils.Simulate.change(checkboxes[0]);
-        assert.isTrue(
-          store.getState().testForm.items.$form.validity.required);
-        assert.isTrue(
-          store.getState().testForm.items.$form.validity.values);
+        assert.isTrue(get(store.getState().testForm, ['items','$form','validity','required']));
+        assert.isTrue(get(store.getState().testForm, ['items','$form','validity','values']));
 
         TestUtils.Simulate.change(checkboxes[1]);
-        assert.isFalse(
-          store.getState().testForm.items.$form.validity.required);
-        assert.isFalse(store.getState().testForm.items.$form.valid);
+        assert.isFalse(get(store.getState().testForm, ['items','$form','validity','required']));
+        assert.isFalse(get(store.getState().testForm, ['items','$form','valid']));
       });
     });
 
@@ -1080,23 +1076,15 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.Simulate.change(control);
 
-        assert.deepEqual(
-          store.getState().testForm.foo.errors,
-          {
-            length: false,
-            valid: false,
-          });
-
+        assert.isFalse(get(store.getState().testForm, ['foo', 'error', 'length']));
+        assert.isFalse(get(store.getState().testForm, ['foo', 'error', 'valid']));
+        
         control.value = 'invalid string';
 
         TestUtils.Simulate.change(control);
 
-        assert.deepEqual(
-          store.getState().testForm.foo.errors,
-          {
-            length: 'too long',
-            valid: 'not valid',
-          });
+        assert.equal(get(store.getState().testForm, ['foo', 'error', 'length']), 'too long');
+        assert.equal(get(store.getState().testForm, ['foo', 'error', 'valid']), 'not valid');
       });
 
       it('should only validate errors on blur if validateOn="blur"', () => {
@@ -1144,33 +1132,20 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.equal(timesValidationCalled, 2,
           'validation should be called again on blur');
 
-        assert.deepEqual(
-          store.getState().testForm.foo.errors,
-          {
-            length: false,
-            valid: false,
-          });
+        assert.isFalse(get(store.getState().testForm, ['foo', 'errors', 'length']));
+        assert.isFalse(get(store.getState().testForm, ['foo', 'errors', 'valid']));
 
         control.value = 'invalid string';
 
-
         TestUtils.Simulate.change(control);
 
-        assert.deepEqual(
-          store.getState().testForm.foo.errors,
-          {
-            length: false,
-            valid: false,
-          });
+        assert.isFalse(get(store.getState().testForm, ['foo', 'errors', 'length']));
+        assert.isFalse(get(store.getState().testForm, ['foo', 'errors', 'valid']));
 
         TestUtils.Simulate.blur(control);
 
-        assert.deepEqual(
-          store.getState().testForm.foo.errors,
-          {
-            length: 'too long',
-            valid: 'not valid',
-          });
+        assert.equal(get(store.getState().testForm, ['foo', 'errors', 'length']), 'too long');
+        assert.equal(get(store.getState().testForm, ['foo', 'errors', 'valid']), 'not valid');
       });
 
       it('should handle a validator function for errors', () => {
@@ -1195,7 +1170,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
         assert.equal(
-          store.getState().testForm.foo.errors,
+          toJS(store.getState().testForm).foo.errors,
           'Required');
 
         control.value = 'valid';
@@ -1203,7 +1178,7 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.change(control);
 
         assert.deepEqual(
-          store.getState().testForm.foo.errors,
+          toJS(store.getState().testForm).foo.errors,
           false);
       });
     });
@@ -1402,7 +1377,7 @@ Object.keys(testContexts).forEach((testKey) => {
         );
 
         assert.containSubset(
-          store.getState().testForm.foo,
+          toJS(store.getState().testForm).foo,
           {
             validity: {
               initial: false,
@@ -1687,13 +1662,13 @@ Object.keys(testContexts).forEach((testKey) => {
     // TODO: control
     it('should remove the item at the specified index of the array'
       + 'represented by the model', (done) => {
-      const initialState = {
+      const initialState = getInitialState({
         foo: [
           { val: 1 },
           { val: 2 },
           { val: 3 },
         ],
-      };
+      });
 
       const store = createTestStore(applyMiddleware(thunk)(createStore)(combineReducers({
         form: formReducer('test', initialState),
@@ -1921,8 +1896,8 @@ Object.keys(testContexts).forEach((testKey) => {
     describe('unmounting', () => {
       it('should set the validity of the model to true when umounted', () => {
         const store = applyMiddleware(thunk)(createStore)(combineReducers({
-          test: modelReducer('test', { foo: '' }),
-          testForm: formReducer('test', { foo: '' }),
+          test: modelReducer('test', getInitialState({ foo: '' })),
+          testForm: formReducer('test', getInitialState({ foo: '' })),
         }));
 
         const container = document.createElement('div');
@@ -1949,8 +1924,8 @@ Object.keys(testContexts).forEach((testKey) => {
 
       it('should only reset the validity of field-specific validators', () => {
         const store = applyMiddleware(thunk)(createStore)(combineReducers({
-          test: modelReducer('test', { foo: '' }),
-          testForm: formReducer('test', { foo: '' }),
+          test: modelReducer('test', getInitialState({ foo: '' })),
+          testForm: formReducer('test', getInitialState({ foo: '' })),
         }));
 
         const container = document.createElement('div');
@@ -1995,8 +1970,8 @@ Object.keys(testContexts).forEach((testKey) => {
     describe('with input type="reset"', () => {
       it('should reset the given model', () => {
         const store = applyMiddleware(thunk)(createStore)(combineReducers({
-          test: modelReducer('test', { foo: '' }),
-          testForm: formReducer('test', { foo: '' }),
+          test: modelReducer('test', getInitialState({ foo: '' })),
+          testForm: formReducer('test', getInitialState({ foo: '' })),
         }));
 
         const container = document.createElement('div');
@@ -2109,6 +2084,7 @@ Object.keys(testContexts).forEach((testKey) => {
         test: modelReducer('test', { foo: 'bar' }),
         testForm: formReducer('test'),
       });
+
       const field = testRender(
         <Field model="test.foo">
         {(fieldValue) => <input
@@ -2136,7 +2112,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.Simulate.focus(input);
 
-        assert.isTrue(store.getState().testForm.foo.focus);
+        assert.isTrue(get(store.getState().testForm, ['foo', 'focus']));
 
         assert.ok(TestUtils.findRenderedDOMComponentWithClass(field, 'focused'));
       });

@@ -1,27 +1,49 @@
 import isPlainObject from 'lodash/isPlainObject';
+import get from '../utils/get';
+import Immutable from 'immutable';
 
-export default function isValid(formState) {
-  if (!formState) return true;
+const defaultStrategies = {
+  get,
+  keys: Object.keys
+};
 
-  if (!formState.$form) {
-    const { errors } = formState;
+export function create(s = defaultStrategies) {
+  function isValid(formState) {
+    if (!formState) return true;
 
-    if (!Array.isArray(errors) && !isPlainObject(errors)) {
-      return !errors;
+    if (!s.get(formState, '$form')) {
+      const errors = s.get(formState, 'errors');
+
+      if (!Array.isArray(errors) && !isPlainObject(errors) && !Immutable.Iterable.isIterable(errors)) {
+        return !errors;
+      }
+
+      return s.keys(errors).every((errorKey) => {
+        const valid = !s.get(errors, errorKey);
+
+        return valid;
+      });
     }
 
-    return Object.keys(formState.errors).every((errorKey) => {
-      const valid = !formState.errors[errorKey];
-
-      return valid;
-    });
+    return s.keys(formState)
+      .every((key) => {
+        return isValid(s.get(formState, key));
+      });
   }
 
-  return Object.keys(formState)
-    .every((key) => isValid(formState[key]));
+  function fieldsValid(formState) {
+    return s.keys(formState)
+      .every((key) => (key === '$form') || isValid(s.get(formState, key)));
+  }
+
+  return {
+    isValid,
+    fieldsValid
+  };
 }
 
-export function fieldsValid(formState) {
-  return Object.keys(formState)
-    .every((key) => (key === '$form') || isValid(formState[key]));
-}
+const mutableFn = create();
+const isValid = mutableFn.isValid;
+
+export default isValid;
+export const fieldsValid = mutableFn.fieldsValid;

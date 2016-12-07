@@ -103,6 +103,7 @@ const defaultStrategy = {
   Control,
   getFieldFromState,
   actions,
+  fromJS: identity,
 };
 
 function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
@@ -113,7 +114,7 @@ function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
 
     const modelString = getModel(model, state);
     const fieldValue = s.getFieldFromState(state, modelString)
-      || initialFieldState;
+      || s.fromJS(initialFieldState);
 
     return {
       model: modelString,

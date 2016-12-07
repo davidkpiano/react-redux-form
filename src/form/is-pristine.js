@@ -1,15 +1,27 @@
-export default function isPristine(formState) {
-  if (!formState) return false;
+import get from '../utils/get';
 
-  // Form is pristine
-  if (!formState.$form) {
-    return formState.pristine;
+const defaultStrategies = {
+  get,
+  keys: Object.keys
+};
+
+export function create(s = defaultStrategies) {
+  return function isPristine(formState) {
+    if (!formState) return false;
+
+    // Form is pristine
+    if (!s.get(formState, '$form')) {
+      return s.get(formState, 'pristine');
+    }
+
+    // Every field in form is pristine
+    return s.keys(formState).every((key) => {
+      if (key === '$form') return true;
+
+      return isPristine(s.get(formState, key));
+    });
   }
-
-  // Every field in form is pristine
-  return Object.keys(formState).every((key) => {
-    if (key === '$form') return true;
-
-    return isPristine(formState[key]);
-  });
 }
+
+const isPristine = create();
+export default isPristine;

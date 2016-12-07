@@ -9,6 +9,7 @@ import sinon from 'sinon';
 
 import _get from 'lodash/get';
 import toPath from 'lodash/toPath';
+import identity from 'lodash/identity';
 import i from 'icepick';
 import Immutable from 'immutable';
 
@@ -24,22 +25,20 @@ export const defaultTestContexts = {
     set: (state, path, value) => i.setIn(state, path, value),
     length: (value) => value.length,
     getInitialState: (state) => state,
+    fromJS: identity,
   },
   immutable: {
     object: new Immutable.Map(),
+    keys: (state) => state.keySeq(),
     get: (value, path) => {
-      if (!path) return value.toJS();
+      if (!path) return value;
 
-      const result = value.getIn(toPath(path));
-      try {
-        return result.toJS();
-      } catch (e) {
-        return result;
-      }
+      return value.getIn(toPath(path));
     },
     set: (state, path, value) => state.setIn(path, value),
     length: (value) => value.size,
     getInitialState: (state) => Immutable.fromJS(state),
+    fromJS: Immutable.fromJS,
   },
 };
 

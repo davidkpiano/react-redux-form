@@ -158,7 +158,7 @@ function createFieldActions(s = defaultStrategies) {
     if (options.validate) {
       const form = s.getForm(getState(), model);
 
-      if (!form.$form.valid) {
+      if (!s.get(form, ['$form', 'valid'])) {
         return dispatch(NULL_ACTION);
       }
 

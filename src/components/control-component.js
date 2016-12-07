@@ -8,6 +8,7 @@ import merge from '../utils/merge';
 import mapValues from '../utils/map-values';
 import isPlainObject from 'lodash/isPlainObject';
 import i from 'icepick';
+import getForm from '../utils/get-form';
 import omit from '../utils/omit';
 import actionTypes from '../action-types';
 
@@ -107,6 +108,11 @@ const defaultStrategy = {
   get: _get,
   getFieldFromState,
   actions,
+  initialFieldState,
+  getForm,
+  isObject: isPlainObject,
+  toJS: identity,
+  keys: (obj) => Object.keys(obj),
 };
 
 function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
@@ -253,7 +259,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           ? merge(invertValidity(fieldValidity), fieldErrors)
           : fieldErrors;
 
-        if (!fieldValue || !shallowEqual(mergedErrors, fieldValue.errors)) {
+        if (!fieldValue || !shallowEqual(mergedErrors, s.toJS(s.get(fieldValue, 'errors')))) {
           return actions.setErrors(model, mergedErrors);
         }
       } else if (nodeErrors && Object.keys(nodeErrors).length) {
@@ -284,11 +290,11 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       // If any sync validity is invalid,
       // do not run async validation
       const asyncValidatorKeys = Object.keys(asyncValidators);
-      const syncValid = Object.keys(fieldValue.validity).every((key) => {
+      const syncValid = s.keys(s.get(fieldValue, 'validity')).every((key) => {
         // If validity is based on async validator, skip
         if (!!~asyncValidatorKeys.indexOf(key)) return true;
 
-        return fieldValue.validity[key];
+        return s.get(fieldValue, ['validity', key]);
       });
 
       if (!syncValid) return false;
@@ -350,14 +356,15 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         model,
         modelValue,
         fieldValue,
-        fieldValue: { intents },
         controlProps,
         dispatch,
         updateOn,
         validateOn = updateOn,
       } = this.props;
 
-      if (!intents.length) return;
+      const intents = s.get(fieldValue, 'intents');
+
+      if (!intents.length || !intents.size) return;
 
       intents.forEach((intent) => {
         switch (intent.type) {
@@ -365,7 +372,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
             if (isNative) return;
 
             const readOnlyValue = isReadOnlyValue(controlProps);
-            const focused = fieldValue.focus;
+            const focused = s.get(fieldValue, 'focus');
 
             if ((focused && this.node.focus)
               && (
@@ -601,8 +608,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     } = props;
 
     const modelString = getModel(model, state);
-    const fieldValue = s.getFieldFromState(state, modelString)
-      || initialFieldState;
+    const fieldValue = s.getFieldFromState(state, modelString, s)
+      || s.initialFieldState;
 
     return {
       model: modelString,

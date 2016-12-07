@@ -1,0 +1,2658 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"invalid",
+				"invalidItem"
+			],
+			[
+				"valid",
+				"validItem〔variable〕"
+			],
+			[
+				"billingInfo",
+				"billingInfoInitialState"
+			],
+			[
+				"Column",
+				"ColumnWrapper"
+			],
+			[
+				"PropType",
+				"PropTypes.object"
+			],
+			[
+				"esc",
+				"escapeEtago〔variable〕"
+			],
+			[
+				"compon",
+				"componentWillReceiveProps	 Life Cycle"
+			],
+			[
+				"componen",
+				"componentDidMount	 Life Cycle"
+			],
+			[
+				"component",
+				"componentPath"
+			],
+			[
+				"compone",
+				"componentId"
+			],
+			[
+				"render",
+				"renderResult"
+			],
+			[
+				"trace",
+				"traceNumber"
+			],
+			[
+				"serializ",
+				"serialize"
+			],
+			[
+				"serialize",
+				"serializedStore"
+			],
+			[
+				"reques",
+				"requests_implementation"
+			],
+			[
+				"HTTP",
+				"HTTPDaemon"
+			],
+			[
+				"WEBPACK",
+				"WEBPACK_DLL_ASSETS_PATH〔variable〕"
+			],
+			[
+				"ser",
+				"serverConfig〔variable〕"
+			],
+			[
+				"clien",
+				"clientConfig〔variable〕"
+			],
+			[
+				"gener",
+				"generatedAssetStats"
+			],
+			[
+				"module",
+				"moduleId"
+			],
+			[
+				"exter",
+				"externals"
+			],
+			[
+				"embed",
+				"embedInstructions"
+			],
+			[
+				"__G",
+				"__GRAPHITE_PORT__"
+			],
+			[
+				"issue",
+				"issue_placeholder"
+			],
+			[
+				"Metrics",
+				"MetricsClient"
+			],
+			[
+				"page",
+				"page_list"
+			],
+			[
+				"object",
+				"Object"
+			],
+			[
+				"suggestion",
+				"suggestionQuery〔variable〕"
+			],
+			[
+				"requ",
+				"request"
+			],
+			[
+				"js",
+				"jsIncludes"
+			],
+			[
+				"score",
+				"scoreCard〔variable〕"
+			],
+			[
+				"pos",
+				"position"
+			],
+			[
+				"initia",
+				"initializeEditor"
+			],
+			[
+				"min",
+				"minWidth"
+			],
+			[
+				"color-grey",
+				"color-grey-2"
+			],
+			[
+				"feature",
+				"featureType"
+			],
+			[
+				"duplica",
+				"duplicateElement"
+			],
+			[
+				"thumbnail",
+				"thumbnail-min-width"
+			],
+			[
+				"thumb",
+				"thumbnail-width"
+			],
+			[
+				"thumbn",
+				"thumbnail-min-width"
+			],
+			[
+				"on-page",
+				"on-page-width"
+			],
+			[
+				"visits",
+				"visits-width"
+			],
+			[
+				"description",
+				"description-width"
+			],
+			[
+				"posted-w",
+				"posted-width"
+			],
+			[
+				"description-",
+				"description-min-width"
+			],
+			[
+				"com",
+				"component〔argument〕"
+			],
+			[
+				"satu",
+				"desaturate(color, 10%)"
+			],
+			[
+				"SERV",
+				"SERVICE_IP"
+			],
+			[
+				"store",
+				"storeContents"
+			],
+			[
+				"fun",
+				"function	React.PropTypes.func"
+			],
+			[
+				"message",
+				"messagePromise"
+			],
+			[
+				"prefe",
+				"prefetchDataPromise〔variable〕"
+			],
+			[
+				"custom",
+				"customOnClick"
+			],
+			[
+				"class",
+				"className〔variable〕"
+			],
+			[
+				"React",
+				"ReactDOMServer〔variable〕"
+			],
+			[
+				"cache",
+				"cacheContent"
+			],
+			[
+				"componentWill",
+				"componentWillMount	Life Cycle Method"
+			],
+			[
+				"delay",
+				"delayIndex〔variable〕"
+			],
+			[
+				"Snowflake",
+				"SnowflakeContainer"
+			],
+			[
+				"SnowFlake",
+				"SnowflakeContainer"
+			],
+			[
+				"style",
+				"stylesheetUrl〔variable〕"
+			],
+			[
+				"webpack",
+				"webpack_configuration"
+			],
+			[
+				"extrac",
+				"extractedChunk"
+			],
+			[
+				"Footer",
+				"FooterLinkColumns"
+			],
+			[
+				"columnWidth",
+				"columnWidths"
+			],
+			[
+				"Colu",
+				"ColumnLayout"
+			],
+			[
+				"complete",
+				"completeTodo"
+			],
+			[
+				"backgr",
+				"background-color"
+			],
+			[
+				"get",
+				"getInitialState	Life Cycle Method"
+			],
+			[
+				"func",
+				"function"
+			],
+			[
+				"Todo",
+				"TodoStore〔variable〕"
+			],
+			[
+				"watch",
+				"watchlistAds"
+			],
+			[
+				"envi",
+				"environment"
+			],
+			[
+				"environ",
+				"environmentVariables"
+			],
+			[
+				"deplo",
+				"deployFlags"
+			],
+			[
+				"down",
+				"downStreamJob"
+			],
+			[
+				"Com",
+				"Component"
+			],
+			[
+				"cli",
+				"cliParams〔variable〕"
+			],
+			[
+				"NEXUS",
+				"NEXUS_USER"
+			],
+			[
+				"Dumb",
+				"DumbInner"
+			],
+			[
+				"TodoList",
+				"TodoListItem"
+			],
+			[
+				"NewTodo",
+				"NewTodoInput"
+			],
+			[
+				"sandbo",
+				"sandboxInstance"
+			],
+			[
+				"data",
+				"dataMarkup"
+			],
+			[
+				"serv",
+				"serviceUrl"
+			],
+			[
+				"Hello",
+				"HelloWorldWidget"
+			],
+			[
+				"Webpack",
+				"WebpackDevServer"
+			],
+			[
+				"metada",
+				"metadataMeta"
+			],
+			[
+				"wrapper",
+				"wrapperInstance"
+			],
+			[
+				"super",
+				"superagent"
+			],
+			[
+				"service",
+				"serviceEndpoint"
+			],
+			[
+				"make_json",
+				"make_json_app〔function〕"
+			],
+			[
+				"update",
+				"updateTasks"
+			],
+			[
+				"Curren",
+				"CurrentTaskView〔variable〕"
+			],
+			[
+				"c-button",
+				"c-button-green"
+			],
+			[
+				"text-",
+				"text-align"
+			],
+			[
+				"web",
+				"webpackDevConfig〔variable〕"
+			],
+			[
+				"EXIF",
+				"EXIF_ORIENTATION_TAG〔variable〕"
+			],
+			[
+				"file",
+				"file_extension"
+			],
+			[
+				"clear",
+				"clearTodos"
+			],
+			[
+				"getElemnt",
+				"getElementsByTagName〔function〕"
+			],
+			[
+				"conver",
+				"convertToSomethingElse"
+			],
+			[
+				"build",
+				"buildCss"
+			],
+			[
+				"selected",
+				"selectedTimes"
+			],
+			[
+				"swap",
+				"swapstopId"
+			],
+			[
+				"selec",
+				"selectedTimes"
+			],
+			[
+				"val",
+				"value"
+			],
+			[
+				"Swaptime",
+				"SwaptimeActions"
+			],
+			[
+				"Selec",
+				"selectedTimes"
+			],
+			[
+				"selecte",
+				"SelectedSnapspot"
+			],
+			[
+				"Selected",
+				"selectedSnapspots"
+			],
+			[
+				"react",
+				"reactGoogleMaps"
+			],
+			[
+				"reac",
+				"reactGoogleMaps"
+			],
+			[
+				"announ",
+				"AnnouncementNotifier"
+			],
+			[
+				"Ann",
+				"AnnouncementForm"
+			],
+			[
+				"announce",
+				"announcementForm"
+			],
+			[
+				"ann",
+				"announcementBuffer"
+			],
+			[
+				"anno",
+				"announcement"
+			],
+			[
+				"on",
+				"onAnnouncementAdded"
+			],
+			[
+				"onAnnoun",
+				"onAnnouncementAdded"
+			],
+			[
+				"add",
+				"addNotification"
+			],
+			[
+				"Anno",
+				"AnnouncementActions"
+			],
+			[
+				"nodejs",
+				"nodejs_version"
+			],
+			[
+				"time",
+				"time_period"
+			],
+			[
+				"list",
+				"listingEl"
+			],
+			[
+				"real",
+				"realFlyout"
+			],
+			[
+				"clone",
+				"clonedFlyout"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "src/actions/model-actions.js",
+			"settings":
+			{
+				"buffer_size": 4619,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 174 files for \"list\"\n\n/Users/dfarkov/Projects/core/oss/react-redux-form/.eslintrc:\n    9      \"new-cap\": [\n   10        2, {\n   11:         \"capIsNewExceptions\": [\"List\", \"Map\"]\n   12        }\n   13      ],\n\n/Users/dfarkov/Projects/core/oss/react-redux-form/react-redux-form.sublime-workspace:\n  110  			[\n  111  				\"page\",\n  112: 				\"page_list\"\n  113  			],\n  114  			[\n  ...\n  294  			[\n  295  				\"watch\",\n  296: 				\"watchlistAds\"\n  297  			],\n  298  			[\n  ...\n  329  			],\n  330  			[\n  331: 				\"TodoList\",\n  332: 				\"TodoListItem\"\n  333  			],\n  334  			[\n  ...\n  505  			],\n  506  			[\n  507: 				\"list\",\n  508: 				\"listingEl\"\n  509  			],\n  510  			[\n  ...\n 1122  			\"setValidity\",\n 1123  			\"splice\",\n 1124: 			\"list\",\n 1125  			\"splice\",\n 1126  			\"i.\",\n\n/Users/dfarkov/Projects/core/oss/react-redux-form/examples/server.js:\n   26  app.use(express.static(__dirname));\n   27  \n   28: app.listen(8080, function () {\n   29:   console.log('Server listening on http://localhost:8080, Ctrl+C to stop');\n   30  });\n   31  \n\n/Users/dfarkov/Projects/core/oss/react-redux-form/src/immutable.js:\n   47    getValue,\n   48    keys: immutableKeys,\n   49:   splice: (list, ...args) => {console.log(list, 'list'); return list.splice(...args);},\n   50    merge: (map, ...args) => map.merge(...args),\n   51    remove: (map, ...args) => map.remove(...args),\n   52:   push: (list, ...args) => list.push(...args),\n   53:   length: (list) => list.size,\n   54    object: new Immutable.Map(),\n   55:   array: new Immutable.List(),\n   56    isObject: (state) => (isPlainObject(state) || Immutable.Map.isMap(state)),\n   57  };\n\n/Users/dfarkov/Projects/core/oss/react-redux-form/test/field-component-spec.js:\n 2079      });\n 2080  \n 2081:     describe('whitelisting props', () => {\n 2082        it('should not pass extraneous props to child components', () => {\n 2083          const store = createStore(combineReducers({\n\n20 matches across 5 files\n",
+			"settings":
+			{
+				"buffer_size": 1947,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "src/immutable.js",
+			"settings":
+			{
+				"buffer_size": 5176,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "test/immutable-form-reducer-spec.js",
+			"settings":
+			{
+				"buffer_size": 8637,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "test/form-reducer-spec.js",
+			"settings":
+			{
+				"buffer_size": 8395,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 87.0,
+		"selected_items":
+		[
+			[
+				"js nex",
+				"Set Syntax: JavaScript Next"
+			],
+			[
+				"jaascri",
+				"Set Syntax: JavaScript Next"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			],
+			[
+				"spaces",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"reindent",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"format",
+				"Format: Javascript"
+			],
+			[
+				"indent",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"javascr",
+				"Set Syntax: JavaScript Next"
+			],
+			[
+				"yaml",
+				"Set Syntax: YAML"
+			],
+			[
+				"javasc",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"beautif",
+				"SQL Beautifier: Format Current SQL File"
+			],
+			[
+				"sort",
+				"Sort Lines"
+			],
+			[
+				"java",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"indent ",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"javascript",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"reinden",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"reinde",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"onvert to spa",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"indentation",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"css comb",
+				"Run CSScomb"
+			],
+			[
+				"css",
+				"Set Syntax: CSS"
+			],
+			[
+				"bash",
+				"Set Syntax: Shell Script (Bash)"
+			],
+			[
+				"uppercase",
+				"Convert Case: Upper Case"
+			],
+			[
+				"UPPER",
+				"Convert Case: Upper Case"
+			],
+			[
+				"beauti",
+				"Javascript Beautify"
+			],
+			[
+				"beu",
+				"Javascript Beautify"
+			],
+			[
+				"package",
+				"Package Control: Install Package"
+			],
+			[
+				"convert to spaces",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"js next",
+				"Set Syntax: JavaScript Next"
+			],
+			[
+				"convert to tab",
+				"Indentation: Convert to Tabs"
+			],
+			[
+				"preview",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"link",
+				"Snippet: link - alternate"
+			],
+			[
+				"markdown",
+				"Set Syntax: Markdown"
+			],
+			[
+				"markdown prev",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"tabs",
+				"Indentation: Convert to Tabs"
+			],
+			[
+				"dockerfi",
+				"Set Syntax: Dockerfile"
+			],
+			[
+				"js",
+				"Set Syntax: JavaScript"
+			],
+			[
+				"indent spac",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"package install",
+				"Package Control: Install Package"
+			],
+			[
+				"svg",
+				"Package Control: Discover Packages"
+			],
+			[
+				"xml",
+				"Set Syntax: XML"
+			],
+			[
+				"space",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"convert to",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"upper",
+				"Convert Case: Upper Case"
+			],
+			[
+				"convert",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"header",
+				"Snippet: Markdown_header_(mdh3)"
+			],
+			[
+				"utf8",
+				"ConvertToUTF8: Reload with Encoding"
+			],
+			[
+				"path",
+				"Copy File Path"
+			],
+			[
+				"jsx",
+				"Set Syntax: JSX"
+			],
+			[
+				"thrift",
+				"Set Syntax: Thrift"
+			],
+			[
+				"markdownpreview",
+				"Markdown Preview: Open Markdown Cheat sheet"
+			],
+			[
+				"prett",
+				"Pretty JSON: Format (Pretty Print) JSON"
+			],
+			[
+				"convert to spac",
+				"Indentation: Convert to Spaces"
+			],
+			[
+				"word",
+				"Word Wrap: Toggle"
+			],
+			[
+				"text",
+				"Set Syntax: Plain Text"
+			],
+			[
+				"sql",
+				"Set Syntax: SQL"
+			],
+			[
+				"browser",
+				"Markdown Preview: Preview in Browser"
+			],
+			[
+				"table",
+				"Snippet: <table>"
+			],
+			[
+				"php",
+				"Set Syntax: PHP"
+			],
+			[
+				"encode",
+				"URL Encode"
+			],
+			[
+				"deco",
+				"URL Decode"
+			],
+			[
+				"decode",
+				"URL Decode"
+			],
+			[
+				"html5",
+				"Set Syntax: HTML5"
+			],
+			[
+				"less",
+				"Set Syntax: LESS"
+			],
+			[
+				"puppet",
+				"Set Syntax: Puppet"
+			],
+			[
+				"select",
+				"SublimeLinter: Extract Annotations"
+			],
+			[
+				"lint",
+				"Tag: Lint Selection or Document"
+			],
+			[
+				"tidy",
+				"Tidy HTML"
+			],
+			[
+				"freema",
+				"Set Syntax: FreeMarker"
+			],
+			[
+				"opackage",
+				"Package Control: Install Package"
+			],
+			[
+				"INSTALL",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 593.0
+	},
+	"console":
+	{
+		"height": 487.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/utils/update-field.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/utils/get.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/utils/get-field.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/react-redux-form.sublime-project",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/react-redux-form.sublime-workspace",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/react-redux-form.d.ts",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/lib/components/form-component.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/reducers/form-actions-reducer.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/lib/actions/model-actions.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/reducers/form-reducer.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/actions/model-actions.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/immutable.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/utils/get-field-form.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/utils/compose-reducers.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/utils/invert-validators.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/test/immutable-field-component-spec.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/package.json",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/examples/immutable/components/submit-button.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/test/utils-spec.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/test/utils.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/test/immutable-model-reducer-spec.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/immutable.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/utils/get-from-immutable-state.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/combineForms.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/reducers/forms-reducer.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/utils/get-field-from-state.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/docs/api/Form.md",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/utils/get-form.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/src/components/form-component.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/test/form-reducer-plugins-spec.js",
+		"/Users/dfarkov/Projects/core/oss/react-redux-form/examples/immutable/store.js",
+		"/Users/dfarkov/Projects/core/fes/app/components/Checkout/BillingForm.jsx",
+		"/Users/dfarkov/Projects/core/fes/node_modules/react-redux-form/lib/immutable.js",
+		"/Users/dfarkov/Projects/core/fes/config/webpack-config.server.js",
+		"/Users/dfarkov/Desktop/test/sample2.html",
+		"/Users/dfarkov/Projects/core/fes/node_modules/react-redux-form/src/utils/get-from-immutable-state.js",
+		"/Users/dfarkov/Projects/core/fes/node_modules/react-redux-form/src/utils/get-form.js",
+		"/Users/dfarkov/Projects/core/fes/node_modules/react-redux-form/lib/index.js",
+		"/Users/dfarkov/Projects/core/fes/node_modules/react-redux-form/lib/utils/get-form.js",
+		"/Users/dfarkov/Projects/core/fes/app/components/Checkout/BillingPage.jsx",
+		"/Users/dfarkov/Projects/core/fes/app/redux-helpers/modules/reducer.js",
+		"/Users/dfarkov/Projects/core/fes/app/components/Layout/Columns.jsx",
+		"/Users/dfarkov/Projects/core/fes/config/webpack-config.dll.js",
+		"/Users/dfarkov/Projects/core/fes/app/components/Checkout/BillingForm.jss",
+		"/Users/dfarkov/Projects/core/fes/app/redux-helpers/create.js",
+		"/Users/dfarkov/Projects/core/fes/package.json",
+		"/Users/dfarkov/Projects/core/fes/app/components/Checkout/BillingFormValidator.js",
+		"/Users/dfarkov/Projects/core/fes/node_modules/cssstyle/lib/properties/webkitColumnSpan.js",
+		"/Users/dfarkov/Projects/core/fes/app/components/PostAd/MainForm.jss",
+		"/Users/dfarkov/Projects/core/fes/app/components/Shared/Footer.jss",
+		"/Users/dfarkov/Projects/core/fes/app/redux-helpers/modules/postAd/isShoppingCart.js",
+		"/Users/dfarkov/Projects/core/fes/app/redux-helpers/modules/postAd/isShoppingCart.test.js",
+		"/Users/dfarkov/Projects/core/fes/app/redux-helpers/modules/postAd/insertionFee.test.js",
+		"/Users/dfarkov/Projects/core/fes/app/components/PostAd/Packages/Packages.jsx",
+		"/Users/dfarkov/Projects/core/fes/app/components/PostAd/Packages/Packages.jss",
+		"/Users/dfarkov/Projects/core/fes/app/components/Homepage/GalleryAd.jsx",
+		"/Users/dfarkov/Projects/core/fes/app/components/ViewItem/MemberSince.jsx",
+		"/Users/dfarkov/Projects/core/fes/app/components/PostAd/Packages/PackageButton.jsx",
+		"/Users/dfarkov/Projects/core/fes/app/components/PostAd/Packages/PackageButton.jss",
+		"/Users/dfarkov/Projects/core/fes/app/constants/Components.jsx",
+		"/Users/dfarkov/Projects/core/fes/app/helpers/DevTools.jsx",
+		"/Users/dfarkov/Projects/core/fes/app/redux-helpers/modules/postAd/postAd.js",
+		"/Users/dfarkov/Projects/core/fes/app/components/Shared/Footer.jsx",
+		"/Users/dfarkov/Projects/core/fes/app/helpers/ApiClient.js",
+		"/Users/dfarkov/Projects/core/fes/app/redux-helpers/modules/homepageGallery.js",
+		"/Users/dfarkov/Projects/core/fes/app/redux-helpers/modules/locationPicker.js",
+		"/Users/dfarkov/Projects/core/fes/app/helpers/styles.js",
+		"/Users/dfarkov/Projects/core/fes/app/services/endpoints.js",
+		"/Users/dfarkov/.ssh/config",
+		"/etc/hosts",
+		"/Users/dfarkov/Desktop/joke-for-e",
+		"/Users/dfarkov/Projects/core/frontend-service/lib/react-engine.js",
+		"/Users/dfarkov/Projects/core/frontend-service/server.js",
+		"/Users/dfarkov/Projects/core/fes/main.js",
+		"/Users/dfarkov/Projects/core/frontend-service/config/webpack-config.server.js",
+		"/Users/dfarkov/Projects/core/frontend-service/config/webpack-config.common.js",
+		"/Users/dfarkov/Projects/core/frontend-service/config/webpack-config.dll.js",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Footer.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/lib/caching.js",
+		"/Users/dfarkov/Projects/core/frontend-service/node_modules/preact-render-to-string/dist/index.js",
+		"/Users/dfarkov/Projects/core/frontend-service/build/_records",
+		"/Users/dfarkov/Projects/core/frontend-service/config/webpack-config.client.js",
+		"/Users/dfarkov/Projects/core/frontend-service/app/helpers/ContextProvider.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Social/ShareLink.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/main.js",
+		"/Users/dfarkov/Projects/core/frontend-service/app/Boot.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Header/Logo.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/lib/ascii-logo.js",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/FooterBadgeColumns.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/FooterLinkColumns.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Layout/Columns.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/lib/dev-bundler.js",
+		"/Users/dfarkov/Projects/core/frontend-service/build/main.js",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/SSR/Sandbox.jsx",
+		"/Users/dfarkov/Desktop/data-mining",
+		"/Users/dfarkov/Projects/core/frontend-service/app/constants/Components.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/package.json",
+		"/Users/dfarkov/Projects/core/frontend-service/.babelrc",
+		"/Users/dfarkov/Projects/core/frontend-service/node_modules/glob/common.js",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Features/Showcase.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Homepage/Gallery.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Homepage/GalleryAd.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Pagelets/SmartComponentExample.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Pagelets/__tests__/SmartComponent-test.js",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/PostAd/PostAd.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/DropDown.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/DropDownItem.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/SearchSuggestions.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Test.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Header/Header.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Header/Search.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Header/SearchAddress.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Header/SearchLocationPicker.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Header/SearchWithPicker.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Header/Suggestions/DropDown.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Header/Suggestions/DropDownItem.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Header/Suggestions/KeywordSuggestions.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/Header/Suggestions/SponsoredSuggestion.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/ViewItem/ProfileMain.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/helpers/connect.js",
+		"/Users/dfarkov/Projects/core/frontend-service/node_modules/preact-render-to-string/src/index.js",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Elements/Icon.jsx",
+		"/Users/dfarkov/Projects/core/oss/preact-render-to-string/test/index.js",
+		"/Users/dfarkov/Projects/core/frontend-service/app/helpers/DevTools.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/app/components/Shared/WrapperRequest.jsx",
+		"/Users/dfarkov/Projects/core/frontend-service/lib/react-dom-server.min.js",
+		"/Users/dfarkov/Projects/core/frontend-service/lib/renderComponent.js",
+		"/Users/dfarkov/Projects/core/frontend-service/app/redux-helpers/create.js"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+			"-build/*,-dist/*,-.venv/*,-package.json,-node_modules/*",
+			"-build/*,-dist/*,-.venv/*,-package.json",
+			"-build/*,-dist/*,-.venv/*,-node_modules/*,-package.json",
+			"-build/*,-dist/*,-.venv/*,-node_modules/*",
+			"/Users/dfarkov/Projects/core/frontend-service/node_modules/preact",
+			"-build/*,-dist/*,-.venv/*,-node_modules/*,+node_modules/preact/*",
+			"-build/*,-dist/*,-.venv/*,-node_modules/*",
+			"-build/*,-dist/*,-.venv/*,-node_modules/*,*.jsx",
+			"-dist/*,-.venv/*,-node_modules/*,*.jsx",
+			"-build/*,-dist/*,-.venv/*,-node_modules/*,*.jsx",
+			"-build/*,-dist/*,-.venv/*,-node_modules/*",
+			"-build/*,-dist/*,-.venv/*",
+			"-build/*,-dist/*,-.venv/*,-node_modules/*",
+			"node_modules/react/lib",
+			"-build/*,-dist/*,-.venv/*,-node_modules/*",
+			"-build/*,-dist/*,-.venv/*",
+			"-build/*,-dist/*,-.venv/*,-node_modules/*",
+			"-build/*,-dist/*,-.venv/*",
+			"-node_modules/*,-build/*,-dist/*,-.venv/*",
+			"-node_modules/*,-build/*,-dist/*,-.venv",
+			"-node_modules/*,-build/*,-dist/*",
+			"-node_modules/*,-build/*,-dist/*,/Users/dfarkov/Projects/core/vagrant/ecg-puppet/hiera/ca",
+			"-node_modules/*,-build/*,-dist/*",
+			"-node_modules/*,-build/*",
+			"-node_modules/*",
+			"-node_modules",
+			"",
+			"-node_modules/**/*",
+			"-node_modules/*.txt",
+			"",
+			"/Users/dfarkov/Projects/core/canada-static/node_modules/webpack-kj-svgstore-plugin",
+			"",
+			"*.js",
+			"",
+			"*.js",
+			"",
+			"/Users/dfarkov/Projects/core/kijiji.ca/box-canada-webapp-static/src/",
+			"/Users/dfarkov/Projects/core/kijiji.ca/box-canada-webapp-static/src",
+			"",
+			"/Users/dfarkov/Projects/core/canada-static/",
+			"/Users/dfarkov/Projects/core/canada-static/node_modules/react-a11y",
+			"",
+			"/Users/dfarkov/Projects/core/kijiji.ca/box-canada-webapp",
+			"/Users/dfarkov/Projects/core/kijiji.ca/box-canada-tns-webapp",
+			"*.js,-**/angular-mocks/**.js,*.jsp,*.tag",
+			"*.js,-**/angular-mocks/**.js,*.jsp,/*.tag",
+			"*.js,-**/angular-mocks/**.js,*.jsp",
+			"*.js,-**/angular-mocks/**.js",
+			"*.js",
+			"*.jsp",
+			"*.*",
+			"*.jsp",
+			"",
+			"-node_modules/**/*",
+			"!node_modules/**",
+			"",
+			"**/CONSUL_HOST",
+			"./**/CONSUL_HOST",
+			"",
+			"src/**/*",
+			"src/",
+			"",
+			"/Users/dfarkov/Desktop",
+			"",
+			"/Users/dfarkov/Projects/core/canada-static/",
+			"/Users/dfarkov/Projects/core/canada-static/node_modules/webpack-svgstore-plugin",
+			"",
+			"/Users/dfarkov/Projects/core/canada-static/node_modules/svg-sprite-loader",
+			"",
+			"test/cases/**/*.txt",
+			"./test/cases/**/*.txt",
+			"test/*.txt",
+			"*.txt",
+			"",
+			"*.less",
+			"*.js",
+			"*.jsx",
+			"*.js",
+			"*.jsx",
+			"",
+			"-/Users/dfarkov/Projects/core/canada-static/node_modules/",
+			"-/Users/dfarkov/Projects/core/canada-static/node_modules/*",
+			"-/Users/dfarkov/Projects/core/canada-static/node_modules/**/*",
+			"-/Users/dfarkov/Projects/core/canada-static/node_modules/**",
+			"-node_modules/*.*",
+			"-node_modules",
+			"-node_modules/**/*.*",
+			"-node_modules/**",
+			"",
+			"/Users/dfarkov/Projects/core/canada-static/app,/Users/dfarkov/Projects/core/canada-static/config,/Users/dfarkov/Projects/core/canada-static/lib",
+			"/Users/dfarkov/Projects/core/canada-static/app,/Users/dfarkov/Projects/core/canada-static/config,/Users/dfarkov/Projects/core/canada-static/libcon",
+			"-node_modules/**/*.*",
+			"-node_modules/*.*",
+			"-node_modules",
+			"",
+			"-node_modules/*",
+			"",
+			"/Users/dfarkov/Projects/core/react-redux-universal-hot-example/src",
+			"",
+			"/Users/dfarkov/Projects/core",
+			"",
+			"/Users/dfarkov/Projects/core/swapspots-fe/src/",
+			"/Users/dfarkov/Projects/core/swapspots-fe/node_modules/react-google-maps",
+			"",
+			"/Users/dfarkov/Projects/home/hola/src/react_components",
+			"",
+			"*.php",
+			"*.js",
+			"*.php",
+			"",
+			"*.php",
+			"",
+			"/Users/dfarkov/Projects/home/mawazo/src/wp-content/themes/mawazo",
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"splice",
+			"list",
+			"updateSubFields",
+			"console.log",
+			"consolle",
+			"updateField",
+			"isValidityInvalid",
+			"setValidity",
+			"removeKeys",
+			"getState",
+			"createModifierAction",
+			"isValid",
+			"setValidity",
+			"splice",
+			"isValid",
+			"immutableSet",
+			"createModelActions",
+			"actions",
+			"setValidity",
+			"splice",
+			"list",
+			"splice",
+			"i.",
+			"createInitialState",
+			"composeReducers",
+			"immutableModelReducerEnhancer",
+			"immutableFormReducer",
+			"createFormCombiner",
+			"createFor",
+			"createFormCombiner",
+			"immutableCreateForms",
+			"formActionsReducer",
+			"form-actions-reducer",
+			"state",
+			"updateField",
+			"update-field",
+			"immutableFormReducer",
+			"immutableFormReducer\n\nimmutableFormReducer",
+			"_get",
+			"update-field",
+			"defaultPlugins",
+			"changeActionReducer",
+			"formReducer",
+			"form-reducer",
+			"form-actions-reducer",
+			"i",
+			"updateField",
+			"update-field",
+			"formValue.",
+			"formValue",
+			"formValue.",
+			"console.log",
+			"formValue",
+			"createFormCombiner",
+			"combineForms",
+			"forms",
+			"console.log",
+			"is plainobj",
+			"createFormCombiner",
+			"immutableFormCombiner",
+			"immutableStrategy",
+			"immutableGetForm",
+			"getForm",
+			"get-from-immutable-state",
+			"getForm",
+			"mapStateToProps",
+			"formValue",
+			"handleIntents",
+			"getFieldAndForm",
+			"immutableFormCombiner",
+			"testorm",
+			"combineReducersImmutable",
+			"react-redux",
+			"redux-immutable",
+			"react-redux-form",
+			"babel-polyfill",
+			"combineForms",
+			"render",
+			"kj-react-re",
+			"router",
+			"cookies",
+			"router",
+			"createForms",
+			"react-redux-form",
+			"ontario",
+			"combineForms",
+			"billingInfoInitialState",
+			"combineForms",
+			"immutable",
+			"lodash/get",
+			"react-redux-form",
+			"create",
+			"redux-form/immutable",
+			"react-redux-form",
+			"actions",
+			"<Field name=\"",
+			"Columns",
+			"</SingleColumn>",
+			"<SingleColumn>",
+			"ConnectedField",
+			"connectedfield",
+			"react-hot",
+			"st",
+			"form",
+			"submitClick",
+			"LOAD_SUCCESS",
+			"alacarte-features",
+			"bottomButtonClasses",
+			"overviewPackageName",
+			"classnames",
+			"isShoppingCart",
+			"renderPackages",
+			"JSS.with",
+			"JSS",
+			"jssIf",
+			"cssVariant",
+			"variant",
+			"jssvariant",
+			"overview",
+			"this.props.",
+			"editing",
+			"POSTAD_SERVICE",
+			"insertionFee",
+			"mesos",
+			"dev.",
+			"try",
+			"trackLocationSelecte",
+			"promise"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"'preact-redux",
+			"react-redux",
+			"preact-redux",
+			"'production'",
+			"",
+			" lodash.isObject(",
+			" lodash.template(",
+			" lodash.wrap(",
+			" lodash.get(",
+			"intl",
+			"this.props.intl(",
+			"this.context.intl(",
+			"intl: React.PropTypes.func",
+			"<\\1div",
+			"div",
+			"dmitrif",
+			"this.context.intl",
+			"/>",
+			"/dependencies",
+			"\\'",
+			"\"",
+			"\\'",
+			"\"",
+			"```",
+			"\"styles\"",
+			"\"classes\"",
+			"}",
+			"{",
+			"'react-helmet'",
+			"Helmet",
+			"import Helmet from \"react-helmet\";",
+			"'form'",
+			"'submit'",
+			"'p2'",
+			"'password'",
+			"'getElementById'",
+			"'username'",
+			"'value'",
+			"'='",
+			"==",
+			"slice",
+			"join",
+			"charAt",
+			"utf8_encode",
+			"'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='",
+			"substring",
+			"fromCharCode",
+			"charCodeAt",
+			"length",
+			"\"\"",
+			"",
+			"localhost:8080/",
+			"var/www/mawazo/staging",
+			"mawazo.pss-digital.com",
+			"/var/www/mawazo/staging",
+			"mawazo.pss-digital.com",
+			"localhost:8080/",
+			"/var/www/mawazo/staging",
+			"mawazo.pss-digital.com/",
+			"localhost:8080/",
+			"em",
+			"localhost:8080/",
+			"mawazo",
+			"localhost:8080/",
+			"4057955",
+			"qa-2.yhevents.com",
+			"/"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "src/actions/model-actions.js",
+					"settings":
+					{
+						"buffer_size": 4619,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3381,
+								3381
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"auto_complete": false,
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"is_init_dirty_state": false,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"devel": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"origPos": null,
+							"origin_encoding": "ASCII",
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": "load-save",
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syncScroll": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"settings":
+					{
+						"buffer_size": 1947,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										174,
+										178
+									],
+									[
+										352,
+										356
+									],
+									[
+										438,
+										442
+									],
+									[
+										519,
+										523
+									],
+									[
+										542,
+										546
+									],
+									[
+										620,
+										624
+									],
+									[
+										639,
+										643
+									],
+									[
+										737,
+										741
+									],
+									[
+										913,
+										917
+									],
+									[
+										969,
+										973
+									],
+									[
+										1178,
+										1182
+									],
+									[
+										1209,
+										1213
+									],
+									[
+										1216,
+										1220
+									],
+									[
+										1231,
+										1235
+									],
+									[
+										1381,
+										1385
+									],
+									[
+										1399,
+										1403
+									],
+									[
+										1437,
+										1441
+									],
+									[
+										1446,
+										1450
+									],
+									[
+										1525,
+										1529
+									],
+									[
+										1757,
+										1761
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								1211,
+								1211
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"detect_indentation": false,
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"is_init_dirty_state": false,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"devel": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"origPos": null,
+							"output_tag": 1,
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"result_base_dir": "",
+							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"sublimelinter": "load-save",
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syncScroll": false,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 449.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/immutable.js",
+					"settings":
+					{
+						"buffer_size": 5176,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1561,
+								1567
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"is_init_dirty_state": false,
+							"is_preview": true,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"devel": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"origPos": null,
+							"origin_encoding": "ASCII",
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": "load-save",
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syncScroll": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 56.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "test/immutable-form-reducer-spec.js",
+					"settings":
+					{
+						"buffer_size": 8637,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2900,
+								2900
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"auto_complete": false,
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"is_init_dirty_state": false,
+							"is_preview": true,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"devel": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"origPos": null,
+							"origin_encoding": "ASCII",
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": "load-save",
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syncScroll": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1135.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "test/form-reducer-spec.js",
+					"settings":
+					{
+						"buffer_size": 8395,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2254,
+								2254
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"auto_complete": false,
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"is_init_dirty_state": false,
+							"is_preview": true,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"devel": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"origPos": null,
+							"origin_encoding": "ASCII",
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"sublimelinter": "load-save",
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": true,
+							"sublimelinter_gutter_marks_theme": "simple",
+							"sublimelinter_mark_style": "none",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"syncScroll": false,
+							"syntax": "Packages/JavaScript/JavaScript.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 1011.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		},
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 34.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.5,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.markdown":
+	{
+		"height": 112.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"get.js",
+				"src/utils/get.js"
+			],
+			[
+				"get-field",
+				"src/utils/get-field.js"
+			],
+			[
+				"update-field",
+				"src/utils/update-field.js"
+			],
+			[
+				"form-reducer",
+				"src/reducers/form-reducer.js"
+			],
+			[
+				"mode-ac",
+				"src/actions/model-actions.js"
+			],
+			[
+				"model-action",
+				"lib/actions/model-actions.js"
+			],
+			[
+				"model-actions",
+				"lib/actions/model-actions.js"
+			],
+			[
+				"action/model-a",
+				"src/actions/model-actions.js"
+			],
+			[
+				"model-ac",
+				"src/actions/model-actions.js"
+			],
+			[
+				"immutable.js",
+				"immutable.js"
+			],
+			[
+				"immutable",
+				"src/immutable.js"
+			],
+			[
+				"get-field-from",
+				"src/utils/get-field-from-state.js"
+			],
+			[
+				"form-c",
+				"src/components/form-component.js"
+			],
+			[
+				"immutable-field-com",
+				"test/immutable-field-component-spec.js"
+			],
+			[
+				"form-compon",
+				"src/components/form-component.js"
+			],
+			[
+				"form-com",
+				"src/components/form-component.js"
+			],
+			[
+				"forms-reduc",
+				"src/reducers/forms-reducer.js"
+			],
+			[
+				"combine",
+				"src/combineForms.js"
+			],
+			[
+				"form-component",
+				"src/components/form-component.js"
+			],
+			[
+				"packag.",
+				"package.json"
+			],
+			[
+				"footer.",
+				"app/components/Shared/Footer.jsx"
+			],
+			[
+				"webpack-config",
+				"config/webpack-config.client.js"
+			],
+			[
+				"main.js",
+				"main.js"
+			],
+			[
+				"reducer.",
+				"app/redux-helpers/modules/reducer.js"
+			],
+			[
+				"locationpicker.js",
+				"app/redux-helpers/modules/locationPicker.js"
+			],
+			[
+				"package.json",
+				"package.json"
+			],
+			[
+				"get-form",
+				"node_modules/react-redux-form/lib/utils/get-form.js"
+			],
+			[
+				"get-form.js",
+				"node_modules/react-redux-form/src/utils/get-form.js"
+			],
+			[
+				"reducer",
+				"app/redux-helpers/modules/reducer.js"
+			],
+			[
+				"webpack-config.ser",
+				"config/webpack-config.server.js"
+			],
+			[
+				"billinginfo",
+				"app/redux-helpers/modules/forms/billingInfo.js"
+			],
+			[
+				"package",
+				"package.json"
+			],
+			[
+				"column",
+				"app/components/Layout/Columns.jsx"
+			],
+			[
+				"columns",
+				"node_modules/cssstyle/lib/properties/webkitColumnSpan.js"
+			],
+			[
+				"package.",
+				"package.json"
+			],
+			[
+				"billingpage",
+				"app/components/Checkout/BillingPage.jsx"
+			],
+			[
+				"billingform",
+				"app/components/Checkout/BillingForm.jsx"
+			],
+			[
+				"devtools",
+				"app/helpers/DevTools.jsx"
+			],
+			[
+				"redux-helpers",
+				"app/redux-helpers/create.js"
+			],
+			[
+				"billing",
+				"app/components/Checkout/BillingPage.jsx"
+			],
+			[
+				"reducer.js",
+				"app/redux-helpers/modules/reducer.js"
+			],
+			[
+				"apiclient",
+				"app/helpers/ApiClient.js"
+			],
+			[
+				"components.js",
+				"app/constants/Components.jsx"
+			],
+			[
+				"styles.js",
+				"app/helpers/styles.js"
+			],
+			[
+				"styles.",
+				"app/helpers/styles.js"
+			],
+			[
+				"package.jsx",
+				"app/components/PostAd/Packages/Packages.jsx"
+			],
+			[
+				"endpoints",
+				"app/services/endpoints.js"
+			],
+			[
+				"postad.js",
+				"app/redux-helpers/modules/postAd/postAd.js"
+			],
+			[
+				"tracking.",
+				"app/helpers/Tracking.js"
+			],
+			[
+				"trackm",
+				"app/redux-helpers/middleware/trackingMiddleware.js"
+			],
+			[
+				"locationpicker",
+				"app/redux-helpers/modules/locationPicker.js"
+			],
+			[
+				"searchwith",
+				"app/components/Shared/Header/SearchWithPicker.jsx"
+			],
+			[
+				"main",
+				"main.js"
+			],
+			[
+				"config.",
+				"app/redux-helpers/modules/config.js"
+			],
+			[
+				"escapetextcontentforbrowser",
+				"node_modules/react/lib/escapeTextContentForBrowser.js"
+			],
+			[
+				"react/lib/reactcompon",
+				"node_modules/react/lib/ReactComponent.js"
+			],
+			[
+				"server",
+				"server.js"
+			],
+			[
+				"preact-render-to",
+				"node_modules/preact-render-to-string/dist/index.js"
+			],
+			[
+				"footer",
+				"app/components/Shared/Footer.jsx"
+			],
+			[
+				"server.js",
+				"server.js"
+			],
+			[
+				"build/main",
+				"build/main.js"
+			],
+			[
+				"build/main.js",
+				"build/main.js"
+			],
+			[
+				"sandbox",
+				"app/components/SSR/Sandbox.jsx"
+			],
+			[
+				"reacteng",
+				"lib/react-engine.js"
+			],
+			[
+				".server.js",
+				"config/webpack-config.server.js"
+			],
+			[
+				".common",
+				"config/webpack-config.common.js"
+			],
+			[
+				"common.",
+				"node_modules/glob/common.js"
+			],
+			[
+				"dll.",
+				"config/webpack-config.dll.js"
+			],
+			[
+				".common.js",
+				"config/webpack-config.common.js"
+			],
+			[
+				"dev-bunder",
+				"lib/dev-bundler.js"
+			],
+			[
+				"react-engin",
+				"lib/react-engine.js"
+			],
+			[
+				"layout/cl",
+				"app/components/Layout/Columns.jsx"
+			],
+			[
+				"footerlink",
+				"app/components/Shared/FooterLinkColumns.jsx"
+			],
+			[
+				"footerbad",
+				"app/components/Shared/FooterBadgeColumns.jsx"
+			],
+			[
+				"icon",
+				"app/components/Elements/Icon.jsx"
+			],
+			[
+				"components/layouts",
+				"app/components/Layout/Columns.jsx"
+			],
+			[
+				"react-engine",
+				"lib/react-engine.js"
+			],
+			[
+				"footer.js",
+				"app/components/Shared/Footer.jsx"
+			],
+			[
+				"babelrc",
+				".babelrc"
+			],
+			[
+				"preact-render-to-string/dist",
+				"node_modules/preact-render-to-string/dist/index.js"
+			],
+			[
+				"preact-render-tostring/dist/",
+				"node_modules/preact-render-to-string/dist/index.js"
+			],
+			[
+				"footer.jsx",
+				"app/components/Shared/Footer.jsx"
+			],
+			[
+				"preact-render",
+				"node_modules/preact-render-to-string/dist/index.js"
+			],
+			[
+				"logo",
+				"app/components/Shared/Header/Logo.jsx"
+			],
+			[
+				"dll.js",
+				"config/webpack-config.dll.js"
+			],
+			[
+				"test.jsx",
+				"app/components/Shared/Test.jsx"
+			],
+			[
+				"components",
+				"app/constants/Components.jsx"
+			],
+			[
+				"foter",
+				"app/components/Shared/Footer.jsx"
+			],
+			[
+				"connect",
+				"app/helpers/connect.js"
+			],
+			[
+				"config-dll",
+				"config/webpack-config.dll.js"
+			],
+			[
+				"boot.jsx",
+				"app/Boot.jsx"
+			],
+			[
+				"config-server.js",
+				"config/webpack-config.server.js"
+			],
+			[
+				"social",
+				"app/components/Shared/Social/ShareLink.jsx"
+			],
+			[
+				"react-en",
+				"lib/react-engine.js"
+			],
+			[
+				"webpack-dll",
+				"config/webpack-config.dll.js"
+			],
+			[
+				"reacten",
+				"lib/react-engine.js"
+			],
+			[
+				"vendor.",
+				"dist/dll/vendor.31a17795e57401aa1fbb.js"
+			],
+			[
+				"react-dom-server",
+				"lib/react-dom-server.min.js"
+			],
+			[
+				"dll",
+				"node_modules/webpack/lib/DllPlugin.js"
+			],
+			[
+				"redux-helpers/create",
+				"app/redux-helpers/create.js"
+			],
+			[
+				"react",
+				"lib/react-engine.js"
+			],
+			[
+				"searchform.",
+				"app/helpers/SearchForm.jsx"
+			],
+			[
+				"31a17795e57401aa1fbb",
+				"dist/dll/vendor.31a17795e57401aa1fbb.js"
+			],
+			[
+				"31",
+				"dist/dll/vendor.31a17795e57401aa1fbb.js"
+			],
+			[
+				"72025",
+				"dist/dll/vendor.72025a401b168b984665.js"
+			],
+			[
+				"vendor",
+				"dist/dll/vendor.5b788266d2a42a385676.js"
+			],
+			[
+				"header.jsx",
+				"app/components/Shared/Header/Header.jsx"
+			],
+			[
+				"morgan/",
+				"node_modules/morgan/index.js"
+			],
+			[
+				"jenkins-node4",
+				"Dockerfile.jenkins-node4-make"
+			],
+			[
+				"mesos-node4",
+				"Dockerfile.mesos-node4"
+			],
+			[
+				"devbund",
+				"lib/dev-bundler.js"
+			],
+			[
+				"react-e",
+				"lib/react-engine.js"
+			],
+			[
+				"config",
+				"config/webpack-config.common.js"
+			],
+			[
+				"logger",
+				"lib/logger.js"
+			],
+			[
+				"react-",
+				"lib/react-engine.js"
+			],
+			[
+				"boot",
+				"app/Boot.jsx"
+			],
+			[
+				"serialize-java",
+				"node_modules/serialize-javascript/README.md"
+			],
+			[
+				"boot.js",
+				"app/Boot.jsx"
+			],
+			[
+				"create.js",
+				"app/redux-helpers/create.js"
+			],
+			[
+				"async",
+				"node_modules/async-json/lib/async-json.js"
+			],
+			[
+				"async-json",
+				"node_modules/async-json/lib/async-json.js"
+			],
+			[
+				"caching-reg",
+				"lib/caching-registry.js"
+			],
+			[
+				"caching",
+				"lib/caching.js"
+			],
+			[
+				"mykijiji",
+				"app/components/Shared/Header/MyKijijiMenu.jsx"
+			],
+			[
+				"profilemain",
+				"app/components/ViewItem/ProfileMain.jsx"
+			],
+			[
+				"profileheader.jsx",
+				"app/components/ViewItem/ProfileHeader.jsx"
+			],
+			[
+				"profileheader",
+				"app/components/ViewItem/ProfileHeader.jss"
+			],
+			[
+				"caching-registry",
+				"lib/caching-registry.js"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 331.0,
+	"status_bar_visible": true
+}

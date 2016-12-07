@@ -4,7 +4,7 @@ import isValidityInvalid from '../src/utils/is-validity-invalid';
 import { getFormStateKey as _getFormStateKey, clearGetFormCache } from '../src/utils/get-form';
 import getFieldFromState from '../src/utils/get-field-from-state';
 import { createStore, applyMiddleware, combineReducers as _combineReducers } from 'redux';
-import { combineReducers as combineReducersImmutable } from 'redux-immutable';
+import { combineReducers as combineReducersImmutable } from 'redux-immutablejs';
 import thunk from 'redux-thunk';
 import mapValues from 'lodash/mapValues';
 import _get from 'lodash/get';
@@ -15,14 +15,16 @@ import { defaultTestContexts } from './utils';
 import {
   actions as _actions,
   formReducer as _formReducer,
-  getField,
+  getField as _getField,
   getModel,
   combineForms,
 } from '../src';
 import {
   actions as immutableActions,
+  getField as immutableGetField, 
   formReducer as immutableFormReducer,
   getFormStateKey as immutableGetFormStateKey,
+  strategy as immutableStrategy,
 } from '../immutable';
 
 const testContexts = {
@@ -32,6 +34,7 @@ const testContexts = {
     formReducer: _formReducer,
     combineReducers: _combineReducers,
     getFormStateKey: _getFormStateKey,
+    getField: _getField,
   },
   immutable: {
     ...defaultTestContexts.immutable,
@@ -39,6 +42,7 @@ const testContexts = {
     formReducer: immutableFormReducer,
     combineReducers: combineReducersImmutable,
     getFormStateKey: immutableGetFormStateKey,
+    getField: immutableGetField,
   },
 };
 
@@ -49,6 +53,9 @@ Object.keys(testContexts).forEach((testKey) => {
   const combineReducers = testContext.combineReducers;
   const getFormStateKey = testContext.getFormStateKey;
   const getInitialState = testContext.getInitialState;
+  const get = testContext.get;
+  const fromJS = testContext.fromJS;
+  const getField = testContext.getField;
 
   describe(`utils (${testKey} context)`, () => {
     describe('invertValidators()', () => {
@@ -126,8 +133,8 @@ Object.keys(testContexts).forEach((testKey) => {
           const reducer = formReducer('person');
           const personForm = reducer(undefined, actions.change('person.name', 'john'));
 
-          const field = getFieldFromState({ personForm }, 'person.name');
-          assert.strictEqual(personForm.name, field);
+          const field = getField({ personForm }, 'person.name');
+          assert.strictEqual(get(personForm, 'name'), field);
         });
       });
 
@@ -136,8 +143,8 @@ Object.keys(testContexts).forEach((testKey) => {
           const reducer = formReducer('app.car');
           const carForm = reducer(undefined, actions.change('app.car.make', 'mazda'));
 
-          const field = getFieldFromState({ carForm }, 'app.car.make');
-          assert.strictEqual(carForm.make, field);
+          const field = getField({ carForm }, 'app.car.make');
+          assert.strictEqual(get(carForm, 'make'), field);
         });
       });
 
@@ -146,8 +153,8 @@ Object.keys(testContexts).forEach((testKey) => {
           const reducer = formReducer('district.library');
           const libraryForm = reducer(undefined, actions.change('district.library.hours.open', 8));
 
-          const field = getFieldFromState({ libraryForm }, 'district.library.hours.open');
-          assert.strictEqual(libraryForm.hours.open, field);
+          const field = getField({ libraryForm }, 'district.library.hours.open');
+          assert.strictEqual(get(libraryForm, ['hours', 'open']), field);
         });
       });
     });

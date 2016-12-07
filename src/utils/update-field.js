@@ -1,58 +1,78 @@
 import i from 'icepick';
-import get from './get';
-import mapValues from './map-values';
+import _get from './get';
+import _mapValues from './map-values';
+import identity from 'lodash/identity';
+import _initialFieldState from '../constants/initial-field-state';
 import { createInitialState } from '../reducers/form-reducer';
 
-function assocIn(state, path, value, fn) {
-  if (!path.length) return i.assign(state, value);
-  if (!fn) return i.assocIn(state, path, value);
+const defaultStrategies = {
+  get: _get,
+  set: i.set,
+  setIn: i.setIn,
+  initialFieldState: _initialFieldState,
+  fromJS: identity,
+  merge: i.assign,
+  mergeDeep: i.merge,
+  mapValues: _mapValues,
+};
+
+function assocIn(state, path, value, fn, s = defaultStrategies) {
+  if (!path.length) return s.set(state, value);
+  if (!fn) return s.setIn(state, path, value);
 
   const key0 = path[0];
 
   if (path.length === 1) {
-    return fn(i.assoc(state, key0, value));
+    return fn(s.set(state, key0, value));
   }
 
-  return fn(i.assoc(state, key0, assocIn(state[key0] || {}, path.slice(1), value, fn)));
+  stateFirstKeyVal = s.get(state, key0, s.fromJS({}));
+
+  return fn(s.set(state, key0, assocIn(stateFirstKeyVal, path.slice(1), value, fn, s)));
 }
 
-function tempInitialState(path, initialValue = null) {
-  if (path.length === 1) return { [path[0]]: initialValue };
+function tempInitialState(path, initialValue = null, s = defaultStrategies) {
+  if (path.length === 1) return s.fromJS({ [path[0]]: initialValue });
 
-  return {
+  return s.fromJS({
     [path[0]]: tempInitialState(path.slice(1), initialValue),
-  };
+  });
 }
 
-export function getFieldAndForm(formState, modelPath) {
-  let field = get(formState, modelPath);
+export function getFieldAndForm(formState, modelPath, s = defaultStrategies) {
+  let field = s.get(formState, modelPath);
   let form = formState;
 
   if (!field) {
-    const initialValue = get(formState.$form.initialValue, modelPath);
+    const initialValue = s.get(formState, ['$form', 'initialValue'].concat(modelPath));
+    const modelValue = s.get(formState, ['$form', 'model']);
+    const temporaryFieldState = tempInitialState(modelPath, initialValue, s);
+    const initialState = createInitialState(modelValue, temporaryFieldState, {}, {}, s)
 
-    form = i.merge(createInitialState(
-      formState.$form.model,
-      tempInitialState(modelPath, initialValue)), formState);
+    form = s.mergeDeep(
+      initialState, 
+      formState
+    );
 
-    field = get(form, modelPath);
+    field = s.get(form, modelPath);
   }
 
   return [field, form];
 }
 
-export default function updateField(state, path, newState, newSubState, updater) {
-  const [field, fullState] = getFieldAndForm(state, path);
+export default function updateField(state, path, newState, newSubState, updater, s = defaultStrategies) {
+  const [field, fullState] = getFieldAndForm(state, path, s);
 
   if (!field) return state;
 
-  const isForm = field.hasOwnProperty('$form');
+  const $form = s.get(field, ['$form']);
+  const isForm = $form !== undefined;
   const fieldPath = isForm
-    ? i.push(path, '$form')
+    ? path.concat(['$form'])
     : path;
 
   const fieldState = isForm
-    ? field.$form
+    ? $form
     : field;
 
   const updatedFieldState = typeof newState === 'function'
@@ -60,9 +80,9 @@ export default function updateField(state, path, newState, newSubState, updater)
     : newState;
 
   if (isForm && newSubState) {
-    const formState = mapValues(field, (subState, key) => {
+    const formState = s.mapValues(field, (subState, key) => {
       if (key === '$form') {
-        return i.assign(
+        return s.merge(
           fieldState,
           updatedFieldState);
       }
@@ -71,15 +91,15 @@ export default function updateField(state, path, newState, newSubState, updater)
         ? newSubState(subState, updatedFieldState)
         : newSubState;
 
-      return i.assign(subState, updatedSubState);
+      return s.merge(subState, updatedSubState);
     });
 
     if (!path.length) return formState;
 
-    return assocIn(fullState, path, formState, updater);
+    return assocIn(fullState, path, formState, updater, s);
   }
 
-  return assocIn(fullState, fieldPath, i.assign(
+  return assocIn(fullState, fieldPath, s.merge(
     fieldState,
-    updatedFieldState), updater);
+    updatedFieldState), updater, s);
 }

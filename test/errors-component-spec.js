@@ -132,6 +132,7 @@ Object.keys(testContexts).forEach((testKey) => {
         testForm: formReducer('test'),
         test: modelReducer('test'),
       });
+      
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -176,9 +177,10 @@ Object.keys(testContexts).forEach((testKey) => {
         <Provider store={store}>
           <Form model="test"
             validators={{
-              '': { foo: (model) => get(model, 'foo') && get(model, 'foo').length },
+              '': { foo: (model) => { let foo = get(model, 'foo'); return foo && (foo.length || foo.size); } },
             }}
           >
+
             <Errors model="test"
               messages={{
                 foo: 'This form is invalid',
@@ -276,9 +278,9 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const errors = TestUtils.scryRenderedDOMComponentsWithTag(form, 'span');
 
-        assert.property(store.getState().testForm.foo.errors, 'doNotShow');
+        assert.isDefined(get(store.getState().testForm, ['foo', 'errors', 'doNotShow']));
 
-        assert.isTrue(store.getState().testForm.foo.errors.doNotShow);
+        assert.isTrue(get(store.getState().testForm, ['foo','errors','doNotShow']));
 
         assert.lengthOf(errors, 1);
       });
@@ -358,7 +360,7 @@ Object.keys(testContexts).forEach((testKey) => {
       }
 
       it('should support a function that shows based on field value', () => {
-        const showFn = (field) => field.focus;
+        const showFn = (field) => get(field, 'focus');
 
         const form = renderErrorsWithShow(showFn);
         const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
@@ -380,7 +382,7 @@ Object.keys(testContexts).forEach((testKey) => {
           test: modelReducer('test'),
         });
 
-        const showFn = (field, form) => field.focus || form.submitFailed;
+        const showFn = (field, form) => get(field, 'focus') || get(form, 'submitFailed');
 
         const form = TestUtils.renderIntoDocument(
           <Provider store={store}>

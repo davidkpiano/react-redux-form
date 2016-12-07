@@ -1,17 +1,28 @@
 import get from './get';
 import i from 'icepick';
+import identity from 'lodash/identity';
 
-function updateSubField(subField, newSubState) {
+const defaultStrategies = {
+  get,
+  fromJS: identity,
+  merge: i.assign,
+  mergeDeep: i.merge,
+  keys: Object.keys,
+  setIn: i.assocIn,
+  set: i.assoc,
+};
+
+function updateSubField(subField, newSubState, s = defaultStrategies) {
   // Form
-  if (subField && subField.$form) {
+  if (subField && s.get(subField, '$form')) {
     // intermediate value - not mutated outside function
-    const result = {};
+    let result = s.fromJS({});
 
-    Object.keys(subField).forEach((key) => {
+    s.keys(subField).forEach((key) => {
       if (key === '$form') {
-        result.$form = i.assign(subField.$form, newSubState);
+        result = s.set(result, '$form', s.merge(s.get(subField, '$form'), newSubState));
       } else {
-        result[key] = updateSubField(subField[key], newSubState);
+        result = s.set(result, key, updateSubField(s.get(subField, key), newSubState));
       }
     });
 
@@ -19,28 +30,28 @@ function updateSubField(subField, newSubState) {
   }
 
   // Field
-  return i.assign(subField, newSubState);
+  return s.merge(subField, newSubState);
 }
 
-export default function updateSubFields(state, localPath, newState) {
-  const field = get(state, localPath);
+export default function updateSubFields(state, localPath, newState, s = defaultStrategies) {
+  const field = s.get(state, localPath);
 
   // only forms can have fields -
   // skip if field is not a form
-  if (!field.$form) return state;
+  if (!s.get(field, '$form')) return state;
 
   // intermediate value - not mutated outside function
-  const updatedField = {};
+  let updatedField = s.fromJS({});
 
-  Object.keys(field).forEach((key) => {
+  s.keys(field).forEach((key) => {
     if (key === '$form') {
-      updatedField.$form = field.$form;
+      updatedField = s.set(updatedField, '$form', s.get(field, '$form'));
     } else {
-      updatedField[key] = updateSubField(field[key], newState);
+      updatedField = s.set(updatedField, key, updateSubField(s.get(field, key), newState, s));
     }
   });
 
-  if (!localPath.length) return updatedField;
+  if (!localPath.length) return s.fromJS(updatedField);
 
-  return i.assocIn(state, localPath, updatedField);
+  return s.setIn(state, localPath, updatedField);
 }

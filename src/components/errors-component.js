@@ -4,8 +4,10 @@ import _get from '../utils/get';
 import map from '../utils/map';
 import iteratee from '../utils/iteratee';
 import isPlainObject from 'lodash/isPlainObject';
+import identity from 'lodash/identity';
 import omit from '../utils/omit';
 import invariant from 'invariant';
+import Immutable from 'immutable';
 
 import getForm from '../utils/get-form';
 import getFieldFromState from '../utils/get-field-from-state';
@@ -19,6 +21,10 @@ const defaultStrategy = {
   get: _get,
   getForm,
   getFieldFromState,
+  isValid,
+  map,
+  toJS: identity,
+  fromJS: identity,
 };
 
 const propTypes = {
@@ -57,18 +63,19 @@ const propTypes = {
   }),
 };
 
-function showErrors(field, form, show = true) {
+function showErrors(field, form, show = true, s) {
   if (typeof show === 'function') {
     return show(field, form);
   }
 
   if (!Array.isArray(show)
+    && !Immutable.Iterable.isIterable(show)
     && typeof show !== 'object'
     && typeof show !== 'string') {
     return !!show;
   }
 
-  return iteratee(show)(field);
+  return iteratee(show)(s.toJS(field));
 }
 
 function createErrorsClass(s = defaultStrategy) {
@@ -94,7 +101,7 @@ function createErrorsClass(s = defaultStrategy) {
 
       if (!errors) return null;
 
-      return map(errors, (error, key) => {
+      return s.toJS(s.map(errors, (error, key) => {
         const message = messages[key];
 
         if (error) {
@@ -106,24 +113,25 @@ function createErrorsClass(s = defaultStrategy) {
         }
 
         return false;
-      }).reduce((a, b) => (b ? a.concat(b) : a), []);
+      })).reduce((a, b) => (b ? a.concat(b) : a), []);
     }
 
     renderError(message, key) {
-      const {
+      let {
         component,
         model,
-        modelValue,
-        fieldValue,
-        fieldValue: { errors },
+        modelValue
       } = this.props;
 
-      const errorProps = {
+      let errorProps = {
         key,
         model,
-        modelValue,
-        fieldValue,
+        modelValue
       };
+
+      let fieldValue = s.toJS(this.props.fieldValue);
+      let errors = fieldValue.errors;
+      errorProps.fieldValue = fieldValue;
 
       const messageString = typeof message === 'function'
         ? message(modelValue, errors[key])
@@ -153,13 +161,13 @@ function createErrorsClass(s = defaultStrategy) {
         ? this.props
         : omit(this.props, Object.keys(propTypes));
 
-      if (!showErrors(fieldValue, formValue, show)) {
+      if (!showErrors(fieldValue, formValue, show, s)) {
         return null;
       }
 
-      const errorMessages = isValid(fieldValue)
+      const errorMessages = s.isValid(fieldValue)
         ? null
-        : this.mapErrorMessages(fieldValue.errors);
+        : this.mapErrorMessages(s.get(fieldValue, 'errors'));
 
       if (!errorMessages) return null;
 
@@ -187,9 +195,9 @@ function createErrorsClass(s = defaultStrategy) {
     invariant(form, `Could not find form state for '${modelString}' model. `
       + 'Please make sure it exists in the store.');
 
-    const formValue = form.$form;
+    const formValue = s.get(form, ['$form']);
     const fieldValue = s.getFieldFromState(state, modelString)
-      || initialFieldState;
+      || s.fromJS(initialFieldState);
 
     return {
       model: modelString,

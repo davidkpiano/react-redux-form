@@ -1,11 +1,23 @@
-export default function isRetouched(formState) {
-  if (!formState) return false;
+import get from '../utils/get';
 
-  // Field is pending
-  if (!formState.$form) {
-    return formState.retouched;
-  }
+const defaultStrategies = {
+  get,
+  keys: Object.keys
+};
 
-  // Any field in form is pending
-  return Object.keys(formState).some((key) => isRetouched(formState[key]));
+export function create(s = defaultStrategies) {
+	return function isRetouched(formState) {
+	  if (!formState) return false;
+
+	  // Field is pending
+	  if (!s.get(formState, '$form')) {
+	    return s.get(formState, 'retouched');
+	  }
+
+	  // Any field in form is pending
+	  return s.keys(formState).some((key) => isRetouched(s.get(formState, key)));
+	}
 }
+
+const isRetouched = create();
+export default isRetouched;

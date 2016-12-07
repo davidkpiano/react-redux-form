@@ -14,7 +14,7 @@ SubmitButton.propTypes = {
 const mapStateToProps = (state) => {
   // Enable one of the two:
   return { user: state.user };  // Enable when using redux
-  // return { user: state.get('user') };  // Enable when using redux-immutable
+  // return { user: state.get('user') };  // Enable when using redux-immutablejs
 };
 
 export default connect(mapStateToProps)(SubmitButton);

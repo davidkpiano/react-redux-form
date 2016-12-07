@@ -1,9 +1,9 @@
 import toPath from './to-path';
 
-export default function immutableGetFromState(state, modelString) {
+export default function immutableGetFromState(state, modelString, defaultValue) {
   const path = toPath(modelString);
 
-  return path.reduce((subState, subPath) => {
+  let val = path.reduce((subState, subPath) => {
     if (!subState || typeof subState === 'string') return subState;
 
     // Current subState is immutable
@@ -14,4 +14,6 @@ export default function immutableGetFromState(state, modelString) {
     // Current subState is a plain object/array
     return subState[subPath];
   }, state);
+
+  return val === undefined ? defaultValue : val;
 }

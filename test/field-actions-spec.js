@@ -3,15 +3,16 @@ import configureMockStore from 'redux-mock-store';
 import createTestStore from 'redux-test-store';
 import thunk from 'redux-thunk';
 import _get from 'lodash/get';
+import identity from 'lodash/identity';
 import toPath from 'lodash/toPath';
 import i from 'icepick';
 import Immutable from 'immutable';
 
 import { testCreateStore } from './utils';
 
-import isValid from '../src/form/is-valid';
-import isPristine from '../src/form/is-pristine';
-import isRetouched from '../src/form/is-retouched';
+import isValidMutable from '../src/form/is-valid';
+import isPristineMutable from '../src/form/is-pristine';
+import isRetouchedMutable from '../src/form/is-retouched';
 
 import {
   actions as _actions,
@@ -22,6 +23,9 @@ import {
 import {
   actions as immutableActions,
   formReducer as immutableFormReducer,
+  isValid as isValidImmutable,
+  isPristine as isPristineImmutable,
+  isRetouched as isRetouchedImmutable
 } from '../immutable';
 
 const testContexts = {
@@ -32,21 +36,26 @@ const testContexts = {
     get: _get,
     set: (state, path, value) => i.setIn(state, path, value),
     getInitialState: (state) => state,
+    isValid: isValidMutable,
+    isPristine: isPristineMutable,
+    isRetouched: isRetouchedMutable,
+    toJS: identity,
+    fromJS: identity,
   },
   immutable: {
     actions: immutableActions,
     formReducer: immutableFormReducer,
     object: new Immutable.Map(),
     get: (value, path) => {
-      const result = value.getIn(toPath(path));
-      try {
-        return result.toJS();
-      } catch (e) {
-        return result;
-      }
+      return value.getIn(toPath(path));
     },
     set: (state, path, value) => state.setIn(path, value),
     getInitialState: (state) => Immutable.fromJS(state),
+    isValid: isValidImmutable,
+    isPristine: isPristineImmutable,
+    isRetouched: isRetouchedImmutable,
+    toJS: (obj) => obj.toJS(),
+    fromJS: (obj) => Immutable.fromJS(obj)
   },
 };
 
@@ -55,6 +64,13 @@ Object.keys(testContexts).forEach((testKey) => {
   const actions = testContext.actions;
   const formReducer = testContext.formReducer;
   const getInitialState = testContext.getInitialState;
+  const get = testContext.get;
+  const emptyObj = testContext.object;
+  const isValid = testContext.isValid;
+  const isPristine = testContext.isPristine;
+  const isRetouched = testContext.isRetouched;
+  const toJS = testContext.toJS;
+  const fromJS = testContext.fromJS;
 
   describe('field actions', () => {
     describe('change()', () => {
@@ -63,28 +79,14 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test', initialState);
         const state = reducer(undefined, actions.setSubmitted('test'));
 
-        assert.containSubset(
-          state.$form,
-          {
-            submitted: true,
-            retouched: false,
-          }, 'not retouched yet');
+        assert.isTrue(get(state, ['$form', 'submitted']));
+        assert.isFalse(get(state, ['$form', 'retouched']));
 
         const changedState = reducer(state, actions.change('test.foo', 'new'));
 
-        assert.containSubset(
-          changedState.$form,
-          {
-            submitted: true,
-          });
-
+        assert.isTrue(get(changedState, ['$form', 'submitted']));
         assert.isTrue(isRetouched(changedState), 'form retouched after submit');
-
-        assert.containSubset(
-          changedState.foo,
-          {
-            retouched: true,
-          }, 'field retouched after submit');
+        assert.isTrue(get(changedState, ['foo', 'retouched'])); 
       });
 
       it('should be able to set change an object to null without throwing an error', () => {
@@ -95,7 +97,7 @@ Object.keys(testContexts).forEach((testKey) => {
         // the .$form breaks. in the code, we just added
         // a condition like subField && subField.$form.
         // this test will ensure that condition stays functioning
-        const reducer = formReducer('foo', { a: {} });
+        const reducer = formReducer('foo', fromJS({ a: {} }));
         let didThrow = false;
 
         try {
@@ -116,8 +118,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.reset('test.foo'))
-            .foo,
+          toJS(get(reducer(undefined, actions.reset('test.foo')), 'foo')),
           initialFieldState);
       });
 
@@ -128,8 +129,8 @@ Object.keys(testContexts).forEach((testKey) => {
         const localInitialFormState = reducer(undefined, 'BOGUS / INITIAL STATE');
 
         assert.containSubset(
-          reducer(undefined, actions.reset('test')),
-          localInitialFormState);
+          toJS(reducer(undefined, actions.reset('test'))),
+          toJS(localInitialFormState));
       });
 
       it('should reset all errors on the field', () => {
@@ -140,14 +141,12 @@ Object.keys(testContexts).forEach((testKey) => {
           required: true,
         }));
 
-        assert.deepEqual(stateWithErrors.foo.errors, {
-          valid: true,
-          required: false,
-        });
+        assert.equal(get(stateWithErrors, ['foo', 'errors', 'valid']), true);
+        assert.equal(get(stateWithErrors, ['foo', 'errors', 'required']), false);
 
         const stateAfterReset = reducer(stateWithErrors, actions.reset('test.foo'));
 
-        assert.deepEqual(stateAfterReset.foo.errors, {});
+        assert.deepEqual(get(stateAfterReset, ['foo', 'errors']), emptyObj);
       });
 
       it('should reset all errors on the form', () => {
@@ -158,31 +157,31 @@ Object.keys(testContexts).forEach((testKey) => {
           required: true,
         }));
 
-        assert.deepEqual(stateWithErrors.$form.errors, {
+        assert.deepEqual(toJS(stateWithErrors).$form.errors, {
           valid: true,
           required: false,
         });
 
-        assert.deepEqual(stateWithErrors.$form.validity, {
+        assert.deepEqual(toJS(stateWithErrors).$form.validity, {
           valid: false,
           required: true,
         });
 
         const stateAfterReset = reducer(stateWithErrors, actions.reset('test'));
 
-        assert.deepEqual(stateAfterReset.$form.errors, {});
+        assert.deepEqual(toJS(stateAfterReset).$form.errors, {});
       });
 
       it('should intend to revalidate the field and subfields', () => {
-        const reducer = formReducer('test', {
+        const reducer = formReducer('test', getInitialState({
           button: {},
-        });
+        }));
 
         const resetState = reducer(undefined, actions.reset('test'));
 
-        assert.include(resetState.$form.intents, { type: 'validate' });
+        assert.include(toJS(resetState).$form.intents, { type: 'validate' });
 
-        assert.include(resetState.button.$form.intents, { type: 'validate' },
+        assert.include(toJS(resetState).button.$form.intents, { type: 'validate' },
           'should intend to revalidate subfields');
       });
     });
@@ -192,7 +191,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.focus('test.foo'))
+          toJS(reducer(undefined, actions.focus('test.foo')))
             .foo,
           {
             focus: true,
@@ -205,7 +204,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.blur('test.foo'))
+          toJS(reducer(undefined, actions.blur('test.foo')))
             .foo,
           {
             focus: false,
@@ -219,7 +218,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.setPristine('test.foo'))
+          toJS(reducer(undefined, actions.setPristine('test.foo')))
             .foo,
           {
             pristine: true,
@@ -232,11 +231,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const actualPristine = reducer(undefined, actions.setPristine('test.foo'));
 
-        assert.containSubset(
-          actualPristine.$form,
-          {
-            pristine: true,
-          });
+        assert.isTrue(get(actualPristine, ['$form', 'pristine']));
 
         const actualDirty = reducer(actualPristine, actions.setDirty('test.bar'));
 
@@ -257,7 +252,7 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(isPristine(pristineFormAndField));
 
         assert.containSubset(
-          pristineFormAndField.foo,
+          toJS(pristineFormAndField).foo,
           {
             pristine: true,
           });
@@ -269,7 +264,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.setDirty('test.foo'))
+          toJS(reducer(undefined, actions.setDirty('test.foo')))
             .foo,
           {
             pristine: false,
@@ -291,7 +286,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.setPending('test.foo'))
+          toJS(reducer(undefined, actions.setPending('test.foo')))
             .foo,
           {
             pending: true,
@@ -305,7 +300,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualPending = reducer(undefined, actions.setPending('test.foo', true));
 
         assert.containSubset(
-          actualPending
+          toJS(actualPending)
             .foo,
           {
             pending: true,
@@ -315,7 +310,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualNotPending = reducer(actualPending, actions.setPending('test.foo', false));
 
         assert.containSubset(
-          actualNotPending
+          toJS(actualNotPending)
             .foo,
           {
             pending: false,
@@ -329,14 +324,14 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualPending = reducer(undefined, actions.setPending('test'));
 
         assert.containSubset(
-          actualPending.$form,
+          toJS(actualPending).$form,
           {
             pending: true,
             submitted: false,
           });
 
         assert.containSubset(
-          reducer(actualPending, actions.setPending('test', false))
+          toJS(reducer(actualPending, actions.setPending('test', false)))
             .$form,
           {
             pending: false,
@@ -350,7 +345,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.setValidating('test.foo'))
+          toJS(reducer(undefined, actions.setValidating('test.foo')))
             .foo,
           {
             validating: true,
@@ -366,7 +361,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setValidating('test.foo', true));
 
         assert.containSubset(
-          actualValidating
+          toJS(actualValidating)
             .foo,
           {
             validating: true,
@@ -378,7 +373,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setValidating('test.foo', false));
 
         assert.containSubset(
-          actualNotValidating
+          toJS(actualNotValidating)
             .foo,
           {
             validating: false,
@@ -392,14 +387,14 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualValidating = reducer(undefined, actions.setValidating('test'));
 
         assert.containSubset(
-          actualValidating.$form,
+          toJS(actualValidating).$form,
           {
             validating: true,
             validated: false,
           });
 
         assert.containSubset(
-          reducer(actualValidating, actions.setValidating('test', false))
+          toJS(reducer(actualValidating, actions.setValidating('test', false)))
             .$form,
           {
             validating: false,
@@ -414,7 +409,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.setSubmitted('test.foo'))
+          toJS(reducer(undefined, actions.setSubmitted('test.foo')))
             .foo,
           {
             submitted: true,
@@ -429,7 +424,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualSubmitted = reducer(undefined, actions.setSubmitted('test.foo', true));
 
         assert.containSubset(
-          actualSubmitted
+          toJS(actualSubmitted)
             .foo,
           {
             submitted: true,
@@ -441,7 +436,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actualSubmitted, actions.setSubmitted('test.foo', false));
 
         assert.containSubset(
-          actualNotSubmitted
+          toJS(actualNotSubmitted)
             .foo,
           {
             submitted: false,
@@ -456,7 +451,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualSubmitted = reducer(undefined, actions.setSubmitted('test', true));
 
         assert.containSubset(
-          actualSubmitted.$form,
+          toJS(actualSubmitted).$form,
           {
             submitted: true,
             pending: false,
@@ -465,7 +460,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualNotSubmitted = reducer(actualSubmitted, actions.setSubmitted('test', false));
 
         assert.containSubset(
-          actualNotSubmitted.$form,
+          toJS(actualNotSubmitted).$form,
           {
             submitted: false,
             pending: false,
@@ -478,7 +473,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.setSubmitFailed('test'))
+          toJS(reducer(undefined, actions.setSubmitFailed('test')))
             .$form,
           {
             submitFailed: true,
@@ -492,7 +487,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const state = reducer(undefined, actions.setSubmitFailed('test'));
 
         assert.containSubset(
-          reducer(state, actions.setSubmitted('test'))
+          toJS(reducer(state, actions.setSubmitted('test')))
             .$form,
           {
             submitFailed: false,
@@ -506,7 +501,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const state = reducer(undefined, actions.setSubmitFailed('test'));
 
         assert.containSubset(
-          reducer(state, actions.setPending('test'))
+          toJS(reducer(state, actions.setPending('test')))
             .$form,
           {
             submitFailed: false,
@@ -520,7 +515,7 @@ Object.keys(testContexts).forEach((testKey) => {
         let state = reducer(undefined, actions.setPending('test'));
 
         assert.containSubset(
-          reducer(state, actions.setSubmitFailed('test'))
+          toJS(reducer(state, actions.setSubmitFailed('test')))
             .$form,
           {
             submitFailed: true,
@@ -531,7 +526,7 @@ Object.keys(testContexts).forEach((testKey) => {
         state = reducer(state, actions.setSubmitted('test'));
 
         assert.containSubset(
-          reducer(state, actions.setSubmitFailed('test'))
+          toJS(reducer(state, actions.setSubmitFailed('test')))
             .$form,
           {
             submitFailed: true,
@@ -547,7 +542,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.setTouched('test.foo'))
+          toJS(reducer(undefined, actions.setTouched('test.foo')))
             .foo,
           {
             touched: true,
@@ -561,14 +556,14 @@ Object.keys(testContexts).forEach((testKey) => {
         const state = reducer(undefined, actions.setSubmitted('test'));
 
         assert.containSubset(
-          state.$form,
+          toJS(state).$form,
           {
             submitted: true,
             retouched: false,
           }, 'not retouched yet');
 
         assert.containSubset(
-          reducer(state, actions.setTouched('test'))
+          toJS(reducer(state, actions.setTouched('test')))
             .$form,
           {
             submitted: true,
@@ -581,7 +576,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const state = reducer(undefined, actions.setSubmitFailed('test'));
 
         assert.containSubset(
-          state.$form,
+          toJS(state).$form,
           {
             submitted: false,
             submitFailed: true,
@@ -589,7 +584,7 @@ Object.keys(testContexts).forEach((testKey) => {
           }, 'not retouched yet');
 
         assert.containSubset(
-          reducer(state, actions.setTouched('test'))
+          toJS(reducer(state, actions.setTouched('test')))
             .$form,
           {
             submitted: false,
@@ -605,7 +600,7 @@ Object.keys(testContexts).forEach((testKey) => {
         state = reducer(state, actions.setTouched('test'));
 
         assert.containSubset(
-          state.$form,
+          toJS(state).$form,
           {
             submitted: true,
             retouched: true,
@@ -614,7 +609,7 @@ Object.keys(testContexts).forEach((testKey) => {
         state = reducer(state, actions.setPending('test'));
 
         assert.containSubset(
-          state.$form,
+          toJS(state).$form,
           {
             pending: true,
             submitted: false,
@@ -628,7 +623,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.setUntouched('test.foo'))
+          toJS(reducer(undefined, actions.setUntouched('test.foo')))
             .foo,
           {
             touched: false,
@@ -641,14 +636,14 @@ Object.keys(testContexts).forEach((testKey) => {
         const reducer = formReducer('test');
 
         assert.containSubset(
-          reducer(undefined, actions.setValidity('test.foo', true))
+          toJS(reducer(undefined, actions.setValidity('test.foo', true)))
             .foo,
           {
             errors: false,
           });
 
         assert.containSubset(
-          reducer(undefined, actions.setValidity('test.foo', false))
+          toJS(reducer(undefined, actions.setValidity('test.foo', false)))
             .foo,
           {
             errors: true,
@@ -665,7 +660,7 @@ Object.keys(testContexts).forEach((testKey) => {
           };
 
           assert.containSubset(
-            reducer(undefined, actions.setValidity('test.foo', validity))
+            toJS(reducer(undefined, actions.setValidity('test.foo', validity)))
               .foo,
             {
               errors: {
@@ -685,7 +680,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const actualForm = reducer(undefined, actions.setValidity('test.foo', validity));
 
-        assert.isTrue(isValid(actualForm.foo));
+        assert.isTrue(isValid(get(actualForm, 'foo')));
 
         assert.isTrue(isValid(actualForm), 'form should be valid if all fields are valid');
       });
@@ -701,7 +696,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const actualForm = reducer(undefined, actions.setValidity('test.foo', validity));
 
-        assert.isFalse(isValid(actualForm.foo));
+        assert.isFalse(isValid(get(actualForm, 'foo')));
 
         assert.isFalse(isValid(actualForm), 'form should be invalid if any fields are invalid');
       });
@@ -719,7 +714,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setValidity('test', validity));
 
         assert.containSubset(
-          actual.$form,
+          toJS(actual).$form,
           {
             errors: {
               foo: false,
@@ -743,7 +738,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setValidity('test', validity));
 
         assert.containSubset(
-          actual.$form,
+          toJS(actual).$form,
           {
             validity: {
               foo: 'truthy string',
@@ -762,7 +757,7 @@ Object.keys(testContexts).forEach((testKey) => {
         }));
 
         assert.containSubset(
-          actual.$form,
+          toJS(actual).$form,
           {
             validity: {
               foo: false,
@@ -780,7 +775,7 @@ Object.keys(testContexts).forEach((testKey) => {
         }));
 
         assert.containSubset(
-          actual.$form,
+          toJS(actual).$form,
           {
             validity: {
               foo: 'truthy string',
@@ -807,7 +802,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setValidity('test', oldValidity));
 
         assert.deepEqual(
-          oldState.$form.validity,
+          toJS(oldState).$form.validity,
           oldValidity);
 
         const newValidity = {
@@ -820,11 +815,11 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setValidity('test', newValidity));
 
         assert.deepEqual(
-          newState.$form.validity,
+          toJS(newState).$form.validity,
           newValidity);
 
         assert.deepEqual(
-          newState.$form.errors,
+          toJS(newState).$form.errors,
           {
             foo: false,
             bar: true,
@@ -839,24 +834,24 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualInvalid = reducer(undefined, actions.setErrors('test.foo', true));
 
         assert.containSubset(
-          actualInvalid.foo,
+          toJS(actualInvalid).foo,
           {
             errors: true,
             validity: false,
           });
 
-        assert.isFalse(isValid(actualInvalid.foo));
+        assert.isFalse(isValid(get(actualInvalid, 'foo')));
 
         const actualValid = reducer(undefined, actions.setErrors('test.foo', false));
 
         assert.containSubset(
-          actualValid.foo,
+          toJS(actualValid).foo,
           {
             errors: false,
             validity: true,
           });
 
-        assert.isTrue(isValid(actualValid.foo));
+        assert.isTrue(isValid(get(actualValid, 'foo')));
       });
 
       it('should set the errors state of the field', () => {
@@ -870,7 +865,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const actual = reducer(undefined, actions.setErrors('test.foo', errors));
 
         assert.containSubset(
-          actual.foo,
+          toJS(actual).foo,
           {
             errors: {
               good: true,
@@ -882,7 +877,7 @@ Object.keys(testContexts).forEach((testKey) => {
             },
           });
 
-        assert.isFalse(isValid(actual.foo));
+        assert.isFalse(isValid(get(actual, 'foo')));
       });
 
       it('should set the valid state to true if all values in error object are false', () => {
@@ -897,7 +892,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualForm = reducer(undefined, actions.setErrors('test.foo', errors));
 
         assert.containSubset(
-          actualForm.foo,
+          toJS(actualForm).foo,
           {
             validity: {
               one: true,
@@ -906,7 +901,7 @@ Object.keys(testContexts).forEach((testKey) => {
             },
           });
 
-        assert.isTrue(isValid(actualForm.foo));
+        assert.isTrue(isValid(get(actualForm, 'foo')));
 
         assert.isTrue(isValid(actualForm),
           'form should be valid if all fields are valid');
@@ -924,7 +919,7 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualForm = reducer(undefined, actions.setErrors('test.foo', errors));
 
         assert.containSubset(
-          actualForm.foo,
+          toJS(actualForm).foo,
           {
             errors: {
               one: true,
@@ -938,7 +933,7 @@ Object.keys(testContexts).forEach((testKey) => {
             },
           });
 
-        assert.isFalse(isValid(actualForm.foo));
+        assert.isFalse(isValid(get(actualForm, 'foo')));
 
         assert.isFalse(isValid(actualForm),
           'form should be invalid if any fields are invalid');
@@ -957,7 +952,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setErrors('test', errors));
 
         assert.containSubset(
-          actual.$form,
+          toJS(actual).$form,
           {
             errors: {
               foo: true,
@@ -981,7 +976,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setErrors('test', errors));
 
         assert.containSubset(
-          actual.$form,
+          toJS(actual).$form,
           {
             validity: {
               foo: false,
@@ -1000,7 +995,7 @@ Object.keys(testContexts).forEach((testKey) => {
         }));
 
         assert.containSubset(
-          actual.$form,
+          toJS(actual).$form,
           {
             validity: {
               foo: true,
@@ -1018,7 +1013,7 @@ Object.keys(testContexts).forEach((testKey) => {
         }));
 
         assert.containSubset(
-          actual.$form,
+          toJS(actual).$form,
           {
             validity: {
               foo: false,
@@ -1044,7 +1039,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setErrors('test', errors));
 
         assert.containSubset(
-          actual.$form,
+          toJS(actual).$form,
           {
             errors,
             validity: false,
@@ -1057,7 +1052,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setErrors('test', false));
 
         assert.containSubset(
-          actual.$form,
+          toJS(actual).$form,
           {
             errors: false,
             validity: true,
@@ -1070,7 +1065,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setErrors('test.foo', fieldErrors));
 
         assert.containSubset(
-          actualField.foo,
+          toJS(actualField).foo,
           {
             errors: fieldErrors,
             validity: false,
@@ -1083,7 +1078,7 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setErrors('test.foo', false));
 
         assert.containSubset(
-          actualField.foo,
+          toJS(actualField).foo,
           {
             errors: false,
             validity: true,
@@ -1102,26 +1097,26 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setErrors('test.foo', { bar: true, baz: true }));
 
         assert.containSubset(
-          stateWithErrors.foo,
+          toJS(stateWithErrors).foo,
           {
             validity: { bar: false, baz: false },
             errors: { bar: true, baz: true },
           });
 
-        assert.isFalse(isValid(stateWithErrors.foo));
+        assert.isFalse(isValid(get(stateWithErrors, 'foo')));
 
         const actualState = reducer(
           stateWithErrors,
           actions.resetValidity('test.foo'));
 
         assert.containSubset(
-          actualState.foo,
+          toJS(actualState).foo,
           {
             validity: {},
             errors: {},
           });
 
-        assert.isTrue(isValid(actualState.foo));
+        assert.isTrue(isValid(get(actualState, 'foo')));
       });
 
       it('should reset the validity and errors of a form', () => {
@@ -1134,49 +1129,49 @@ Object.keys(testContexts).forEach((testKey) => {
           actions.setErrors('test.bar', { foo: true, baz: true }));
 
         assert.containSubset(
-          stateWithMoreErrors.foo,
+          toJS(stateWithMoreErrors).foo,
           {
             validity: { bar: false, baz: false },
             errors: { bar: true, baz: true },
           });
 
-        assert.isFalse(isValid(stateWithMoreErrors.foo));
+        assert.isFalse(isValid(get(stateWithMoreErrors, 'foo')));
 
         assert.containSubset(
-          stateWithMoreErrors.bar,
+          toJS(stateWithMoreErrors).bar,
           {
             validity: { foo: false, baz: false },
             errors: { foo: true, baz: true },
           });
 
-        assert.isFalse(isValid(stateWithMoreErrors.bar));
+        assert.isFalse(isValid(get(stateWithMoreErrors, 'bar')));
 
         const actualState = reducer(
           stateWithMoreErrors,
           actions.resetValidity('test'));
 
-        assert.deepEqual(actualState.foo.validity, {});
-        assert.deepEqual(actualState.foo.errors, {});
+        assert.deepEqual(toJS(actualState).foo.validity, {});
+        assert.deepEqual(toJS(actualState).foo.errors, {});
 
         assert.isTrue(isValid(actualState));
 
         assert.containSubset(
-          actualState.foo,
+          toJS(actualState).foo,
           {
             validity: {},
             errors: {},
           });
 
-        assert.isTrue(isValid(actualState.foo));
+        assert.isTrue(isValid(get(actualState, 'foo')));
 
         assert.containSubset(
-          actualState.bar,
+          toJS(actualState).bar,
           {
             validity: {},
             errors: {},
           });
 
-        assert.isTrue(isValid(actualState.bar));
+        assert.isTrue(isValid(get(actualState, 'bar')));
       });
 
       it('should be aliased to resetErrors()', () => {
@@ -1188,10 +1183,10 @@ Object.keys(testContexts).forEach((testKey) => {
           stateWithErrors,
           actions.resetErrors('test.foo'));
 
-        assert.deepEqual(actualState.foo.validity, {});
-        assert.deepEqual(actualState.foo.errors, {});
+        assert.deepEqual(toJS(actualState).foo.validity, {});
+        assert.deepEqual(toJS(actualState).foo.errors, {});
 
-        assert.isTrue(isValid(actualState.foo));
+        assert.isTrue(isValid(get(actualState, 'foo')));
       });
     });
 
@@ -1205,7 +1200,7 @@ Object.keys(testContexts).forEach((testKey) => {
             assert.isFalse(isValid(actual));
 
             assert.containSubset(
-              actual.foo,
+              toJS(actual).foo,
               {
                 errors: {
                   good: false,
@@ -1217,9 +1212,9 @@ Object.keys(testContexts).forEach((testKey) => {
           }
         };
 
-        const getState = () => ({
+        const getState = () => (getInitialState({
           test: { foo: 5 },
-        });
+        }));
 
         const validator = (value, done) => done({
           good: value > 4,
@@ -1236,7 +1231,7 @@ Object.keys(testContexts).forEach((testKey) => {
             const actual = reducer(undefined, action);
 
             assert.containSubset(
-              actual.$form,
+              toJS(actual).$form,
               {
                 errors: {
                   good: false,
@@ -1250,14 +1245,18 @@ Object.keys(testContexts).forEach((testKey) => {
           }
         };
 
-        const getState = () => ({
+        const getState = () => (getInitialState({
           test: { foo: 5 },
-        });
+        }));
 
-        const validator = ({ foo }, done) => done({
-          good: foo > 4,
-          bad: foo > 5,
-        });
+        const validator = (value, done) => {
+          let foo = get(value, 'foo');
+
+          return done({
+            good: foo > 4,
+            bad: foo > 5,
+          })
+        };
 
         actions.asyncSetValidity('test', validator)(dispatch, getState);
       });
@@ -1276,9 +1275,9 @@ Object.keys(testContexts).forEach((testKey) => {
             if (action.type === actionTypes.SET_VALIDATING) {
               validatingStates.push(action.validating);
 
-              assert.equal(state.foo.validating, action.validating);
+              assert.equal(get(state, ['foo','validating']), action.validating);
             } else if (action.type === actionTypes.SET_VALIDITY) {
-              validatingStates.push(state.foo.validating);
+              validatingStates.push(get(state, ['foo', 'validating']));
 
               testDone(assert.deepEqual(
                 validatingStates,
@@ -1286,7 +1285,7 @@ Object.keys(testContexts).forEach((testKey) => {
             }
           };
 
-          const getState = () => ({});
+          const getState = () => (getInitialState({}));
 
           const validator = (_, done) => done(true);
 
@@ -1306,9 +1305,9 @@ Object.keys(testContexts).forEach((testKey) => {
             if (action.type === actionTypes.SET_VALIDATING) {
               validatingStates.push(action.validating);
 
-              assert.equal(state.$form.validating, action.validating);
+              assert.equal(get(state, ['$form', 'validating']), action.validating);
             } else if (action.type === actionTypes.SET_VALIDITY) {
-              validatingStates.push(state.$form.validating);
+              validatingStates.push(get(state, ['$form', 'validating']));
 
               testDone(assert.deepEqual(
                 validatingStates,
@@ -1316,7 +1315,7 @@ Object.keys(testContexts).forEach((testKey) => {
             }
           };
 
-          const getState = () => ({});
+          const getState = () => (getInitialState({}));
 
           const validator = (_, done) => done(true);
 
@@ -1352,7 +1351,7 @@ Object.keys(testContexts).forEach((testKey) => {
           },
         ];
 
-        const store = mockStore(() => ({}), expectedActions, done);
+        const store = mockStore(() => (getInitialState({})), expectedActions, done);
 
         store.dispatch(actions.submit('test', submitPromise({ valid: true })));
       });
@@ -1718,14 +1717,14 @@ Object.keys(testContexts).forEach((testKey) => {
       store.when(actionTypes.SET_PENDING, () => true);
 
       store.when(actionTypes.SET_SUBMITTED, (state) => {
-        assert.containSubset(state.testForm.$form, {
+        assert.containSubset(toJS(state.testForm).$form, {
           submitted: true,
           pending: false,
         });
       });
 
       store.when(actionTypes.SET_VALIDITY, (state) => {
-        assert.containSubset(state.testForm.$form, {
+        assert.containSubset(toJS(state.testForm).$form, {
           submitted: true,
           pending: false,
         });

@@ -686,14 +686,14 @@ describe('formReducer() (V1)', () => {
     });
 
     it('should change the initial value for the form', () => {
-      assert.deepEqual(loadedState.$form.initialValue, { foo: 'new initial' });
-      assert.deepEqual(loadedState.$form.value, { foo: 'new initial' });
+      assert.containSubset(loadedState.$form.initialValue, { foo: 'new initial' });
+      assert.containSubset(loadedState.$form.value, { foo: 'new initial' });
     });
 
     it('resetting a parent field should reset child fields in form', () => {
       const resetState = reducer(loadedState, actions.reset('test'));
 
-      assert.deepEqual(resetState.$form.value, { foo: 'new initial' });
+      assert.containSubset(resetState.$form.value, { foo: 'new initial' });
       assert.equal(resetState.foo.value, 'new initial');
     });
   });

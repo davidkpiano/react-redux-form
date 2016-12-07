@@ -6,7 +6,7 @@ import {
 
 // Enable one of the two:
 import { combineReducers } from 'redux';
-//import { combineReducers } from 'redux-immutable';
+//import { combineReducers } from 'redux-immutablejs';
 
 import { createForms } from 'react-redux-form/immutable';
 import thunk from 'redux-thunk';

@@ -21,12 +21,13 @@ const defaultStrategy = {
   modelReducer,
   formReducer,
   modeled,
-  toJS: identity,
+  fromJS: identity,
+  keys: Object.keys,
 };
 
-function createFormCombiner(strategy = defaultStrategy) {
+function createFormCombiner(s = defaultStrategy) {
   function createForms(forms, model = '', options = {}) {
-    const formKeys = Object.keys(forms);
+    const formKeys = s.keys(forms);
     const modelReducers = {};
     const initialFormState = {};
     const optionsWithDefaults = {
@@ -50,17 +51,17 @@ function createFormCombiner(strategy = defaultStrategy) {
           initialState = null;
         }
 
-        modelReducers[formKey] = strategy.modeled(formValue, subModel);
+        modelReducers[formKey] = s.modeled(formValue, subModel);
         initialFormState[formKey] = initialState;
       } else {
-        modelReducers[formKey] = strategy.modelReducer(subModel, formValue);
-        initialFormState[formKey] = strategy.toJS(formValue);
+        modelReducers[formKey] = s.modelReducer(subModel, formValue);
+        initialFormState[formKey] = formValue;
       }
     });
 
     return {
       ...modelReducers,
-      [key]: strategy.formReducer(model, initialFormState, { plugins }),
+      [key]: s.formReducer(model, s.fromJS(initialFormState), { plugins }),
     };
   }
 

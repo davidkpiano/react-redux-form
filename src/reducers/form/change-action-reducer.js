@@ -1,145 +1,166 @@
 import actionTypes from '../../action-types';
+import Immutable from 'immutable';
 import i from 'icepick';
-import get from '../../utils/get';
+import identity from 'lodash/identity';
+import _get from '../../utils/get';
 import shallowEqual from '../../utils/shallow-equal';
 import isPlainObject from 'lodash/isPlainObject';
 import compact from 'lodash/compact';
-import mapValues from '../../utils/map-values';
+import _mapValues from '../../utils/map-values';
 import { createInitialState } from '../form-reducer';
-import initialFieldState from '../../constants/initial-field-state';
+import _initialFieldState from '../../constants/initial-field-state';
 import updateParentForms from '../../utils/update-parent-forms';
 
-function updateFieldValue(field, action, parentModel = undefined) {
-  const { value, removeKeys, silent, load, model } = action;
+const defaultStrategies = {
+  get: _get,
+  set: i.set,
+  setIn: i.setIn,
+  fromJS: identity,
+  remove: i.dissoc,
+  initialFieldState: _initialFieldState,
+  merge: i.assign,
+  mergeDeep: i.merge,
+  mapValues: _mapValues,
+  keys: Object.keys,
+};
 
-  const fieldState = (field && field.$form)
-    ? field.$form
-    : field;
+export function createChangeActionReducer(s = defaultStrategies) {
+  function updateFieldValue(field, action, parentModel = undefined) {
+    const { value, removeKeys, silent, load, model } = action;
 
-  const changedFieldProps = {
-    validated: false,
-    retouched: fieldState.submitted
-      ? true
-      : fieldState.retouched,
-    intents: [{ type: 'validate' }],
-    pristine: silent
-      ? fieldState.pristine
-      : false,
-    initialValue: load
-      ? value
-      : fieldState.initialValue,
-  };
+    const $form = s.get(field, ['$form']);
+    const fieldState = (field && $form)
+      ? $form
+      : field;
 
-  if (shallowEqual(field.value, value)) {
-    return i.merge(field, changedFieldProps);
-  }
+    const changedFieldProps = s.fromJS({
+      validated: false,
+      retouched: s.get(fieldState, 'submitted')
+        ? true
+        : s.get(fieldState, 'retouched'),
+      intents: [{ type: 'validate' }],
+      pristine: silent
+        ? s.get(fieldState, 'pristine')
+        : false,
+      initialValue: load
+        ? value
+        : s.get(fieldState, 'initialValue'),
+    });
 
-  if (removeKeys) {
-    const valueIsArray = Array.isArray(field.$form.value);
-    const removeKeysArray = Array.isArray(removeKeys)
-      ? removeKeys
-      : [removeKeys];
-
-    let result;
-
-    if (valueIsArray) {
-      result = [];
-
-      Object.keys(field).forEach((key) => {
-        if (!!~removeKeysArray.indexOf(+key) || (key === '$form')) return;
-
-        result[key] = field[key];
-      });
-
-      return i.set(compact(result), '$form', field.$form);
+    if (shallowEqual(s.get(field, 'value'), value)) {
+      return s.merge(field, changedFieldProps);
     }
 
-    result = { ...field };
+    if (removeKeys) {
+      const valueIsArray = Array.isArray(field.$form.value);
+      const removeKeysArray = Array.isArray(removeKeys)
+        ? removeKeys
+        : [removeKeys];
 
-    Object.keys(field).forEach((key) => {
-      if (!!~removeKeysArray.indexOf(key)) {
-        delete result[`${key}`];
+      let result;
+
+      if (valueIsArray) {
+        result = [];
+
+        Object.keys(field).forEach((key) => {
+          if (!!~removeKeysArray.indexOf(+key) || (key === '$form')) return;
+
+          result[key] = field[key];
+        });
+
+        return s.set(compact(result), '$form', s.get(field, '$form'));
       }
+
+      result = { ...field };
+
+      s.keys(field).forEach((key) => {
+        if (!!~removeKeysArray.indexOf(key)) {
+          delete result[`${key}`];
+        }
+      });
+
+      return result;
+    }
+
+    if (!Array.isArray(value) && !isPlainObject(value) && !Immutable.Iterable.isIterable(value)) {
+      return s.merge(field, s.set(changedFieldProps, 'value', value));
+    }
+
+    const updatedField = s.mapValues(s.fromJS(value), (subValue, index) => {
+      // TODO: refactor
+      const parentModelString = parentModel ? `${parentModel}.` : '';
+      const fullModelPath = `${`${parentModelString}${model}`}`;
+
+      const subField = field[index]
+        || createInitialState(`${fullModelPath}.${index}`, subValue, {}, {}, s);
+
+      if (s.get(subField, '$form')) {
+        return updateFieldValue(subField, s.fromJS({
+          model: index,
+          value: subValue,
+        }), fullModelPath);
+      }
+
+      if (shallowEqual(subValue, subField.value)) {
+        return subField;
+      }
+
+      return s.merge(subField, s.merge(changedFieldProps, s.fromJS({
+        value: subValue,
+        initialValue: load
+          ? subValue
+          : subField.initialValue,
+      })));
     });
+
+    const dirtyFormState = s.merge(s.get(field, '$form') || s.initialFieldState,
+      s.set(changedFieldProps, 'retouched',
+        s.get(field, 'submitted') || (s.get(field, '$form') && s.get(field, ['$form', 'retouched']))));
+
+
+    return s.set(updatedField, '$form',
+      s.set(dirtyFormState, 'value', value));
+  }
+
+  function getFormValue(form) {
+    if (!s.get(form, '$form')) return s.get(form, 'initialValue');
+
+    const result = s.mapValues(form, (field, key) => {
+      if (key === '$form') return undefined;
+
+      return getFormValue(field);
+    });
+
+    s.remove(result, '$form');
 
     return result;
   }
 
-  if (!Array.isArray(value) && !isPlainObject(value)) {
-    return i.merge(field, i.set(changedFieldProps, 'value', value));
-  }
+  return function changeActionReducer(state, action, localPath) {
+    if (action.type !== actionTypes.CHANGE) return state;
 
-  const updatedField = mapValues(value, (subValue, index) => {
-    // TODO: refactor
-    const subField = field[index]
-      || createInitialState(`${`${(parentModel
-        ? `${parentModel}.`
-        : '')
-      }${model}`}.${index}`, subValue);
+    const field = s.get(state, localPath, createInitialState(action.model, s.fromJS(action.value), {}, {}, s));
 
-    if (Object.hasOwnProperty.call(subField, '$form')) {
-      return updateFieldValue(subField, {
-        model: index,
-        value: subValue,
-      }, parentModel ? `${parentModel}.${model}` : model);
+    const updatedField = updateFieldValue(field, action);
+
+    if (!localPath.length) return updatedField;
+
+    const updatedState = s.setIn(state, localPath, updatedField);
+
+    if (action.silent) {
+      return updateParentForms(updatedState, localPath, (form) => {
+        const formValue = getFormValue(form);
+
+        return s.fromJS({
+          value: formValue,
+          initialValue: formValue,
+        });
+      }, s);
     }
 
-    if (shallowEqual(subValue, subField.value)) {
-      return subField;
-    }
-
-    return i.merge(subField, i.assign(changedFieldProps, {
-      value: subValue,
-      initialValue: load
-        ? subValue
-        : subField.initialValue,
-    }));
-  });
-
-  const dirtyFormState = i.merge(field.$form || initialFieldState,
-    i.set(changedFieldProps, 'retouched',
-      field.submitted || (field.$form && field.$form.retouched)));
-
-
-  return i.set(updatedField, '$form',
-    i.set(dirtyFormState, 'value', value));
-}
-
-function getFormValue(form) {
-  if (!form.$form) return form.initialValue;
-
-  const result = mapValues(form, (field, key) => {
-    if (key === '$form') return undefined;
-
-    return getFormValue(field);
-  });
-
-  delete result.$form;
-
-  return result;
-}
-
-export default function changeActionReducer(state, action, localPath) {
-  if (action.type !== actionTypes.CHANGE) return state;
-
-  const field = get(state, localPath, createInitialState(action.model, action.value));
-
-  const updatedField = updateFieldValue(field, action);
-
-  if (!localPath.length) return updatedField;
-
-  const updatedState = i.setIn(state, localPath, updatedField);
-
-  if (action.silent) {
-    return updateParentForms(updatedState, localPath, (form) => {
-      const formValue = getFormValue(form);
-
-      return {
-        value: formValue,
-        initialValue: formValue,
-      };
-    });
+    return updateParentForms(updatedState, localPath, { pristine: false }, s);
   }
-
-  return updateParentForms(updatedState, localPath, { pristine: false });
 }
+
+const createChangeAction = createChangeActionReducer();
+export default createChangeAction;

@@ -12,7 +12,8 @@ const defaultStrategies = {
   get: _get,
   getValue,
   splice: i.splice,
-  merge: i.merge,
+  merge: i.assign,
+  mergeDeep: i.merge,
   remove: i.dissoc,
   push: i.push,
   length: (value) => value.length,
@@ -46,6 +47,7 @@ export function createModelActions(s = defaultStrategies) {
   function createModifierAction(modifier, defaultValue, optionsIndex, getOptions) {
     const actionCreator = (model, ...args) => (dispatch, getState) => {
       const modelValue = s.get(getState(), model, defaultValue);
+
       const value = modifier(modelValue, ...args);
 
       const options = getOptions
