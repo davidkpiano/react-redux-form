@@ -1,4 +1,4 @@
-# React Redux Form 🍂
+# React Redux Form ❄️
 
 [![Join the chat at https://gitter.im/react-redux-form/Lobby](https://badges.gitter.im/react-redux-form/Lobby.svg)](https://gitter.im/react-redux-form/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/davidkpiano/react-redux-form.svg?branch=master)](https://travis-ci.org/davidkpiano/react-redux-form) [![npm version](https://badge.fury.io/js/react-redux-form.svg)](https://badge.fury.io/js/react-redux-form)
@@ -15,13 +15,43 @@ React Redux Form is a collection of reducer creators and action creators that ma
 
 ```bash
 # Dependencies (you probably already have these)
-npm install react react-dom redux react-redux redux-thunk --save
+npm install react react-dom redux react-redux --save
 
-# version 1.0.x
+# version 1.x.x
 npm install react-redux-form@latest --save
 ```
 
+## Zero-Boilerplate `<LocalForm>`
+
+If you want to get up and running with forms quickly without having to set up Redux, [just use Local Forms](http://davidkpiano.github.io/react-redux-form/docs/guides/local.html):
+
+```js
+import React from 'react';
+import { LocalForm, Control } from 'react-redux-form';
+
+export default class MyApp extends React.Component {
+  handleChange(values) { ... }
+  handleUpdate(form) { ... }
+  handleSubmit(values) { ... }
+  render() {
+    return (
+      <LocalForm
+        onUpdate={(form) => this.handleUpdate(form)}
+        onChange={(values) => this.handleChange(values)}
+        onSubmit={(values) => this.handleSubmit(values)}
+      >
+        <Control.text model=".username" />
+        <Control.text model=".password" />
+      </LocalForm>
+    );
+  }
+}
+```
+
+That's all you need. Seriously. [Read the Documentation](http://davidkpiano.github.io/react-redux-form/docs/guides/local.html) for more information.
+
 ## Quick Start
+For more fine-grained control (such as using custom reducers, storing form state globally, dispatching actions, etc.), you'll want to set up a Redux store for your forms.
 
 Be sure to read the [step-by-step quick start guide](http://davidkpiano.github.io/react-redux-form/docs/guides/quickstart.html) in the documentation.
 
@@ -66,7 +96,7 @@ class MyForm extends React.Component {
     return (
       <Form model="user" onSubmit={(val) => this.handleSubmit(val)}>
         <label>Your name?</label>
-        <Control.text model="user.name" />
+        <Control.text model=".name" />
         <button>Submit!</button>
       </Form>
     );
