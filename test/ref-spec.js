@@ -2,6 +2,7 @@
 import { assert } from 'chai';
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
+import { clearGetFormCache } from '../src/utils/get-form';
 
 import { testCreateStore, testRender } from './utils';
 
@@ -23,6 +24,10 @@ describe('getRef()', () => {
   const store = testCreateStore({
     test: modelReducer('test', {}),
     testForm: formReducer('test', {}),
+  });
+
+  beforeEach(() => {
+    clearGetFormCache();
   });
 
   components.forEach(([RRFComponent, tag]) => {

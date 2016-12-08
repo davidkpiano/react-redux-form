@@ -2,6 +2,7 @@ import get from './get';
 import toPath from './to-path';
 import getForm from './get-form';
 import isPlainObject from 'lodash/isPlainObject';
+import invariant from 'invariant';
 
 const defaultStrategy = {
   getForm,
@@ -15,6 +16,10 @@ export default function getFieldFromState(state, modelString, s = defaultStrateg
   if (!form) return null;
 
   if (!modelString.length) return form;
+
+  invariant(form,
+    'Could not find form for "%s" in the store.',
+    modelString);
 
   const formPath = toPath(form.$form.model);
   const fieldPath = toPath(modelString).slice(formPath.length);

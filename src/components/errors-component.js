@@ -5,7 +5,6 @@ import map from '../utils/map';
 import iteratee from '../utils/iteratee';
 import isPlainObject from 'lodash/isPlainObject';
 import omit from '../utils/omit';
-import invariant from 'invariant';
 
 import getForm from '../utils/get-form';
 import getFieldFromState from '../utils/get-field-from-state';
@@ -14,6 +13,7 @@ import isValid from '../form/is-valid';
 import resolveModel from '../utils/resolve-model';
 import initialFieldState from '../constants/initial-field-state';
 import shallowEqual from '../utils/shallow-equal';
+import invariant from 'invariant';
 
 const defaultStrategy = {
   get: _get,
@@ -184,8 +184,10 @@ function createErrorsClass(s = defaultStrategy) {
     const modelString = getModel(model, state);
 
     const form = s.getForm(state, modelString);
-    invariant(form, `Could not find form state for '${modelString}' model. `
-      + 'Please make sure it exists in the store.');
+    invariant(form,
+      'Unable to retrieve errors. ' +
+      'Could not find form for "%s" in the store.',
+      modelString);
 
     const formValue = form.$form;
     const fieldValue = s.getFieldFromState(state, modelString)

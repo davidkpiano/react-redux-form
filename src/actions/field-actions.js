@@ -13,6 +13,7 @@ import getFieldFromState from '../utils/get-field-from-state';
 import NULL_ACTION from '../constants/null-action';
 import omit from '../utils/omit';
 import isNative from '../utils/is-native';
+import invariant from 'invariant';
 
 const defaultStrategies = {
   get: _get,
@@ -175,6 +176,11 @@ function createFieldActions(s = defaultStrategies) {
     return (dispatch, getState) => {
       if (options.validate) {
         const form = s.getForm(getState(), model);
+
+        invariant(form,
+          'Unable to submit form with validation. ' +
+          'Could not find form for "%s" in the store.',
+          model);
 
         if (!form.$form.valid) {
           return dispatch(NULL_ACTION);

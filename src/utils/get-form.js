@@ -89,7 +89,9 @@ function getForm(state, modelString, s = defaultStrategy) {
     return null;
   }
 
-  return s.get(state, formStateKey);
+  const form = s.get(state, formStateKey);
+
+  return form;
 }
 
 export default getForm;

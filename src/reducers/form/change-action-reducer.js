@@ -8,6 +8,7 @@ import mapValues from '../../utils/map-values';
 import { createInitialState } from '../form-reducer';
 import initialFieldState from '../../constants/initial-field-state';
 import updateParentForms from '../../utils/update-parent-forms';
+import invariant from 'invariant';
 
 function updateFieldValue(field, action, parentModel = undefined) {
   const { value, removeKeys, silent, load, model } = action;
@@ -35,6 +36,11 @@ function updateFieldValue(field, action, parentModel = undefined) {
   }
 
   if (removeKeys) {
+    invariant(field && field.$form,
+      'Unable to remove keys. ' +
+      'Field for "%s" in store is not an array/object.',
+      model);
+
     const valueIsArray = Array.isArray(field.$form.value);
     const removeKeysArray = Array.isArray(removeKeys)
       ? removeKeys

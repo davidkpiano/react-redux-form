@@ -16,6 +16,7 @@ import getField from '../utils/get-field';
 import { fieldsValid } from '../form/is-valid';
 import deepCompareChildren from '../utils/deep-compare-children';
 import containsEvent from '../utils/contains-event';
+import invariant from 'invariant';
 
 const propTypes = {
   component: PropTypes.any,
@@ -373,11 +374,17 @@ function createFormClass(s = defaultStrategy) {
 
   function mapStateToProps(state, { model }) {
     const modelString = getModel(model, state);
+    const form = s.getForm(state, modelString);
+
+    invariant(form,
+      'Unable to create Form component. ' +
+      'Could not find form for "%s" in the store.',
+      modelString);
 
     return {
       model: modelString,
       modelValue: s.get(state, modelString),
-      formValue: s.getForm(state, modelString),
+      formValue: form,
     };
   }
 

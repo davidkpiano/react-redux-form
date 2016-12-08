@@ -1855,7 +1855,6 @@ Object.keys(testContexts).forEach((testKey) => {
       const filter = ({ constructor }) =>
         constructor.displayName === 'Connect(Control)';
       const components = TestUtils.findAllInRenderedTree(field, filter);
-      console.log(components);
       assert.lengthOf(components, 1, 'exactly one connected Control was rendered');
       const [component] = components;
       const oldStateProps = component.stateProps;

@@ -2,6 +2,7 @@ import i from 'icepick';
 import get from './get';
 import mapValues from './map-values';
 import { createInitialState } from '../reducers/form-reducer';
+import invariant from 'invariant';
 
 function assocIn(state, path, value, fn) {
   if (!path.length) return i.assign(state, value);
@@ -27,6 +28,10 @@ function tempInitialState(path, initialValue = null) {
 export function getFieldAndForm(formState, modelPath) {
   let field = get(formState, modelPath);
   let form = formState;
+
+  invariant(form,
+    'Could not find form for "%s" in the store.',
+    modelPath);
 
   if (!field) {
     const initialValue = get(formState.$form.initialValue, modelPath);

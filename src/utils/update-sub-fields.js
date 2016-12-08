@@ -27,7 +27,7 @@ export default function updateSubFields(state, localPath, newState) {
 
   // only forms can have fields -
   // skip if field is not a form
-  if (!field.$form) return state;
+  if (!field || !field.$form) return state;
 
   // intermediate value - not mutated outside function
   const updatedField = {};
