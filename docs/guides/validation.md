@@ -6,6 +6,73 @@ Validation occurs as the result of dispatching validation actions, such as `acti
 - validate any key on that model (such as `{ required: true, length: false }`)
 - call validation only when the model has been updated.
 
+## Quick Reference
+
+**Component Validation**
+```jsx
+const isEmail = (val) => /* check if val is email */
+
+// HTML5 validation
+// Works with any HTML5 constraint validation attributes
+<Control.text type="email" model="user.email" required />
+
+// Keyed validation
+<Control.text
+  model="user.email"
+  validators={{
+    required: (val) => val && val.length,
+    isEmail, // ES6 property shorthand
+  }}
+/>
+
+// Keyed errors
+<Control.text
+  model="user.email"
+  errors={{
+    required: (val) => !val || !val.length,
+    isEmail: (val) => !isEmail(val),
+  }}
+/>
+
+// Form-level validation
+const longEnough = (val) => val && val.length > 8;
+
+<Form
+  model="user"
+  validators={{
+    '': {
+      // Form-level validator
+      passwordsMatch: (vals) => vals.password === vals.confirmPassword,
+    },
+    // Field-level validators
+    password: { longEnough },
+    confirmPassword: { longEnough },
+  }}
+/>
+```
+
+**Actions**
+```jsx
+// Set validity of entire model
+dispatch(actions.setValidity('foo.bar', true));
+
+// Set keyed validity of entire model
+dispatch(actions.setValidity('foo.bar', {
+  isLongEnough: true,
+  isRightFormat: false,
+}));
+
+// Set errors of entire model.
+// Truthy values indicate an error.
+dispatch(actions.setErrors('foo.bar', true));
+
+// Set keyed validity of entire model
+dispatch(actions.setErrors('foo.bar', {
+  isLongEnough: false, // not an error
+  isRightFormat: true, // an error
+}));
+```
+
 ## Simple Validation
 
 Suppose you are validating `'user.email'`. At any point, you can dispatch `actions.setValidity()` to set the validity of that model on your form state:
@@ -234,6 +301,28 @@ import { Form } from 'react-redux-form';
   <Control.email />
 </Form>
 ```
+
+## Validating across models
+
+Any validation across models is best represented as a form-level validator. For instance, say you have a form where the two password fields, `.password` and `.confirmPassword`, need to match:
+
+```jsx
+<Form
+  model="user"
+  validators={{
+    '': {
+      passwordsMatch: (vals) => vals.password === vals.confirmPassword,
+    },
+  }}
+>
+  <Control type="password" model=".password" />
+  <Control type="password" model=".confirmPassword" />
+
+  <Errors model="user" />
+</Form>
+```
+
+When any of the `user` model values change, the form-level validity will be updated. You can manually retrieve form-level validation by accessing `[form path].$form.validity`, which represents the validity of the entire form.
 
 ## Deep Model Validation in `<Form>`
 

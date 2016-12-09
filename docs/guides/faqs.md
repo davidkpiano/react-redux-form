@@ -56,6 +56,8 @@ const BirthDate = ({forModel}) => (
 export default BirthDate;
 ```
 
+Also, see [./validation.md](the validation guide) for more information.
+
 ### How do I get the component instance? `ref={...}` doesn't work.
 
 Use `getRef={(node) => ...}` in place of `ref`. This is due to the fact that React treats the `ref` prop as a "magic" prop that doesn't get propagated down through wrapped components.
