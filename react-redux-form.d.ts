@@ -101,6 +101,9 @@ type MapPropsObject = { [key: string]: (props: MapPropsProps) => any };
 
 type MapProps = MapPropsFunc | MapPropsObject;
 
+type UpdateOn = 'change' | 'blur' | 'focus';
+type ValidateOn = 'change' | 'blur' | 'focus';
+
 export interface ControlProps<T> extends React.HTMLProps<T> {
     /**
      * Wrap field into custom component
@@ -127,7 +130,7 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
      *     <input type="text" />
      * </Field>
      */
-    updateOn?: 'change' | 'blur' | 'focus';
+    updateOn?: UpdateOn | UpdateOn[];
     /**
      * A map where the keys are validation keys, and the values are the corresponding functions that determine the validity of each key, given the model's value.
      * Validator functions accept the value and return true if the field is valid.
@@ -142,7 +145,7 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
      *
      * @default change
      */
-    validateOn?: 'change' | 'blur' | 'focus';
+    validateOn?: ValidateOn | ValidateOn[];
     asyncValidators?: AsyncValidators;
     /**
      * Indicates when to validate the field asynchronously
