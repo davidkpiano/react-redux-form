@@ -71,3 +71,5 @@ With [`<Fieldset>`](../api/Fieldset), you can deeply resolve models:
 ```
 
 This makes it even easier to create reusable groups of controls.
+
+(since: 1.4.0)

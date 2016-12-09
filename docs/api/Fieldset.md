@@ -34,6 +34,8 @@ const Address = () => (
 </Form>
 ```
 
+(since: 1.4.0)
+
 # Prop Types
 
 ## `model="..."` (required)
