@@ -90,7 +90,8 @@
   "dependencies": {
     "icepick": "^1.1.0",
     "invariant": "~2.2.1",
-    "lodash": "^4.10.0"
+    "lodash.get": "~4.4.2",
+    "lodash.topath": "~4.5.2"
   },
   "peerDependencies": {
     "react": "^0.14.0 || ^15.0.0",

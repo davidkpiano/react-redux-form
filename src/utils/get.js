@@ -1,4 +1,4 @@
-import _get from 'lodash/get';
+import _get from 'lodash.get';
 import endsWith from './ends-with';
 
 export default function get(object, path, defaultValue) {

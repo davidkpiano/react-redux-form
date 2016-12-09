@@ -54,3 +54,20 @@ const AddressFields = () => (
   <AddressFields />
 </Form>
 ```
+
+## Deeply Resolved Models
+
+With [`<Fieldset>`](../api/Fieldset), you can deeply resolve models:
+
+```jsx
+// in render():
+<Form model="user">
+  <Fieldset model=".address">
+    <Control.text model=".city" />
+    <Control.text model=".state" />
+    <Control.text model=".zip" />
+  </Fieldset>
+</Form>
+```
+
+This makes it even easier to create reusable groups of controls.
