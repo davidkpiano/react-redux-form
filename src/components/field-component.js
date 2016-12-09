@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 
 import _get from '../utils/get';
-import identity from 'lodash/identity';
+import identity from '../utils/identity';
 import omit from '../utils/omit';
-import isPlainObject from 'lodash/isPlainObject';
-import pick from 'lodash/pick';
+import isPlainObject from '../utils/is-plain-object';
+import pick from '../utils/pick';
 import { connect } from 'react-redux';
 import invariant from 'invariant';
 

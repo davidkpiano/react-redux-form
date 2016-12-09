@@ -1,4 +1,4 @@
-import identity from 'lodash/identity';
+import identity from './identity';
 
 function matcher(object) {
   return (compareObject) => {

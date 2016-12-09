@@ -1,4 +1,4 @@
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from './is-plain-object';
 import arraySome from 'lodash/_arraySome';
 import baseSome from 'lodash/_baseSome';
 

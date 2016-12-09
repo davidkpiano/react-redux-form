@@ -1,12 +1,12 @@
 import React, { Component, createElement, cloneElement, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import identity from 'lodash/identity';
+import identity from '../utils/identity';
 import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import merge from '../utils/merge';
 import mapValues from '../utils/map-values';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../utils/is-plain-object';
 import i from 'icepick';
 import omit from '../utils/omit';
 import actionTypes from '../action-types';

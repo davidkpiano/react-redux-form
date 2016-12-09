@@ -5,7 +5,7 @@ import updateSubFields from '../utils/update-sub-fields';
 import getFieldForm from '../utils/get-field-form';
 import isPristine from '../form/is-pristine';
 import map from '../utils/map';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../utils/is-plain-object';
 import mapValues from '../utils/map-values';
 import inverse from '../utils/inverse';
 import isValid, { fieldsValid } from '../form/is-valid';

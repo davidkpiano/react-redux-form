@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import _get from '../utils/get';
 import map from '../utils/map';
 import iteratee from '../utils/iteratee';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../utils/is-plain-object';
 import omit from '../utils/omit';
 
 import getForm from '../utils/get-form';

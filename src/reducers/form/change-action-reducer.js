@@ -2,7 +2,7 @@ import actionTypes from '../../action-types';
 import i from 'icepick';
 import get from '../../utils/get';
 import shallowEqual from '../../utils/shallow-equal';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../../utils/is-plain-object';
 import compact from 'lodash/compact';
 import mapValues from '../../utils/map-values';
 import { createInitialState } from '../form-reducer';
