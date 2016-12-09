@@ -6,8 +6,8 @@ import {
   form as selectForm,
   formReducer,
 } from '../src';
-import mapValues from 'lodash/mapValues';
-import toPath from 'lodash/toPath';
+import mapValues from '../src/utils/map-values';
+import toPath from 'lodash.topath';
 import get from '../src/utils/get';
 
 describe('formReducer() (V1)', () => {

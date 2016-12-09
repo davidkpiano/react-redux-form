@@ -5,9 +5,9 @@ import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import { Provider } from 'react-redux';
 import sinon from 'sinon';
-import capitalize from 'lodash/capitalize';
-import _get from 'lodash/get';
-import toPath from 'lodash/toPath';
+import capitalize from '../src/utils/capitalize';
+import _get from 'lodash.get';
+import toPath from 'lodash.topath';
 import i from 'icepick';
 import Immutable from 'immutable';
 
