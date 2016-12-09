@@ -1,6 +1,6 @@
 {
   "name": "react-redux-form",
-  "version": "1.3.4",
+  "version": "1.4.0",
   "description": "Create Forms Easily with React and Redux",
   "main": "lib/index.js",
   "typings": "react-redux-form.d.ts",
