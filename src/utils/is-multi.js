@@ -1,4 +1,4 @@
-import endsWith from 'lodash/endsWith';
+import endsWith from './ends-with';
 
 export default function isMulti(model) {
   return endsWith(model, '[]');

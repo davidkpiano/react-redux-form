@@ -2,7 +2,6 @@ import _get from '../utils/get';
 import i from 'icepick';
 import arraysEqual from '../utils/arrays-equal';
 import isPlainObject from '../utils/is-plain-object';
-import isArray from 'lodash/isArray';
 import mapValues from '../utils/map-values';
 import toPath from '../utils/to-path';
 import composeReducers from '../utils/compose-reducers';
@@ -24,7 +23,7 @@ export function createInitialState(model, state, customInitialFieldState = {}, o
     lazy = false,
   } = options;
 
-  if (isArray(state) || isPlainObject(state)) {
+  if (Array.isArray(state) || isPlainObject(state)) {
     initialState = lazy
       ? {}
       : mapValues(state, (subState, subModel) =>

@@ -3,7 +3,6 @@ import i from 'icepick';
 import get from '../../utils/get';
 import shallowEqual from '../../utils/shallow-equal';
 import isPlainObject from '../../utils/is-plain-object';
-import compact from 'lodash/compact';
 import mapValues from '../../utils/map-values';
 import { createInitialState } from '../form-reducer';
 import initialFieldState from '../../constants/initial-field-state';
@@ -57,7 +56,7 @@ function updateFieldValue(field, action, parentModel = undefined) {
         result[key] = field[key];
       });
 
-      return { ...i.set(compact(result), '$form', field.$form) };
+      return { ...i.set(result.filter((f) => f), '$form', field.$form) };
     }
 
     result = { ...field };
