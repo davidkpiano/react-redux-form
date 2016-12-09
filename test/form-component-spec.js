@@ -1887,5 +1887,35 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(store.getState().testForm.$form.submitFailed);
       });
     });
+
+    describe('getDispatch() prop', () => {
+      it('should provide dispatch to callback', (done) => {
+        const initialState = getInitialState({ foo: '' });
+
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        function handleGetDispatch(dispatch) {
+          assert.isFunction(dispatch);
+
+          dispatch(actions.setPending('test.foo'));
+
+          assert.isTrue(store.getState().testForm.foo.pending);
+
+          done();
+        }
+
+        TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Form
+              model="test"
+              getDispatch={handleGetDispatch}
+            />
+          </Provider>
+        );
+      });
+    });
   });
 });

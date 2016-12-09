@@ -213,8 +213,20 @@ _(Function)_ The handler function that is called with the form's model value whe
 _(Function)_: Calls the callback provided to the `getRef` prop with the node instance. Similar to `ref`.
 
 ```jsx
-<Control.text
-  model="user.name"
+<Form
+  model="user"
   getRef={(node) => this.attach(node)}
 />
 ```
+
+## `getDispatch={(dispatch) => ...}`
+_(Function)_ Provides the dispatcher for the `<Form>`'s store.
+
+```jsx
+<Form
+  model="user"
+  getDispatch={(dispatch) => this.formDispatch = dispatch}
+/>
+
+### Notes
+- This is most useful for use with `<LocalForm>`, and is primarily intended for `<LocalForm>`.

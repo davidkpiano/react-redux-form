@@ -332,6 +332,14 @@ interface BaseFormProps {
      * * For React Native, it is important that you specify the component to avoid any rendering errors. For most use cases, component={View} will work.
      */
     component?: React.ComponentClass<any> | string;
+    /**
+     * Calls the callback provided with the node instance. Similar to the "ref" prop.
+     */
+    getRef?: (ref: any) => void;
+    /**
+     * Provides the dispatcher for the form's Redux store.
+     */
+    getDispatch?: (dispatch: Function) => void;
 }
 export interface FormProps extends BaseFormProps {
     /**

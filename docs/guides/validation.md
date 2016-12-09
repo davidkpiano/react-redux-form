@@ -258,7 +258,7 @@ As of RRF version 1.2.4, you can have deep validators in the `<Form validators={
 >
   {/* etc. */}
 </Form>
-````
+```
 
 The empty brackets in the validator key `'phones[].number'` tell RRF to validate the `.number` property for each `phone` in the `user.phones[]` array.
 

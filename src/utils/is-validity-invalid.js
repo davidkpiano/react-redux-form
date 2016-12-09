@@ -1,14 +1,13 @@
 import isPlainObject from './is-plain-object';
-import arraySome from 'lodash/_arraySome';
-import baseSome from 'lodash/_baseSome';
 
 export default function isValidityInvalid(errors) {
-  const some = Array.isArray(errors)
-    ? arraySome
-    : baseSome;
+  if (Array.isArray(errors)) {
+    return errors.some(isValidityInvalid);
+  }
 
   if (isPlainObject(errors)) {
-    return some(errors, isValidityInvalid);
+    return Object.keys(errors).some((key) =>
+      isValidityInvalid(errors[key]));
   }
 
   return !!errors;
