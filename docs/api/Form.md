@@ -229,6 +229,7 @@ _(Function)_ Provides the dispatcher for the `<Form>`'s store.
   model="user"
   getDispatch={(dispatch) => this.formDispatch = dispatch}
 />
+```
 
 ### Notes
 - This is most useful for use with `<LocalForm>`, and is primarily intended for `<LocalForm>`.
