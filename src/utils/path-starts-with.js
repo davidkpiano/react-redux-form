@@ -1,4 +1,4 @@
-import toPath from 'lodash.toPath';
+import toPath from 'lodash.topath';
 
 export default function pathStartsWith(pathString, subPathString) {
   if (pathString === subPathString) return true;
