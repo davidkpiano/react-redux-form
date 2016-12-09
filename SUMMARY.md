@@ -17,6 +17,7 @@
   * [Control component](docs/api/Control.md)
   * [Form component](docs/api/Form.md)
   * [Field component](docs/api/Field.md)
+  * [Fieldset component](docs/api/Fieldset.md)
   * [Errors component](docs/api/Errors.md)
   * [modelReducer](docs/api/modelReducer.md)
   * [formReducer](docs/api/formReducer.md)
