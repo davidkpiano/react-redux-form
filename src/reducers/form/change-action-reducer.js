@@ -25,9 +25,9 @@ function updateFieldValue(field, action, parentModel = undefined) {
     pristine: silent
       ? fieldState.pristine
       : false,
-    initialValue: load
+    loadedValue: load
       ? value
-      : fieldState.initialValue,
+      : fieldState.loadedValue,
   };
 
   if (shallowEqual(field.value, value)) {
@@ -95,9 +95,9 @@ function updateFieldValue(field, action, parentModel = undefined) {
 
     return i.merge(subField, i.assign(changedFieldProps, {
       value: subValue,
-      initialValue: load
+      loadedValue: load
         ? subValue
-        : subField.initialValue,
+        : subField.loadedValue,
     }));
   });
 
@@ -111,7 +111,11 @@ function updateFieldValue(field, action, parentModel = undefined) {
 }
 
 function getFormValue(form) {
-  if (form && !form.$form) return form.initialValue;
+  if (form && !form.$form) {
+    return typeof form.loadedValue !== 'undefined'
+      ? form.loadedValue
+      : form.initialValue;
+  }
 
   const result = mapValues(form, (field, key) => {
     if (key === '$form') return undefined;
@@ -141,7 +145,7 @@ export default function changeActionReducer(state, action, localPath) {
 
       return {
         value: formValue,
-        initialValue: formValue,
+        loadedValue: formValue,
       };
     });
   }

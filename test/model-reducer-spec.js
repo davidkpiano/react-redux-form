@@ -88,4 +88,25 @@ describe('modelReducer()', () => {
       {},
       'should only change when base path is equal');
   });
+
+  it('should reset a model to its initial state', () => {
+    const initialState = {
+      simple: 123,
+      foo: [],
+      meta: { bar: [] },
+    };
+
+    const reducer = modelReducer('test', initialState);
+
+    const changedState = reducer(undefined, actions.change('test', {
+      simple: 999,
+      foo: [1, 2, 3],
+      meta: { bar: [1, 2, 3], baz: 'new field' },
+    }));
+
+    assert.deepEqual(
+      reducer(changedState, actions.reset('test')),
+      initialState
+    );
+  });
 });

@@ -927,9 +927,8 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('initial value after reset', () => {
       const initialState = getInitialState({ foo: '' });
-      const reducer = formReducer('test');
       const store = testCreateStore({
-        testForm: reducer,
+        testForm: formReducer('test', initialState),
         test: modelReducer('test', initialState),
       });
 

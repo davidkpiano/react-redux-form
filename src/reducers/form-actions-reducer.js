@@ -19,26 +19,28 @@ import i from 'icepick';
 const resetFieldState = (field, key) => {
   if (!isPlainObject(field)) return field;
 
+  const intents = [{ type: 'validate' }];
+  let resetValue = field.initialValue;
+
+  if ('loadedValue' in field && field.initialValue !== field.loadedValue) {
+    intents.push({ type: 'load', value: field.loadedValue });
+    resetValue = field.loadedValue;
+  }
+
   if (key === '$form') {
     return i.assign(initialFieldState, {
-      value: field.initialValue,
+      value: resetValue,
       model: field.model,
-      intents: [
-        { type: 'validate' },
-        { type: 'load', value: field.initialValue },
-      ],
+      intents,
     });
   }
 
   if (field.$form) return mapValues(field, resetFieldState);
 
   return i.assign(initialFieldState, {
-    value: field.initialValue,
+    value: resetValue,
     model: field.model,
-    intents: [
-      { type: 'validate' },
-      { type: 'load', value: field.initialValue },
-    ],
+    intents,
   });
 };
 
