@@ -31,7 +31,6 @@ export function createInitialState(model, state, customInitialFieldState = {}, o
   } else {
     return i.merge(initialFieldState, {
       initialValue: state,
-      value: state,
       model,
       ...customInitialFieldState,
     });
@@ -39,7 +38,6 @@ export function createInitialState(model, state, customInitialFieldState = {}, o
 
   const initialForm = i.merge(initialFieldState, {
     initialValue: state,
-    value: state,
     model,
     ...customInitialFieldState,
   });

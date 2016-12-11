@@ -23,7 +23,6 @@ describe('formReducer() (V1)', () => {
         expectedField: {
           pristine: false,
           validated: false,
-          value: 'foo',
         },
         expectedForm: {
           pristine: false,
@@ -36,7 +35,6 @@ describe('formReducer() (V1)', () => {
           $form: {
             pristine: false,
             validated: false,
-            value: { foo: 'bar' },
           },
         },
         expectedForm: {
@@ -50,7 +48,6 @@ describe('formReducer() (V1)', () => {
           $form: {
             pristine: false,
             validated: false,
-            value: [1, 2, 3],
           },
         },
         expectedForm: {
@@ -62,7 +59,6 @@ describe('formReducer() (V1)', () => {
         args: ['string'],
         expectedField: {
           pristine: true,
-          value: 'string',
           loadedValue: 'string',
         },
         expectedForm: {
@@ -74,7 +70,6 @@ describe('formReducer() (V1)', () => {
         args: [42],
         expectedField: {
           pristine: true,
-          value: 42,
           loadedValue: 42,
         },
         expectedForm: {
@@ -87,12 +82,10 @@ describe('formReducer() (V1)', () => {
         expectedField: {
           $form: {
             pristine: true,
-            value: { foo: 'bar' },
             loadedValue: { foo: 'bar' },
           },
           foo: {
             pristine: true,
-            value: 'bar',
             initialValue: 'bar',
           },
         },
@@ -707,7 +700,6 @@ describe('formReducer() (V1)', () => {
 
     it('should change the loaded value for the field', () => {
       assert.equal(loadedState.foo.loadedValue, 'new loaded');
-      assert.equal(loadedState.foo.value, 'new loaded');
     });
 
     it('should change the loaded value for the form', () => {

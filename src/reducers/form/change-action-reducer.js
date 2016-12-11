@@ -1,7 +1,6 @@
 import actionTypes from '../../action-types';
 import i from 'icepick';
 import get from '../../utils/get';
-import shallowEqual from '../../utils/shallow-equal';
 import isPlainObject from '../../utils/is-plain-object';
 import mapValues from '../../utils/map-values';
 import { createInitialState } from '../form-reducer';
@@ -16,23 +15,15 @@ function updateFieldValue(field, action, parentModel = undefined) {
     ? field.$form
     : field;
 
+  const valueIsArray = Array.isArray(value);
+
   const changedFieldProps = {
     validated: false,
-    retouched: fieldState.submitted
-      ? true
-      : fieldState.retouched,
+    retouched: fieldState.submitted || fieldState.retouched,
     intents: [{ type: 'validate' }],
-    pristine: silent
-      ? fieldState.pristine
-      : false,
-    loadedValue: load
-      ? value
-      : fieldState.loadedValue,
+    pristine: silent && fieldState.pristine,
+    loadedValue: (load && value) || fieldState.loadedValue,
   };
-
-  if (shallowEqual(field.value, value)) {
-    return i.merge(field, changedFieldProps);
-  }
 
   if (removeKeys) {
     invariant(field && field.$form,
@@ -40,10 +31,7 @@ function updateFieldValue(field, action, parentModel = undefined) {
       'Field for "%s" in store is not an array/object.',
       model);
 
-    const valueIsArray = Array.isArray(field.$form.value);
-    const removeKeysArray = Array.isArray(removeKeys)
-      ? removeKeys
-      : [removeKeys];
+    const removeKeysArray = [].concat(removeKeys);
 
     let result;
 
@@ -70,8 +58,8 @@ function updateFieldValue(field, action, parentModel = undefined) {
     return result;
   }
 
-  if (!Array.isArray(value) && !isPlainObject(value)) {
-    return i.merge(field, i.set(changedFieldProps, 'value', value));
+  if (!valueIsArray && !isPlainObject(value)) {
+    return i.merge(field, changedFieldProps);
   }
 
   const updatedField = mapValues(value, (subValue, index) => {
@@ -89,12 +77,7 @@ function updateFieldValue(field, action, parentModel = undefined) {
       }, parentModel ? `${parentModel}.${model}` : model);
     }
 
-    if (shallowEqual(subValue, subField.value)) {
-      return subField;
-    }
-
     return i.merge(subField, i.assign(changedFieldProps, {
-      value: subValue,
       loadedValue: load
         ? subValue
         : subField.loadedValue,
