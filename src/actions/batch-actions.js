@@ -1,6 +1,6 @@
 import actionTypes from '../action-types';
 import partition from '../utils/partition';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../utils/is-plain-object';
 import { trackable } from '../utils/track';
 
 import NULL_ACTION from '../constants/null-action';

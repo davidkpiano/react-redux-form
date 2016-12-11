@@ -44,6 +44,7 @@ const propTypes = {
   onUpdate: PropTypes.func,
   onChange: PropTypes.func,
   getRef: PropTypes.func,
+  getDispatch: PropTypes.func,
 };
 
 const defaultStrategy = {
@@ -77,6 +78,10 @@ function createFormClass(s = defaultStrategy) {
 
       if (containsEvent(this.props.validateOn, 'change')) {
         this.validate(this.props, true);
+      }
+
+      if (this.props.getDispatch) {
+        this.props.getDispatch(this.props.dispatch);
       }
     }
 

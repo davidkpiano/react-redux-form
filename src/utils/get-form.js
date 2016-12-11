@@ -1,5 +1,5 @@
 import get from '../utils/get';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../utils/is-plain-object';
 import pathStartsWith, { pathDifference } from '../utils/path-starts-with';
 
 const defaultStrategy = {

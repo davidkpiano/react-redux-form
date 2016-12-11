@@ -47,7 +47,7 @@ _(String | Function)_: The string representing the model value of the entire for
 
 Typically, the `<Control>` (and/or `<Field>`) components nested inside `<Form>` would be _members_ of the form model; e.g. `user.email` and `user.password` are members of the `user` model.
 
-You can also use [partial models](../guides/partial-models) for `<Control>`, `<Field>`, and `<Errors>` components inside of `<Form>` - they will be resolved to the form's model.
+You can also use [partial models](../guides/partial-models) for `<Control>`, `<Field>`, `<Fieldset>`, and `<Errors>` components inside of `<Form>` - they will be resolved to the form's model.
 
 ## `validators={{...}}`
 _(Object)_: An object representing the validators for the fields inside the form, where:
@@ -213,8 +213,23 @@ _(Function)_ The handler function that is called with the form's model value whe
 _(Function)_: Calls the callback provided to the `getRef` prop with the node instance. Similar to `ref`.
 
 ```jsx
-<Control.text
-  model="user.name"
+<Form
+  model="user"
   getRef={(node) => this.attach(node)}
 />
 ```
+
+## `getDispatch={(dispatch) => ...}`
+_(Function)_ Provides the dispatcher for the `<Form>`'s store.
+
+(since: 1.4.0)
+
+```jsx
+<Form
+  model="user"
+  getDispatch={(dispatch) => this.formDispatch = dispatch}
+/>
+```
+
+### Notes
+- This is most useful for use with `<LocalForm>`, and is primarily intended for `<LocalForm>`.

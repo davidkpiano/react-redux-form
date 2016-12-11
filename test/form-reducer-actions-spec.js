@@ -6,8 +6,8 @@ import {
   form as selectForm,
   formReducer,
 } from '../src';
-import mapValues from 'lodash/mapValues';
-import toPath from 'lodash/toPath';
+import mapValues from '../src/utils/map-values';
+import toPath from 'lodash.topath';
 import get from '../src/utils/get';
 
 describe('formReducer() (V1)', () => {
@@ -23,7 +23,6 @@ describe('formReducer() (V1)', () => {
         expectedField: {
           pristine: false,
           validated: false,
-          value: 'foo',
         },
         expectedForm: {
           pristine: false,
@@ -36,7 +35,6 @@ describe('formReducer() (V1)', () => {
           $form: {
             pristine: false,
             validated: false,
-            value: { foo: 'bar' },
           },
         },
         expectedForm: {
@@ -50,7 +48,6 @@ describe('formReducer() (V1)', () => {
           $form: {
             pristine: false,
             validated: false,
-            value: [1, 2, 3],
           },
         },
         expectedForm: {
@@ -62,8 +59,7 @@ describe('formReducer() (V1)', () => {
         args: ['string'],
         expectedField: {
           pristine: true,
-          value: 'string',
-          initialValue: 'string',
+          loadedValue: 'string',
         },
         expectedForm: {
           pristine: true,
@@ -74,8 +70,7 @@ describe('formReducer() (V1)', () => {
         args: [42],
         expectedField: {
           pristine: true,
-          value: 42,
-          initialValue: 42,
+          loadedValue: 42,
         },
         expectedForm: {
           pristine: true,
@@ -87,12 +82,10 @@ describe('formReducer() (V1)', () => {
         expectedField: {
           $form: {
             pristine: true,
-            value: { foo: 'bar' },
-            initialValue: { foo: 'bar' },
+            loadedValue: { foo: 'bar' },
           },
           foo: {
             pristine: true,
-            value: 'bar',
             initialValue: 'bar',
           },
         },
@@ -660,23 +653,40 @@ describe('formReducer() (V1)', () => {
   });
 
   describe('deep resetting', () => {
-    const reducer = formReducer('test', {
-      foo: '',
-      meta: {
-        bar: '',
-      },
-    });
-
-    const changedState = reducer(undefined, actions.change('test', {
-      foo: 'changed foo',
-      meta: { bar: 'changed bar' },
-    }));
-
     it('resetting a parent field should reset child fields in form', () => {
+      const reducer = formReducer('test', {
+        foo: '',
+        meta: {
+          bar: '',
+        },
+      });
+
+      const changedState = reducer(undefined, actions.change('test', {
+        foo: 'changed foo',
+        meta: { bar: 'changed bar' },
+      }));
       const resetState = reducer(changedState, actions.reset('test'));
 
       assert.equal(resetState.foo.value, '');
       assert.equal(resetState.meta.bar.value, '');
+    });
+
+    it('resetting a parent field should reset complex child fields', () => {
+      const reducer = formReducer('test', {
+        foo: [],
+        meta: {
+          bar: [],
+        },
+      });
+
+      const changedState = reducer(undefined, actions.change('test', {
+        foo: [1, 2, 3],
+        meta: { bar: [1, 2, 3] },
+      }));
+      const resetState = reducer(changedState, actions.reset('test'));
+
+      assert.deepEqual(resetState.foo.$form.value, []);
+      assert.deepEqual(resetState.meta.bar.$form.value, []);
     });
   });
 
@@ -686,23 +696,22 @@ describe('formReducer() (V1)', () => {
     });
 
     const loadedState = reducer(undefined,
-      actions.load('test.foo', 'new initial'));
+      actions.load('test.foo', 'new loaded'));
 
-    it('should change the initial value for the field', () => {
-      assert.equal(loadedState.foo.initialValue, 'new initial');
-      assert.equal(loadedState.foo.value, 'new initial');
+    it('should change the loaded value for the field', () => {
+      assert.equal(loadedState.foo.loadedValue, 'new loaded');
     });
 
-    it('should change the initial value for the form', () => {
-      assert.deepEqual(loadedState.$form.initialValue, { foo: 'new initial' });
-      assert.deepEqual(loadedState.$form.value, { foo: 'new initial' });
+    it('should change the loaded value for the form', () => {
+      assert.deepEqual(loadedState.$form.loadedValue, { foo: 'new loaded' });
+      assert.deepEqual(loadedState.$form.value, { foo: 'new loaded' });
     });
 
     it('resetting a parent field should reset child fields in form', () => {
       const resetState = reducer(loadedState, actions.reset('test'));
 
-      assert.deepEqual(resetState.$form.value, { foo: 'new initial' });
-      assert.equal(resetState.foo.value, 'new initial');
+      assert.deepEqual(resetState.$form.value, { foo: 'new loaded' });
+      assert.equal(resetState.foo.value, 'new loaded');
     });
   });
 

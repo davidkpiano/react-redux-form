@@ -1,10 +1,11 @@
-import arrayMap from 'lodash/_arrayMap';
-import baseMap from 'lodash/_baseMap';
 
 export default function map(values, iteratee) {
-  const func = Array.isArray(values)
-    ? arrayMap
-    : baseMap;
+  if (Array.isArray(values)) {
+    return values.map(iteratee);
+  }
 
-  return func(values, iteratee);
+  const result = Object.keys(values).map((key) =>
+    iteratee(values[key], key, values));
+
+  return result;
 }

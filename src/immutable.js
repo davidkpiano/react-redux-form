@@ -12,7 +12,7 @@ import batch from './actions/batch-actions';
 import getValue from './utils/get-value';
 import immutableGetFromState from './utils/get-from-immutable-state';
 import getForm, { getFormStateKey } from './utils/get-form';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from './utils/is-plain-object';
 import Immutable from 'immutable';
 
 import {

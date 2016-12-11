@@ -1,7 +1,7 @@
 import get from './get';
 import toPath from './to-path';
 import getForm from './get-form';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from './is-plain-object';
 import invariant from 'invariant';
 
 const defaultStrategy = {

@@ -5,7 +5,7 @@ import updateSubFields from '../utils/update-sub-fields';
 import getFieldForm from '../utils/get-field-form';
 import isPristine from '../form/is-pristine';
 import map from '../utils/map';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../utils/is-plain-object';
 import mapValues from '../utils/map-values';
 import inverse from '../utils/inverse';
 import isValid, { fieldsValid } from '../form/is-valid';
@@ -19,26 +19,28 @@ import i from 'icepick';
 const resetFieldState = (field, key) => {
   if (!isPlainObject(field)) return field;
 
+  const intents = [{ type: 'validate' }];
+  let resetValue = field.initialValue;
+
+  if ('loadedValue' in field && field.initialValue !== field.loadedValue) {
+    intents.push({ type: 'load', value: field.loadedValue });
+    resetValue = field.loadedValue;
+  }
+
   if (key === '$form') {
     return i.assign(initialFieldState, {
-      value: field.initialValue,
+      value: resetValue,
       model: field.model,
-      intents: [
-        { type: 'validate' },
-        { type: 'load', value: field.initialValue },
-      ],
+      intents,
     });
   }
 
   if (field.$form) return mapValues(field, resetFieldState);
 
   return i.assign(initialFieldState, {
-    value: field.initialValue,
+    value: resetValue,
     model: field.model,
-    intents: [
-      { type: 'validate' },
-      { type: 'load', value: field.initialValue },
-    ],
+    intents,
   });
 };
 

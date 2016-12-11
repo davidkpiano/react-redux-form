@@ -11,9 +11,13 @@ describe('local forms', () => {
 
   describe('standard usage with onUpdate', () => {
     let innerFormState;
+    let innerModelState;
 
     const form = TestUtils.renderIntoDocument(
-      <LocalForm onUpdate={(formValue) => innerFormState = formValue}>
+      <LocalForm
+        onUpdate={(formValue) => innerFormState = formValue}
+        onChange={(modelState) => innerModelState = modelState}
+      >
         <Control.text model=".foo" />
       </LocalForm>
     );
@@ -38,8 +42,11 @@ describe('local forms', () => {
         },
         foo: {
           pristine: false,
-          value: 'changed',
         },
+      });
+
+      assert.deepEqual(innerModelState, {
+        foo: 'changed',
       });
     });
   });

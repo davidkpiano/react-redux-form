@@ -2,7 +2,7 @@ import modeled from '../enhancers/modeled-enhancer';
 import modelReducer from './model-reducer';
 import formReducer from './form-reducer';
 import { combineReducers } from 'redux';
-import identity from 'lodash/identity';
+import identity from '../utils/identity';
 
 import NULL_ACTION from '../constants/null-action';
 

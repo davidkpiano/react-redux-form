@@ -1,4 +1,4 @@
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../utils/is-plain-object';
 
 export default function isValid(formState) {
   if (!formState) return true;

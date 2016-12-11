@@ -1,4 +1,4 @@
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from './is-plain-object';
 import get from './get';
 import initialFieldState from '../constants/initial-field-state';
 

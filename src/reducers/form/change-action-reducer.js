@@ -1,9 +1,7 @@
 import actionTypes from '../../action-types';
 import i from 'icepick';
 import get from '../../utils/get';
-import shallowEqual from '../../utils/shallow-equal';
-import isPlainObject from 'lodash/isPlainObject';
-import compact from 'lodash/compact';
+import isPlainObject from '../../utils/is-plain-object';
 import mapValues from '../../utils/map-values';
 import { createInitialState } from '../form-reducer';
 import initialFieldState from '../../constants/initial-field-state';
@@ -17,23 +15,15 @@ function updateFieldValue(field, action, parentModel = undefined) {
     ? field.$form
     : field;
 
+  const valueIsArray = Array.isArray(value);
+
   const changedFieldProps = {
     validated: false,
-    retouched: fieldState.submitted
-      ? true
-      : fieldState.retouched,
+    retouched: fieldState.submitted || fieldState.retouched,
     intents: [{ type: 'validate' }],
-    pristine: silent
-      ? fieldState.pristine
-      : false,
-    initialValue: load
-      ? value
-      : fieldState.initialValue,
+    pristine: silent && fieldState.pristine,
+    loadedValue: (load && value) || fieldState.loadedValue,
   };
-
-  if (shallowEqual(field.value, value)) {
-    return i.merge(field, changedFieldProps);
-  }
 
   if (removeKeys) {
     invariant(field && field.$form,
@@ -41,10 +31,7 @@ function updateFieldValue(field, action, parentModel = undefined) {
       'Field for "%s" in store is not an array/object.',
       model);
 
-    const valueIsArray = Array.isArray(field.$form.value);
-    const removeKeysArray = Array.isArray(removeKeys)
-      ? removeKeys
-      : [removeKeys];
+    const removeKeysArray = [].concat(removeKeys);
 
     let result;
 
@@ -57,7 +44,7 @@ function updateFieldValue(field, action, parentModel = undefined) {
         result[key] = field[key];
       });
 
-      return { ...i.set(compact(result), '$form', field.$form) };
+      return { ...i.set(result.filter((f) => f), '$form', field.$form) };
     }
 
     result = { ...field };
@@ -71,8 +58,8 @@ function updateFieldValue(field, action, parentModel = undefined) {
     return result;
   }
 
-  if (!Array.isArray(value) && !isPlainObject(value)) {
-    return i.merge(field, i.set(changedFieldProps, 'value', value));
+  if (!valueIsArray && !isPlainObject(value)) {
+    return i.merge(field, changedFieldProps);
   }
 
   const updatedField = mapValues(value, (subValue, index) => {
@@ -90,15 +77,10 @@ function updateFieldValue(field, action, parentModel = undefined) {
       }, parentModel ? `${parentModel}.${model}` : model);
     }
 
-    if (shallowEqual(subValue, subField.value)) {
-      return subField;
-    }
-
     return i.merge(subField, i.assign(changedFieldProps, {
-      value: subValue,
-      initialValue: load
+      loadedValue: load
         ? subValue
-        : subField.initialValue,
+        : subField.loadedValue,
     }));
   });
 
@@ -112,7 +94,11 @@ function updateFieldValue(field, action, parentModel = undefined) {
 }
 
 function getFormValue(form) {
-  if (form && !form.$form) return form.initialValue;
+  if (form && !form.$form) {
+    return typeof form.loadedValue !== 'undefined'
+      ? form.loadedValue
+      : form.initialValue;
+  }
 
   const result = mapValues(form, (field, key) => {
     if (key === '$form') return undefined;
@@ -142,7 +128,7 @@ export default function changeActionReducer(state, action, localPath) {
 
       return {
         value: formValue,
-        initialValue: formValue,
+        loadedValue: formValue,
       };
     });
   }

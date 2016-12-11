@@ -2,8 +2,8 @@ import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
 import createTestStore from 'redux-test-store';
 import thunk from 'redux-thunk';
-import _get from 'lodash/get';
-import toPath from 'lodash/toPath';
+import _get from 'lodash.get';
+import toPath from 'lodash.topath';
 import i from 'icepick';
 import Immutable from 'immutable';
 
@@ -1101,11 +1101,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.containSubset(
           reducer(changedState, actions.setInitial('test.foo'))
-            .foo,
-          {
-            ...initialFieldState,
-            value: 'changed',
-          });
+            .foo, initialFieldState);
       });
     });
 
