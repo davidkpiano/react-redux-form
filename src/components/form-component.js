@@ -5,6 +5,7 @@ import _get from '../utils/get';
 import mapValues from '../utils/map-values';
 import merge from '../utils/merge';
 import omit from '../utils/omit';
+import identity from 'lodash/identity';
 
 import actions from '../actions';
 import getValidity from '../utils/get-validity';
@@ -49,6 +50,8 @@ const defaultStrategy = {
   getField,
   actions,
   fieldsValid: _fieldsValid,
+  toJS: identity,
+  fromJS: identity,
 };
 
 function createFormClass(s = defaultStrategy) {
@@ -178,11 +181,11 @@ function createFormClass(s = defaultStrategy) {
             ? s.get(modelValue, field)
             : modelValue;
 
-          const currentErrors = s.getField(formValue, field).errors;
+          const currentErrors = s.get(s.getField(formValue, field), 'errors');
 
           // If the validators didn't change, the validity didn't change.
           if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
-            fieldsErrors[field] = s.getField(formValue, field).errors;
+            fieldsErrors[field] = s.get(s.getField(formValue, field), 'errors');
           } else {
             const fieldErrors = getValidity(errorValidator, nextValue);
 
@@ -198,7 +201,7 @@ function createFormClass(s = defaultStrategy) {
       mapValues(errorValidators, validateField);
 
       // Compute form-level validity
-      if (!fieldsErrors.hasOwnProperty('')) {
+      if (!s.get(fieldsErrors, '')) {
         fieldsErrors[''] = false;
         validityChanged = validityChanged
           || isValidityInvalid(s.get(formValue, ['$form', 'errors']));
@@ -240,7 +243,9 @@ function createFormClass(s = defaultStrategy) {
       } = this.props;
 
       s.get(formValue, ['$form', 'intents']).forEach((intent) => {
-        switch (intent.type) {
+        let intentType = s.get(intent, 'type');
+
+        switch (intentType) {
           case 'submit': {
             dispatch(s.actions.clearIntents(model, intent));
 
@@ -328,7 +333,7 @@ function createFormClass(s = defaultStrategy) {
           model,
           fieldsValidity
         ),
-        s.actions.addIntent(model, { type: 'submit' }),
+        s.actions.addIntent(model, s.fromJS({ type: 'submit' })),
       ]));
 
       return modelValue;

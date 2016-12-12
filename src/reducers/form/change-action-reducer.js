@@ -16,6 +16,7 @@ const defaultStrategies = {
   set: i.set,
   setIn: i.setIn,
   fromJS: identity,
+  toJS: identity,
   remove: i.dissoc,
   initialFieldState: _initialFieldState,
   merge: i.assign,
@@ -52,7 +53,7 @@ export function createChangeActionReducer(s = defaultStrategies) {
     }
 
     if (removeKeys) {
-      const valueIsArray = Array.isArray(field.$form.value);
+      const valueIsArray = Array.isArray(s.toJS(s.get(field, ['$form', 'value'])));
       const removeKeysArray = Array.isArray(removeKeys)
         ? removeKeys
         : [removeKeys];
@@ -62,10 +63,10 @@ export function createChangeActionReducer(s = defaultStrategies) {
       if (valueIsArray) {
         result = [];
 
-        Object.keys(field).forEach((key) => {
+        s.keys(field).forEach((key) => {
           if (!!~removeKeysArray.indexOf(+key) || (key === '$form')) return;
 
-          result[key] = field[key];
+          result[key] = s.get(field, key);
         });
 
         return s.set(compact(result), '$form', s.get(field, '$form'));

@@ -34,17 +34,17 @@ import {
 import isValid from '../src/form/is-valid';
 
 const testContexts = {
-  standard: {
-    Field: _Field,
-    actions: _actions,
-    modelReducer: _modelReducer,
-    formReducer: _formReducer,
-    get: _get,
-    length: (value) => value.length,
-    isValid: isValid,
-    toJS: identity,
-    getInitialState: (state) => state,
-  },
+  // standard: {
+  //   Field: _Field,
+  //   actions: _actions,
+  //   modelReducer: _modelReducer,
+  //   formReducer: _formReducer,
+  //   get: _get,
+  //   length: (value) => value.length,
+  //   isValid: isValid,
+  //   toJS: identity,
+  //   getInitialState: (state) => state,
+  // },
   immutable: {
     Field: ImmutableField,
     actions: immutableActions,
@@ -73,7 +73,7 @@ Object.keys(testContexts).forEach((testKey) => {
   const toJS = testContext.toJS;
   const getInitialState = testContext.getInitialState;
 
-  describe('<Field /> component', () => {
+  describe(`<Field /> component [${testKey}] - `, () => {
     const textFieldElements = [
       ['input', 'text'],
       ['input', 'password'],
@@ -811,7 +811,7 @@ Object.keys(testContexts).forEach((testKey) => {
           'validation should be called upon blur');
 
         assert.deepEqual(
-          store.getState().testForm.blur.errors,
+          toJS(store.getState().testForm).blur.errors,
           {
             good: false,
             bad: true,
@@ -841,11 +841,11 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.equal(timesValidationCalled, 1,
           'validation called on load');
 
-        assert.isFalse(store.getState().testForm.external.valid);
+        assert.isFalse(toJS(store.getState().testForm).external.valid);
 
         store.dispatch(actions.change('test.external', 'valid'));
 
-        assert.isTrue(store.getState().testForm.external.valid);
+        assert.isTrue(toJS(store.getState().testForm).external.valid);
 
         assert.equal(timesValidationCalled, 2,
           'validation called because of external change');
@@ -869,7 +869,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const checkboxes = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
 
-        assert.isFalse(store.getState().testForm.items.valid);
+        assert.isFalse(toJS(store.getState().testForm).items.valid);
 
         TestUtils.Simulate.change(checkboxes[0]);
 
@@ -929,7 +929,7 @@ Object.keys(testContexts).forEach((testKey) => {
         store.subscribe(() => {
           const state = store.getState();
 
-          actualStates.push(state.testForm.foo);
+          actualStates.push(toJS(get(state.testForm, 'foo')));
 
           if (actualStates.length === expectedStates.length) {
             expectedStates.map((expectedFn, i) =>
@@ -975,7 +975,7 @@ Object.keys(testContexts).forEach((testKey) => {
         store.subscribe(() => {
           const state = store.getState();
 
-          actualStates.push(state.testForm.foo);
+          actualStates.push(toJS(state.testForm).foo);
 
           if (actualStates.length === expectedStates.length) {
             expectedStates.map((expectedFn, i) =>
@@ -1021,12 +1021,12 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.blur(input);
 
         assert.deepEqual(
-          store.getState().testForm.foo.validity,
+          toJS(store.getState().testForm).foo.validity,
           {
             required: false,
           });
 
-        assert.isUndefined(store.getState().testForm.foo.validity.asyncValid);
+        assert.isUndefined(toJS(store.getState().testForm).foo.validity.asyncValid);
       });
 
       it('async validation should not override sync validity', () => {
@@ -1034,10 +1034,10 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.change(input);
         TestUtils.Simulate.blur(input);
 
-        assert.isDefined(store.getState().testForm.foo.validity.asyncValid);
+        assert.isDefined(toJS(store.getState().testForm).foo.validity.asyncValid);
 
         assert.deepEqual(
-          store.getState().testForm.foo.validity,
+          toJS(store.getState().testForm).foo.validity,
           {
             required: true,
             asyncValid: false,
@@ -1076,15 +1076,17 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.Simulate.change(control);
 
-        assert.isFalse(get(store.getState().testForm, ['foo', 'error', 'length']));
-        assert.isFalse(get(store.getState().testForm, ['foo', 'error', 'valid']));
+        console.log(toJS(store.getState().testForm))
+
+        assert.isFalse(get(store.getState().testForm, ['foo', 'errors', 'length']));
+        assert.isFalse(get(store.getState().testForm, ['foo', 'errors', 'valid']));
         
         control.value = 'invalid string';
 
         TestUtils.Simulate.change(control);
 
-        assert.equal(get(store.getState().testForm, ['foo', 'error', 'length']), 'too long');
-        assert.equal(get(store.getState().testForm, ['foo', 'error', 'valid']), 'not valid');
+        assert.equal(get(store.getState().testForm, ['foo', 'errors', 'length']), 'too long');
+        assert.equal(get(store.getState().testForm, ['foo', 'errors', 'valid']), 'not valid');
       });
 
       it('should only validate errors on blur if validateOn="blur"', () => {
@@ -1387,7 +1389,7 @@ Object.keys(testContexts).forEach((testKey) => {
             },
           });
 
-        assert.isFalse(store.getState().testForm.foo.valid);
+        assert.isFalse(toJS(store.getState().testForm).foo.valid);
       });
     });
 
@@ -1701,10 +1703,10 @@ Object.keys(testContexts).forEach((testKey) => {
         </Provider>
       );
 
-      assert.equal(get(store.getState().test, 'foo').length, 3);
+      assert.equal(toJS(store.getState().test).foo.length, 3);
 
       store.when(actionTypes.CHANGE, (state) => {
-        assert.equal(get(state.test, 'foo').length, 2);
+        assert.equal(toJS(state.test).foo.length, 2);
       });
 
       store.dispatch(actions.remove('test.foo', index));
@@ -1915,11 +1917,11 @@ Object.keys(testContexts).forEach((testKey) => {
         const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
         store.dispatch(actions.setValidity('test.foo', false));
-        assert.isFalse(store.getState().testForm.foo.valid);
+        assert.isFalse(toJS(store.getState().testForm).foo.valid);
 
         ReactDOM.unmountComponentAtNode(container);
 
-        assert.isTrue(store.getState().testForm.foo.valid);
+        assert.isTrue(toJS(store.getState().testForm).foo.valid);
       });
 
       it('should only reset the validity of field-specific validators', () => {
@@ -1945,25 +1947,25 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
-        assert.isFalse(store.getState().testForm.foo.valid);
+        assert.isFalse(toJS(store.getState().testForm).foo.valid);
 
         store.dispatch(actions.setValidity('test.foo', {
-          ...store.getState().testForm.foo.validity,
+          ...toJS(store.getState().testForm).foo.validity,
           external: false,
         }));
 
-        assert.isFalse(store.getState().testForm.foo.valid);
+        assert.isFalse(toJS(store.getState().testForm).foo.valid);
 
         ReactDOM.unmountComponentAtNode(container);
 
-        assert.isFalse(store.getState().testForm.foo.valid);
+        assert.isFalse(toJS(store.getState().testForm).foo.valid);
 
         store.dispatch(actions.setValidity('test.foo', {
-          ...store.getState().testForm.foo.validity,
+          ...toJS(store.getState().testForm).foo.validity,
           external: true,
         }));
 
-        assert.isTrue(store.getState().testForm.foo.valid);
+        assert.isTrue(toJS(store.getState().testForm).foo.valid);
       });
     });
 
@@ -2088,7 +2090,7 @@ Object.keys(testContexts).forEach((testKey) => {
       const field = testRender(
         <Field model="test.foo">
         {(fieldValue) => <input
-          className={fieldValue.focus
+          className={s.get(fieldValue, 'focus')
             ? 'focused'
             : ''
           }

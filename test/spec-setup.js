@@ -1,5 +1,4 @@
-require('babel-register')({
-});
+require('babel-register')({});
 
 var jsdom = require('jsdom');
 var chai = require('chai');

@@ -180,7 +180,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         errors = {},
       } = this.props;
 
-      if (fieldValue && !fieldValue.valid) {
+      if (fieldValue && !s.get(fieldValue, 'valid')) {
         const keys = Object.keys(validators)
           .concat(Object.keys(errors));
 
@@ -259,7 +259,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           ? merge(invertValidity(fieldValidity), fieldErrors)
           : fieldErrors;
 
-        if (!fieldValue || !shallowEqual(mergedErrors, s.toJS(s.get(fieldValue, 'errors')))) {
+        if (!fieldValue || !shallowEqual(mergedErrors, s.get(fieldValue, 'errors'))) {
           return actions.setErrors(model, mergedErrors);
         }
       } else if (nodeErrors && Object.keys(nodeErrors).length) {
@@ -304,7 +304,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           (validator, key) => dispatch(actions.asyncSetValidity(model,
             (_, done) => {
               const outerDone = (valid) => {
-                const validity = i.merge(fieldValue.validity, { [key]: valid });
+                const validity = s.merge(s.get(fieldValue, 'validity'), s.fromJS({ [key]: valid }));
 
                 done(validity);
               };
@@ -362,12 +362,15 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         validateOn = updateOn,
       } = this.props;
 
-      const intents = s.get(fieldValue, 'intents');
+      const intents = s.get(fieldValue, 'intents', {});
 
-      if (!intents.length || !intents.size) return;
+      if (!intents.length && !intents.size) return;
 
       intents.forEach((intent) => {
-        switch (intent.type) {
+        let intentType = s.get(intent, 'type');
+        let intentValue = s.get(intent, 'value');
+
+        switch (intentType) {
           case actionTypes.FOCUS: {
             if (isNative) return;
 
@@ -377,8 +380,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
             if ((focused && this.node.focus)
               && (
                 !readOnlyValue
-                || typeof intent.value === 'undefined'
-                || intent.value === controlProps.value
+                || typeof intentValue === 'undefined'
+                || intentValue === controlProps.value
               )) {
               this.node.focus();
 
@@ -395,9 +398,9 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
             return;
 
           case 'load':
-            if (!shallowEqual(modelValue, intent.value)) {
+            if (!shallowEqual(modelValue, intentValue)) {
               dispatch(actions.clearIntents(model, intent));
-              dispatch(actions.load(model, intent.value));
+              dispatch(actions.load(model, intentValue));
             }
             return;
 
@@ -545,7 +548,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       } = this.props;
 
       if (!validators && !errorValidators) return modelValue;
-      if (!fieldValue) return modelValue;
+      if (fieldValue === undefined) return modelValue;
 
       const fieldValidity = getValidity(validators, modelValue);
       const fieldErrors = getValidity(errorValidators, modelValue);
@@ -554,7 +557,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         ? merge(invertValidity(fieldValidity), fieldErrors)
         : fieldErrors;
 
-      if (!shallowEqual(errors, fieldValue.errors)) {
+      if (!shallowEqual(errors, s.toJS(fieldValue).errors)) {
         dispatch(actions.setErrors(model, errors));
       }
 
