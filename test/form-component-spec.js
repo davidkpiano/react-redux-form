@@ -1766,6 +1766,125 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('form validation as function', () => {
+      const initialState = getInitialState({
+        items: [
+          { name: 'one' },
+          { name: 'two' },
+          { name: 'three' },
+        ],
+      });
+      const store = testCreateStore({
+        testForm: formReducer('test', initialState),
+        test: modelReducer('test', initialState),
+      });
+
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form
+            model="test"
+            validators={(model) => {
+              const field1 = 'items[0].name';
+              const field2 = 'items[1].name';
+              const hasValue = (value) => value && value.length;
+
+              const field1Value = get(model, field1);
+              const field2Value = get(model, field2);
+
+              const notRequired = () => Boolean(hasValue(field1Value) || hasValue(field2Value));
+              const containsOne = field1Value.includes('one');
+              const validations = {};
+
+              validations[field1] = {
+                required: notRequired(),
+                needsFoo: containsOne,
+              };
+              validations[field2] = {
+                required: notRequired(),
+              };
+              return validations;
+            }}
+            errors={{
+              'items[2].name': (value) => { // eslint-disable-line arrow-body-style
+                return value.includes('three') ? false : { invalidThree: 'invalid three' };
+              },
+            }}
+          >
+            {get(initialState, 'items').map((item, i) =>
+              <Control model={`test.items[${i}].name`} />
+            )}
+          </Form>
+        </Provider>
+      );
+
+      const [input1, input2, input3] = TestUtils
+        .scryRenderedDOMComponentsWithTag(form, 'input');
+
+      it('should initially validate each item', () => {
+        const { $form, items } = store.getState().testForm;
+        assert.isTrue(items[0].name.valid);
+        assert.isTrue(items[1].name.valid);
+        assert.isTrue($form.valid);
+      });
+
+      it('should check validity of each item on change', () => {
+        input2.value = '';
+        TestUtils.Simulate.change(input2);
+        const { $form, items } = store.getState().testForm;
+
+        assert.isTrue(items[0].name.valid);
+        assert.isTrue(items[1].name.valid);
+        assert.isTrue($form.valid);
+
+        input1.value = '';
+        TestUtils.Simulate.change(input1);
+
+        const { $form: $form1, items: items1 } = store.getState().testForm;
+
+        assert.isFalse(items1[0].name.valid);
+        assert.isFalse(items1[1].name.valid);
+        assert.isFalse($form1.valid);
+      });
+
+      it('should set validation type on change', () => {
+        input2.value = '';
+        TestUtils.Simulate.change(input2);
+        input1.value = '';
+        TestUtils.Simulate.change(input1);
+        const { $form, items } = store.getState().testForm;
+
+        assert.isFalse(items[0].name.validity.required);
+        assert.isTrue(items[0].name.errors.required);
+        assert.isFalse(items[1].name.validity.required);
+        assert.isTrue(items[1].name.errors.required);
+        assert.isFalse($form.valid);
+      });
+
+      it('should aggregate errors and validations.', () => {
+        input1.value = '';
+        TestUtils.Simulate.change(input1);
+        input2.value = '';
+        TestUtils.Simulate.change(input2);
+        input3.value = 'foo';
+        TestUtils.Simulate.change(input3);
+        const { $form, items } = store.getState().testForm;
+
+        assert.isFalse(items[0].name.validity.required);
+        assert.isFalse(items[0].name.validity.needsFoo);
+
+        assert.isTrue(items[0].name.errors.required);
+        assert.isTrue(items[0].name.errors.needsFoo);
+
+        assert.isFalse(items[1].name.validity.required);
+        assert.isTrue(items[1].name.errors.required);
+
+        assert.isFalse(items[2].name.validity.invalidThree);
+        assert.equal(items[2].name.errors.invalidThree, 'invalid three');
+
+        assert.isFalse($form.valid);
+      });
+    });
+
     describe('submit valid form no validators', () => {
       const initialState = getInitialState({ foo: '' });
 
