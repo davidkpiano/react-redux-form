@@ -9,7 +9,7 @@
     "examples": "NODE_ENV=development node examples/server.js",
     "lint": "eslint --ext .js,.jsx .",
     "lint:fix": "eslint --fix --ext .js,.jsx .",
-    "test": "NODE_ENV=test mocha --require babel-register --require ./test/spec-setup.js",
+    "test": "SET NODE_ENV=test& mocha --require babel-register --require ./test/spec-setup.js",
     "test:watch": "NODE_ENV=test mocha -w --require babel-register --require ./test/spec-setup.js",
     "build": "npm run build:umd && npm run build:lib",
     "build:watch": "babel -w src --out-dir lib",

@@ -20,7 +20,10 @@ import invariant from 'invariant';
 
 const propTypes = {
   component: PropTypes.any,
-  validators: PropTypes.object,
+  validators: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.func
+  ]),
   errors: PropTypes.object,
   validateOn: PropTypes.oneOf([
     'change',
@@ -157,53 +160,103 @@ function createFormClass(s = defaultStrategy) {
       const validatorsChanged = validators !== this.props.validators
         || errors !== this.props.errors;
 
-      const errorValidators = validators
-        ? merge(invertValidators(validators), errors)
-        : errors;
-
-      let validityChanged = false;
       const fieldsErrors = {};
+      let validityChanged = false;
 
-      // this is (internally) mutative for performance reasons.
-      const validateField = (errorValidator, field) => {
-        if (!!~field.indexOf('[]')) {
-          const [parentModel, childModel] = field.split('[]');
+      if (typeof validators === 'function'){
+        const field = '';
 
-          const nextValue = parentModel
-            ? s.get(nextProps.modelValue, parentModel)
-            : nextProps.modelValue;
+        const nextValue = field
+          ? s.get(nextProps.modelValue, field)
+          : nextProps.modelValue;
 
-          nextValue.forEach((subValue, index) => {
-            validateField(errorValidator, `${parentModel}[${index}]${childModel}`);
-          });
+        const currentValue = field
+          ? s.get(modelValue, field)
+          : modelValue;
+
+        const currentErrors = getField(formValue, field).errors;
+
+        // If the validators didn't change, the validity didn't change.
+        if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
+          fieldsErrors[field] = getField(formValue, field).errors;
         } else {
-          const nextValue = field
-            ? s.get(nextProps.modelValue, field)
-            : nextProps.modelValue;
+          const fieldErrors = getValidity(validators, nextValue);
 
-          const currentValue = field
-            ? s.get(modelValue, field)
-            : modelValue;
+          if (fieldErrors)
+          {
+            Object.keys(fieldErrors).forEach((key) => {
+              if (key === 'validatedMutlipleFields'){
+                return;
+              }
 
-          const currentErrors = getField(formValue, field).errors;
+              fieldsErrors[key] = fieldErrors[key];
+            });
 
-          // If the validators didn't change, the validity didn't change.
-          if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
-            fieldsErrors[field] = getField(formValue, field).errors;
-          } else {
-            const fieldErrors = getValidity(errorValidator, nextValue);
-
-            if (!validityChanged && !shallowEqual(fieldErrors, currentErrors)) {
-              validityChanged = true;
-            }
-
-            fieldsErrors[field] = fieldErrors;
+            validityChanged = true;
           }
         }
-      };
+      }
+      else {
+        const errorValidators = validators
+          ? merge(invertValidators(validators), errors)
+          : errors;
 
-      mapValues(errorValidators, validateField);
+        // this is (internally) mutative for performance reasons.
+        const validateField = (errorValidator, field) => {
+          if (!!~field.indexOf('[]')) {
+            const [parentModel, childModel] = field.split('[]');
 
+            const nextValue = parentModel
+              ? s.get(nextProps.modelValue, parentModel)
+              : nextProps.modelValue;
+
+            nextValue.forEach((subValue, index) => {
+              validateField(errorValidator, `${parentModel}[${index}]${childModel}`);
+            });
+          } else {
+            const nextValue = field
+              ? s.get(nextProps.modelValue, field)
+              : nextProps.modelValue;
+
+            const currentValue = field
+              ? s.get(modelValue, field)
+              : modelValue;
+
+            const currentErrors = getField(formValue, field).errors;
+
+            // If the validators didn't change, the validity didn't change.
+            if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
+              fieldsErrors[field] = getField(formValue, field).errors;
+            } else {
+              const fieldErrors = getValidity(errorValidator, nextValue);
+
+              if (fieldErrors && fieldErrors.validatedMutlipleFields)
+              {
+                Object.keys(fieldErrors).forEach((key) => {
+                  if (key === 'validatedMutlipleFields'){
+                    return;
+                  }
+
+                  fieldsErrors[key] = fieldErrors[key];
+                });
+
+                validityChanged = true;
+              }
+              else
+              {
+                if (!validityChanged && !shallowEqual(fieldErrors, currentErrors)) {
+                  validityChanged = true;
+                }
+
+                fieldsErrors[field] = fieldErrors;
+              }
+            }
+          }
+        };
+
+        mapValues(errorValidators, validateField);
+      }
+      
       // Compute form-level validity
       if (!fieldsErrors.hasOwnProperty('')) {
         fieldsErrors[''] = false;
