@@ -1839,7 +1839,7 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     // TODO: control
-    it('should render a Component with an idempotent mapStateToProps', () => {
+    xit('should render a Component with an idempotent mapStateToProps', () => {
       const store = testCreateStore({
         test: modelReducer('test', { foo: '' }),
         testForm: formReducer('test'),
