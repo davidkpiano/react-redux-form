@@ -1101,7 +1101,11 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.containSubset(
           reducer(changedState, actions.setInitial('test.foo'))
-            .foo, initialFieldState);
+            .foo,
+          {
+            ...initialFieldState,
+            value: 'changed',
+          });
       });
     });
 
