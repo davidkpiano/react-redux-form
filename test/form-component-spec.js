@@ -1052,8 +1052,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('deep state path', () => {
       const initialState = getInitialState({
-        foo: '',
-        bar: '',
+        foo: 'deep foo',
       });
       const formsReducer = combineReducers({
         testForm: formReducer('forms.test'),
@@ -1067,21 +1066,16 @@ Object.keys(testContexts).forEach((testKey) => {
         <Provider store={store}>
           <Form
             model="forms.test"
-            onSubmit={() => { }}
-          />
+          >
+            <Control model=".foo" />
+          </Form>
         </Provider>
       );
 
-      const component = TestUtils.findRenderedComponentWithType(form, Form);
-      const props = component.renderedElement.props;
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
 
       it('should resolve the model value', () => {
-        assert.containSubset(get(props.modelValue), { foo: '', bar: '' });
-      });
-
-      it('should resolve the form value', () => {
-        assert.containSubset(props.formValue.$form, { model: 'forms.test' });
-        assert.ok(isValid(props.formValue));
+        assert.equal(input.value, 'deep foo');
       });
     });
 
