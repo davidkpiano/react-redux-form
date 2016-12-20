@@ -1632,6 +1632,42 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isTrue(store.getState().testForm.foo.valid);
       });
+
+      it('should not clobber other non-field-specific validators', () => {
+        const initialState = getInitialState({});
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        store.dispatch(actions.setValidity('test.foo', {
+          validator: false,
+        }));
+
+        const container = document.createElement('div');
+
+        class WrappedControl extends React.Component {
+          componentWillUnmount() {
+            store.dispatch(actions.setErrors('test.foo', {}));
+          }
+
+          render() {
+            return <Control.input model="test.foo" />;
+          }
+        }
+
+        ReactDOM.render(
+          <Provider store={store}>
+            <WrappedControl />
+          </Provider>,
+          container);
+
+        assert.isFalse(store.getState().testForm.foo.validity.validator);
+
+        ReactDOM.unmountComponentAtNode(container);
+
+        assert.isUndefined(store.getState().testForm.foo.validity.validator);
+      });
     });
 
     describe('with <Control.reset>', () => {

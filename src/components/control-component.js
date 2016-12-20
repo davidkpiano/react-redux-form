@@ -183,7 +183,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         const keys = Object.keys(validators)
           .concat(Object.keys(errors), this.willValidate ? validityKeys : []);
 
-        dispatch(actions.setValidity(model, omit(fieldValue.validity, keys)));
+        dispatch(actions.resetValidity(model, keys));
       }
     }
 
