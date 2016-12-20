@@ -1632,6 +1632,31 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isTrue(store.getState().testForm.foo.valid);
       });
+
+      it('should not set the validity when resetOnUnmount is false', () => {
+        const initialState = getInitialState({ foo: '' });
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        const container = document.createElement('div');
+
+        const field = ReactDOM.render(
+          <Provider store={store}>
+            <Control.input model="test.foo" resetOnUnmount={false} />
+          </Provider>,
+          container);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        store.dispatch(actions.setValidity('test.foo', false));
+        assert.isFalse(store.getState().testForm.foo.valid);
+
+        ReactDOM.unmountComponentAtNode(container);
+
+        assert.isFalse(store.getState().testForm.foo.valid);
+      });
     });
 
     describe('with <Control.reset>', () => {
