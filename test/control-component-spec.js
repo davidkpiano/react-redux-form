@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
-import { connect, Provider } from 'react-redux';
+import { Provider } from 'react-redux';
 import sinon from 'sinon';
 import capitalize from '../src/utils/capitalize';
 import _get from 'lodash.get';
