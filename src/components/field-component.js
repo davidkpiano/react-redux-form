@@ -102,6 +102,7 @@ function getControlType(control, props, options) {
 
 const defaultStrategy = {
   Control,
+  ControProps: fieldPropTypes,
   getFieldFromState,
   actions,
 };
@@ -161,7 +162,7 @@ function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
         mapProps = options.controlPropsMap[controlType],
       } = props;
 
-      const controlProps = pick(props, Object.keys(fieldPropTypes));
+      const controlProps = pick(props, Object.keys(s.ControlProps));
 
       if (!mapProps) {
         return React.cloneElement(
@@ -201,7 +202,7 @@ function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
       } = this.props;
 
 
-      const allowedProps = omit(this.props, Object.keys(fieldPropTypes));
+      const allowedProps = omit(this.props, Object.keys(s.ControlProps));
       const renderableChildren = typeof children === 'function'
         ? children(fieldValue)
         : children;
