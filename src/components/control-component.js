@@ -140,6 +140,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       this.attachNode = this.attachNode.bind(this);
       this.readOnlyValue = isReadOnlyValue(props.controlProps);
 
+      this.willValidate = false;
+
       this.state = {
         viewValue: props.modelValue,
       };
@@ -179,7 +181,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
       if (fieldValue && !fieldValue.valid) {
         const keys = Object.keys(validators)
-          .concat(Object.keys(errors));
+          .concat(Object.keys(errors), this.willValidate ? validityKeys : []);
 
         dispatch(actions.setValidity(model, omit(fieldValue.validity, keys)));
       }
@@ -319,8 +321,11 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       } = this;
 
       if (!node || !node.willValidate) {
+        this.willValidate = false;
         return null;
       }
+
+      this.willValidate = true;
 
       const nodeErrors = {};
 

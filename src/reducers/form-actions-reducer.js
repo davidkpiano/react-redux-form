@@ -194,10 +194,23 @@ export default function formActionsReducer(state, action, localPath) {
     }
 
     case actionTypes.RESET_VALIDITY: {
+      let validity = { ...fieldState.validity };
+      let errors = { ...fieldState.errors };
+
+      if (action.omitKeys) {
+        action.omitKeys.forEach((key) => {
+          delete validity[key];
+          delete errors[key];
+        });
+      } else {
+        validity = initialFieldState.validity;
+        errors = initialFieldState.errors;
+      }
+
       fieldUpdates = {
         valid: initialFieldState.valid,
-        validity: initialFieldState.validity,
-        errors: initialFieldState.errors,
+        validity,
+        errors,
       };
 
       subFieldUpdates = {

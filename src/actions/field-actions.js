@@ -11,7 +11,6 @@ import { trackable } from '../utils/track';
 import getForm from '../utils/get-form';
 import getFieldFromState from '../utils/get-field-from-state';
 import NULL_ACTION from '../constants/null-action';
-import omit from '../utils/omit';
 import isNative from '../utils/is-native';
 import invariant from 'invariant';
 
@@ -86,28 +85,11 @@ function createFieldActions(s = defaultStrategies) {
     [options.errors ? 'errors' : 'validity']: validity,
   });
 
-  const resetValidity = (model, omitKeys = false) => {
-    if (!omitKeys) {
-      return {
-        type: actionTypes.RESET_VALIDITY,
-        model,
-      };
-    }
-
-    return (dispatch, getState) => {
-      const field = s.getFieldFromState(getState(), model);
-
-      if (!field) {
-        dispatch(NULL_ACTION);
-      } else {
-        dispatch({
-          type: actionTypes.SET_VALIDITY,
-          model,
-          validity: omit(field.validity, omitKeys),
-        });
-      }
-    };
-  };
+  const resetValidity = (model, omitKeys = false) => ({
+    type: actionTypes.RESET_VALIDITY,
+    model,
+    omitKeys,
+  });
 
   const setFieldsValidity = (model, fieldsValidity, options = {}) => ({
     type: actionTypes.SET_FIELDS_VALIDITY,
