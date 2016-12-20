@@ -20,7 +20,10 @@ import invariant from 'invariant';
 
 const propTypes = {
   component: PropTypes.any,
-  validators: PropTypes.object,
+  validators: PropTypes.oneOfType([
+    PropTypes.object,
+    PropTypes.func,
+  ]),
   errors: PropTypes.object,
   validateOn: PropTypes.oneOf([
     'change',
@@ -157,12 +160,8 @@ function createFormClass(s = defaultStrategy) {
       const validatorsChanged = validators !== this.props.validators
         || errors !== this.props.errors;
 
-      const errorValidators = validators
-        ? merge(invertValidators(validators), errors)
-        : errors;
-
-      let validityChanged = false;
       const fieldsErrors = {};
+      let validityChanged = false;
 
       // this is (internally) mutative for performance reasons.
       const validateField = (errorValidator, field) => {
@@ -197,12 +196,64 @@ function createFormClass(s = defaultStrategy) {
               validityChanged = true;
             }
 
+            // Changed the below for a test that errors and validations
+            // get merged correctly, but it appears this wasn't actually
+            // supported for the same field? Also could have the side
+            // effect that errors wouldn't get cleared?
+            // fieldsErrors[field] = merge(fieldsErrors[field] || {}, fieldErrors);
+
             fieldsErrors[field] = fieldErrors;
           }
         }
       };
 
-      mapValues(errorValidators, validateField);
+      // Run errors first, validations should take precendence.
+      // When run below will replace the contents of the fieldErrors[].
+      mapValues(errors, validateField);
+
+      if (typeof validators === 'function') {
+        const field = '';
+
+        const nextValue = field
+          ? s.get(nextProps.modelValue, field)
+          : nextProps.modelValue;
+
+        const currentValue = field
+          ? s.get(modelValue, field)
+          : modelValue;
+
+        // If the validators didn't change, the validity didn't change.
+        if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
+          // TODO this will only set the errors on form when using the function.
+          // How handle? Safe to assume will be no dispatch?
+          // fieldsErrors[field] = getField(formValue, field).errors;
+        } else {
+          const multiFieldErrors = getValidity(validators, nextValue);
+
+          if (multiFieldErrors) {
+            Object.keys(multiFieldErrors).forEach((key) => {
+              // key will be the model value to apply errors to.
+              const fieldErrors = multiFieldErrors[key];
+              const currentErrors = getField(formValue, key).errors;
+
+              // Invert validators
+              Object.keys(fieldErrors).forEach((validationName) => {
+                fieldErrors[validationName] = !fieldErrors[validationName];
+              });
+
+              if (!validityChanged && !shallowEqual(fieldErrors, currentErrors)) {
+                validityChanged = true;
+              }
+
+              fieldsErrors[key] = fieldErrors;
+            });
+          }
+        }
+      } else if (validators) {
+        const errorValidators = invertValidators(validators);
+
+        mapValues(errorValidators, validateField);
+      }
 
       // Compute form-level validity
       if (!fieldsErrors.hasOwnProperty('')) {
