@@ -243,7 +243,7 @@ function createFormClass(s = defaultStrategy) {
       } = this.props;
 
       s.get(formValue, ['$form', 'intents']).forEach((intent) => {
-        let intentType = s.get(intent, 'type');
+        const intentType = s.get(intent, 'type');
 
         switch (intentType) {
           case 'submit': {

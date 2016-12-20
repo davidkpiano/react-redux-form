@@ -306,7 +306,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           (validator, key) => dispatch(actions.asyncSetValidity(model,
             (_, done) => {
               const outerDone = (valid) => {
-                const validity = s.toJS(s.merge(s.get(fieldValue, 'validity'), s.fromJS({ [key]: valid })));
+                const validity = s.toJS(
+                    s.merge(s.get(fieldValue, 'validity'),
+                    s.fromJS({ [key]: valid }))
+                  );
 
                 done(validity);
               };
@@ -369,8 +372,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       if (!intents.length && !intents.size) return;
 
       intents.forEach((intent) => {
-        let intentType = s.get(intent, 'type');
-        let intentValue = s.get(intent, 'value');
+        const intentType = s.get(intent, 'type');
+        const intentValue = s.get(intent, 'value');
 
         switch (intentType) {
           case actionTypes.FOCUS: {

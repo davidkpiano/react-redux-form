@@ -6,12 +6,12 @@ import isPlainObject from 'lodash/isPlainObject';
 const defaultStrategy = {
   getForm,
   get,
-  isObject: isPlainObject
+  isObject: isPlainObject,
 };
 
 export default function getFieldFromState(state, modelString, s = defaultStrategy) {
-  let stateForm = s.get(state, '$form');
-  
+  const stateForm = s.get(state, '$form');
+
   const form = (state && stateForm)
     ? state
     : s.getForm(state, modelString);
@@ -27,7 +27,7 @@ export default function getFieldFromState(state, modelString, s = defaultStrateg
 
   if (!field) return null;
 
-  let fieldForm = s.get(field, '$form');
+  const fieldForm = s.get(field, '$form');
   if (s.isObject(field) && fieldForm) return fieldForm;
 
   return field;

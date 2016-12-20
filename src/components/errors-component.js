@@ -117,20 +117,20 @@ function createErrorsClass(s = defaultStrategy) {
     }
 
     renderError(message, key) {
-      let {
+      const {
         component,
         model,
-        modelValue
+        modelValue,
       } = this.props;
 
-      let errorProps = {
+      const errorProps = {
         key,
         model,
-        modelValue
+        modelValue,
       };
 
-      let fieldValue = s.toJS(this.props.fieldValue);
-      let errors = fieldValue.errors;
+      const fieldValue = s.toJS(this.props.fieldValue);
+      const errors = fieldValue.errors;
       errorProps.fieldValue = fieldValue;
 
       const messageString = typeof message === 'function'

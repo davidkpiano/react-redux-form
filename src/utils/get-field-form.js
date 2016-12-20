@@ -1,8 +1,8 @@
 import get from './get';
 
 const defaultStrategies = {
-	get
-}
+  get,
+};
 
 export default function getFieldForm(state, path, s = defaultStrategies) {
   const formPath = path.slice(0, -1);

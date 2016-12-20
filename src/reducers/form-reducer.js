@@ -42,7 +42,11 @@ function getSubModelString(model, subModel) {
   return `${model}.${subModel}`;
 }
 
-export function createInitialState(model, state, customInitialFieldState = {}, options = {}, s = defaultStrategies) {
+export function createInitialState(model,
+  state,
+  customInitialFieldState = {},
+  options = {},
+  s = defaultStrategies) {
   let initialState;
 
   const {
@@ -52,7 +56,12 @@ export function createInitialState(model, state, customInitialFieldState = {}, o
   if (isArray(state) || isPlainObject(state) || Immutable.Iterable.isIterable(state)) {
     initialState = lazy
       ? s.fromJS({})
-      : s.mapValues(state, (subState, subModel) => createInitialState(getSubModelString(model, subModel), subState, customInitialFieldState, undefined, s));
+      : s.mapValues(
+          state,
+          (subState, subModel) => createInitialState(
+            getSubModelString(model, subModel), subState, customInitialFieldState, undefined, s
+          )
+        );
   } else {
     return s.merge(s.initialFieldState, s.merge(s.fromJS({
       initialValue: state,

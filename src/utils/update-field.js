@@ -26,7 +26,7 @@ function assocIn(state, path, value, fn, s = defaultStrategies) {
     return fn(s.set(state, key0, value));
   }
 
-  stateFirstKeyVal = s.get(state, key0, s.fromJS({}));
+  const stateFirstKeyVal = s.get(state, key0, s.fromJS({}));
 
   return fn(s.set(state, key0, assocIn(stateFirstKeyVal, path.slice(1), value, fn, s)));
 }
@@ -48,10 +48,10 @@ export function getFieldAndForm(formState, modelPath, s = defaultStrategies) {
     const initialValue = s.get(formState, ['$form', 'initialValue'].concat(modelPath));
     const modelValue = s.get(formState, ['$form', 'model']);
     const temporaryFieldState = tempInitialState(modelPath, initialValue, s);
-    const initialState = createInitialState(modelValue, temporaryFieldState, {}, {}, s)
+    const initialState = createInitialState(modelValue, temporaryFieldState, {}, {}, s);
 
     form = s.mergeDeep(
-      initialState, 
+      initialState,
       formState
     );
 
@@ -61,7 +61,8 @@ export function getFieldAndForm(formState, modelPath, s = defaultStrategies) {
   return [field, form];
 }
 
-export default function updateField(state, path, newState, newSubState, updater, s = defaultStrategies) {
+export default function updateField(state, path, newState, newSubState,
+  updater, s = defaultStrategies) {
   const [field, fullState] = getFieldAndForm(state, path, s);
 
   if (!field) return state;

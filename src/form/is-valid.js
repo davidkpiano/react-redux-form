@@ -4,7 +4,7 @@ import Immutable from 'immutable';
 
 const defaultStrategies = {
   get,
-  keys: Object.keys
+  keys: Object.keys,
 };
 
 export function create(s = defaultStrategies) {
@@ -14,7 +14,9 @@ export function create(s = defaultStrategies) {
     if (!s.get(formState, '$form')) {
       const errors = s.get(formState, 'errors');
 
-      if (!Array.isArray(errors) && !isPlainObject(errors) && !Immutable.Iterable.isIterable(errors)) {
+      if (!Array.isArray(errors)
+        && !isPlainObject(errors)
+        && !Immutable.Iterable.isIterable(errors)) {
         return !errors;
       }
 
@@ -26,9 +28,7 @@ export function create(s = defaultStrategies) {
     }
 
     return s.keys(formState)
-      .every((key) => {
-        return isValid(s.get(formState, key));
-      });
+      .every((key) => isValid(s.get(formState, key)));
   }
 
   function fieldsValid(formState) {
@@ -38,7 +38,7 @@ export function create(s = defaultStrategies) {
 
   return {
     isValid,
-    fieldsValid
+    fieldsValid,
   };
 }
 

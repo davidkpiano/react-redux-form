@@ -21,10 +21,9 @@ import {
 } from '../src';
 import {
   actions as immutableActions,
-  getField as immutableGetField, 
+  getField as immutableGetField,
   formReducer as immutableFormReducer,
   getFormStateKey as immutableGetFormStateKey,
-  strategy as immutableStrategy,
 } from '../immutable';
 
 const testContexts = {
@@ -54,7 +53,6 @@ Object.keys(testContexts).forEach((testKey) => {
   const getFormStateKey = testContext.getFormStateKey;
   const getInitialState = testContext.getInitialState;
   const get = testContext.get;
-  const fromJS = testContext.fromJS;
   const getField = testContext.getField;
 
   describe(`utils (${testKey} context)`, () => {

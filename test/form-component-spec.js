@@ -28,7 +28,7 @@ import {
   Field as ImmutableField,
   Control as ImmutableControl,
   actions as immutableActions,
-  isValid as immutableIsValid
+  isValid as immutableIsValid,
 } from '../immutable';
 
 const testContexts = {
@@ -1124,8 +1124,6 @@ Object.keys(testContexts).forEach((testKey) => {
 
       it('should set errors from rejected submit handler on valid submit', (done) => {
         store.when(actionTypes.SET_ERRORS, (state) => {
-            console.log('state', isValid(state.testForm));
-
           assert.isFalse(isValid(state.testForm));
           assert.equal(toJS(state.testForm).$form.errors, 'Form is invalid');
           done();
@@ -1181,7 +1179,7 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.submit(formElement);
 
         assert.containSubset(
-          toJS(store.getState().testForm).$form, 
+          toJS(store.getState().testForm).$form,
           { errors: 'Form is invalid' });
       });
 
@@ -1320,7 +1318,6 @@ Object.keys(testContexts).forEach((testKey) => {
 
       class UserForm extends React.Component {
         componentDidMount() {
-          
           store.dispatch(actions.change('userEx', { username: '', email: '' }));
         }
 
@@ -1353,7 +1350,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
       it('the similarly-named userEx form should not be valid in presence of'
         + 'valid user form', () => {
-        assert.isFalse(get(store.getState().userExForm, ['$form','valid']));
+        assert.isFalse(get(store.getState().userExForm, ['$form', 'valid']));
       });
     });
 
@@ -1526,13 +1523,11 @@ Object.keys(testContexts).forEach((testKey) => {
       });
       const form = testRender(
         <Form model="test">
-          {((formValue) => {
-            return (
-              <Field model={`${get(formValue, ['$form', 'model'])}.foo`}>
-                <input className={get(formValue, ['foo', 'focus']) ? 'focused' : ''} />
-              </Field>
-            );
-          })}
+          {((formValue) =>
+            <Field model={`${get(formValue, ['$form', 'model'])}.foo`}>
+              <input className={get(formValue, ['foo', 'focus']) ? 'focused' : ''} />
+            </Field>
+          )}
         </Form>, store);
 
       const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');

@@ -2,7 +2,7 @@ import get from '../utils/get';
 
 const defaultStrategies = {
   get,
-  keys: Object.keys
+  keys: Object.keys,
 };
 
 export function create(s = defaultStrategies) {
@@ -20,7 +20,7 @@ export function create(s = defaultStrategies) {
 
       return isPristine(s.get(formState, key));
     });
-  }
+  };
 }
 
 const isPristine = create();

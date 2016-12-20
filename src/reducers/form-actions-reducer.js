@@ -6,7 +6,6 @@ import updateSubFields from '../utils/update-sub-fields';
 import getFieldForm from '../utils/get-field-form';
 import map from '../utils/map';
 import isPlainObject from 'lodash/isPlainObject';
-import mapValues from '../utils/map-values';
 import inverse from '../utils/inverse';
 import isValid, { fieldsValid } from '../form/is-valid';
 import isPristine from '../form/is-pristine';
@@ -20,20 +19,20 @@ import identity from 'lodash/identity';
 import _mapValues from '../utils/map-values';
 
 const defaultStrategies = {
-    set: i.set,
-    setIn: i.setIn,
-    keys: Object.keys,
-    get,
-    fromJS: identity,
-    toJS: identity,
-    merge: i.assign,
-    mergeDeep: i.merge,
-    mapValues: _mapValues,
-    isObject: isPlainObject,
-    isValid,
-    isPristine,
-    fieldsValid,
-    initialFieldState,
+  set: i.set,
+  setIn: i.setIn,
+  keys: Object.keys,
+  get,
+  fromJS: identity,
+  toJS: identity,
+  merge: i.assign,
+  mergeDeep: i.merge,
+  mapValues: _mapValues,
+  isObject: isPlainObject,
+  isValid,
+  isPristine,
+  fieldsValid,
+  initialFieldState,
 };
 
 export function createFormActionReducer(s = defaultStrategies) {
@@ -65,7 +64,7 @@ export function createFormActionReducer(s = defaultStrategies) {
     return result;
   };
 
-  return function formActionsReducer(state, action, localPath, s = defaultStrategies) {
+  return function formActionsReducer(state, action, localPath) {
     const [field] = getFieldAndForm(state, localPath, s);
 
     const $form = s.get(field, '$form');
@@ -172,9 +171,8 @@ export function createFormActionReducer(s = defaultStrategies) {
       }
 
       case actionTypes.SET_FIELDS_VALIDITY: {
-        let mapResult = map(action.fieldsValidity, (fieldValidity, subField) => {
-          return fieldActions.setValidity(subField, fieldValidity, action.options)
-        });
+        const mapResult = map(action.fieldsValidity, (fieldValidity, subField) =>
+          fieldActions.setValidity(subField, fieldValidity, action.options));
 
         let accState = state;
 
@@ -182,7 +180,7 @@ export function createFormActionReducer(s = defaultStrategies) {
           accState = s.merge(accState, formActionsReducer(
             accState,
             subAction,
-            localPath.concat(toPath(subAction.model)), s));
+            localPath.concat(toPath(subAction.model))));
         });
 
         return accState;
@@ -301,7 +299,7 @@ export function createFormActionReducer(s = defaultStrategies) {
       : updatedSubFields;
 
     return updatedParentForms;
-  }
+  };
 }
 
 const formActionReducer = createFormActionReducer();

@@ -11,18 +11,18 @@ import { createFormClass } from './components/form-component';
 import { createFieldActions } from './actions/field-actions';
 import batch from './actions/batch-actions';
 import getValue from './utils/get-value';
-import {immutableMapValues} from './utils/map-values';
+import { immutableMapValues } from './utils/map-values';
 import immutableGetFromState from './utils/get-from-immutable-state';
 import getForm, { getFormStateKey } from './utils/get-form';
 import isPlainObject from 'lodash/isPlainObject';
 import Immutable from 'immutable';
 import { createGetField } from './utils/get-field';
-import {create as createIsValid} from '../src/form/is-valid';
-import {create as createIsPristine} from '../src/form/is-pristine';
-import {create as createIsRetouched} from '../src/form/is-retouched';
+import { create as createIsValid } from '../src/form/is-valid';
+import { create as createIsPristine } from '../src/form/is-pristine';
+import { create as createIsRetouched } from '../src/form/is-retouched';
 
-import {createChangeActionReducer} from './reducers/form/change-action-reducer';
-import {createFormActionReducer} from './reducers/form-actions-reducer';
+import { createChangeActionReducer } from './reducers/form/change-action-reducer';
+import { createFormActionReducer } from './reducers/form-actions-reducer';
 
 import {
   initialFieldState,
@@ -37,14 +37,15 @@ import {
 const immutableInitialFieldState = Immutable.fromJS(initialFieldState);
 
 function immutableSetIn(state, path, value) {
-  // Due to issue https://github.com/facebook/immutable-js/issues/1008
-  // If a numerical key is present, convert to regular JS, do a merge, and return.
   try {
-    let isNumericPath = path.filter((val) => !isNaN(val)).length > 0;
+    const isNumericPath = path.filter((val) => !isNaN(val)).length > 0;
 
     if (isNumericPath) {
-      let updatedState = setWith(baseStrategy.toJS(state), path, value, Object);
-      return baseStrategy.fromJS(updatedState);
+      // Due to issue https://github.com/facebook/immutable-js/issues/1008
+      // If a numerical key is present, convert to regular JS, do a merge, and return.
+      // This is slow, so remove once the issue is fixed.
+      const updatedState = setWith(state.toJS(), path, value, Object);
+      return Immutable.fromJS(updatedState);
     }
 
     return state.setIn(path, value);
@@ -70,7 +71,7 @@ const baseStrategy = {
   getValue,
   keys: immutableKeys,
   splice: (list, ...args) => list.splice(...args),
-  merge: merge,
+  merge,
   mergeDeep: merge,
   remove: (map, ...args) => map.remove(...args),
   push: (list, ...args) => list.push(...args),
@@ -79,7 +80,7 @@ const baseStrategy = {
   array: new Immutable.List(),
   isObject: (state) => (isPlainObject(state) || Immutable.Map.isMap(state)),
   fromJS: Immutable.fromJS,
-  toJS: (obj) => obj ? obj.toJS() : {},
+  toJS: (obj) => (obj ? obj.toJS() : {}),
   mapValues: immutableMapValues,
   map: (obj, fn) => obj.map(fn).toSet(),
 };
@@ -140,7 +141,7 @@ function immutableFormReducer(model, initialState = new Immutable.Map(), options
       createChangeActionReducer(immutableStrategy),
       createFormActionReducer(immutableStrategy),
     ],
-    ...immutableStrategy
+    ...immutableStrategy,
   });
 }
 
@@ -166,7 +167,7 @@ const ImmutableField = createFieldClass(immutableControlPropsMap, {
   getFieldFromState: immutableGetFieldFromState,
   changeAction: immutableModelActions.change,
   actions: immutableModelActions,
-  fromJS: immutableStrategy.fromJS
+  fromJS: immutableStrategy.fromJS,
 });
 const ImmutableErrors = createErrorsClass(immutableStrategy);
 const ImmutableForm = createFormClass({
@@ -178,7 +179,7 @@ const immutableFormCombiner = createFormCombiner({
   modelReducer: immutableModelReducer,
   formReducer: immutableFormReducer,
   modeled: immutableModelReducerEnhancer,
-  ...immutableStrategy
+  ...immutableStrategy,
 });
 
 const immutableCombineForms = immutableFormCombiner.combineForms;

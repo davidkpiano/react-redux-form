@@ -29,9 +29,9 @@ import {
   actions as immutableActions,
   modelReducer as immutableModelReducer,
   formReducer as immutableFormReducer,
-  strategy as immutableStrategy
+  strategy as immutableStrategy,
 } from '../immutable';
-import isValid from '../src/form/is-valid';
+import _isValid from '../src/form/is-valid';
 
 const testContexts = {
   standard: {
@@ -41,7 +41,7 @@ const testContexts = {
     formReducer: _formReducer,
     get: _get,
     length: (value) => value.length,
-    isValid: isValid,
+    isValid: _isValid,
     toJS: identity,
     getInitialState: (state) => state,
   },
@@ -54,7 +54,6 @@ const testContexts = {
     get: (value, path) => value.getIn(toPath(path)),
     length: (value) => value.size,
     isValid: immutableStrategy.isValid,
-    s: immutableStrategy,
     toJS: (obj) => obj.toJS(),
     getInitialState: (state) => Immutable.fromJS(state),
   },
@@ -68,7 +67,6 @@ Object.keys(testContexts).forEach((testKey) => {
   const formReducer = testContext.formReducer;
   const get = testContext.get;
   const length = testContext.length;
-  const s = testContext.s;
   const isValid = testContext.isValid;
   const toJS = testContext.toJS;
   const getInitialState = testContext.getInitialState;
@@ -302,7 +300,7 @@ Object.keys(testContexts).forEach((testKey) => {
           test: modelReducer('test', { foo: 'bar' }),
         }));
 
-        const TestField = connect(s => s)(props => {
+        const TestField = connect(state => state)(props => {
           const { test } = props;
 
           return (
@@ -873,20 +871,20 @@ Object.keys(testContexts).forEach((testKey) => {
 
         TestUtils.Simulate.change(checkboxes[0]);
 
-        assert.isTrue(get(store.getState().testForm, ['items','$form','valid']));
-        assert.isTrue(get(store.getState().testForm, ['items','$form','validity','required']));
+        assert.isTrue(get(store.getState().testForm, ['items', '$form', 'valid']));
+        assert.isTrue(get(store.getState().testForm, ['items', '$form', 'validity', 'required']));
 
         TestUtils.Simulate.change(checkboxes[1]);
-        assert.isTrue(get(store.getState().testForm, ['items','$form','validity','required']));
-        assert.isTrue(get(store.getState().testForm, ['items','$form','validity','values']));
+        assert.isTrue(get(store.getState().testForm, ['items', '$form', 'validity', 'required']));
+        assert.isTrue(get(store.getState().testForm, ['items', '$form', 'validity', 'values']));
 
         TestUtils.Simulate.change(checkboxes[0]);
-        assert.isTrue(get(store.getState().testForm, ['items','$form','validity','required']));
-        assert.isTrue(get(store.getState().testForm, ['items','$form','validity','values']));
+        assert.isTrue(get(store.getState().testForm, ['items', '$form', 'validity', 'required']));
+        assert.isTrue(get(store.getState().testForm, ['items', '$form', 'validity', 'values']));
 
         TestUtils.Simulate.change(checkboxes[1]);
-        assert.isFalse(get(store.getState().testForm, ['items','$form','validity','required']));
-        assert.isFalse(get(store.getState().testForm, ['items','$form','valid']));
+        assert.isFalse(get(store.getState().testForm, ['items', '$form', 'validity', 'required']));
+        assert.isFalse(get(store.getState().testForm, ['items', '$form', 'valid']));
       });
     });
 
@@ -1078,7 +1076,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isFalse(get(store.getState().testForm, ['foo', 'errors', 'length']));
         assert.isFalse(get(store.getState().testForm, ['foo', 'errors', 'valid']));
-        
+
         control.value = 'invalid string';
 
         TestUtils.Simulate.change(control);

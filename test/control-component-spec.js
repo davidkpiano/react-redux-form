@@ -49,9 +49,7 @@ const testContexts = {
     Control: immutableControl,
     actions: immutableActions,
     object: new Immutable.Map(),
-    get: (value, path) => {
-      return value.getIn(toPath(path));
-    },
+    get: (value, path) => value.getIn(toPath(path)),
     set: (state, path, value) => state.setIn(path, value),
     getInitialState: (state) => Immutable.fromJS(state),
     toJS: (obj) => obj.toJS(),
@@ -69,8 +67,6 @@ Object.keys(testContexts).forEach((testKey) => {
   const get = testContext.get;
   const toJS = testContext.toJS;
   const getInitialState = testContext.getInitialState;
-
-  console.log(toJS);
 
   describe(`<Control> component (${testKey} context)`, () => {
     describe('existence check', () => {
@@ -134,8 +130,8 @@ Object.keys(testContexts).forEach((testKey) => {
       it('should call the onLoad function', () => {
         assert.ok(handleLoad.calledOnce);
 
-        assert.equal(handleLoad.args[0][0], 'bar');        
-        
+        assert.equal(handleLoad.args[0][0], 'bar');
+
         if (testKey === 'standard') {
           assert.containSubset(handleLoad.args[0][1], {
             initialValue: 'bar',
@@ -197,7 +193,7 @@ Object.keys(testContexts).forEach((testKey) => {
         it('should dispatch a blur event when blurred', () => {
           TestUtils.Simulate.blur(node);
 
-          assert.equal(get(store.getState().testForm, ['foo', 'focus']), false); 
+          assert.equal(get(store.getState().testForm, ['foo', 'focus']), false);
         });
 
         it('should dispatch a change event when changed', () => {
@@ -807,10 +803,8 @@ Object.keys(testContexts).forEach((testKey) => {
           actualStates.push(toJS(state.testForm).foo);
 
           if (actualStates.length === expectedStates.length) {
-            expectedStates.map((expectedFn, index) => {
-              console.log(actualStates[index], 'actualState');
-              assert.ok(expectedFn(actualStates[index]), `${index}`)
-            }
+            expectedStates.map(
+              (expectedFn, index) => assert.ok(expectedFn(actualStates[index]), `${index}`)
             );
 
             done();

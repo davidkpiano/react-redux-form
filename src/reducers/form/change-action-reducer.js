@@ -116,7 +116,10 @@ export function createChangeActionReducer(s = defaultStrategies) {
 
     const dirtyFormState = s.merge(s.get(field, '$form') || s.initialFieldState,
       s.set(changedFieldProps, 'retouched',
-        s.get(field, 'submitted') || (s.get(field, '$form') && s.get(field, ['$form', 'retouched']))));
+        s.get(field, 'submitted') ||
+        (s.get(field, '$form') && s.get(field, ['$form', 'retouched']))
+      )
+    );
 
     return s.set(updatedField, '$form',
       s.set(dirtyFormState, 'value', value));
@@ -139,7 +142,10 @@ export function createChangeActionReducer(s = defaultStrategies) {
   return function changeActionReducer(state, action, localPath) {
     if (action.type !== actionTypes.CHANGE) return state;
 
-    const field = s.get(state, localPath, createInitialState(action.model, s.fromJS(action.value), {}, {}, s));
+    const field = s.get(state,
+      localPath,
+      createInitialState(action.model, s.fromJS(action.value), {}, {}, s)
+    );
 
     const updatedField = updateFieldValue(field, action);
 
@@ -159,7 +165,7 @@ export function createChangeActionReducer(s = defaultStrategies) {
     }
 
     return updateParentForms(updatedState, localPath, { pristine: false }, s);
-  }
+  };
 }
 
 const createChangeAction = createChangeActionReducer();

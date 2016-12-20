@@ -25,7 +25,7 @@ import {
   formReducer as immutableFormReducer,
   isValid as isValidImmutable,
   isPristine as isPristineImmutable,
-  isRetouched as isRetouchedImmutable
+  isRetouched as isRetouchedImmutable,
 } from '../immutable';
 
 const testContexts = {
@@ -46,16 +46,14 @@ const testContexts = {
     actions: immutableActions,
     formReducer: immutableFormReducer,
     object: new Immutable.Map(),
-    get: (value, path) => {
-      return value.getIn(toPath(path));
-    },
+    get: (value, path) => value.getIn(toPath(path)),
     set: (state, path, value) => state.setIn(path, value),
     getInitialState: (state) => Immutable.fromJS(state),
     isValid: isValidImmutable,
     isPristine: isPristineImmutable,
     isRetouched: isRetouchedImmutable,
     toJS: (obj) => obj.toJS(),
-    fromJS: (obj) => Immutable.fromJS(obj)
+    fromJS: (obj) => Immutable.fromJS(obj),
   },
 };
 
@@ -86,7 +84,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isTrue(get(changedState, ['$form', 'submitted']));
         assert.isTrue(isRetouched(changedState), 'form retouched after submit');
-        assert.isTrue(get(changedState, ['foo', 'retouched'])); 
+        assert.isTrue(get(changedState, ['foo', 'retouched']));
       });
 
       it('should be able to set change an object to null without throwing an error', () => {
@@ -1250,12 +1248,12 @@ Object.keys(testContexts).forEach((testKey) => {
         }));
 
         const validator = (value, done) => {
-          let foo = get(value, 'foo');
+          const foo = get(value, 'foo');
 
           return done({
             good: foo > 4,
             bad: foo > 5,
-          })
+          });
         };
 
         actions.asyncSetValidity('test', validator)(dispatch, getState);
@@ -1275,7 +1273,7 @@ Object.keys(testContexts).forEach((testKey) => {
             if (action.type === actionTypes.SET_VALIDATING) {
               validatingStates.push(action.validating);
 
-              assert.equal(get(state, ['foo','validating']), action.validating);
+              assert.equal(get(state, ['foo', 'validating']), action.validating);
             } else if (action.type === actionTypes.SET_VALIDITY) {
               validatingStates.push(get(state, ['foo', 'validating']));
 
