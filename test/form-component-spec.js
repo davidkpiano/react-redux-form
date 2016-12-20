@@ -1772,6 +1772,7 @@ Object.keys(testContexts).forEach((testKey) => {
           { name: 'one' },
           { name: 'two' },
           { name: 'three' },
+          { name: 'four' }
         ],
       });
       const store = testCreateStore({
@@ -1786,10 +1787,12 @@ Object.keys(testContexts).forEach((testKey) => {
             validators={(model) => {
               const field1 = 'items[0].name';
               const field2 = 'items[1].name';
+              const field4 = 'items[3].name';
               const hasValue = (value) => value && value.length;
 
               const field1Value = get(model, field1);
               const field2Value = get(model, field2);
+              const field4Value = get(model, field4);
 
               const notRequired = () => Boolean(hasValue(field1Value) || hasValue(field2Value));
               const containsOne = field1Value.includes('one');
@@ -1797,11 +1800,14 @@ Object.keys(testContexts).forEach((testKey) => {
 
               validations[field1] = {
                 required: notRequired(),
-                needsFoo: containsOne,
+                needsOne: containsOne,
               };
               validations[field2] = {
                 required: notRequired(),
               };
+              validations[field4] = {
+                required: hasValue(field4)
+              }
               return validations;
             }}
             errors={{
@@ -1810,14 +1816,15 @@ Object.keys(testContexts).forEach((testKey) => {
               },
             }}
           >
-            {get(initialState, 'items').map((item, i) =>
-              <Control model={`test.items[${i}].name`} />
-            )}
+              <Control model={`test.items[0].name`} />
+              <Control model={`test.items[1].name`} />
+              <Control model={`test.items[2].name`} />
+              <Control model={`test.items[3].name`} validators={{needsFour: (val) => val.includes('four')}} />
           </Form>
         </Provider>
       );
 
-      const [input1, input2, input3] = TestUtils
+      const [input1, input2, input3, input4] = TestUtils
         .scryRenderedDOMComponentsWithTag(form, 'input');
 
       it('should initially validate each item', () => {
@@ -1870,16 +1877,31 @@ Object.keys(testContexts).forEach((testKey) => {
         const { $form, items } = store.getState().testForm;
 
         assert.isFalse(items[0].name.validity.required);
-        assert.isFalse(items[0].name.validity.needsFoo);
+        assert.isFalse(items[0].name.validity.needsOne);
 
         assert.isTrue(items[0].name.errors.required);
-        assert.isTrue(items[0].name.errors.needsFoo);
+        assert.isTrue(items[0].name.errors.needsOne);
 
         assert.isFalse(items[1].name.validity.required);
         assert.isTrue(items[1].name.errors.required);
 
         assert.isFalse(items[2].name.validity.invalidThree);
         assert.equal(items[2].name.errors.invalidThree, 'invalid three');
+
+        assert.isFalse($form.valid);
+      });
+
+      it('should aggregate form validations and field validations.', () => {
+        input4.value = '';
+        TestUtils.Simulate.change(input4);
+        
+        const { $form, items } = store.getState().testForm;
+
+        assert.isFalse(items[0].name.validity.required);
+        assert.isFalse(items[0].name.validity.needsFour);
+
+        assert.isTrue(items[0].name.errors.required);
+        assert.isTrue(items[0].name.errors.needsFour);
 
         assert.isFalse($form.valid);
       });
