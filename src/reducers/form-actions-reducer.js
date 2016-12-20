@@ -146,8 +146,8 @@ export function createFormActionReducer(s = defaultStrategies) {
         const isErrors = action.type === actionTypes.SET_ERRORS;
         const validity = isErrors ? action.errors : action.validity;
 
-        const inverseValidity = isPlainObject(validity)
-          ? mapValues(validity, inverse)
+        const inverseValidity = s.isObject(validity)
+          ? s.mapValues(s.fromJS(validity), inverse)
           : !validity;
 
         // If the field is a form, its validity is
@@ -172,16 +172,20 @@ export function createFormActionReducer(s = defaultStrategies) {
       }
 
       case actionTypes.SET_FIELDS_VALIDITY: {
-        let mapResult = map(action.fieldsValidity, (fieldValidity, subField) =>
-          fieldActions.setValidity(subField, fieldValidity, action.options)
-        );
+        let mapResult = map(action.fieldsValidity, (fieldValidity, subField) => {
+          return fieldActions.setValidity(subField, fieldValidity, action.options)
+        });
 
-        let reduceResult = mapResult.reduce((accState, subAction) => formActionsReducer(
+        let accState = state;
+
+        mapResult.forEach((subAction) => {
+          accState = s.merge(accState, formActionsReducer(
             accState,
             subAction,
-            localPath.concat(toPath(subAction.model)), s), state)
+            localPath.concat(toPath(subAction.model)), s));
+        });
 
-        return reduceResult;
+        return accState;
       }
 
       case actionTypes.RESET_VALIDITY: {

@@ -1,3 +1,4 @@
+import setWith from 'lodash/setWith';
 import { createModeler } from './reducers/model-reducer';
 import formReducer from './reducers/form-reducer';
 import { createModelReducerEnhancer } from './enhancers/modeled-enhancer';
@@ -36,7 +37,16 @@ import {
 const immutableInitialFieldState = Immutable.fromJS(initialFieldState);
 
 function immutableSetIn(state, path, value) {
+  // Due to issue https://github.com/facebook/immutable-js/issues/1008
+  // If a numerical key is present, convert to regular JS, do a merge, and return.
   try {
+    let isNumericPath = path.filter((val) => !isNaN(val)).length > 0;
+
+    if (isNumericPath) {
+      let updatedState = setWith(baseStrategy.toJS(state), path, value, Object);
+      return baseStrategy.fromJS(updatedState);
+    }
+
     return state.setIn(path, value);
   } catch (error) {
     throw new Error(`Unable to set path '${path.join(

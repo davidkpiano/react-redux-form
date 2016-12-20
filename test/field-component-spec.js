@@ -34,17 +34,17 @@ import {
 import isValid from '../src/form/is-valid';
 
 const testContexts = {
-  // standard: {
-  //   Field: _Field,
-  //   actions: _actions,
-  //   modelReducer: _modelReducer,
-  //   formReducer: _formReducer,
-  //   get: _get,
-  //   length: (value) => value.length,
-  //   isValid: isValid,
-  //   toJS: identity,
-  //   getInitialState: (state) => state,
-  // },
+  standard: {
+    Field: _Field,
+    actions: _actions,
+    modelReducer: _modelReducer,
+    formReducer: _formReducer,
+    get: _get,
+    length: (value) => value.length,
+    isValid: isValid,
+    toJS: identity,
+    getInitialState: (state) => state,
+  },
   immutable: {
     Field: ImmutableField,
     actions: immutableActions,
@@ -915,13 +915,13 @@ Object.keys(testContexts).forEach((testKey) => {
         const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
         const expectedStates = [
-          (state) => state.focus === false,
+          (state) => get(state, 'focus') === false,
 
           // initially valid
-          (state) => state.validating === true && isValid(state),
+          (state) => get(state, 'validating') === true && isValid(state),
 
           // true after validating
-          (state) => state.validating === false && isValid(state),
+          (state) => get(state, 'validating') === false && isValid(state),
         ];
 
         const actualStates = [];
@@ -929,7 +929,7 @@ Object.keys(testContexts).forEach((testKey) => {
         store.subscribe(() => {
           const state = store.getState();
 
-          actualStates.push(toJS(get(state.testForm, 'foo')));
+          actualStates.push(get(state.testForm, 'foo'));
 
           if (actualStates.length === expectedStates.length) {
             expectedStates.map((expectedFn, i) =>
@@ -961,13 +961,13 @@ Object.keys(testContexts).forEach((testKey) => {
         const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
 
         const expectedStates = [
-          (state) => state.focus === false,
+          (state) => get(state, 'focus') === false,
 
           // initially valid
-          (state) => state.validating === true && isValid(state),
+          (state) => get(state, 'validating') === true && isValid(state),
 
           // false after validating
-          (state) => state.validating === false && !isValid(state),
+          (state) => get(state, 'validating') === false && !isValid(state),
         ];
 
         const actualStates = [];
@@ -975,7 +975,7 @@ Object.keys(testContexts).forEach((testKey) => {
         store.subscribe(() => {
           const state = store.getState();
 
-          actualStates.push(toJS(state.testForm).foo);
+          actualStates.push(get(state.testForm, 'foo'));
 
           if (actualStates.length === expectedStates.length) {
             expectedStates.map((expectedFn, i) =>
@@ -1075,8 +1075,6 @@ Object.keys(testContexts).forEach((testKey) => {
         control.value = 'valid';
 
         TestUtils.Simulate.change(control);
-
-        console.log(toJS(store.getState().testForm))
 
         assert.isFalse(get(store.getState().testForm, ['foo', 'errors', 'length']));
         assert.isFalse(get(store.getState().testForm, ['foo', 'errors', 'valid']));
@@ -2090,7 +2088,7 @@ Object.keys(testContexts).forEach((testKey) => {
       const field = testRender(
         <Field model="test.foo">
         {(fieldValue) => <input
-          className={s.get(fieldValue, 'focus')
+          className={get(fieldValue, 'focus')
             ? 'focused'
             : ''
           }

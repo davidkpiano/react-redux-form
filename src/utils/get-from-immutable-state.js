@@ -11,7 +11,6 @@ export default function immutableGetFromState(state, modelString, defaultValue) 
       return subState.get(subPath);
     }
 
-    // Current subState is a plain object/array
     return subState[subPath];
   }, state);
 

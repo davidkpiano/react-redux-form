@@ -22,6 +22,7 @@ const defaultStrategies = {
   ],
   get: _get,
   set: i.set,
+  isObject: isPlainObject,
   isValid,
   isPristine,
   fieldsValid,
@@ -51,22 +52,20 @@ export function createInitialState(model, state, customInitialFieldState = {}, o
   if (isArray(state) || isPlainObject(state) || Immutable.Iterable.isIterable(state)) {
     initialState = lazy
       ? s.fromJS({})
-      : s.mapValues(state, (subState, subModel) => createInitialState(getSubModelString(model, subModel), subState, s.fromJS(customInitialFieldState), undefined, s));
+      : s.mapValues(state, (subState, subModel) => createInitialState(getSubModelString(model, subModel), subState, customInitialFieldState, undefined, s));
   } else {
-    return s.merge(s.initialFieldState, s.fromJS({
+    return s.merge(s.initialFieldState, s.merge(s.fromJS({
       initialValue: state,
       value: state,
       model,
-      ...customInitialFieldState,
-    }));
+    }), customInitialFieldState));
   }
 
-  const initialForm = s.merge(s.initialFieldState, s.fromJS({
+  const initialForm = s.merge(s.initialFieldState, s.merge(s.fromJS({
     initialValue: state,
     value: state,
     model,
-    ...customInitialFieldState,
-  }));
+  }), customInitialFieldState));
 
   return s.set(initialState, '$form', initialForm);
 }

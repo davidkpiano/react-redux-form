@@ -69,18 +69,18 @@ export function createChangeActionReducer(s = defaultStrategies) {
           result[key] = s.get(field, key);
         });
 
-        return s.set(compact(result), '$form', s.get(field, '$form'));
+        return s.set(s.fromJS(compact(result)), '$form', s.get(field, '$form'));
       }
 
-      result = { ...field };
+      result = s.toJS(field);
 
       s.keys(field).forEach((key) => {
-        if (!!~removeKeysArray.indexOf(key)) {
+        if (removeKeysArray.indexOf(key) !== -1) {
           delete result[`${key}`];
         }
       });
 
-      return result;
+      return s.fromJS(result);
     }
 
     if (!Array.isArray(value) && !isPlainObject(value) && !Immutable.Iterable.isIterable(value)) {
@@ -92,7 +92,7 @@ export function createChangeActionReducer(s = defaultStrategies) {
       const parentModelString = parentModel ? `${parentModel}.` : '';
       const fullModelPath = `${`${parentModelString}${model}`}`;
 
-      const subField = field[index]
+      const subField = s.get(field, index)
         || createInitialState(`${fullModelPath}.${index}`, subValue, {}, {}, s);
 
       if (s.get(subField, '$form')) {
@@ -102,7 +102,7 @@ export function createChangeActionReducer(s = defaultStrategies) {
         }), fullModelPath);
       }
 
-      if (shallowEqual(subValue, subField.value)) {
+      if (shallowEqual(subValue, s.get(subField, 'value'))) {
         return subField;
       }
 
@@ -117,7 +117,6 @@ export function createChangeActionReducer(s = defaultStrategies) {
     const dirtyFormState = s.merge(s.get(field, '$form') || s.initialFieldState,
       s.set(changedFieldProps, 'retouched',
         s.get(field, 'submitted') || (s.get(field, '$form') && s.get(field, ['$form', 'retouched']))));
-
 
     return s.set(updatedField, '$form',
       s.set(dirtyFormState, 'value', value));

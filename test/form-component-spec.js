@@ -9,7 +9,7 @@ import createTestStore from 'redux-test-store';
 import sinon from 'sinon';
 import identity from 'lodash/identity';
 
-import isValid from '../src/form/is-valid';
+import _isValid from '../src/form/is-valid';
 import { defaultTestContexts, testCreateStore, testRender } from './utils';
 
 import {
@@ -28,6 +28,7 @@ import {
   Field as ImmutableField,
   Control as ImmutableControl,
   actions as immutableActions,
+  isValid as immutableIsValid
 } from '../immutable';
 
 const testContexts = {
@@ -39,7 +40,8 @@ const testContexts = {
     Field: _Field,
     Control: _Control,
     actions: _actions,
-    toJS: identity
+    toJS: identity,
+    isValid: _isValid,
   },
   immutable: {
     ...defaultTestContexts.immutable,
@@ -50,6 +52,7 @@ const testContexts = {
     Control: ImmutableControl,
     actions: immutableActions,
     toJS: (obj) => obj.toJS(),
+    isValid: immutableIsValid,
   },
 };
 
@@ -63,6 +66,7 @@ Object.keys(testContexts).forEach((testKey) => {
   const actions = testContext.actions;
   const object = testContext.object;
   const get = testContext.get;
+  const isValid = testContext.isValid;
   const getInitialState = testContext.getInitialState;
   const toJS = testContext.toJS;
 
@@ -1120,7 +1124,9 @@ Object.keys(testContexts).forEach((testKey) => {
 
       it('should set errors from rejected submit handler on valid submit', (done) => {
         store.when(actionTypes.SET_ERRORS, (state) => {
-          assert.isFalse(isValid(get(state, 'testForm')));
+            console.log('state', isValid(state.testForm));
+
+          assert.isFalse(isValid(state.testForm));
           assert.equal(toJS(state.testForm).$form.errors, 'Form is invalid');
           done();
         });
@@ -1521,9 +1527,6 @@ Object.keys(testContexts).forEach((testKey) => {
       const form = testRender(
         <Form model="test">
           {((formValue) => {
-
-            console.log('formvalue', formValue);
-
             return (
               <Field model={`${get(formValue, ['$form', 'model'])}.foo`}>
                 <input className={get(formValue, ['foo', 'focus']) ? 'focused' : ''} />

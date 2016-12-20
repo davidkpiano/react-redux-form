@@ -89,7 +89,7 @@ function createFieldActions(s = defaultStrategies) {
         dispatch({
           type: actionTypes.SET_VALIDITY,
           model,
-          validity: omit(field.validity, omitKeys),
+          validity: omit(s.get(field, validity), omitKeys),
         });
       }
     };

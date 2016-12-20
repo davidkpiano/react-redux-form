@@ -1,5 +1,11 @@
+import Immutable from 'immutable';
+
 export function immutableMapValues(iterable, iteratee) {
-	return iterable.map((val, key) => iteratee(val, key, iterable));
+	const result = Immutable.Map().asMutable();
+
+	iterable.map((val, key) => result.set(key, iteratee(val, key, iterable)));
+
+	return result.asImmutable();
 }
 
 export default function mapValues(object, iteratee) {

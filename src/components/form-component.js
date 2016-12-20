@@ -201,10 +201,10 @@ function createFormClass(s = defaultStrategy) {
       mapValues(errorValidators, validateField);
 
       // Compute form-level validity
-      if (!s.get(fieldsErrors, '')) {
+      if (!fieldsErrors.hasOwnProperty('')) {
         fieldsErrors[''] = false;
         validityChanged = validityChanged
-          || isValidityInvalid(s.get(formValue, ['$form', 'errors']));
+          || isValidityInvalid(s.toJS(formValue).$form.errors);
       }
 
       if (validityChanged) {
@@ -318,7 +318,7 @@ function createFormClass(s = defaultStrategy) {
 
       mapValues(finalErrorValidators, validateField);
 
-      // const fieldsValidity = mapValues(finalErrorValidators, (validator, field) => {
+      // const fieldsValidity = s.mapValues(finalErrorValidators, (validator, field) => {
       //   const fieldValue = field
       //     ? s.get(modelValue, field)
       //     : modelValue;

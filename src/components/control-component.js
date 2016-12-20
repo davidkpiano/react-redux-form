@@ -110,7 +110,9 @@ const defaultStrategy = {
   actions,
   initialFieldState,
   getForm,
+  merge: i.assign,
   isObject: isPlainObject,
+  fromJS: identity,
   toJS: identity,
   keys: (obj) => Object.keys(obj),
 };
@@ -184,7 +186,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         const keys = Object.keys(validators)
           .concat(Object.keys(errors));
 
-        dispatch(actions.setValidity(model, omit(fieldValue.validity, keys)));
+        dispatch(actions.setValidity(model, omit(s.toJS(fieldValue).validity, keys)));
       }
     }
 
@@ -304,7 +306,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           (validator, key) => dispatch(actions.asyncSetValidity(model,
             (_, done) => {
               const outerDone = (valid) => {
-                const validity = s.merge(s.get(fieldValue, 'validity'), s.fromJS({ [key]: valid }));
+                const validity = s.toJS(s.merge(s.get(fieldValue, 'validity'), s.fromJS({ [key]: valid })));
 
                 done(validity);
               };

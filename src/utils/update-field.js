@@ -41,6 +41,7 @@ function tempInitialState(path, initialValue = null, s = defaultStrategies) {
 
 export function getFieldAndForm(formState, modelPath, s = defaultStrategies) {
   let field = s.get(formState, modelPath);
+
   let form = formState;
 
   if (!field) {
