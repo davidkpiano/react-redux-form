@@ -48,8 +48,14 @@ interface ErrorsComponentMessages {
 interface FormValidators {
     [key: string]: Validators;
 }
+interface FormValidatorsFn {
+    (val: any): FormValidationErrors
+}
 interface ValidationErrors {
     [key: string]: any;
+}
+interface FormValidationErrors {
+    [key: string]: ValidationErrors
 }
 /**
  * Internal interface
@@ -270,7 +276,7 @@ interface BaseFormProps {
      * * Specifying validators on the form is usually sufficient - you don't need to put validators on the <Field> for most use cases.
      * * If you need validators to run on submit, this is the place to put them.
      */
-    validators?: Validators | FormValidators;
+    validators?: Validators | FormValidators | FormValidatorsFn;
 
     /**
      * An object representing the error validators for the fields inside the form, where:
