@@ -102,6 +102,7 @@ const propTypes = {
     getState: PropTypes.func,
   }),
   getRef: PropTypes.func,
+  resetOnUnmount: PropTypes.bool,
 };
 
 const defaultStrategy = {
@@ -169,6 +170,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     componentWillUnmount() {
+      if (!this.props.resetOnUnmount) {
+        return;
+      }
+
       const {
         model,
         fieldValue,
@@ -612,6 +617,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     dynamic: false,
     mapProps: controlPropsMap.default,
     component: 'input',
+    resetOnUnmount: true,
   };
 
   function mapStateToProps(state, props) {
