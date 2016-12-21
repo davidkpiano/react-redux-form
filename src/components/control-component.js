@@ -122,10 +122,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     ...customControlPropsMap,
   };
 
-  function isReadOnlyValue(controlProps) {
-    return ~['radio', 'checkbox'].indexOf(controlProps.type);
-  }
-
   const emptyControlProps = {};
 
   class Control extends Component {
@@ -144,7 +140,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       this.handleLoad = this.handleLoad.bind(this);
       this.getMappedProps = this.getMappedProps.bind(this);
       this.attachNode = this.attachNode.bind(this);
-      this.readOnlyValue = isReadOnlyValue(props.controlProps);
 
       this.willValidate = false;
 
@@ -226,7 +221,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         modelValue,
         changeAction,
       } = this.props;
-      const value = this.readOnlyValue
+      const value = this.isReadOnlyValue()
         ? getReadOnlyValue(this.props)
         : event;
 
@@ -351,9 +346,15 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     setViewValue(viewValue) {
-      if (!isReadOnlyValue(this.props.controlProps)) {
+      if (!this.isReadOnlyValue()) {
         this.setState({ viewValue: this.parse(viewValue) });
       }
+    }
+
+    isReadOnlyValue() {
+      const { component, controlProps } = this.props;
+
+      return component === 'input' && ~['radio', 'checkbox'].indexOf(controlProps.type);
     }
 
     handleIntents() {
@@ -375,12 +376,11 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           case actionTypes.FOCUS: {
             if (isNative) return;
 
-            const readOnlyValue = isReadOnlyValue(controlProps);
             const focused = fieldValue.focus;
 
             if ((focused && this.node.focus)
               && (
-                !readOnlyValue
+                !this.isReadOnlyValue()
                 || typeof intent.value === 'undefined'
                 || intent.value === controlProps.value
               )) {
@@ -521,7 +521,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
             : event;
         }
 
-        if (isReadOnlyValue(controlProps)) {
+        if (this.isReadOnlyValue()) {
           return compose(
             dispatchBatchActions,
             persistEventWithCallback(controlEventHandler || identity)
