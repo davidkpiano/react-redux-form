@@ -1772,7 +1772,7 @@ Object.keys(testContexts).forEach((testKey) => {
           { name: 'one' },
           { name: 'two' },
           { name: 'three' },
-          { name: 'four' }
+          { name: 'four' },
         ],
       });
       const store = testCreateStore({
@@ -1806,20 +1806,27 @@ Object.keys(testContexts).forEach((testKey) => {
                 required: notRequired(),
               };
               validations[field4] = {
-                required: hasValue(field4Value)
-              }
+                required: hasValue(field4Value),
+              };
               return validations;
             }}
             errors={{
-              'items[2].name': (value) => { // eslint-disable-line arrow-body-style
-                return value.includes('three') ? false : { invalidThree: 'invalid three' };
-              },
+              'items[2].name': (value) => (
+                value.includes('three')
+                  ? false
+                  : { invalidThree: 'invalid three' }
+              ),
             }}
           >
-              <Control model={`test.items[0].name`} />
-              <Control model={`test.items[1].name`} />
-              <Control model={`test.items[2].name`} />
-              <Control model={`test.items[3].name`} validators={{needsFour: (val) => val.includes('four')}} />
+            <Control model="test.items[0].name" />
+            <Control model="test.items[1].name" />
+            <Control model="test.items[2].name" />
+            <Control
+              model="test.items[3].name"
+              validators={{
+                needsFour: (val) => val.includes('four'),
+              }}
+            />
           </Form>
         </Provider>
       );
@@ -1894,7 +1901,7 @@ Object.keys(testContexts).forEach((testKey) => {
       it('should aggregate form validations and field validations.', () => {
         input4.value = '';
         TestUtils.Simulate.change(input4);
-        
+
         const { $form, items } = store.getState().testForm;
 
         assert.isFalse(items[3].name.validity.required);

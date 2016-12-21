@@ -82,6 +82,7 @@ function createFieldActions(s = defaultStrategies) {
       ? actionTypes.SET_ERRORS
       : actionTypes.SET_VALIDITY,
     model,
+    ...options,
     [options.errors ? 'errors' : 'validity']: validity,
   });
 

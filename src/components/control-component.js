@@ -47,6 +47,12 @@ function getReadOnlyValue(props) {
   }
 }
 
+function mergeOrSetErrors(model, errors) {
+  return actions.setErrors(model, errors, {
+    merge: isPlainObject(errors),
+  });
+}
+
 const propTypes = {
   model: PropTypes.oneOfType([
     PropTypes.func,
@@ -259,10 +265,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           : fieldErrors;
 
         if (!fieldValue || !shallowEqual(mergedErrors, fieldValue.errors)) {
-          return actions.setErrors(model, mergedErrors);
+          return mergeOrSetErrors(model, mergedErrors);
         }
       } else if (nodeErrors && Object.keys(nodeErrors).length) {
-        return actions.setErrors(model, nodeErrors);
+        return mergeOrSetErrors(model, nodeErrors);
       }
 
       return false;
@@ -566,7 +572,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         : fieldErrors;
 
       if (!shallowEqual(errors, fieldValue.errors)) {
-        dispatch(actions.setErrors(model, errors));
+        dispatch(mergeOrSetErrors(model, errors));
       }
 
       return modelValue;
