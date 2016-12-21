@@ -8,6 +8,7 @@ import map from '../utils/map';
 import isPlainObject from '../utils/is-plain-object';
 import mapValues from '../utils/map-values';
 import inverse from '../utils/inverse';
+import merge from '../utils/merge';
 import isValid, { fieldsValid } from '../form/is-valid';
 import isValidityValid from '../utils/is-validity-valid';
 import isValidityInvalid from '../utils/is-validity-invalid';
@@ -157,7 +158,16 @@ export default function formActionsReducer(state, action, localPath) {
     case actionTypes.SET_VALIDITY:
     case actionTypes.SET_ERRORS: {
       const isErrors = action.type === actionTypes.SET_ERRORS;
-      const validity = isErrors ? action.errors : action.validity;
+      let validity;
+      if (isErrors) {
+        validity = action.merge
+          ? merge({ ...fieldState.errors }, action.errors)
+          : action.errors;
+      } else {
+        validity = action.merge
+          ? merge({ ...fieldState.validity }, action.validity)
+          : action.validity;
+      }
 
       const inverseValidity = isPlainObject(validity)
         ? mapValues(validity, inverse)

@@ -294,17 +294,19 @@ Object.keys(testContexts).forEach((testKey) => {
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <form>
-            <Errors model="test.foo"
-                    messages={{
-                      length: (val, {length}) => `${val && val.length} chars is too short (must be at least ${length} chars)`,
-                      doNotShow: () => false,
-                    }}
+            <Errors
+              model="test.foo"
+              messages={{
+                length: (val, {length}) => `${val && val.length} chars is too short (must be at least ${length} chars)`,
+                doNotShow: () => false,
+              }}
             />
-            <Field model="test.foo"
-                   errors={{
-                     length: (v) => v && v.length && v.length > 5 ? false : {length: 5},
-                     doNotShow: () => false,
-                   }}
+            <Field
+              model="test.foo"
+              errors={{
+                length: (v) => v && v.length && v.length > 5 ? false : {length: 5},
+                doNotShow: () => false,
+              }}
             >
               <input type="text"/>
             </Field>
