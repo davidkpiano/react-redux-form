@@ -102,7 +102,7 @@ function getControlType(control, props, options) {
 
 const defaultStrategy = {
   Control,
-  controPropTypes: fieldPropTypes,
+  controlPropTypes: fieldPropTypes,
   getFieldFromState,
   actions,
 };
@@ -110,7 +110,7 @@ const defaultStrategy = {
 function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
   // Use the fieldPropTypes if no controlProptypes have been defined to
   // maintain backwards compatibiltiy.
-  const controlPropTypes = s.controPropTypes || fieldPropTypes;
+  const controlPropTypes = s.controlPropTypes || fieldPropTypes;
 
   function mapStateToProps(state, props) {
     const {
