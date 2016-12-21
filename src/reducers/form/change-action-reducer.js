@@ -86,6 +86,7 @@ function updateFieldValue(field, action, parentModel = undefined) {
       return updateFieldValue(subField, {
         model: index,
         value: subValue,
+        load,
       }, parentModel ? `${parentModel}.${model}` : model);
     }
 

@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 import sinon from 'sinon';
 import capitalize from '../src/utils/capitalize';
 import _get from 'lodash.get';
@@ -19,6 +20,7 @@ import {
   formReducer as _formReducer,
   Control as _Control,
   actions as _actions,
+  combineForms as _combineForms,
 } from '../src';
 import {
   controls as immutableControls,
@@ -26,6 +28,7 @@ import {
   formReducer as immutableFormReducer,
   Control as immutableControl,
   actions as immutableActions,
+  combineForms as immutableCombineForms,
 } from '../immutable';
 
 const testContexts = {
@@ -39,6 +42,7 @@ const testContexts = {
     get: _get,
     set: (state, path, value) => i.setIn(state, path, value),
     getInitialState: (state) => state,
+    combineForms: _combineForms,
   },
   immutable: {
     controls: immutableControls,
@@ -57,6 +61,7 @@ const testContexts = {
     },
     set: (state, path, value) => state.setIn(path, value),
     getInitialState: (state) => Immutable.fromJS(state),
+    combineForms: immutableCombineForms,
   },
 };
 
@@ -70,6 +75,7 @@ Object.keys(testContexts).forEach((testKey) => {
   const object = testContext.object;
   const get = testContext.get;
   const getInitialState = testContext.getInitialState;
+  const combineForms = testContext.combineForms;
 
   describe(`<Control> component (${testKey} context)`, () => {
     describe('existence check', () => {
@@ -945,6 +951,36 @@ Object.keys(testContexts).forEach((testKey) => {
         store.dispatch(actions.reset('test.foo'));
 
         assert.equal(get(store.getState().test, 'foo'), 'new foo');
+      });
+    });
+
+    describe('deep initial value after reset', () => {
+      const store = createStore(combineForms({
+        user: getInitialState({
+          nest: {
+            name: 'initial name',
+            email: 'initial email',
+          },
+        }),
+      }));
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <div>
+            <Control.text model="user.nest.name" />
+            <Control.text type="email" model="user.nest.email" />
+          </div>
+        </Provider>
+      );
+
+      it('should reset the control to the last deeply loaded value', () => {
+        store.dispatch(actions.load('user', getInitialState({
+          nest: { name: 'loaded name', email: 'loaded email' },
+        })));
+        store.dispatch(actions.reset('user'));
+
+        assert.equal(get(store.getState().user, 'nest.name'), 'loaded name');
+        assert.equal(get(store.getState().user, 'nest.email'), 'loaded email');
       });
     });
 
