@@ -1806,7 +1806,7 @@ Object.keys(testContexts).forEach((testKey) => {
                 required: notRequired(),
               };
               validations[field4] = {
-                required: hasValue(field4)
+                required: hasValue(field4Value)
               }
               return validations;
             }}
@@ -1897,11 +1897,11 @@ Object.keys(testContexts).forEach((testKey) => {
         
         const { $form, items } = store.getState().testForm;
 
-        assert.isFalse(items[0].name.validity.required);
-        assert.isFalse(items[0].name.validity.needsFour);
+        assert.isFalse(items[3].name.validity.required);
+        assert.isFalse(items[3].name.validity.needsFour);
 
-        assert.isTrue(items[0].name.errors.required);
-        assert.isTrue(items[0].name.errors.needsFour);
+        assert.isTrue(items[3].name.errors.required);
+        assert.isTrue(items[3].name.errors.needsFour);
 
         assert.isFalse($form.valid);
       });

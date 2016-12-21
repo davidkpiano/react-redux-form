@@ -159,9 +159,31 @@ export default function formActionsReducer(state, action, localPath) {
       const isErrors = action.type === actionTypes.SET_ERRORS;
       const validity = isErrors ? action.errors : action.validity;
 
-      const inverseValidity = isPlainObject(validity)
+      console.log();
+      console.log(validity);
+
+      const validityIsPlainObject = isPlainObject(validity);
+
+      const inverseValidity = validityIsPlainObject
         ? mapValues(validity, inverse)
         : !validity;
+
+      let newErrors = {};
+      let newValidity = {};
+
+
+      if (isErrors) {
+        newErrors = validityIsPlainObject ? Object.assign({}, field.errors, validity) : validity;
+        newValidity = validityIsPlainObject ? Object.assign({}, field.validity, inverseValidity) : inverseValidity;
+      }
+      else {
+        newValidity = validityIsPlainObject ? Object.assign({}, field.validity, validity) : validity;
+        newErrors = validityIsPlainObject ? Object.assign({}, field.errors, inverseValidity) : inverseValidity;
+      }
+
+      console.log(newValidity);
+      console.log(newErrors);
+      console.log();
 
       // If the field is a form, its validity is
       // also based on whether its fields are all valid.
@@ -170,13 +192,13 @@ export default function formActionsReducer(state, action, localPath) {
         : true;
 
       fieldUpdates = {
-        [isErrors ? 'errors' : 'validity']: validity,
-        [isErrors ? 'validity' : 'errors']: inverseValidity,
+        'errors': newErrors,
+        'validity': newValidity,
         validating: false,
         validated: true,
         valid: areFieldsValid && (isErrors
-          ? !isValidityInvalid(validity)
-          : isValidityValid(validity)),
+          ? !isValidityInvalid(newErrors)
+          : isValidityValid(newValidity)),
       };
 
       parentFormUpdates = (form) => ({ valid: isValid(form) });
