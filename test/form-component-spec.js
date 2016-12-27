@@ -2059,5 +2059,52 @@ Object.keys(testContexts).forEach((testKey) => {
         );
       });
     });
+
+    describe('deep async validity', () => {
+      const initialState = getInitialState({ foo: '' });
+
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
+
+      const handleSubmit = sinon.spy((val) => val);
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form
+            model="test"
+            onSubmit={handleSubmit}
+          >
+            <Control model=".foo" />
+          </Form>
+        </Provider>
+      );
+
+      beforeEach(() => {
+        store.dispatch(actions.reset('test'));
+      });
+
+      it('should allow submit if non-async validity is valid', () => {
+        store.dispatch(actions.setValidity('test.foo', { asyncValid: false }, { async: true }));
+        store.dispatch(actions.setValidity('test.foo', { syncValid: false }, { merge: true }));
+
+        assert.isFalse(store.getState().testForm.foo.valid);
+
+        store.dispatch(actions.submit('test'));
+
+        assert.isFalse(handleSubmit.calledOnce,
+          'not called because sync validity is invalid');
+
+        store.dispatch(actions.setValidity('test.foo', { syncValid: true }, { merge: true }));
+
+        assert.isFalse(store.getState().testForm.foo.valid);
+
+        store.dispatch(actions.submit('test'));
+
+        assert.isTrue(handleSubmit.calledOnce,
+          'called because sync validity is valid');
+      });
+    });
   });
 });

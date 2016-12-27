@@ -10,10 +10,10 @@ import actions from '../actions';
 import getValidity from '../utils/get-validity';
 import invertValidators from '../utils/invert-validators';
 import isValidityInvalid from '../utils/is-validity-invalid';
+import isValid from '../form/is-valid';
 import getForm from '../utils/get-form';
 import getModel from '../utils/get-model';
 import getField from '../utils/get-field';
-import { fieldsValid } from '../form/is-valid';
 import deepCompareChildren from '../utils/deep-compare-children';
 import containsEvent from '../utils/contains-event';
 import invariant from 'invariant';
@@ -150,7 +150,7 @@ function createFormClass(s = defaultStrategy) {
         // If the form is invalid (due to async validity)
         // but its fields are valid and the value has changed,
         // the form should be "valid" again.
-        if (!formValue.$form.valid && fieldsValid(formValue)) {
+        if (isValid(formValue, { async: false })) {
           dispatch(s.actions.setValidity(model, true));
         }
 
@@ -310,7 +310,7 @@ function createFormClass(s = defaultStrategy) {
           case 'submit': {
             dispatch(s.actions.clearIntents(model, intent));
 
-            if (formValue.$form.valid) {
+            if (isValid(formValue, { async: false })) {
               this.handleValidSubmit();
             } else {
               this.handleInvalidSubmit();

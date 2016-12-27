@@ -123,13 +123,16 @@ function createFieldActions(s = defaultStrategies) {
     model,
   });
 
-  const asyncSetValidity = (model, validator) => (dispatch, getState) => {
+  const asyncSetValidity = (model, validator, options = {}) => (dispatch, getState) => {
     const value = s.get(getState(), model);
 
     dispatch(setValidating(model, true));
 
     const done = (validity) => {
-      dispatch(setValidity(model, validity));
+      dispatch(setValidity(model, validity, {
+        async: true,
+        ...options,
+      }));
     };
 
     const immediateResult = validator(value, done);
@@ -138,6 +141,12 @@ function createFieldActions(s = defaultStrategies) {
       done(immediateResult);
     }
   };
+
+  const asyncSetErrors = (model, validator, options = {}) =>
+    asyncSetValidity(model, validator, {
+      errors: true,
+      ...options,
+    });
 
   const setSubmitted = (model, submitted = true) => ({
     type: actionTypes.SET_SUBMITTED,
@@ -297,6 +306,7 @@ function createFieldActions(s = defaultStrategies) {
     validateFields,
     validateFieldsErrors,
     asyncSetValidity,
+    asyncSetErrors,
     addIntent,
     clearIntents,
   }, trackable);
