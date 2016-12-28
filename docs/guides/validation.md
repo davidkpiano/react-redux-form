@@ -169,7 +169,7 @@ export function checkAvailability(username) {
       .then((response) => {
          dispatch(actions.setValidity('user.username', {
            available: response.available
-         });
+         }));
 
          dispatch(actions.setPending('user.username', false));
       });
