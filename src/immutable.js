@@ -8,6 +8,7 @@ import { createErrorsClass } from './components/errors-component';
 import { createControlClass } from './components/control-component';
 import { createFormClass } from './components/form-component';
 import { createFieldActions } from './actions/field-actions';
+import Fieldset from './components/fieldset-component';
 import batch from './actions/batch-actions';
 import getValue from './utils/get-value';
 import immutableGetFromState from './utils/get-from-immutable-state';
@@ -163,6 +164,7 @@ export {
   ImmutableControl as Control,
   ImmutableForm as Form,
   ImmutableErrors as Errors,
+  Fieldset, // not immutable-specific
 
   // Factories
   createFieldClass,
