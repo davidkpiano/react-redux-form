@@ -315,6 +315,14 @@ interface BaseFormProps {
      */
     onSubmit?: (formModelData: any) => void;
     /**
+     * The handler function called when the form fails to submit. This happens when:
+     * * attempting to submit an invalid form
+     * * submitting a valid form that later becomes invalid (due to async server/API validation, etc.) 
+     *
+     * The callback function provided to onSubmitFailed will be called with one argument: the entire formState for the form's model.
+     */
+    onSubmitFailed?: (formState: any) => void;
+    /**
      * The handler function that is called with the form state whenever the form state is updated.
      *
      * Notes
