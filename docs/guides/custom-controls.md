@@ -79,7 +79,7 @@ By default, any props on `<Control>` that are _not_ part of the `Control.propTyp
   model="user.active"
   component={MyCheckbox}
   controlProps={{
-    label: 'Is user active?', // will also be passed to Mycheckbox
+    label: 'Is user active?', // will also be passed to MyCheckbox
   }}
 />
 ```
