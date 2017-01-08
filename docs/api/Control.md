@@ -26,6 +26,7 @@ The following pre-defined `<Control>`s are available:
 
 - `<Control>` or `<Control.input>` for standard `<input />` controls
 - `<Control.text>` for `<input type="text" />`
+- `<Control.textarea>` for `<textarea></textarea>`
 - `<Control.radio>` for `<input type="radio" />`
 - `<Control.checkbox>` for `<input type="checkbox" />`
 - `<Control.file>` for `<input type="file" />`
