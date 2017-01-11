@@ -342,7 +342,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         // previously invalid and is now valid,
         // set its validity
         if (errorValidity
-          || (fieldValue && fieldValue.errors[key])) {
+          || (fieldValue && s.get(fieldValue, ['errors', key]))) {
           nodeErrors[key] = errorValidity;
         }
       });

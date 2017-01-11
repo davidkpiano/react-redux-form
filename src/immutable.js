@@ -17,9 +17,9 @@ import getForm, { getFormStateKey } from './utils/get-form';
 import isPlainObject from 'lodash/isPlainObject';
 import Immutable from 'immutable';
 import { createGetField } from './utils/get-field';
-import { create as createIsValid } from '../src/form/is-valid';
-import { create as createIsPristine } from '../src/form/is-pristine';
-import { create as createIsRetouched } from '../src/form/is-retouched';
+import { create as createIsValid } from './form/is-valid';
+import { create as createIsPristine } from './form/is-pristine';
+import { create as createIsRetouched } from './form/is-retouched';
 
 import { createChangeActionReducer } from './reducers/form/change-action-reducer';
 import { createFormActionReducer } from './reducers/form-actions-reducer';
