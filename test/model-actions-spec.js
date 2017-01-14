@@ -196,6 +196,13 @@ describe('model actions', () => {
 
   describe('thunk action creators', () => {
     const actionTests = {
+      change: [
+        {
+          init: { foo: 'existing' },
+          params: ['test.foo', (val) => val.toUpperCase()],
+          expected: { foo: 'EXISTING' },
+        },
+      ],
       push: [
         {
           init: { foo: [123] },
