@@ -1,50 +1,20 @@
 import _get from '../utils/get';
-import i from 'icepick';
 import arraysEqual from '../utils/arrays-equal';
 import isPlainObject from '../utils/is-plain-object';
-import mapValues from '../utils/map-values';
 import toPath from '../utils/to-path';
 import composeReducers from '../utils/compose-reducers';
 import createBatchReducer from '../enhancers/batched-enhancer';
-import initialFieldState from '../constants/initial-field-state';
 
 import changeActionReducer from './form/change-action-reducer';
 import formActionsReducer from './form-actions-reducer';
-
-function getSubModelString(model, subModel) {
-  if (!model) return subModel;
-
-  return `${model}.${subModel}`;
-}
+import createFieldState, { createFormState } from '../utils/create-field';
 
 export function createInitialState(model, state, customInitialFieldState = {}, options = {}) {
-  let initialState;
-  const {
-    lazy = false,
-  } = options;
-
   if (Array.isArray(state) || isPlainObject(state)) {
-    initialState = lazy
-      ? {}
-      : mapValues(state, (subState, subModel) =>
-        createInitialState(getSubModelString(model, subModel), subState, customInitialFieldState));
-  } else {
-    return i.merge(initialFieldState, {
-      initialValue: state,
-      value: state,
-      model,
-      ...customInitialFieldState,
-    });
+    return createFormState(model, state, customInitialFieldState, options);
   }
 
-  const initialForm = i.merge(initialFieldState, {
-    initialValue: state,
-    value: state,
-    model,
-    ...customInitialFieldState,
-  });
-
-  return i.set(initialState, '$form', initialForm);
+  return createFieldState(model, state, customInitialFieldState, options);
 }
 
 function wrapFormReducer(plugin, modelPath, initialState) {
