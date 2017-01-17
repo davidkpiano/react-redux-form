@@ -1,6 +1,6 @@
 {
-  "name": "kj-react-redux-form",
-  "version": "9.2.6",
+  "name": "react-redux-form",
+  "version": "1.5.3",
   "description": "Create Forms Easily with React and Redux",
   "main": "lib/index.js",
   "typings": "react-redux-form.d.ts",
@@ -70,11 +70,12 @@
     "express-urlrewrite": "^1.2.0",
     "immutable": "^3.7.6",
     "jsdom": "^9.2.1",
+    "lodash": "~4.17.2",
     "mocha": "^2.5.1",
-    "react": "^15.0.2",
-    "react-addons-test-utils": "^15.0.1",
-    "react-dom": "^15.0.1",
-    "react-redux": "^4.4.0",
+    "react": "~15.4.1",
+    "react-addons-test-utils": "~15.4.1",
+    "react-dom": "~15.4.1",
+    "react-redux": "~5.0.0",
     "redux": "^3.3.1",
     "redux-immutable": "^3.0.8",
     "redux-immutablejs": "0.0.8",
@@ -91,13 +92,13 @@
   "dependencies": {
     "icepick": "^1.1.0",
     "invariant": "~2.2.1",
-    "lodash": "^4.10.0"
+    "lodash.get": "~4.4.2",
+    "lodash.topath": "~4.5.2"
   },
   "peerDependencies": {
     "react": "^0.14.0 || ^15.0.0",
     "react-dom": "^0.14.7 || ^15.0.0",
     "react-redux": "^4.0.0 || ^5.0.0",
-    "redux": "^3.0.0",
-    "redux-thunk": "^2.0.1"
+    "redux": "^3.0.0"
   }
 }

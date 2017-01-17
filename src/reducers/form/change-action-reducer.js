@@ -4,12 +4,12 @@ import i from 'icepick';
 import identity from 'lodash/identity';
 import _get from '../../utils/get';
 import shallowEqual from '../../utils/shallow-equal';
-import isPlainObject from 'lodash/isPlainObject';
-import compact from 'lodash/compact';
+import isPlainObject from '../../utils/is-plain-object';
 import _mapValues from '../../utils/map-values';
 import { createInitialState } from '../form-reducer';
 import _initialFieldState from '../../constants/initial-field-state';
 import updateParentForms from '../../utils/update-parent-forms';
+import invariant from 'invariant';
 
 const defaultStrategies = {
   get: _get,
@@ -43,9 +43,9 @@ export function createChangeActionReducer(s = defaultStrategies) {
       pristine: silent
         ? s.get(fieldState, 'pristine')
         : false,
-      initialValue: load
+      loadedValue: load
         ? value
-        : s.get(fieldState, 'initialValue'),
+        : s.get(fieldState, 'loadedValue'),
     });
 
     if (shallowEqual(s.get(field, 'value'), value)) {
@@ -53,6 +53,10 @@ export function createChangeActionReducer(s = defaultStrategies) {
     }
 
     if (removeKeys) {
+      invariant(field && s.get(field, '$form'),
+        'Unable to remove keys. ' +
+        'Field for "%s" in store is not an array/object.',
+      model);
       const valueIsArray = Array.isArray(s.toJS(s.get(field, ['$form', 'value'])));
       const removeKeysArray = Array.isArray(removeKeys)
         ? removeKeys
@@ -69,10 +73,10 @@ export function createChangeActionReducer(s = defaultStrategies) {
           result[key] = s.get(field, key);
         });
 
-        return s.set(s.fromJS(compact(result)), '$form', s.get(field, '$form'));
+        return { ...i.set(result.filter((f) => f), '$form', s.get(field, '$form')) };
       }
 
-      result = s.toJS(field);
+      result = { ...s.toJS(field) };
 
       s.keys(field).forEach((key) => {
         if (removeKeysArray.indexOf(key) !== -1) {
@@ -96,25 +100,26 @@ export function createChangeActionReducer(s = defaultStrategies) {
         || createInitialState(`${fullModelPath}.${index}`, subValue, {}, {}, s);
 
       if (s.get(subField, '$form')) {
-        return updateFieldValue(subField, s.fromJS({
+        return updateFieldValue(subField, {
           model: index,
           value: subValue,
-        }), fullModelPath);
+          load,
+        }, fullModelPath);
       }
 
       if (shallowEqual(subValue, s.get(subField, 'value'))) {
         return subField;
       }
 
-      return s.merge(subField, s.merge(changedFieldProps, s.fromJS({
+      return s.mergeDeep(subField, s.merge(changedFieldProps, s.fromJS({
         value: subValue,
-        initialValue: load
+        loadedValue: load
           ? subValue
-          : subField.initialValue,
+          : s.get(subField, 'loadedValue'),
       })));
     });
 
-    const dirtyFormState = s.merge(s.get(field, '$form') || s.initialFieldState,
+    const dirtyFormState = s.mergeDeep(s.get(field, '$form') || s.initialFieldState,
       s.set(changedFieldProps, 'retouched',
         s.get(field, 'submitted') ||
         (s.get(field, '$form') && s.get(field, ['$form', 'retouched']))
@@ -126,17 +131,17 @@ export function createChangeActionReducer(s = defaultStrategies) {
   }
 
   function getFormValue(form) {
-    if (!s.get(form, '$form')) return s.get(form, 'initialValue');
+    if (form && !s.get(form, '$form')) {
+      return s.get(form, 'loadedValue') ? s.get(form, 'loadedValue') : s.get(form, 'initialValue');
+    }
 
-    const result = s.mapValues(form, (field, key) => {
+    let result = s.mapValues(form, (field, key) => {
       if (key === '$form') return undefined;
 
       return getFormValue(field);
     });
 
-    s.remove(result, '$form');
-
-    return result;
+    return s.remove(result, '$form');
   }
 
   return function changeActionReducer(state, action, localPath) {
@@ -159,7 +164,7 @@ export function createChangeActionReducer(s = defaultStrategies) {
 
         return s.fromJS({
           value: formValue,
-          initialValue: formValue,
+          loadedValue: formValue,
         });
       }, s);
     }

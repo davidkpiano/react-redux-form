@@ -1,12 +1,12 @@
 import React, { Component, createElement, cloneElement, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import identity from 'lodash/identity';
+import identity from '../utils/identity';
 import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import merge from '../utils/merge';
 import mapValues from '../utils/map-values';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../utils/is-plain-object';
 import i from 'icepick';
 import getForm from '../utils/get-form';
 import omit from '../utils/omit';
@@ -46,6 +46,12 @@ function getReadOnlyValue(props) {
     default:
       return controlProps.value;
   }
+}
+
+function mergeOrSetErrors(model, errors) {
+  return actions.setErrors(model, errors, {
+    merge: isPlainObject(errors),
+  });
 }
 
 const propTypes = {
@@ -102,6 +108,7 @@ const propTypes = {
     dispatch: PropTypes.func,
     getState: PropTypes.func,
   }),
+  getRef: PropTypes.func,
 };
 
 const defaultStrategy = {
@@ -123,10 +130,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     ...customControlPropsMap,
   };
 
-  function isReadOnlyValue(controlProps) {
-    return ~['radio', 'checkbox'].indexOf(controlProps.type);
-  }
-
   const emptyControlProps = {};
 
   class Control extends Component {
@@ -145,7 +148,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       this.handleLoad = this.handleLoad.bind(this);
       this.getMappedProps = this.getMappedProps.bind(this);
       this.attachNode = this.attachNode.bind(this);
-      this.readOnlyValue = isReadOnlyValue(props.controlProps);
+
+      this.willValidate = false;
 
       this.state = {
         viewValue: props.modelValue,
@@ -164,8 +168,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-      return !shallowEqual(this.props, nextProps, ['controlProps', 'mapProps'])
-        || !shallowEqual(this.props.controlProps, nextProps.controlProps)
+      return !shallowEqual(this.props, nextProps, {
+        deepKeys: ['controlProps'],
+        omitKeys: ['mapProps'],
+      })
         || !shallowEqual(this.state.viewValue, nextState.viewValue);
     }
 
@@ -184,9 +190,9 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
       if (fieldValue && !s.get(fieldValue, 'valid')) {
         const keys = Object.keys(validators)
-          .concat(Object.keys(errors));
+          .concat(Object.keys(errors), this.willValidate ? validityKeys : []);
 
-        dispatch(actions.setValidity(model, omit(s.toJS(fieldValue).validity, keys)));
+        dispatch(actions.resetValidity(model, keys));
       }
     }
 
@@ -223,7 +229,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         modelValue,
         changeAction,
       } = this.props;
-      const value = this.readOnlyValue
+      const value = this.isReadOnlyValue()
         ? getReadOnlyValue(this.props)
         : event;
 
@@ -262,10 +268,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           : fieldErrors;
 
         if (!fieldValue || !shallowEqual(mergedErrors, s.get(fieldValue, 'errors'))) {
-          return actions.setErrors(model, mergedErrors);
+          return mergeOrSetErrors(model, mergedErrors);
         }
       } else if (nodeErrors && Object.keys(nodeErrors).length) {
-        return actions.setErrors(model, nodeErrors);
+        return mergeOrSetErrors(model, nodeErrors);
       }
 
       return false;
@@ -278,6 +284,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         model,
         modelValue,
         updateOn,
+        dispatch,
       } = this.props;
 
       // If there are no async validators,
@@ -301,26 +308,22 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
       if (!syncValid) return false;
 
-      return (dispatch) => {
-        mapValues(asyncValidators,
-          (validator, key) => dispatch(actions.asyncSetValidity(model,
-            (_, done) => {
-              const outerDone = (valid) => {
-                const validity = s.toJS(
-                    s.merge(s.get(fieldValue, 'validity'),
-                    s.fromJS({ [key]: valid }))
-                  );
+      dispatch(actions.setValidating(model, true));
 
-                done(validity);
-              };
+      mapValues(asyncValidators, (validator, key) => {
+        const outerDone = (valid) => {
+          const validity = s.toJS(
+            s.merge(s.get(fieldValue, 'validity'),
+            s.fromJS({ [key]: valid }))
+          );
 
-              validator(getValue(valueToValidate), outerDone);
-            })
-          )
-        );
+          dispatch(actions.setValidity(model, validity));
+        };
 
-        return valueToValidate;
-      };
+        validator(getValue(valueToValidate), outerDone);
+      });
+
+      return valueToValidate;
     }
 
     getNodeErrors() {
@@ -330,8 +333,11 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       } = this;
 
       if (!node || !node.willValidate) {
+        this.willValidate = false;
         return null;
       }
+
+      this.willValidate = true;
 
       const nodeErrors = {};
 
@@ -351,9 +357,15 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     setViewValue(viewValue) {
-      if (!isReadOnlyValue(this.props.controlProps)) {
+      if (!this.isReadOnlyValue()) {
         this.setState({ viewValue: this.parse(viewValue) });
       }
+    }
+
+    isReadOnlyValue() {
+      const { component, controlProps } = this.props;
+
+      return component === 'input' && ~['radio', 'checkbox'].indexOf(controlProps.type);
     }
 
     handleIntents() {
@@ -379,12 +391,11 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           case actionTypes.FOCUS: {
             if (isNative) return;
 
-            const readOnlyValue = isReadOnlyValue(controlProps);
             const focused = s.get(fieldValue, 'focus');
 
             if ((focused && this.node.focus)
               && (
-                !readOnlyValue
+                !this.isReadOnlyValue()
                 || typeof intentValue === 'undefined'
                 || intentValue === controlProps.value
               )) {
@@ -427,13 +438,20 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     handleKeyPress(event) {
+      const {
+        controlProps: { onKeyPress },
+        dispatch,
+      } = this.props;
+
       // Get the value from the event
       // in case updateOn="blur" (or something other than "change")
       const parsedValue = this.parse(getValue(event));
 
       if (event.key === 'Enter') {
-        this.props.dispatch(this.getChangeAction(parsedValue));
+        dispatch(this.getChangeAction(parsedValue));
       }
+
+      if (onKeyPress) onKeyPress(event);
     }
 
     handleLoad() {
@@ -502,8 +520,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           eventAction && eventAction(model),
           containsEvent(validateOn, eventName)
             && this.getValidateAction(persistedEvent, eventName),
-          containsEvent(asyncValidateOn, eventName)
-            && this.getAsyncValidateAction(persistedEvent, eventName),
           containsEvent(updateOn, eventName)
             && this.getChangeAction(persistedEvent),
         ];
@@ -520,14 +536,22 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
             : event;
         }
 
-        if (isReadOnlyValue(controlProps)) {
+        if (this.isReadOnlyValue()) {
           return compose(
             dispatchBatchActions,
             persistEventWithCallback(controlEventHandler || identity)
           )(event);
         }
 
+
         return compose(
+          (e) => {
+            if (containsEvent(asyncValidateOn, eventName)) {
+              this.getAsyncValidateAction(e, eventName);
+            }
+
+            return e;
+          },
           dispatchBatchActions,
           parser,
           getValue,
@@ -553,7 +577,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       } = this.props;
 
       if (!validators && !errorValidators) return modelValue;
-      if (fieldValue === undefined) return modelValue;
+      if (!fieldValue ) return modelValue;
 
       const fieldValidity = getValidity(validators, modelValue);
       const fieldErrors = getValidity(errorValidators, modelValue);
@@ -563,7 +587,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         : fieldErrors;
 
       if (!shallowEqual(errors, s.toJS(fieldValue).errors)) {
-        dispatch(actions.setErrors(model, errors));
+        dispatch(mergeOrSetErrors(model, errors));
       }
 
       return modelValue;
@@ -574,9 +598,14 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         controlProps = emptyControlProps,
         component,
         control,
+        getRef,
       } = this.props;
 
       const mappedProps = omit(this.getMappedProps(), disallowedProps);
+
+      if (getRef) {
+        mappedProps.ref = getRef;
+      }
 
       // If there is an existing control, clone it
       if (control) {
@@ -594,6 +623,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         });
     }
   }
+
+  Control.displayName = 'Control';
 
   Control.propTypes = propTypes;
 
@@ -646,6 +677,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       component="input"
       mapProps={{
         ...controlPropsMap.text,
+        type: 'text',
         ...props.mapProps,
       }}
       {...omit(props, 'mapProps')}
@@ -705,6 +737,17 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       component="select"
       mapProps={{
         ...controlPropsMap.select,
+        ...props.mapProps,
+      }}
+      {...omit(props, 'mapProps')}
+    />
+  );
+
+  ConnectedControl.button = (props) => (
+    <ConnectedControl
+      component="button"
+      mapProps={{
+        ...controlPropsMap.button,
         ...props.mapProps,
       }}
       {...omit(props, 'mapProps')}

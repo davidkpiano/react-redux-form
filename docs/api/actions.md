@@ -3,15 +3,16 @@
 - [Model Action Creators](#model-action-creators)
   - [`actions.change()`](#actions-change)
   - [`actions.reset()`](#actions-reset)
-  - [`actions.merge()`](#actions-merge)
-  - [`actions.xor()`](#actions-xor)
-  - [`actions.toggle()`](#actions-toggle)
-  - [`actions.filter()`](#actions-filter)
-  - [`actions.map()`](#actions-map)
-  - [`actions.remove()`](#actions-remove)
-  - [`actions.move()`](#actions-move)
-  - [`actions.load()`](#actions-load)
-  - [`actions.omit()`](#actions-omit)
+  - **Action thunk creators:**
+    - [`actions.merge()`](#actions-merge)
+    - [`actions.xor()`](#actions-xor)
+    - [`actions.toggle()`](#actions-toggle)
+    - [`actions.filter()`](#actions-filter)
+    - [`actions.map()`](#actions-map)
+    - [`actions.remove()`](#actions-remove)
+    - [`actions.move()`](#actions-move)
+    - [`actions.load()`](#actions-load)
+    - [`actions.omit()`](#actions-omit)
 - [Field Action Creators](#field-action-creators)
   - [`actions.focus()`](#actions-focus)
   - [`actions.blur()`](#actions-blur)
@@ -20,22 +21,25 @@
   - [`actions.setPending()`](#actions-setPending)
   - [`actions.setTouched()`](#actions-setTouched)
   - [`actions.setUntouched()`](#actions-setUntouched)
-  - [`actions.submit()`](#actions-submit)
-  - [`actions.submitFields()`](#actions-submitFields)
   - [`actions.setSubmitted()`](#actions-setSubmitted)
   - [`actions.setSubmitFailed()`](#actions-setSubmitFailed)
   - [`actions.setInitial()`](#actions-setInitial)
+  - **Action thunk creators:**
+    - [`actions.submit()`](#actions-submit)
+    - [`actions.submitFields()`](#actions-submitFields)
 - [Validation Action Creators](#validation-action-creators)
   - [`actions.setValidity()`](#actions-setValidity)
   - [`actions.setFieldsValidity()`](#actions-setFieldsValidity)
-  - [`actions.validate()`](#actions-validate)
-  - [`actions.validateFields()`](#actions-validate)
-  - [`actions.asyncSetValidity()`](#actions-asyncSetValidity)
   - [`actions.setErrors()`](#actions-setErrors)
   - [`actions.setFieldsErrors()`](#actions-setFieldsErrors)
-  - [`actions.validateErrors()`](#actions-validateErrors)
-  - [`actions.validateFieldsErrors()`](#actions-validateFieldsErrors)
   - [`actions.resetValidity()`](#actions-resetValidity)
+  - **Action thunk creators:**
+    - [`actions.validate()`](#actions-validate)
+    - [`actions.validateFields()`](#actions-validate)
+    - [`actions.asyncSetValidity()`](#actions-asyncSetValidity)
+    - [`actions.validateErrors()`](#actions-validateErrors)
+    - [`actions.validateFieldsErrors()`](#actions-validateFieldsErrors)
+
 
 # Model Action Creators
 
@@ -59,6 +63,8 @@ dispatch(actions.change(
 Returns an action that, when handled by a `modelReducer`, changes the value of the `model` to the `value`.
 
 When the change action is handled by a [`formReducer`](./formReducer), the field model's `.dirty` state is set to `true` and its corresponding `.pristine` state is set to `false`.
+
+**Note:** if using `track`, `redux-thunk` is required.
 
 ### Arguments
 - `model` _(String | Function)_: the model whose value will be changed
@@ -257,13 +263,13 @@ Dispatches an `actions.change(...)` action with the `model` value updated to not
 // {
 //   test: {
 //     foo: 1,
-//     bar: 2, 
+//     bar: 2,
 //     baz: 3
 //   }
 // }
 
 dispatch(actions.omit('test', 'foo'));
-// the new test state: 
+// the new test state:
 // => { test: { bar: 2, baz: 3 } }
 
 dispatch(actions.omit('test', ['foo', 'baz']);
@@ -292,7 +298,7 @@ import { actions } from 'react-redux-form';
 // in a connect()-ed component:
 const Newsletter = (props) => {
   const { newsletterForm, dispatch } = props;
-  
+
   return <form>
     <input type="email"
       onFocus={() => dispatch(actions.focus('newsletter.email'))} />
@@ -379,7 +385,7 @@ An "untouched" field indicates that this model has not been interacted with yet.
 - This action is useful for conditionally displaying error messages based on whether the field has been touched.
 
 <h2 id="actions-submit"></h2>
-## `actions.submit(model, promise)`
+## `actions.submit(model, [promise])`
 
 Waits for a submission `promise` to be completed, then, if successful:
 - Sets `.submitted` property of form for `model` to `true`
@@ -389,9 +395,12 @@ If the promise fails, the action will:
 - set `.submitFailed` property of form for `model` to `true`
 - set `.errors` property of form for `model` to the response
 
+If a promise is not provided, e.g.: `actions.submit('user')`, then dispatching the action will trigger a `<Form>` with the specified `model` to submit itself.
+
 ### Arguments
 - `model` _(String | Function)_: the model to be submitted
 - `promise` _(Promise)_: the promise that the submit action will wait to be resolved or rejected
+  - default: `undefined` - will trigger a submit in the `<Form>` component with the specified `model`.
 - `options` _(Object)_: submit options:
 
 ### Options
@@ -476,7 +485,7 @@ import { actions } from 'react-redux-form';
 export default function submitUser(data) {
   return (dispatch) => {
     dispatch(actions.setPending('user', true));
-    
+
     fetch('...', { body: data })
       .then((response) => {
         // handle the response, then...

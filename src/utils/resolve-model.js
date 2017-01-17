@@ -1,5 +1,7 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component, PureComponent, PropTypes } from 'react';
 import shallowEqual from './shallow-equal';
+
+const ReactComponent = PureComponent || Component;
 
 function resolveModel(model, parentModel) {
   if (parentModel) {
@@ -16,7 +18,7 @@ function resolveModel(model, parentModel) {
 }
 
 export default function wrapWithModelResolver(WrappedComponent) {
-  class ResolvedModelWrapper extends Component {
+  class ResolvedModelWrapper extends ReactComponent {
     constructor(props, context) {
       super(props, context);
 
@@ -38,6 +40,8 @@ export default function wrapWithModelResolver(WrappedComponent) {
       />);
     }
   }
+
+  ResolvedModelWrapper.displayName = `Modeled(${WrappedComponent.displayName})`;
 
   ResolvedModelWrapper.propTypes = {
     model: PropTypes.any,

@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 
 import _get from '../utils/get';
-import identity from 'lodash/identity';
+import identity from '../utils/identity';
 import omit from '../utils/omit';
-import isPlainObject from 'lodash/isPlainObject';
-import pick from 'lodash/pick';
+import isPlainObject from '../utils/is-plain-object';
+import pick from '../utils/pick';
 import { connect } from 'react-redux';
 import invariant from 'invariant';
 
@@ -57,6 +57,7 @@ const fieldPropTypes = {
   componentMap: PropTypes.object,
   dynamic: PropTypes.bool,
   dispatch: PropTypes.func,
+  getRef: PropTypes.func,
 
   // Calculated props
   fieldValue: PropTypes.object,
@@ -101,12 +102,17 @@ function getControlType(control, props, options) {
 
 const defaultStrategy = {
   Control,
+  controlPropTypes: fieldPropTypes,
   getFieldFromState,
   actions,
   fromJS: identity,
 };
 
 function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
+  // Use the fieldPropTypes if no controlProptypes have been defined to
+  // maintain backwards compatibiltiy.
+  const controlPropTypes = s.controlPropTypes || fieldPropTypes;
+
   function mapStateToProps(state, props) {
     const {
       model,
@@ -161,7 +167,7 @@ function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
         mapProps = options.controlPropsMap[controlType],
       } = props;
 
-      const controlProps = pick(props, Object.keys(fieldPropTypes));
+      const controlProps = pick(props, Object.keys(controlPropTypes));
 
       if (!mapProps) {
         return React.cloneElement(
@@ -201,7 +207,7 @@ function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
       } = this.props;
 
 
-      const allowedProps = omit(this.props, Object.keys(fieldPropTypes));
+      const allowedProps = omit(this.props, Object.keys(controlPropTypes));
       const renderableChildren = typeof children === 'function'
         ? children(fieldValue)
         : children;

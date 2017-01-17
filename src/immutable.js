@@ -9,12 +9,14 @@ import { createErrorsClass } from './components/errors-component';
 import { createControlClass } from './components/control-component';
 import { createFormClass } from './components/form-component';
 import { createFieldActions } from './actions/field-actions';
+import Fieldset from './components/fieldset-component';
 import batch from './actions/batch-actions';
 import getValue from './utils/get-value';
+import { create as createIteratee } from './utils/iteratee';
 import { immutableMapValues } from './utils/map-values';
 import immutableGetFromState from './utils/get-from-immutable-state';
 import getForm, { getFormStateKey } from './utils/get-form';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from './utils/is-plain-object';
 import Immutable from 'immutable';
 import { createGetField } from './utils/get-field';
 import { create as createIsValid } from './form/is-valid';
@@ -101,17 +103,20 @@ const isValid = createIsValid(baseStrategy).isValid;
 const fieldsValid = createIsValid(baseStrategy).fieldsValid;
 const isPristine = createIsPristine(baseStrategy);
 const isRetouched = createIsRetouched(baseStrategy);
+const getFieldStrategy = createGetField(baseStrategy);
+const iterateeValue = createIteratee(baseStrategy).iterateeValue;
 
 const immutableStrategy = {
   ...baseStrategy,
   getForm: immutableGetForm,
   getFieldFromState: immutableGetFieldFromState,
   initialFieldState: immutableInitialFieldState,
-  getField: createGetField(baseStrategy),
+  getField: getFieldStrategy,
   isValid,
   fieldsValid,
   isPristine,
   isRetouched,
+  iterateeValue,
 };
 
 // function transformAction(action) {
@@ -156,7 +161,7 @@ const immutableActions = {
 
 const immutableModelReducer = createModeler(immutableStrategy);
 const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
-const immutableControlPropsMap = createControlPropsMap();
+const immutableControlPropsMap = createControlPropsMap(immutableStrategy);
 const ImmutableControl = createControlClass(immutableControlPropsMap, {
   ...immutableStrategy,
   actions: immutableModelActions,
@@ -203,6 +208,7 @@ export {
   ImmutableControl as Control,
   ImmutableForm as Form,
   ImmutableErrors as Errors,
+  Fieldset, // not immutable-specific
 
   // Factories
   createFieldClass,

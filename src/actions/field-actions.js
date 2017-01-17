@@ -11,16 +11,31 @@ import { trackable } from '../utils/track';
 import getForm from '../utils/get-form';
 import getFieldFromState from '../utils/get-field-from-state';
 import NULL_ACTION from '../constants/null-action';
-import omit from '../utils/omit';
 import isNative from '../utils/is-native';
+import invariant from 'invariant';
+import identity from 'lodash/identity';
 
 const defaultStrategies = {
+  fromJS: identity,
   get: _get,
   getForm,
   getFieldFromState,
 };
 
 function createFieldActions(s = defaultStrategies) {
+  const addIntent = (model, intent) => ({
+    type: actionTypes.ADD_INTENT,
+    model,
+    intent,
+  });
+
+  const clearIntents = (model, intents, options = {}) => ({
+    type: actionTypes.CLEAR_INTENTS,
+    model,
+    intents,
+    options,
+  });
+
   const focus = (model, value, options = {}) => ({
     type: actionTypes.FOCUS,
     model,
@@ -69,31 +84,15 @@ function createFieldActions(s = defaultStrategies) {
       ? actionTypes.SET_ERRORS
       : actionTypes.SET_VALIDITY,
     model,
+    ...options,
     [options.errors ? 'errors' : 'validity']: validity,
   });
 
-  const resetValidity = (model, omitKeys = false) => {
-    if (!omitKeys) {
-      return {
-        type: actionTypes.RESET_VALIDITY,
-        model,
-      };
-    }
-
-    return (dispatch, getState) => {
-      const field = s.getFieldFromState(getState(), model);
-
-      if (!field) {
-        dispatch(NULL_ACTION);
-      } else {
-        dispatch({
-          type: actionTypes.SET_VALIDITY,
-          model,
-          validity: omit(s.get(field, 'validity'), omitKeys),
-        });
-      }
-    };
-  };
+  const resetValidity = (model, omitKeys = false) => ({
+    type: actionTypes.RESET_VALIDITY,
+    model,
+    omitKeys,
+  });
 
   const setFieldsValidity = (model, fieldsValidity, options = {}) => ({
     type: actionTypes.SET_FIELDS_VALIDITY,
@@ -126,13 +125,16 @@ function createFieldActions(s = defaultStrategies) {
     model,
   });
 
-  const asyncSetValidity = (model, validator) => (dispatch, getState) => {
+  const asyncSetValidity = (model, validator, options = {}) => (dispatch, getState) => {
     const value = s.get(getState(), model);
 
     dispatch(setValidating(model, true));
 
     const done = (validity) => {
-      dispatch(setValidity(model, validity));
+      dispatch(setValidity(model, validity, {
+        async: true,
+        ...options,
+      }));
     };
 
     const immediateResult = validator(value, done);
@@ -141,6 +143,12 @@ function createFieldActions(s = defaultStrategies) {
       done(immediateResult);
     }
   };
+
+  const asyncSetErrors = (model, validator, options = {}) =>
+    asyncSetValidity(model, validator, {
+      errors: true,
+      ...options,
+    });
 
   const setSubmitted = (model, submitted = true) => ({
     type: actionTypes.SET_SUBMITTED,
@@ -154,59 +162,70 @@ function createFieldActions(s = defaultStrategies) {
     submitFailed,
   });
 
-  const submit = (model, promise, options = {}) => (dispatch, getState) => {
-    if (options.validate) {
-      const form = s.getForm(getState(), model);
-
-      if (!s.get(form, ['$form', 'valid'])) {
-        return dispatch(NULL_ACTION);
-      }
-
-      dispatch(setPending(model, true));
-    } else if (options.validators || options.errors) {
-      const validators = options.validators || options.errors;
-      const isErrors = options.errors;
-      const value = s.get(getState(), model);
-      const validity = getValidity(validators, value);
-      const valid = options.errors
-        ? !isValidityInvalid(validity)
-        : isValidityValid(validity);
-
-      if (!valid) {
-        return dispatch(isErrors
-          ? setErrors(model, validity)
-          : setValidity(model, validity));
-      }
-
-      dispatch(batch(model, [
-        setValidity(model, isErrors
-          ? invertValidity(validity)
-          : validity),
-        setPending(model, true),
-      ]));
-    } else {
-      dispatch(setPending(model, true));
+  const submit = (model, promise, options = {}) => {
+    if (typeof promise === 'undefined') {
+      return addIntent(model, s.fromJS({ type: 'submit' }));
     }
 
-    const errorsAction = options.fields
-      ? setFieldsErrors
-      : setErrors;
+    return (dispatch, getState) => {
+      if (options.validate) {
+        const form = s.getForm(getState(), model);
 
-    promise.then(response => {
-      dispatch(batch(model, [
-        setSubmitted(model, true),
-        setValidity(model, response),
-      ]));
-    }).catch(error => {
-      if (!isNative) console.error(error);
+        invariant(form,
+          'Unable to submit form with validation. ' +
+          'Could not find form for "%s" in the store.',
+          model);
 
-      dispatch(batch(model, [
-        setSubmitFailed(model),
-        errorsAction(model, error),
-      ]));
-    });
+        if (!s.get(form, ['$form', 'valid'])) {
+          return dispatch(NULL_ACTION);
+        }
 
-    return promise;
+        dispatch(setPending(model, true));
+      } else if (options.validators || options.errors) {
+        const validators = options.validators || options.errors;
+        const isErrors = options.errors;
+        const value = s.get(getState(), model);
+        const validity = getValidity(validators, value);
+        const valid = options.errors
+          ? !isValidityInvalid(validity)
+          : isValidityValid(validity);
+
+        if (!valid) {
+          return dispatch(isErrors
+            ? setErrors(model, validity)
+            : setValidity(model, validity));
+        }
+
+        dispatch(batch(model, [
+          setValidity(model, isErrors
+            ? invertValidity(validity)
+            : validity),
+          setPending(model, true),
+        ]));
+      } else {
+        dispatch(setPending(model, true));
+      }
+
+      const errorsAction = options.fields
+        ? setFieldsErrors
+        : setErrors;
+
+      promise.then(response => {
+        dispatch(batch(model, [
+          setSubmitted(model, true),
+          setValidity(model, response),
+        ]));
+      }).catch(error => {
+        if (!isNative) console.error(error);
+
+        dispatch(batch(model, [
+          setSubmitFailed(model),
+          errorsAction(model, error),
+        ]));
+      });
+
+      return promise;
+    };
   };
 
   const submitFields = (model, promise, options = {}) =>
@@ -262,19 +281,6 @@ function createFieldActions(s = defaultStrategies) {
       errors: true,
     });
 
-  const addIntent = (model, intent) => ({
-    type: actionTypes.ADD_INTENT,
-    model,
-    intent,
-  });
-
-  const clearIntents = (model, intents, options = {}) => ({
-    type: actionTypes.CLEAR_INTENTS,
-    model,
-    intents,
-    options,
-  });
-
   return mapValues({
     blur,
     focus,
@@ -302,6 +308,7 @@ function createFieldActions(s = defaultStrategies) {
     validateFields,
     validateFieldsErrors,
     asyncSetValidity,
+    asyncSetErrors,
     addIntent,
     clearIntents,
   }, trackable);

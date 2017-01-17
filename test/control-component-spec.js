@@ -4,10 +4,11 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 import sinon from 'sinon';
-import capitalize from 'lodash/capitalize';
-import _get from 'lodash/get';
-import toPath from 'lodash/toPath';
+import capitalize from '../src/utils/capitalize';
+import _get from 'lodash.get';
+import toPath from 'lodash.topath';
 import i from 'icepick';
 import identity from 'lodash/identity';
 import Immutable from 'immutable';
@@ -20,6 +21,7 @@ import {
   formReducer as _formReducer,
   Control as _Control,
   actions as _actions,
+  combineForms as _combineForms,
 } from '../src';
 import {
   controls as immutableControls,
@@ -27,6 +29,7 @@ import {
   formReducer as immutableFormReducer,
   Control as immutableControl,
   actions as immutableActions,
+  combineForms as immutableCombineForms,
 } from '../immutable';
 
 const testContexts = {
@@ -41,6 +44,7 @@ const testContexts = {
     set: (state, path, value) => i.setIn(state, path, value),
     getInitialState: (state) => state,
     toJS: identity,
+    combineForms: _combineForms,
   },
   immutable: {
     controls: immutableControls,
@@ -53,6 +57,7 @@ const testContexts = {
     set: (state, path, value) => state.setIn(path, value),
     getInitialState: (state) => Immutable.fromJS(state),
     toJS: (obj) => obj.toJS(),
+    combineForms: immutableCombineForms,
   },
 };
 
@@ -67,6 +72,7 @@ Object.keys(testContexts).forEach((testKey) => {
   const get = testContext.get;
   const toJS = testContext.toJS;
   const getInitialState = testContext.getInitialState;
+  const combineForms = testContext.combineForms;
 
   describe(`<Control> component (${testKey} context)`, () => {
     describe('existence check', () => {
@@ -147,7 +153,7 @@ Object.keys(testContexts).forEach((testKey) => {
   });
 
 
-  describe('Extended Control components', () => {
+  describe(`Extended Control components (${testKey} context)`, () => {
     const textFieldElements = [
       [''],
       ['text'],
@@ -213,6 +219,16 @@ Object.keys(testContexts).forEach((testKey) => {
             get(store.getState().test, 'foo'),
             'testing again');
         });
+
+        if (controlType === 'text') {
+          it('should have a type="text"', () => {
+            assert.equal(node.getAttribute('type'), 'text');
+          });
+        } else {
+          it('should have the appropriate type attribute', () => {
+            assert.equal(node.getAttribute('type'), type);
+          });
+        }
       });
     });
 
@@ -918,9 +934,8 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('initial value after reset', () => {
       const initialState = getInitialState({ foo: '' });
-      const reducer = formReducer('test');
       const store = testCreateStore({
-        testForm: reducer,
+        testForm: formReducer('test', initialState),
         test: modelReducer('test', initialState),
       });
 
@@ -937,6 +952,36 @@ Object.keys(testContexts).forEach((testKey) => {
         store.dispatch(actions.reset('test.foo'));
 
         assert.equal(get(store.getState().test, 'foo'), 'new foo');
+      });
+    });
+
+    describe('deep initial value after reset', () => {
+      const store = createStore(combineForms({
+        user: getInitialState({
+          nest: {
+            name: 'initial name',
+            email: 'initial email',
+          },
+        }),
+      }));
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <div>
+            <Control.text model="user.nest.name" />
+            <Control.text type="email" model="user.nest.email" />
+          </div>
+        </Provider>
+      );
+
+      it('should reset the control to the last deeply loaded value', () => {
+        store.dispatch(actions.load('user', getInitialState({
+          nest: { name: 'loaded name', email: 'loaded email' },
+        })));
+        store.dispatch(actions.reset('user'));
+
+        assert.equal(get(store.getState().user, 'nest.name'), 'loaded name');
+        assert.equal(get(store.getState().user, 'nest.email'), 'loaded email');
       });
     });
 
@@ -1273,6 +1318,40 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('handling onKeyPress', () => {
+      const eventData = {
+        key: 'a',
+        keyCode: 65,
+        which: 65,
+      };
+
+      const reducer = modelReducer('test');
+      const store = testCreateStore({
+        test: reducer,
+        testForm: formReducer('test'),
+      });
+
+      it('should pass keyPress events to onKeyPress', (done) => {
+        function handleKeyPress(event) {
+          assert.containSubset(event, eventData);
+          done();
+        }
+
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.text
+              model="test.foo"
+              onKeyPress={handleKeyPress}
+            />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        TestUtils.Simulate.keyPress(control, eventData);
+      });
+    });
+
     describe('changeAction prop', () => {
       const initialState = getInitialState({
         foo: '',
@@ -1590,6 +1669,42 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isTrue(toJS(store.getState().testForm).foo.valid);
       });
+
+      it('should not clobber other non-field-specific validators', () => {
+        const initialState = getInitialState({});
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        store.dispatch(actions.setValidity('test.foo', {
+          validator: false,
+        }));
+
+        const container = document.createElement('div');
+
+        class WrappedControl extends React.Component {
+          componentWillUnmount() {
+            store.dispatch(actions.setErrors('test.foo', {}));
+          }
+
+          render() {
+            return <Control.input model="test.foo" />;
+          }
+        }
+
+        ReactDOM.render(
+          <Provider store={store}>
+            <WrappedControl />
+          </Provider>,
+          container);
+
+        assert.isFalse(toJS(store.getState().testForm).foo.validity.validator);
+
+        ReactDOM.unmountComponentAtNode(container);
+
+        assert.isUndefined(toJS(store.getState().testForm).foo.validity.validator);
+      });
     });
 
     describe('with <Control.reset>', () => {
@@ -1625,6 +1740,44 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.click(reset);
 
         assert.equal(get(store.getState().test, 'foo'), '');
+      });
+    });
+
+    describe('with <Control.button>', () => {
+      it('should exist', () => {
+        assert.isFunction(Control.button);
+      });
+
+      const disabledProps = [
+        true,
+        { valid: false },
+        (fieldValue) => !get(fieldValue, 'valid'),
+      ];
+
+      disabledProps.forEach((disabled) => {
+        it(`should be disabled with ${typeof disabled} as disabled prop value`, () => {
+          const initialState = getInitialState({ foo: '' });
+          const store = testCreateStore({
+            testForm: formReducer('test', initialState),
+          });
+
+          const field = testRender(
+            <Control.button model="test" disabled={disabled} />,
+            store);
+
+          const button = TestUtils.findRenderedDOMComponentWithTag(field, 'button');
+
+          store.dispatch(actions.setValidity('test', false));
+
+
+          assert.isTrue(button.disabled);
+
+          if (disabled !== true) {
+            store.dispatch(actions.setValidity('test', true));
+
+            assert.isFalse(button.disabled);
+          }
+        });
       });
     });
 

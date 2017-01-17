@@ -1060,8 +1060,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('deep state path', () => {
       const initialState = getInitialState({
-        foo: '',
-        bar: '',
+        foo: 'deep foo',
       });
       const formsReducer = combineReducers({
         testForm: formReducer('forms.test'),
@@ -1075,21 +1074,16 @@ Object.keys(testContexts).forEach((testKey) => {
         <Provider store={store}>
           <Form
             model="forms.test"
-            onSubmit={() => { }}
-          />
+          >
+            <Control model=".foo" />
+          </Form>
         </Provider>
       );
 
-      const component = TestUtils.findRenderedComponentWithType(form, Form);
-      const props = component.renderedElement.props;
+      const input = TestUtils.findRenderedDOMComponentWithTag(form, 'input');
 
       it('should resolve the model value', () => {
-        assert.containSubset(toJS(props.modelValue), { foo: '', bar: '' });
-      });
-
-      it('should resolve the form value', () => {
-        assert.containSubset(toJS(props.formValue).$form, { model: 'forms.test' });
-        assert.ok(isValid(props.formValue));
+        assert.equal(input.value, 'deep foo');
       });
     });
 
@@ -1388,7 +1382,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isFalse(toJS(store.getState().testForm).$form.valid);
 
-        store.dispatch(actions.merge('test', {
+        store.dispatch(actions.change('test', {
           foo: 'foo valid',
           bar: 'bar valid',
         }));
@@ -1780,6 +1774,154 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('form validation as function', () => {
+      const initialState = getInitialState({
+        items: [
+          { name: 'one' },
+          { name: 'two' },
+          { name: 'three' },
+          { name: 'four' },
+        ],
+      });
+      const store = testCreateStore({
+        testForm: formReducer('test', initialState),
+        test: modelReducer('test', initialState),
+      });
+
+      const form = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form
+            model="test"
+            validators={(model) => {
+              const field1 = 'items[0].name';
+              const field2 = 'items[1].name';
+              const field4 = 'items[3].name';
+              const hasValue = (value) => value && value.length;
+
+              const field1Value = get(model, field1);
+              const field2Value = get(model, field2);
+              const field4Value = get(model, field4);
+
+              const notRequired = () => Boolean(hasValue(field1Value) || hasValue(field2Value));
+              const containsOne = field1Value.includes('one');
+              const validations = {};
+
+              validations[field1] = {
+                required: notRequired(),
+                needsOne: containsOne,
+              };
+              validations[field2] = {
+                required: notRequired(),
+              };
+              validations[field4] = {
+                required: hasValue(field4Value),
+              };
+              return validations;
+            }}
+            errors={{
+              'items[2].name': (value) => (
+                value.includes('three')
+                  ? false
+                  : { invalidThree: 'invalid three' }
+              ),
+            }}
+          >
+            <Control model="test.items[0].name" />
+            <Control model="test.items[1].name" />
+            <Control model="test.items[2].name" />
+            <Control
+              model="test.items[3].name"
+              validators={{
+                needsFour: (val) => val.includes('four'),
+              }}
+            />
+          </Form>
+        </Provider>
+      );
+
+      const [input1, input2, input3, input4] = TestUtils
+        .scryRenderedDOMComponentsWithTag(form, 'input');
+
+      it('should initially validate each item', () => {
+        const { $form, items } = toJS(store.getState().testForm);
+        assert.isTrue(items[0].name.valid);
+        assert.isTrue(items[1].name.valid);
+        assert.isTrue($form.valid);
+      });
+
+      it('should check validity of each item on change', () => {
+        input2.value = '';
+        TestUtils.Simulate.change(input2);
+        const { $form, items } = toJS(store.getState().testForm);
+
+        assert.isTrue(items[0].name.valid);
+        assert.isTrue(items[1].name.valid);
+        assert.isTrue($form.valid);
+
+        input1.value = '';
+        TestUtils.Simulate.change(input1);
+
+        const { $form: $form1, items: items1 } = toJS(store.getState().testForm);
+
+        assert.isFalse(items1[0].name.valid);
+        assert.isFalse(items1[1].name.valid);
+        assert.isFalse($form1.valid);
+      });
+
+      it('should set validation type on change', () => {
+        input2.value = '';
+        TestUtils.Simulate.change(input2);
+        input1.value = '';
+        TestUtils.Simulate.change(input1);
+        const { $form, items } = toJS(store.getState().testForm);
+
+        assert.isFalse(items[0].name.validity.required);
+        assert.isTrue(items[0].name.errors.required);
+        assert.isFalse(items[1].name.validity.required);
+        assert.isTrue(items[1].name.errors.required);
+        assert.isFalse($form.valid);
+      });
+
+      it('should aggregate errors and validations.', () => {
+        input1.value = '';
+        TestUtils.Simulate.change(input1);
+        input2.value = '';
+        TestUtils.Simulate.change(input2);
+        input3.value = 'foo';
+        TestUtils.Simulate.change(input3);
+        const { $form, items } = toJS(store.getState().testForm);
+
+        assert.isFalse(items[0].name.validity.required);
+        assert.isFalse(items[0].name.validity.needsOne);
+
+        assert.isTrue(items[0].name.errors.required);
+        assert.isTrue(items[0].name.errors.needsOne);
+
+        assert.isFalse(items[1].name.validity.required);
+        assert.isTrue(items[1].name.errors.required);
+
+        assert.isFalse(items[2].name.validity.invalidThree);
+        assert.equal(items[2].name.errors.invalidThree, 'invalid three');
+
+        assert.isFalse($form.valid);
+      });
+
+      it('should aggregate form validations and field validations.', () => {
+        input4.value = '';
+        TestUtils.Simulate.change(input4);
+
+        const { $form, items } = toJS(store.getState().testForm);
+
+        assert.isFalse(items[3].name.validity.required);
+        assert.isFalse(items[3].name.validity.needsFour);
+
+        assert.isTrue(items[3].name.errors.required);
+        assert.isTrue(items[3].name.errors.needsFour);
+
+        assert.isFalse($form.valid);
+      });
+    });
+
     describe('submit valid form no validators', () => {
       const initialState = getInitialState({ foo: '' });
 
@@ -1815,6 +1957,161 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isFalse(toJS(store.getState().testForm).$form.pending);
         assert.isFalse(toJS(store.getState().testForm).$form.submitFailed);
+      });
+    });
+
+    describe('triggering a submit remotely', () => {
+      const initialState = getInitialState({ foo: '' });
+
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
+
+      const handleSubmit = sinon.spy((val) => val);
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form
+            model="test"
+            onSubmit={handleSubmit}
+          >
+            <Control model=".foo" />
+          </Form>
+        </Provider>
+      );
+
+      it('should call onSubmit() prop when submit intent is remotely triggered', () => {
+        store.dispatch(actions.submit('test'));
+
+        assert.isTrue(handleSubmit.calledOnce);
+      });
+    });
+
+    describe('onSubmitFailed() prop', () => {
+      it('should call onSubmitFailed() prop if submit attempted with invalid form', () => {
+        const initialState = getInitialState({ foo: '' });
+
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        let handleSubmitFailedCalledWith = null;
+
+        function handleSubmitFailed(val) {
+          handleSubmitFailedCalledWith = val;
+        }
+
+        const form = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Form
+              model="test"
+              onSubmitFailed={handleSubmitFailed}
+              validators={{
+                foo: (val) => val.length,
+              }}
+            >
+              <Control model=".foo" />
+            </Form>
+          </Provider>
+        );
+
+        const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+        TestUtils.Simulate.submit(formNode);
+
+        assert.containSubset(toJS(handleSubmitFailedCalledWith), {
+          $form: {
+            model: 'test',
+            valid: false,
+          },
+          foo: {
+            model: 'test.foo',
+            valid: false,
+            errors: true,
+          },
+        });
+
+        assert.isFalse(toJS(store.getState().testForm).$form.pending);
+        assert.isTrue(toJS(store.getState().testForm).$form.submitFailed);
+      });
+    });
+
+    describe('getDispatch() prop', () => {
+      it('should provide dispatch to callback', (done) => {
+        const initialState = getInitialState({ foo: '' });
+
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        function handleGetDispatch(dispatch) {
+          assert.isFunction(dispatch);
+
+          dispatch(actions.setPending('test.foo'));
+
+          assert.isTrue(toJS(store.getState().testForm).foo.pending);
+
+          done();
+        }
+
+        TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Form
+              model="test"
+              getDispatch={handleGetDispatch}
+            />
+          </Provider>
+        );
+      });
+    });
+
+    describe('deep async validity', () => {
+      const initialState = getInitialState({ foo: '' });
+
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
+
+      const handleSubmit = sinon.spy((val) => val);
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Form
+            model="test"
+            onSubmit={handleSubmit}
+          >
+            <Control model=".foo" />
+          </Form>
+        </Provider>
+      );
+
+      beforeEach(() => {
+        store.dispatch(actions.reset('test'));
+      });
+
+      it('should allow submit if non-async validity is valid', () => {
+        store.dispatch(actions.setValidity('test.foo', { asyncValid: false }, { async: true }));
+        store.dispatch(actions.setValidity('test.foo', { syncValid: false }, { merge: true }));
+
+        assert.isFalse(toJS(store.getState().testForm).foo.valid);
+
+        store.dispatch(actions.submit('test'));
+
+        assert.isFalse(handleSubmit.calledOnce,
+          'not called because sync validity is invalid');
+
+        store.dispatch(actions.setValidity('test.foo', { syncValid: true }, { merge: true }));
+
+        assert.isFalse(toJS(store.getState().testForm).foo.valid);
+
+        store.dispatch(actions.submit('test'));
+
+        assert.isTrue(handleSubmit.calledOnce,
+          'called because sync validity is valid');
       });
     });
   });

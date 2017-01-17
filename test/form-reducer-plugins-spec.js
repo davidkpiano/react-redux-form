@@ -5,11 +5,9 @@ import {
   modelReducer,
 } from '../src';
 import {
-  applyMiddleware,
   createStore,
   combineReducers,
 } from 'redux';
-import thunk from 'redux-thunk';
 import updateField from '../src/utils/update-field';
 
 describe('formReducer plugins', () => {
@@ -59,7 +57,7 @@ describe('formReducer plugins', () => {
     const store = createStore(combineReducers({
       user: modelReducer('user', {}),
       userForm: formReducer('user', {}),
-    }, { user: { firstName: 'G', friends: [{ id: 1, name: 'George' }] } }), applyMiddleware(thunk));
+    }), { user: { firstName: 'G', friends: [{ id: 1, name: 'George' }] } });
 
     it('should initialize missing fields', () => {
       store.dispatch(actions.focus('user.firstName'));

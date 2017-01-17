@@ -14,6 +14,7 @@
 - [`controlProps`](#prop-controlProps)
 - [`component`](#prop-component)
 - [`ignore`](#prop-ignore)
+- [`disabled`](#disabled)
 
 ## `<Control>`
 
@@ -25,10 +26,15 @@ The following pre-defined `<Control>`s are available:
 
 - `<Control>` or `<Control.input>` for standard `<input />` controls
 - `<Control.text>` for `<input type="text" />`
+- `<Control.textarea>` for `<textarea></textarea>`
 - `<Control.radio>` for `<input type="radio" />`
 - `<Control.checkbox>` for `<input type="checkbox" />`
 - `<Control.file>` for `<input type="file" />`
 - `<Control.select>` for `<select></select>`
+- `<Control.button>` for `<button></button>`
+
+You can add your own types to the basic `<Control>` component as an attribute:
+`<Control type="password">`
 
 For making custom controls that work with React Redux Form, see the [custom controls documentation](../guides/custom-controls.md).
 
@@ -259,7 +265,7 @@ function changeAndSubmit(model, value) {
 - Since `changeAction` expects an action creator and `redux-thunk` is used, you can asynchronously dispatch actions (like the example above).
 
 <h2 id="prop-controlProps"></h2>
-### `controlProps={{...}}`
+## `controlProps={{...}}`
 _(Object)_: A mapping of control-specific props that will be applied directly to the rendered control. In some cases, this can be a safer way of applying props, especially if there are naming conflicts between `<Control>`-specific props (such as `"model"`) and props that need to go on the rendered control (e.g., `<input {...props} />`).
 
 The normal behavior is that any extraneous props on `<Control>` that are not part of `Control.propTypes` (which are documented here) will be given to the rendered input.
@@ -276,7 +282,7 @@ Example:
 ```
 
 <h2 id="prop-component"></h2>
-### `component={...}`
+## `component={...}`
 _(Function | String | Node)_: A custom component can be passed into the `component={...}` prop, and standard control props and event handlers (such as `onChange`, `onBlur`, `onFocus`, `value`, etc.) will be mapped as expected:
 
 ```jsx
@@ -292,7 +298,7 @@ const MyTextInput = (props) => <input className="my-input" {...props} />;
 ```
 
 <h2 id="prop-ignore"></h2>
-### `ignore={[...]}`
+## `ignore={[...]}`
 _(String | Array)_: The event(s) that you want the `<Control>` to ignore. This can be good for performance and/or for de-cluttering the console log.
 
 For instance, if you don't care whether a `<Control>` is focused or blurred:
@@ -302,5 +308,38 @@ For instance, if you don't care whether a `<Control>` is focused or blurred:
 <Control
   model="..."
   ignore={['focus', 'blur']}
+/>
+```
+
+## `disabled={...}`
+_(Any)_: The `disabled` prop works just like you'd expect for controls that support the HTML5 `disabled` attribute.
+
+However, in `<Control>`, it can be a boolean, or a function, string, or object as a [Lodash iteratee](https://lodash.com/docs#iteratee).
+
+```jsx
+// Disable the submit button when the form is invalid
+<Control.button
+  model="user"
+  disabled={{ valid: false }}
+>
+  Submit!
+</Control.button>
+```
+
+For example:
+- `disabled={true}` or `disabled={false}` will disable or enable the control respectively, as will any other primitive value, such as `undefined`, `null`, or a number
+- `disabled="touched"` will disable if the field is `touched` (works with any property on the field)
+- `disabled={{ valid: false, touched: true }}` will disable if the field is both `touched` and not `valid`
+- `disabled={(fieldValue) => !fieldValue.valid}` will call the function provided with the `fieldValue` to determine its `disabled` state.
+
+(since: version 1.3.0)
+
+## `getRef={() => ...}`
+_(Function)_: Calls the callback provided to the `getRef` prop with the node instance. Similar to `ref`.
+
+```jsx
+<Control.text
+  model="user.name"
+  getRef={(node) => this.attach(node)}
 />
 ```

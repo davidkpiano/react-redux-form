@@ -38,7 +38,7 @@ export default function updateSubFields(state, localPath, newState, s = defaultS
 
   // only forms can have fields -
   // skip if field is not a form
-  if (!s.get(field, '$form')) return state;
+  if (!field || !s.get(field, '$form')) return state;
 
   // intermediate value - not mutated outside function
   let updatedField = s.fromJS({});

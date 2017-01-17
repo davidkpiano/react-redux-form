@@ -1,4 +1,5 @@
 import get from './get';
+import invariant from 'invariant';
 
 const defaultStrategies = {
   get,
@@ -9,5 +10,11 @@ export default function getFieldForm(state, path, s = defaultStrategies) {
 
   if (!formPath.length) return state;
 
-  return s.get(state, formPath);
+  const form = s.get(state, formPath);
+
+  invariant(form,
+    'Could not find form for "%s" in the store.',
+    formPath.join('.'));
+
+  return form;
 }

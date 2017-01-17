@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import getModel from '../utils/get-model';
 import omit from '../utils/omit';
+import resolveModel from '../utils/resolve-model';
 
 const propTypes = {
   model: PropTypes.string.isRequired,
@@ -30,6 +31,8 @@ class Fieldset extends Component {
   }
 }
 
+Fieldset.displayName = 'Fieldset';
+
 Fieldset.childContextTypes = {
   model: PropTypes.any,
 };
@@ -48,4 +51,4 @@ function mapStateToProps(state, { model }) {
   };
 }
 
-export default connect(mapStateToProps)(Fieldset);
+export default resolveModel(connect(mapStateToProps)(Fieldset));

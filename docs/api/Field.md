@@ -55,3 +55,13 @@ const { showTerritories } = this.props;
   <StatePicker territories={showTerritories} />
 </Field>
 ```
+
+### `getRef={() => ...}`
+_(Function)_: Calls the callback provided to the `getRef` prop with the node instance. Similar to `ref`.
+
+```jsx
+<Control.text
+  model="user.name"
+  getRef={(node) => this.attach(node)}
+/>
+```

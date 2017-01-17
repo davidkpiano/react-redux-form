@@ -1,8 +1,7 @@
 import React from 'react';
 import { assert } from 'chai';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
 import { Field, Errors, modelReducer, formReducer, track } from '../src';
@@ -49,7 +48,7 @@ describe('tracking', () => {
   });
 
   describe('track() with <Field model="...">', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    const store = createStore(combineReducers({
       testForm: formReducer('test'),
       test: modelReducer('test', state),
     }));
@@ -75,7 +74,7 @@ describe('tracking', () => {
   });
 
   describe('track() with <Errors model="...">', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    const store = createStore(combineReducers({
       testForm: formReducer('test'),
       test: modelReducer('test', state),
     }));

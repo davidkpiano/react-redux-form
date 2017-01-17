@@ -1,6 +1,9 @@
 import React from 'react';
 import { LocalForm, Form, actions, Control, Field, Errors } from 'react-redux-form';
 import { connect } from 'react-redux';
+import icepick from 'icepick';
+
+window.i = icepick;
 
 const required = (val) => !!(val && val.length);
 
@@ -35,8 +38,6 @@ class UserForm extends React.Component {
     dispatch(actions.submit('user', somePromise));
   }
   render() {
-    const { forms: { user }, dispatch } = this.props;
-
     return (
       <Form model="user" onSubmit={this.handleSubmit.bind(this)}>
         <div>
@@ -71,9 +72,9 @@ class UserForm extends React.Component {
           </label>
         </Field>
 
-        <button type="submit" disabled={!user.$form.valid}>
+        <Control.button model="user" disabled={{ valid: false }}>
           Finish registration!
-        </button>
+        </Control.button>
         <input type="reset" value="Reset" title="reset"/>
       </Form>
     );

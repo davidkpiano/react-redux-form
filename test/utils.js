@@ -7,8 +7,8 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
-import _get from 'lodash/get';
-import toPath from 'lodash/toPath';
+import _get from 'lodash.get';
+import toPath from 'lodash.toPath';
 import identity from 'lodash/identity';
 import i from 'icepick';
 import Immutable from 'immutable';
@@ -42,8 +42,12 @@ export const defaultTestContexts = {
   },
 };
 
-export function testCreateStore(reducers) {
-  return applyMiddleware(thunk)(createStore)(combineReducers(reducers));
+export function testCreateStore(reducers, thunk = false) {
+  if (thunk) {
+    return applyMiddleware(thunk)(createStore)(combineReducers(reducers));
+  }
+
+  return createStore(combineReducers(reducers));
 }
 
 export function testRender(component, store) {

@@ -1,5 +1,5 @@
 import get from '../utils/get';
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../utils/is-plain-object';
 import pathStartsWith, { pathDifference } from '../utils/path-starts-with';
 
 const defaultStrategy = {
@@ -89,7 +89,9 @@ function getForm(state, modelString, s = defaultStrategy) {
     return null;
   }
 
-  return s.get(state, formStateKey);
+  const form = s.get(state, formStateKey);
+
+  return form;
 }
 
 export default getForm;

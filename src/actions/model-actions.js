@@ -1,5 +1,5 @@
 import _get from '../utils/get';
-import identity from 'lodash/identity';
+import identity from '../utils/identity';
 import i from 'icepick';
 
 import getValue from '../utils/get-value';

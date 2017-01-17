@@ -4,6 +4,7 @@ import _mapValues from './map-values';
 import identity from 'lodash/identity';
 import _initialFieldState from '../constants/initial-field-state';
 import { createInitialState } from '../reducers/form-reducer';
+import invariant from 'invariant';
 
 const defaultStrategies = {
   get: _get,
@@ -17,7 +18,7 @@ const defaultStrategies = {
 };
 
 function assocIn(state, path, value, fn, s = defaultStrategies) {
-  if (!path.length) return s.set(state, value);
+  if (!path.length) return s.merge(state, value);
   if (!fn) return s.setIn(state, path, value);
 
   const key0 = path[0];
@@ -43,6 +44,10 @@ export function getFieldAndForm(formState, modelPath, s = defaultStrategies) {
   let field = s.get(formState, modelPath);
 
   let form = formState;
+
+  invariant(form,
+    'Could not find form for "%s" in the store.',
+    modelPath);
 
   if (!field) {
     const initialValue = s.get(formState, ['$form', 'initialValue'].concat(modelPath));

@@ -1,4 +1,4 @@
-// Type definitions for react-redux-form v1.2.2
+// Type definitions for react-redux-form
 // Project: https://github.com/davidkpiano/react-redux-form
 // Definitions by: Robert Parker (Flavorus) <https://github.com/hsrobflavorus>, Flavorus <http://www.flavorus.com>, Alexey Svetliakov (@asvetliakov), Zach Waggoner <https://github.com/zach-waggoner>
 
@@ -48,8 +48,14 @@ interface ErrorsComponentMessages {
 interface FormValidators {
     [key: string]: Validators;
 }
+interface FormValidatorsFn {
+    (val: any): FormValidationErrors
+}
 interface ValidationErrors {
     [key: string]: any;
+}
+interface FormValidationErrors {
+    [key: string]: ValidationErrors
 }
 /**
  * Internal interface
@@ -87,7 +93,24 @@ interface CustomComponentProps extends WrapperProps {
     children: any;
 }
 
-export interface FieldProps {
+interface MapPropsProps {
+  onChange: (event: any) => void;
+  onBlur: (event: any) => void;
+  onFocus: (event: any) => void;
+  fieldValue: FieldState;
+  modelValue: any;
+  viewValue: any;
+}
+
+type MapPropsFunc = (props: MapPropsProps) => any;
+type MapPropsObject = { [key: string]: (props: MapPropsProps) => any };
+
+type MapProps = MapPropsFunc | MapPropsObject;
+
+type UpdateOn = 'change' | 'blur' | 'focus';
+type ValidateOn = 'change' | 'blur' | 'focus';
+
+export interface ControlProps<T> extends React.HTMLProps<T> {
     /**
      * Wrap field into custom component
      */
@@ -113,7 +136,7 @@ export interface FieldProps {
      *     <input type="text" />
      * </Field>
      */
-    updateOn?: 'change' | 'blur' | 'focus';
+    updateOn?: UpdateOn | UpdateOn[];
     /**
      * A map where the keys are validation keys, and the values are the corresponding functions that determine the validity of each key, given the model's value.
      * Validator functions accept the value and return true if the field is valid.
@@ -128,7 +151,7 @@ export interface FieldProps {
      *
      * @default change
      */
-    validateOn?: 'change' | 'blur' | 'focus';
+    validateOn?: ValidateOn | ValidateOn[];
     asyncValidators?: AsyncValidators;
     /**
      * Indicates when to validate the field asynchronously
@@ -168,44 +191,70 @@ export interface FieldProps {
      * @param value The value that the model is being changed to
      */
     changeAction?: (model: string, value: any) => void;
-}
-
-export class Field extends React.Component<FieldProps, {}> {
-
-}
-
-interface MapPropsProps {
-  onChange: (event: any) => void;
-  onBlur: (event: any) => void;
-  onFocus: (event: any) => void;
-  fieldValue: FieldState;
-  modelValue: any;
-  viewValue: any;
-}
-
-type MapPropsFunc = (props: MapPropsProps) => any;
-type MapPropsObject = { [key: string]: (props: MapPropsProps) => any };
-
-type MapProps = MapPropsFunc | MapPropsObject;
-
-export interface ControlProps extends FieldProps {
     /**
      * A mapping of control-specific property keys to prop-getter functions that taken in the original props and return the result prop.
      * See {@link https://davidkpiano.github.io/react-redux-form/docs/guides/custom-controls.html the documentation on custom controls} for more information.
      */
     mapProps?: MapProps;
     controlProps?: any;
+    /**
+     * Calls the callback provided to the getRef prop with the node instance. Similar to ref.
+     */
+    getRef?: () => void;
 }
 
-export class Control extends React.Component<ControlProps, {}> {
-    static input: React.ComponentClass<ControlProps>;
-    static text: React.ComponentClass<ControlProps>;
-    static textarea: React.ComponentClass<ControlProps>;
-    static radio: React.ComponentClass<ControlProps>;
-    static checkbox: React.ComponentClass<ControlProps>;
-    static file: React.ComponentClass<ControlProps>;
-    static select: React.ComponentClass<ControlProps>;
-    static reset: React.ComponentClass<ControlProps>;
+export class Control<T> extends React.Component<ControlProps<T>, {}> {
+    static input: React.ComponentClass<ControlProps<HTMLInputElement>>;
+    static text: React.ComponentClass<ControlProps<HTMLInputElement>>;
+    static textarea: React.ComponentClass<ControlProps<HTMLTextAreaElement>>;
+    static radio: React.ComponentClass<ControlProps<HTMLInputElement>>;
+    static checkbox: React.ComponentClass<ControlProps<HTMLInputElement>>;
+    static file: React.ComponentClass<ControlProps<HTMLInputElement>>;
+    static select: React.ComponentClass<ControlProps<HTMLSelectElement>>;
+    static reset: React.ComponentClass<ControlProps<HTMLButtonElement>>;
+}
+
+export interface FieldProps<T> extends ControlProps<T> {
+    /**
+     * Specifies whether the children inside <Field> are dynamic; that is, whether they are subject to change based on outside values.
+     * Default value: true. To optimize for performance, set dynamic={false} for any <Field> that does not have dynamic children.
+     * @example
+     * // Does NOT have dynamic children
+     * <Field model="user.favoriteColors" dynamic={false}>
+     *   <select>
+     *     <option value="red">red</option>
+     *     <option value="green">green</option>
+     *     <option value="blue">blue</option>
+     *   </select>
+     * </Field>
+     *
+     * // DOES have dynamic children
+     * <Field model="user.favoriteColors">
+     *   <select>
+     *     {showWhite && <option value="white">white</option>}
+     *     <option value="red">red</option>
+     *     <option value="green">green</option>
+     *     <option value="blue">blue</option>
+     *   </select>
+     * </Field>
+     *
+     * // Does NOT have dynamic children
+     * <Field model="user.state" mapProps={...} dynamic={false}>
+     *   <StatePicker />
+     * </Field>
+     *
+     * // DOES have dynamic children
+     * const { showTerritories } = this.props;
+     *
+     * <Field model="user.state" mapProps={...}>
+     *   <StatePicker territories={showTerritories} />
+     * </Field>
+     */
+    dynamic?: boolean;
+}
+
+export class Field<T> extends React.Component<FieldProps<T>, {}> {
+
 }
 
 interface BaseFormProps {
@@ -227,7 +276,7 @@ interface BaseFormProps {
      * * Specifying validators on the form is usually sufficient - you don't need to put validators on the <Field> for most use cases.
      * * If you need validators to run on submit, this is the place to put them.
      */
-    validators?: Validators | FormValidators;
+    validators?: Validators | FormValidators | FormValidatorsFn;
 
     /**
      * An object representing the error validators for the fields inside the form, where:
@@ -266,6 +315,14 @@ interface BaseFormProps {
      */
     onSubmit?: (formModelData: any) => void;
     /**
+     * The handler function called when the form fails to submit. This happens when:
+     * * attempting to submit an invalid form
+     * * submitting a valid form that later becomes invalid (due to async server/API validation, etc.) 
+     *
+     * The callback function provided to onSubmitFailed will be called with one argument: the entire formState for the form's model.
+     */
+    onSubmitFailed?: (formState: any) => void;
+    /**
      * The handler function that is called with the form state whenever the form state is updated.
      *
      * Notes
@@ -289,6 +346,14 @@ interface BaseFormProps {
      * * For React Native, it is important that you specify the component to avoid any rendering errors. For most use cases, component={View} will work.
      */
     component?: React.ComponentClass<any> | string;
+    /**
+     * Calls the callback provided with the node instance. Similar to the "ref" prop.
+     */
+    getRef?: (ref: any) => void;
+    /**
+     * Provides the dispatcher for the form's Redux store.
+     */
+    getDispatch?: (dispatch: Function) => void;
 }
 export interface FormProps extends BaseFormProps {
     /**
@@ -532,7 +597,7 @@ interface ComponentFieldClassPropsMappings<P> {
  * @param propsMapping
  * @param defaultProps
  */
-export function createFieldClass<P>(propsMapping: ComponentFieldClassPropsMappings<P>, defaultProps?: any): React.ComponentClass<FieldProps>;
+export function createFieldClass<P, T>(propsMapping: ComponentFieldClassPropsMappings<P>, defaultProps?: any): React.ComponentClass<FieldProps<T>>;
 
 
 interface ControlPropsMap {

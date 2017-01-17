@@ -1,9 +1,9 @@
-import isPlainObject from 'lodash/isPlainObject';
-import every from 'lodash/_baseEvery';
+import isPlainObject from './is-plain-object';
 
 export default function isValidityValid(validity) {
   if (isPlainObject(validity)) {
-    return every(validity, isValidityValid);
+    return Object.keys(validity).every((key) =>
+      isValidityValid(validity[key]));
   }
 
   return !!validity;

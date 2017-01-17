@@ -4,12 +4,11 @@ import ReactDOM from 'react-dom';
 import { assert } from 'chai';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';
-import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 import capitalize from 'lodash/capitalize';
 import mapValues from 'lodash/mapValues';
-import _get from 'lodash/get';
-import toPath from 'lodash/toPath';
+import _get from 'lodash.get';
+import toPath from 'lodash.toPath';
 import identity from 'lodash/identity';
 import sinon from 'sinon';
 import createTestStore from 'redux-test-store';
@@ -81,10 +80,10 @@ Object.keys(testContexts).forEach((testKey) => {
     ];
 
     it('should wrap child components in a <div> if more than one', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', { foo: 'bar' }),
-      }));
+      });
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Field model="test.foo">
@@ -104,10 +103,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     it('should wrap child components in a <div> even if only one child', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: modelReducer('test', { foo: 'bar' }),
         testForm: formReducer('test'),
-      }));
+      });
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Field model="test.foo">
@@ -122,10 +121,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     it('should not wrap child components if only one child and null component', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: modelReducer('test', { foo: 'bar' }),
         testForm: formReducer('test'),
-      }));
+      });
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
           <Field model="test.foo" component={null}>
@@ -140,10 +139,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     it('should recursively handle nested control components', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: modelReducer('test', { foo: 'bar' }),
         testForm: formReducer('test'),
-      }));
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -174,10 +173,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     it('should handle nested control components created with React.Children.only', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: modelReducer('test', { foo: 'bar' }),
         testForm: formReducer('test'),
-      }));
+      });
 
       class ChildOnlyComp extends React.Component {
         render() {
@@ -224,10 +223,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     it('should bypass null/falsey children', () => {
       assert.doesNotThrow(() => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           test: modelReducer('test', { foo: 'bar' }),
           testForm: formReducer('test'),
-        }));
+        });
 
         TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -242,10 +241,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     textFieldElements.forEach(([element, type]) => {
       describe(`with <${element} ${type ? `type="${type}"` : ''}/>`, () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           testForm: formReducer('test'),
           test: modelReducer('test', { foo: 'bar' }),
-        }));
+        });
 
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -292,13 +291,17 @@ Object.keys(testContexts).forEach((testKey) => {
             get(store.getState().test, 'foo'),
             'testing again');
         });
+
+        it('should have the appropriate type attribute', () => {
+          assert.equal(node.getAttribute('type'), type);
+        });
       });
 
       describe(`with a controlled <${element} ${type ? `type="${type}"` : ''} /> component`, () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           testForm: formReducer('test'),
           test: modelReducer('test', { foo: 'bar' }),
-        }));
+        });
 
         const TestField = connect(state => state)(props => {
           const { test } = props;
@@ -358,10 +361,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
       mapValues(fields, (fieldChild, key) => {
         describe(`type: ${key}`, () => {
-          const store = applyMiddleware(thunk)(createStore)(combineReducers({
+          const store = testCreateStore({
             testForm: formReducer('test'),
             test: modelReducer('test', { foo: 'two' }),
-          }));
+          });
 
           const field = TestUtils.renderIntoDocument(
             <Provider store={store}>
@@ -419,12 +422,12 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <input type="checkbox" /> (single toggle)', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', {
           single: true,
         }),
-      }));
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -477,12 +480,12 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <input type="checkbox" /> (multi toggle)', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', {
           foo: [1],
         }),
-      }));
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -548,12 +551,12 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <input type="checkbox" /> (custom onChange)', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', {
           foo: true,
         }),
-      }));
+      });
 
       const handleOnChange = sinon.spy((e) => e);
 
@@ -580,10 +583,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('with <input type="file" />', () => {
       it('should update with an array of files', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           testForm: formReducer('test'),
           test: modelReducer('test', { foo: [] }),
-        }));
+        });
 
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -615,12 +618,12 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <select>', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', {
           foo: 'one',
         }),
-      }));
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -674,12 +677,12 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('with <select> (defaultValue)', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: formReducer('test'),
         test: modelReducer('test', {
           foo: undefined,
         }),
-      }));
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -717,14 +720,14 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('validators and validateOn property', () => {
       const reducer = formReducer('test');
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: reducer,
         test: modelReducer('test', {
           foo: '',
           blur: '',
           external: '',
         }),
-      }));
+      });
 
       it('should set the proper field state for validation', () => {
         const field = TestUtils.renderIntoDocument(
@@ -890,10 +893,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('asyncValidators and asyncValidateOn property', () => {
       const reducer = formReducer('test');
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: reducer,
         test: modelReducer('test', {}),
-      }));
+      });
 
       it('should set the proper field state for a valid async validation', done => {
         const field = TestUtils.renderIntoDocument(
@@ -990,10 +993,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('sync and async validators', () => {
       const reducer = formReducer('test');
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: reducer,
         test: modelReducer('test', {}),
-      }));
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -1047,12 +1050,12 @@ Object.keys(testContexts).forEach((testKey) => {
       const reducer = formReducer('test');
 
       it('should set the proper field state for errors', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           testForm: reducer,
           test: modelReducer('test', {
             foo: '',
           }),
-        }));
+        });
 
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -1086,12 +1089,12 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should only validate errors on blur if validateOn="blur"', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           testForm: reducer,
           test: modelReducer('test', {
             foo: '',
           }),
-        }));
+        });
 
         let timesValidationCalled = 0;
 
@@ -1147,12 +1150,12 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should handle a validator function for errors', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           testForm: reducer,
           test: modelReducer('test', {
             foo: '',
           }),
-        }));
+        });
 
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -1183,10 +1186,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('dynamic components', () => {
       const reducer = formReducer('test');
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: reducer,
         test: modelReducer('test', {}),
-      }));
+      });
 
       class DynamicSelectForm extends React.Component {
         constructor() {
@@ -1232,10 +1235,10 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('wrapper components with component property', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: modelReducer('test', {}),
         testForm: formReducer('test'),
-      }));
+      });
 
       it('should wrap children with specified component (string)', () => {
         const field = TestUtils.renderIntoDocument(
@@ -1316,10 +1319,10 @@ Object.keys(testContexts).forEach((testKey) => {
       ];
 
       onEvents.forEach((onEvent) => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           test: modelReducer('test', { foo: 'initial' }),
           testForm: formReducer('test'),
-        }));
+        });
 
         it(`should update the store when updateOn="${onEvent}"`, () => {
           const field = TestUtils.renderIntoDocument(
@@ -1353,12 +1356,12 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('validation on load', () => {
       const reducer = formReducer('test');
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         testForm: reducer,
         test: modelReducer('test', {
           foo: 'invalid',
         }),
-      }));
+      });
 
       it('should always validate the model initially', () => {
         TestUtils.renderIntoDocument(
@@ -1391,10 +1394,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('syncing control defaultValue on load', () => {
       const reducer = modelReducer('test', { foo: '' });
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: reducer,
         testForm: formReducer('test'),
-      }));
+      });
 
       it('should change the model to the defaultValue on load', () => {
         TestUtils.renderIntoDocument(
@@ -1415,10 +1418,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('change on enter', () => {
       const reducer = modelReducer('test');
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: reducer,
         testForm: formReducer('test'),
-      }));
+      });
 
       it('should change the model upon pressing Enter', () => {
         const field = TestUtils.renderIntoDocument(
@@ -1450,10 +1453,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('changeAction prop', () => {
       const reducer = modelReducer('test', { foo: '' });
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: reducer,
         testForm: formReducer('test'),
-      }));
+      });
 
       it('should execute the custom change action', () => {
         let customChanged = false;
@@ -1488,10 +1491,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('event handlers on control', () => {
       const reducer = modelReducer('test', { foo: '', bar: '' });
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: reducer,
         testForm: formReducer('test'),
-      }));
+      });
 
       it('should execute the custom change action', () => {
         const onChangeFn = (val) => val;
@@ -1668,10 +1671,12 @@ Object.keys(testContexts).forEach((testKey) => {
         ],
       });
 
-      const store = createTestStore(applyMiddleware(thunk)(createStore)(combineReducers({
+      /* eslint-disable global-require */
+      const store = createTestStore(createStore(combineReducers({
         form: formReducer('test', initialState),
         test: modelReducer('test', initialState),
-      })), done);
+      }), applyMiddleware(require('redux-thunk').default)), done);
+      /* eslint-enable */
 
       const index = 1;
       TestUtils.renderIntoDocument(
@@ -1710,10 +1715,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     // TODO: control
     it('should maintain child references', (done) => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: modelReducer('test', { foo: '' }),
         testForm: formReducer('test'),
-      }));
+      });
 
       class TestContainer extends React.Component {
         constructor() {
@@ -1757,10 +1762,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     // TODO: control
     it('should not override custom value prop', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: modelReducer('test', { foo: '' }),
         testForm: formReducer('test'),
-      }));
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -1784,10 +1789,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     // TODO: control
     it('should allow an input to remain uncontrolled with value={undefined}', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: modelReducer('test', { foo: '' }),
         testForm: formReducer('test'),
-      }));
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -1807,11 +1812,11 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     // TODO: control
-    it('should render a Component with an idempotent mapStateToProps', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    xit('should render a Component with an idempotent mapStateToProps', () => {
+      const store = testCreateStore({
         test: modelReducer('test', { foo: '' }),
         testForm: formReducer('test'),
-      }));
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -1836,10 +1841,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     // TODO: control
     it('should not override the name prop', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: modelReducer('test', { foo: '' }),
         testForm: formReducer('test'),
-      }));
+      });
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -1856,10 +1861,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     // TODO: control
     it('should allow a custom mapProps() prop for use in Control', () => {
-      const store = applyMiddleware(thunk)(createStore)(combineReducers({
+      const store = testCreateStore({
         test: modelReducer('test', { foo: 'initial' }),
         testForm: formReducer('test'),
-      }));
+      });
 
       const CustomInput = (props) => (
         <div><input {...props} /></div>
@@ -1893,10 +1898,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('unmounting', () => {
       it('should set the validity of the model to true when umounted', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           test: modelReducer('test', getInitialState({ foo: '' })),
           testForm: formReducer('test', getInitialState({ foo: '' })),
-        }));
+        });
 
         const container = document.createElement('div');
 
@@ -1921,10 +1926,10 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       it('should only reset the validity of field-specific validators', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           test: modelReducer('test', getInitialState({ foo: '' })),
           testForm: formReducer('test', getInitialState({ foo: '' })),
-        }));
+        });
 
         const container = document.createElement('div');
 
@@ -1963,14 +1968,50 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isTrue(toJS(store.getState().testForm).foo.valid);
       });
+
+      it('should not clobber other non-field-specific validators', () => {
+        const initialState = getInitialState({});
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        store.dispatch(actions.setValidity('test.foo', {
+          validator: false,
+        }));
+
+        const container = document.createElement('div');
+
+        class WrappedControl extends React.Component {
+          componentWillUnmount() {
+            store.dispatch(actions.setErrors('test.foo', {}));
+          }
+
+          render() {
+            return <Field model="test.foo" />;
+          }
+        }
+
+        ReactDOM.render(
+          <Provider store={store}>
+            <WrappedControl />
+          </Provider>,
+          container);
+
+        assert.isFalse(toJS(store.getState().testForm).foo.validity.validator);
+
+        ReactDOM.unmountComponentAtNode(container);
+
+        assert.isUndefined(toJS(store.getState().testForm).foo.validity.validator);
+      });
     });
 
     describe('with input type="reset"', () => {
       it('should reset the given model', () => {
-        const store = applyMiddleware(thunk)(createStore)(combineReducers({
+        const store = testCreateStore({
           test: modelReducer('test', getInitialState({ foo: '' })),
           testForm: formReducer('test', getInitialState({ foo: '' })),
-        }));
+        });
 
         const container = document.createElement('div');
 
@@ -2007,10 +2048,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('with edge-case values', () => {
       it('should work with value = 0', () => {
-        const store = createStore(combineReducers({
+        const store = testCreateStore({
           test: modelReducer('test', { foo: 0 }),
           testForm: formReducer('test'),
-        }), applyMiddleware(thunk));
+        });
 
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -2028,10 +2069,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('external change with updateOn="blur"', () => {
       it('should update the input value on external change', () => {
-        const store = createStore(combineReducers({
+        const store = testCreateStore({
           test: modelReducer('test', { foo: '' }),
           testForm: formReducer('test'),
-        }), applyMiddleware(thunk));
+        });
 
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
@@ -2053,10 +2094,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
     describe('whitelisting props', () => {
       it('should not pass extraneous props to child components', () => {
-        const store = createStore(combineReducers({
+        const store = testCreateStore({
           test: modelReducer('test', { foo: 0 }),
           testform: formReducer('test'),
-        }), applyMiddleware(thunk));
+        });
 
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>

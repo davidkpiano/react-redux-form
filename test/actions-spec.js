@@ -244,6 +244,52 @@ describe('model action creators', () => {
 
       fn(dispatch, getState);
     });
+
+    it('should remove from collections of complex values', (done) => {
+      const getState = () => ({
+        foo: {
+          bar: [
+            { value: 1 },
+            { value: 2 },
+            { value: 3 },
+            { value: 4 },
+          ],
+        },
+      });
+
+      const getNextState = () => ({
+        foo: {
+          bar: [
+            { value: 1 },
+            { value: 2 },
+            { value: 4 },
+          ],
+        },
+      });
+
+      const nextDispatch = action => {
+        done(assert.deepEqual(
+          action.value,
+          [
+            { value: 1 },
+            { value: 2 },
+          ]));
+      };
+
+      const dispatch = action => {
+        assert.deepEqual(
+          action.value,
+          [
+            { value: 1 },
+            { value: 2 },
+            { value: 4 },
+          ]);
+
+        actions.remove('foo.bar', 2)(nextDispatch, getNextState);
+      };
+
+      actions.remove('foo.bar', 2)(dispatch, getState);
+    });
   });
 
   describe('actions.move() thunk', () => {

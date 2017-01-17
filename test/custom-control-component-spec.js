@@ -2,11 +2,10 @@
 import { assert } from 'chai';
 import React, { Component, PropTypes } from 'react';
 import TestUtils from 'react-addons-test-utils';
-import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 
 import { modelReducer, formReducer, Control } from '../src';
+import { testCreateStore } from './utils';
 
 describe('custom <Control /> components', () => {
   class CustomText extends Component {
@@ -72,10 +71,10 @@ describe('custom <Control /> components', () => {
   MinifiedText.propTypes = { onChange: PropTypes.function };
 
   it('should handle custom prop mappings', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', { foo: 'bar' }),
-    }));
+    });
 
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -101,10 +100,10 @@ describe('custom <Control /> components', () => {
   });
 
   it('should handle string prop mappings', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', { foo: 'bar' }),
-    }));
+    });
 
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -127,10 +126,10 @@ describe('custom <Control /> components', () => {
   });
 
   it('should work with minified components (no displayName)', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', { foo: 'bar' }),
-    }));
+    });
 
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -153,10 +152,10 @@ describe('custom <Control /> components', () => {
   });
 
   it('should work with custom checkboxes', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', { foo: true }),
-    }));
+    });
 
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -177,10 +176,10 @@ describe('custom <Control /> components', () => {
   });
 
   it('should work with custom checkboxes (multi)', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', { items: [1, 2, 3] }),
-    }));
+    });
 
     const field = TestUtils.renderIntoDocument(
       <Provider store={store}>
@@ -230,10 +229,10 @@ describe('custom <Control /> components', () => {
   });
 
   it('should pass event to asyncValidator', (done) => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', { foo: '' }),
-    }));
+    });
 
     class TextInput extends React.Component {
       render() {
@@ -289,10 +288,10 @@ describe('custom <Control /> components', () => {
   });
 
   it('should pass fieldValue in mapProps', () => {
-    const store = applyMiddleware(thunk)(createStore)(combineReducers({
+    const store = testCreateStore({
       testForm: formReducer('test'),
       test: modelReducer('test', { foo: '' }),
-    }));
+    });
 
     class TextInput extends React.Component {
       render() {

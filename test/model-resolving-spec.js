@@ -1,11 +1,6 @@
 import { assert } from 'chai';
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
-// import { applyMiddleware, combineReducers, createStore } from 'redux';
-// import { Provider } from 'react-redux';
-// import thunk from 'redux-thunk';
-// import sinon from 'sinon';
-// import capitalize from 'lodash/capitalize';
 
 import {
   // controls,
@@ -163,6 +158,41 @@ describe('model resolving', () => {
     it('should show the proper errors for the resolved model', () => {
       assert.lengthOf(errors, 1);
       assert.equal(errors[0].innerHTML, 'this is incorrect');
+    });
+  });
+
+  describe('deep resolves with <Fieldset>', () => {
+    const deepInitialState = {
+      foo: {
+        field: 'field value',
+        control: 'control value',
+      },
+    };
+
+    const deepStore = testCreateStore({
+      test: modelReducer('test', deepInitialState),
+      testForm: formReducer('test', deepInitialState),
+    });
+
+    const app = testRender(
+      <Form model="test">
+        <Fieldset model=".foo">
+          <Field model=".field">
+            <input type="text" />
+          </Field>
+          <Control.text model=".control" />
+        </Fieldset>
+      </Form>, deepStore);
+
+    const [fieldInput, controlInput] = TestUtils
+      .scryRenderedDOMComponentsWithTag(app, 'input');
+
+    it('deeply resolve a Field', () => {
+      assert.equal(fieldInput.value, 'field value');
+    });
+
+    it('deeply resolve a Control', () => {
+      assert.equal(controlInput.value, 'control value');
     });
   });
 });

@@ -9,12 +9,13 @@ This step-by-step guide assumes that you already have a project set up with:
 
 Check out the above links if you need any help with those prerequisites.
 
-### 1. Install `react-redux-form` and its prerequisite dependencies (including `redux-thunk`).
+### 1. Install `react-redux-form` and its prerequisite dependencies:
 
 - `npm install react react-dom --save`
 - `npm install redux react-redux --save`
-- `npm install redux-thunk --save`
 - `npm install react-redux-form --save`
+
+**Note:** - `redux-thunk` is no longer required for versions 1.3.0 and higher. If you are using a previous version, make sure to install it as well.
 
 ### 2. Setup your app.
 
@@ -43,6 +44,7 @@ class App extends React.Component {
 ReactDOM.render(<App />, document.getElementById('app'));
 ```
 
+
 ### 3. Setup your store.
 
 We'll be using [`combineForms`]('../api/combineForms.html') to create the reducer that contains all of your `modelReducer`s, and
@@ -55,7 +57,6 @@ import {
   applyMiddleware
 } from 'redux';
 import { combineForms } from 'react-redux-form';
-import thunk from 'redux-thunk';
 
 const initialUserState = {
   firstName: '',
@@ -64,10 +65,12 @@ const initialUserState = {
 
 const store = createStore(combineForms({
   user: initialUserState,
-}), applyMiddleware(thunk));
+}));
 
 export default store;
 ```
+
+**Note:** `redux-thunk` is no longer required for RRF versions 1.3.0 and higher. If you are using a previous version, make sure to configure your store to use `redux-thunk`.
 
 ### 4. Setup your form!
 

@@ -1,28 +1,31 @@
 import React from 'react';
 import { assert } from 'chai';
 import Immutable from 'immutable';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore } from 'redux';
 import { combineReducers } from 'redux-immutablejs';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import TestUtils from 'react-addons-test-utils';
 
-import { actions } from '../src';
+import { actions, formReducer } from '../src';
 import {
-  Control as ImmutableControl,
-  createForms as immutableCreateForms,
+  modelReducer as immutableModelReducer,
+  Field as ImmutableField,
 } from '../immutable';
 
 describe('<Field> with Immutable.js', () => {
+  const reducer = immutableModelReducer('test',
+    Immutable.fromJS({ foo: 'bar' }));
+
   const store = createStore(combineReducers({
-    ...immutableCreateForms({
-      test: Immutable.fromJS({ foo: 'bar' }),
-    }),
-  }), applyMiddleware(thunk));
+    test: reducer,
+    testForm: formReducer('test', Immutable.fromJS({ foo: 'bar' })),
+  }));
 
   const field = TestUtils.renderIntoDocument(
     <Provider store={store}>
-      <ImmutableControl.text model="test.foo" />
+      <ImmutableField model="test.foo">
+        <input />
+      </ImmutableField>
     </Provider>
   );
 

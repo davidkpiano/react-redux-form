@@ -1,4 +1,4 @@
-import isPlainObject from 'lodash/isPlainObject';
+import isPlainObject from '../utils/is-plain-object';
 import get from '../utils/get';
 import Immutable from 'immutable';
 
@@ -8,7 +8,7 @@ const defaultStrategies = {
 };
 
 export function create(s = defaultStrategies) {
-  function isValid(formState) {
+  function isValid(formState, options = { async: true }) {
     if (!formState) return true;
 
     if (!s.get(formState, '$form')) {
@@ -17,10 +17,19 @@ export function create(s = defaultStrategies) {
       if (!Array.isArray(errors)
         && !isPlainObject(errors)
         && !Immutable.Iterable.isIterable(errors)) {
-        return !errors;
+          return !errors;
       }
 
       return s.keys(errors).every((errorKey) => {
+        // if specified to ignore async validator keys and
+        // current error key is an async validator key,
+        // treat key as valid
+        if (!options.async
+          && s.get(formState, 'asyncKeys')
+          && !!~s.get(formState, 'asyncKeys').indexOf(errorKey)) {
+          return true;
+        }
+
         const valid = !s.get(errors, errorKey);
 
         return valid;
@@ -28,12 +37,12 @@ export function create(s = defaultStrategies) {
     }
 
     return s.keys(formState)
-      .every((key) => isValid(s.get(formState, key)));
+    .every((key) => isValid(s.get(formState, key), options));
   }
 
   function fieldsValid(formState) {
     return s.keys(formState)
-      .every((key) => (key === '$form') || isValid(s.get(formState, key)));
+    .every((key) => (key === '$form') || isValid(s.get(formState, key)));
   }
 
   return {

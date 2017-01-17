@@ -2,9 +2,9 @@ import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
 import createTestStore from 'redux-test-store';
 import thunk from 'redux-thunk';
-import _get from 'lodash/get';
+import _get from 'lodash.get';
 import identity from 'lodash/identity';
-import toPath from 'lodash/toPath';
+import toPath from 'lodash.toPath';
 import i from 'icepick';
 import Immutable from 'immutable';
 
@@ -1086,6 +1086,22 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('setInitial()', () => {
+      it('should set to initial field state without changing model value', () => {
+        const reducer = formReducer('test', fromJS({ foo: 'bar' }));
+
+        const changedState = reducer(undefined, actions.change('test.foo', 'changed'));
+
+        assert.containSubset(
+          toJS(reducer(changedState, actions.setInitial('test.foo')))
+            .foo,
+          {
+            ...initialFieldState,
+            value: 'changed',
+          });
+      });
+    });
+
     describe('resetValidity() and resetErrors()', () => {
       const reducer = formReducer('test');
 
@@ -1466,6 +1482,23 @@ Object.keys(testContexts).forEach((testKey) => {
         const action = actions.submit('test', new Promise((r) => r(true)), {
           errors: { foo: () => false },
         });
+
+        store.dispatch(action);
+      });
+
+      it('should add an intent to submit if no promise if given', (done) => {
+        const store = createTestStore(testCreateStore({
+          testForm: formReducer('test'),
+        }), done);
+
+        store.when(actionTypes.ADD_INTENT, (_, action) => {
+          assert.containSubset(action, {
+            model: 'test',
+            intent: fromJS({ type: 'submit' }),
+          });
+        });
+
+        const action = actions.submit('test');
 
         store.dispatch(action);
       });

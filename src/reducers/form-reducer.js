@@ -3,7 +3,6 @@ import Immutable from 'immutable';
 import i from 'icepick';
 import arraysEqual from '../utils/arrays-equal';
 import isPlainObject from 'lodash/isPlainObject';
-import isArray from 'lodash/isArray';
 import identity from 'lodash/identity';
 import _mapValues from '../utils/map-values';
 import toPath from '../utils/to-path';
@@ -53,7 +52,7 @@ export function createInitialState(model,
     lazy = false,
   } = options;
 
-  if (isArray(state) || isPlainObject(state) || Immutable.Iterable.isIterable(state)) {
+  if (Array.isArray(state) || isPlainObject(state) || Immutable.Iterable.isIterable(state)) {
     initialState = lazy
       ? s.fromJS({})
       : s.mapValues(
@@ -63,14 +62,14 @@ export function createInitialState(model,
           )
         );
   } else {
-    return s.merge(s.initialFieldState, s.merge(s.fromJS({
+    return s.mergeDeep(s.initialFieldState, s.merge(s.fromJS({
       initialValue: state,
       value: state,
       model,
     }), customInitialFieldState));
   }
 
-  const initialForm = s.merge(s.initialFieldState, s.merge(s.fromJS({
+  const initialForm = s.mergeDeep(s.initialFieldState, s.merge(s.fromJS({
     initialValue: state,
     value: state,
     model,
