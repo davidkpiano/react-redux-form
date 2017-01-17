@@ -1,9 +1,0 @@
-{
-	"folders":
-	[
-		{
-			"path": "/Users/dfarkov/Projects/core/oss/react-redux-form",
-			"folder_exclude_patterns": ["lib", "node_modules", "umd", "docs", "examples"]
-		}
-	]
-}
