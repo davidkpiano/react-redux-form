@@ -122,7 +122,7 @@ export function createFormActionReducer(s = defaultStrategies) {
 
       case actionTypes.BLUR:
       case actionTypes.SET_TOUCHED: {
-        const fieldForm = s.get(getFieldForm(state, localPath), '$form');
+        const fieldForm = s.get(getFieldForm(state, localPath, s), '$form');
 
         fieldUpdates = s.fromJS({
           focus: action.type === actionTypes.BLUR
