@@ -6,7 +6,7 @@ import composeReducers from '../utils/compose-reducers';
 import createBatchReducer from '../enhancers/batched-enhancer';
 import i from 'icepick';
 import Immutable from 'immutable';
-import identity from 'lodash/identity';
+import identity from 'lodash.identity';
 import _mapValues from '../utils/map-values';
 import _initialFieldState from '../constants/initial-field-state';
 import isValid, { fieldsValid } from '../form/is-valid';

@@ -13,7 +13,7 @@ import getFieldFromState from '../utils/get-field-from-state';
 import NULL_ACTION from '../constants/null-action';
 import isNative from '../utils/is-native';
 import invariant from 'invariant';
-import identity from 'lodash/identity';
+import identity from 'lodash.identity';
 
 const defaultStrategies = {
   fromJS: identity,

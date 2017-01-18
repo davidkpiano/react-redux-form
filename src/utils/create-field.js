@@ -3,7 +3,7 @@ import Immutable from 'immutable';
 import _get from '../utils/get';
 import initialFieldState from '../constants/initial-field-state';
 import isPlainObject from './is-plain-object';
-import identity from 'lodash/identity';
+import identity from 'lodash.identity';
 import _mapValues from '../utils/map-values';
 
 const defaultStrategies = {

@@ -1,7 +1,7 @@
 import i from 'icepick';
 import _get from './get';
 import _mapValues from './map-values';
-import identity from 'lodash/identity';
+import identity from 'lodash.identity';
 import _initialFieldState from '../constants/initial-field-state';
 import { createInitialState } from '../reducers/form-reducer';
 import invariant from 'invariant';

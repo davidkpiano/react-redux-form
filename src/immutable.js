@@ -1,4 +1,4 @@
-import setWith from 'lodash/setWith';
+import setWith from 'lodash.setwith';
 import { createModeler } from './reducers/model-reducer';
 import formReducer from './reducers/form-reducer';
 import { createModelReducerEnhancer } from './enhancers/modeled-enhancer';

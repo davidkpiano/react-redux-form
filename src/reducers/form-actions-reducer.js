@@ -16,7 +16,7 @@ import fieldActions from '../actions/field-actions';
 import toPath from '../utils/to-path';
 import initialFieldState from '../constants/initial-field-state';
 import i from 'icepick';
-import identity from 'lodash/identity';
+import identity from 'lodash.identity';
 import merge from '../utils/merge';
 
 const defaultStrategies = {

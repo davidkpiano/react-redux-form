@@ -1,6 +1,6 @@
 import get from './get';
 import i from 'icepick';
-import identity from 'lodash/identity';
+import identity from 'lodash.identity';
 
 const defaultStrategies = {
   get,

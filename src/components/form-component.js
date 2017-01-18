@@ -5,7 +5,7 @@ import _get from '../utils/get';
 import mapValues from '../utils/map-values';
 import merge from '../utils/merge';
 import omit from '../utils/omit';
-import identity from 'lodash/identity';
+import identity from 'lodash.identity';
 
 import actions from '../actions';
 import getValidity from '../utils/get-validity';

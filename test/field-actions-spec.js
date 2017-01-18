@@ -2,9 +2,9 @@ import { assert } from 'chai';
 import configureMockStore from 'redux-mock-store';
 import createTestStore from 'redux-test-store';
 import thunk from 'redux-thunk';
-import _get from 'lodash.get';
+import _get from 'lodash/get';
 import identity from 'lodash/identity';
-import toPath from 'lodash.toPath';
+import toPath from 'lodash/toPath';
 import i from 'icepick';
 import Immutable from 'immutable';
 
