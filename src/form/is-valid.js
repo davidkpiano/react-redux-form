@@ -17,7 +17,7 @@ export function create(s = defaultStrategies) {
       if (!Array.isArray(errors)
         && !isPlainObject(errors)
         && !Immutable.Iterable.isIterable(errors)) {
-          return !errors;
+        return !errors;
       }
 
       return s.keys(errors).every((errorKey) => {

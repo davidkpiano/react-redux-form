@@ -3,7 +3,7 @@ import identity from './identity';
 const defaultStrategies = {
   keys: Object.keys,
   get: (object, key) => object[key],
-}
+};
 
 export function create(s = defaultStrategies) {
   function matcher(object) {
@@ -33,7 +33,7 @@ export function create(s = defaultStrategies) {
     }
 
     return propChecker(value);
-  }
+  };
 
   const iterateeValue = (data, value) => {
     if (typeof value === 'function') {
@@ -47,17 +47,17 @@ export function create(s = defaultStrategies) {
     }
 
     return iteratee(value)(data);
-  }
+  };
 
   return {
     iteratee,
-    iterateeValue
-  }
+    iterateeValue,
+  };
 }
 
 const iterateeValue = create().iterateeValue;
-export { 
-  iterateeValue
+export {
+  iterateeValue,
 };
 
 const iteratee = create().iteratee;

@@ -200,7 +200,7 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
     /**
      * Calls the callback provided to the getRef prop with the node instance. Similar to ref.
      */
-    getRef?: () => void;
+    getRef?: (node) => void;
 }
 
 export class Control<T> extends React.Component<ControlProps<T>, {}> {

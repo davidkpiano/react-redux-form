@@ -577,7 +577,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       } = this.props;
 
       if (!validators && !errorValidators) return modelValue;
-      if (!fieldValue ) return modelValue;
+      if (!fieldValue) return modelValue;
 
       const fieldValidity = getValidity(validators, modelValue);
       const fieldErrors = getValidity(errorValidators, modelValue);

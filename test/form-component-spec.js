@@ -1650,6 +1650,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
       it('should initially validate each item', () => {
         const { $form, items } = toJS(store.getState().testForm);
+
         assert.isTrue(items[0].name.valid);
         assert.isTrue(items[1].name.valid);
         assert.isTrue($form.valid);

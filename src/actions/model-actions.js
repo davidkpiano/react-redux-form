@@ -36,6 +36,14 @@ export function createModelActions(s = defaultStrategies) {
       ...options,
     };
 
+    if (typeof value === 'function') {
+      return (dispatch, getState) => {
+        const modelValue = s.get(getState(), model);
+
+        return dispatch(change(model, value(modelValue), options));
+      };
+    }
+
     return {
       type: actionTypes.CHANGE,
       model,
@@ -59,18 +67,6 @@ export function createModelActions(s = defaultStrategies) {
         value,
         optionsFromArgs(args, optionsIndex - 1, options)));
     };
-
-    actionCreator.withValue = (model, ...args) =>
-      (value) => {
-        const options = getOptions
-          ? getOptions(value, ...args)
-          : undefined;
-
-        change(
-          model,
-          modifier(value, ...args),
-          optionsFromArgs(args, optionsIndex - 1, options));
-      };
 
     return actionCreator;
   }

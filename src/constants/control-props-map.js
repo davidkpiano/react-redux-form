@@ -3,7 +3,7 @@ import { iterateeValue } from '../utils/iteratee';
 import actions from '../actions';
 
 const defaultStrategy = {
-  iterateeValue
+  iterateeValue,
 };
 
 function createControlPropsMap(s = defaultStrategy) {

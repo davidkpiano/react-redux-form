@@ -41,8 +41,8 @@ export function createFormActionReducer(s = defaultStrategies) {
     if (!s.isObject(field)) return field;
 
     const intents = [{ type: 'validate' }];
+    const loadedValue = s.get(field, 'loadedValue');
     let resetValue = s.get(field, 'initialValue');
-    let loadedValue = s.get(field, 'loadedValue');
 
     if (loadedValue && s.get(field, 'initialValue') !== loadedValue) {
       intents.push({ type: 'load', value: loadedValue });
@@ -62,7 +62,7 @@ export function createFormActionReducer(s = defaultStrategies) {
     return s.mergeDeep(s.initialFieldState, s.fromJS({
       value: resetValue,
       model: s.get(field, 'model'),
-      intents
+      intents,
     }));
   };
 
@@ -133,7 +133,7 @@ export function createFormActionReducer(s = defaultStrategies) {
             ? !!(s.get(fieldForm, 'submitted') || s.get(fieldForm, 'submitFailed'))
             : false,
         });
-  
+
         parentFormUpdates = {
           touched: true,
           retouched: s.get(fieldUpdates, 'retouched'),
@@ -240,10 +240,10 @@ export function createFormActionReducer(s = defaultStrategies) {
       case actionTypes.RESET_VALIDITY: {
         const plainFieldState = s.toJS(fieldState);
         let validity = { ...plainFieldState.validity };
-  let errors = { ...plainFieldState.errors };
-  let valid;
-  
-  if (action.omitKeys) {
+        let errors = { ...plainFieldState.errors };
+        let valid;
+
+        if (action.omitKeys) {
           action.omitKeys.forEach((key) => {
             delete validity[key];
             delete errors[key];
@@ -254,7 +254,7 @@ export function createFormActionReducer(s = defaultStrategies) {
           errors = initialFieldState.errors;
           valid = initialFieldState.valid;
         }
-      
+
         fieldUpdates = {
           valid,
           validity,
@@ -331,7 +331,13 @@ export function createFormActionReducer(s = defaultStrategies) {
         return updateField(state, localPath, resetFieldState, resetFieldState, undefined, s);
       }
       case actionTypes.SET_INITIAL: {
-        return updateField(state, localPath, setInitialFieldState, setInitialFieldState, undefined, s);
+        return updateField(
+          state,
+          localPath,
+          setInitialFieldState,
+          setInitialFieldState,
+          undefined,
+          s);
       }
 
       case actionTypes.ADD_INTENT: {

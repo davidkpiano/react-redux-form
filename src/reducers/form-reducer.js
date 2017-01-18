@@ -1,18 +1,20 @@
 import _get from '../utils/get';
-import Immutable from 'immutable';
-import i from 'icepick';
 import arraysEqual from '../utils/arrays-equal';
-import isPlainObject from 'lodash/isPlainObject';
-import identity from 'lodash/identity';
-import _mapValues from '../utils/map-values';
+import isPlainObject from '../utils/is-plain-object';
 import toPath from '../utils/to-path';
 import composeReducers from '../utils/compose-reducers';
 import createBatchReducer from '../enhancers/batched-enhancer';
+import i from 'icepick';
+import Immutable from 'immutable';
+import identity from 'lodash/identity';
+import _mapValues from '../utils/map-values';
 import _initialFieldState from '../constants/initial-field-state';
 import isValid, { fieldsValid } from '../form/is-valid';
 import isPristine from '../form/is-pristine';
+
 import _changeActionReducer from './form/change-action-reducer';
 import _formActionsReducer from './form-actions-reducer';
+import createFieldState, { createFormState } from '../utils/create-field';
 
 const defaultStrategies = {
   defaultPlugins: [
@@ -35,47 +37,18 @@ const defaultStrategies = {
   mapValues: _mapValues,
 };
 
-function getSubModelString(model, subModel) {
-  if (!model) return subModel;
-
-  return `${model}.${subModel}`;
-}
-
-export function createInitialState(model,
+export function createInitialState(
+  model,
   state,
   customInitialFieldState = {},
   options = {},
-  s = defaultStrategies) {
-  let initialState;
-
-  const {
-    lazy = false,
-  } = options;
-
+  s = defaultStrategies
+) {
   if (Array.isArray(state) || isPlainObject(state) || Immutable.Iterable.isIterable(state)) {
-    initialState = lazy
-      ? s.fromJS({})
-      : s.mapValues(
-          state,
-          (subState, subModel) => createInitialState(
-            getSubModelString(model, subModel), subState, customInitialFieldState, undefined, s
-          )
-        );
-  } else {
-    return s.mergeDeep(s.initialFieldState, s.merge(s.fromJS({
-      initialValue: state,
-      value: state,
-      model,
-    }), customInitialFieldState));
+    return createFormState(model, state, customInitialFieldState, options, s);
   }
 
-  const initialForm = s.mergeDeep(s.initialFieldState, s.merge(s.fromJS({
-    initialValue: state,
-    value: state,
-    model,
-  }), customInitialFieldState));
-
-  return s.set(initialState, '$form', initialForm);
+  return createFieldState(model, state, customInitialFieldState, s);
 }
 
 function wrapFormReducer(plugin, modelPath, initialState, strategies) {
@@ -105,6 +78,7 @@ export default function createFormReducer(
     initialFieldState: customInitialFieldState,
     transformAction = null,
   } = options;
+
   const modelPath = toPath(model);
   const initialFormState = createInitialState(model, initialState,
     customInitialFieldState, options, s);

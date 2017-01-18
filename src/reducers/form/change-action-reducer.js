@@ -135,7 +135,7 @@ export function createChangeActionReducer(s = defaultStrategies) {
       return s.get(form, 'loadedValue') ? s.get(form, 'loadedValue') : s.get(form, 'initialValue');
     }
 
-    let result = s.mapValues(form, (field, key) => {
+    const result = s.mapValues(form, (field, key) => {
       if (key === '$form') return undefined;
 
       return getFormValue(field);
