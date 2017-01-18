@@ -7,8 +7,8 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import sinon from 'sinon';
 
-import _get from 'lodash.get';
-import toPath from 'lodash.toPath';
+import _get from 'lodash/get';
+import toPath from 'lodash/toPath';
 import identity from 'lodash/identity';
 import i from 'icepick';
 import Immutable from 'immutable';
