@@ -108,6 +108,7 @@ const propTypes = {
     getState: PropTypes.func,
   }),
   getRef: PropTypes.func,
+  withField: PropTypes.bool,
 };
 
 const defaultStrategy = {
@@ -487,6 +488,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         controlProps = emptyControlProps,
         parser,
         ignore,
+        withField,
+        fieldValue,
       } = this.props;
 
       const eventAction = {
@@ -541,7 +544,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           parser,
           getValue,
           persistEventWithCallback(controlEventHandler || identity)
-        )(event);
+        )(event, withField ? fieldValue : undefined);
       };
     }
 
@@ -623,6 +626,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     dynamic: false,
     mapProps: controlPropsMap.default,
     component: 'input',
+    withField: true,
   };
 
   function mapStateToProps(state, props) {

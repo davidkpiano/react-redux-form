@@ -201,6 +201,11 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
      * Calls the callback provided to the getRef prop with the node instance. Similar to ref.
      */
     getRef?: (node) => void;
+    /**
+     * Indicates that the model's fieldValue should be passed in
+     * to event handlers as the second prop.
+     */
+    withField?: boolean;
 }
 
 export class Control<T> extends React.Component<ControlProps<T>, {}> {
@@ -317,7 +322,7 @@ interface BaseFormProps {
     /**
      * The handler function called when the form fails to submit. This happens when:
      * * attempting to submit an invalid form
-     * * submitting a valid form that later becomes invalid (due to async server/API validation, etc.) 
+     * * submitting a valid form that later becomes invalid (due to async server/API validation, etc.)
      *
      * The callback function provided to onSubmitFailed will be called with one argument: the entire formState for the form's model.
      */

@@ -1,10 +1,10 @@
 export default function persistEventWithCallback(callback) {
-  return (event) => {
+  return (event, ...args) => {
     if (event && event.persist) {
       event.persist();
     }
 
-    callback(event);
+    callback(event, ...args);
     return event;
   };
 }

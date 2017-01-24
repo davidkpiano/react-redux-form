@@ -1841,5 +1841,59 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.equal(get(store.getState().test, 'foo'), 'update on blur');
       });
     });
+
+    describe('withField prop', () => {
+      const initialState = getInitialState({ foo: 'bar' });
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
+
+      [undefined, true].forEach((withField) => {
+        it('should pass the fieldValue as the second argument to event'
+          + ` handlers ${withField ? '' : 'by default'}`, (done) => {
+          const handleChange = (_, fieldValue) => {
+            assert.ok(fieldValue);
+            assert.containSubset(fieldValue, {
+              model: 'test.foo',
+            });
+            done();
+          };
+
+          const control = testRender(
+            <Control.text
+              model="test.foo"
+              onChange={handleChange}
+              withField={withField}
+            />,
+            store);
+
+          const input = TestUtils.findRenderedDOMComponentWithTag(
+            control, 'input');
+
+          TestUtils.Simulate.change(input);
+        });
+      });
+
+      it('should not pass fieldValue if withField = false', (done) => {
+        const handleChange = (_, fieldValue) => {
+          assert.isUndefined(fieldValue);
+          done();
+        };
+
+        const control = testRender(
+          <Control.text
+            model="test.foo"
+            onChange={handleChange}
+            withField={false}
+          />,
+          store);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(
+          control, 'input');
+
+        TestUtils.Simulate.change(input);
+      });
+    });
   });
 });
