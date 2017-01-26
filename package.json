@@ -92,7 +92,8 @@
     "icepick": "^1.1.0",
     "invariant": "~2.2.1",
     "lodash.get": "~4.4.2",
-    "lodash.topath": "~4.5.2"
+    "lodash.topath": "~4.5.2",
+    "shallow-compare": "1.2.0"
   },
   "peerDependencies": {
     "react": "^0.14.0 || ^15.0.0",
