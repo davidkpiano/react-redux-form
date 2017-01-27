@@ -5,7 +5,9 @@ import {
   initialFieldState,
   form as selectForm,
   formReducer,
+  combineForms,
 } from '../src';
+import { createStore } from 'redux';
 import mapValues from '../src/utils/map-values';
 import toPath from 'lodash.topath';
 import get from '../src/utils/get';
@@ -672,6 +674,7 @@ describe('formReducer() (V1)', () => {
         foo: 'changed foo',
         meta: { bar: 'changed bar' },
       }));
+
       const resetState = reducer(changedState, actions.reset('test'));
 
       assert.equal(resetState.foo.value, '');
@@ -723,7 +726,7 @@ describe('formReducer() (V1)', () => {
     });
   });
 
-  describe('resetting to null', () => {
+  describe('resetting with null', () => {
     it('should work and not cause an infinite loop', () => {
       assert.doesNotThrow(() => {
         const reducer = formReducer('foo', null);
@@ -737,6 +740,26 @@ describe('formReducer() (V1)', () => {
           value: null,
         });
       });
+    });
+
+    it('should reset between null and complex values', () => {
+      const store = createStore(combineForms({
+        user: {
+          city: null,
+        },
+      }));
+
+      // User selected new city
+      store.dispatch(actions.change('user.city', { id: 42, title: 'London' }));
+
+      // User resetted the form
+      store.dispatch(actions.reset('user'));
+
+      // What if we want to reset the field externally? It's already null, nothing bad could happen
+      store.dispatch(actions.change('user.city', null));
+
+      // This should not throw anymore
+      assert.doesNotThrow(() => store.dispatch(actions.resetValidity('user')));
     });
   });
 });

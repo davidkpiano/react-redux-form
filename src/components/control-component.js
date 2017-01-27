@@ -400,9 +400,9 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
             return;
 
           case 'load':
-            if (!shallowEqual(modelValue, intent.value)) {
+            if (!shallowEqual(modelValue, fieldValue.value)) {
               dispatch(actions.clearIntents(model, intent));
-              dispatch(actions.load(model, intent.value));
+              dispatch(actions.load(model, fieldValue.value));
             }
             return;
 

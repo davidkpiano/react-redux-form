@@ -955,13 +955,14 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('deep initial value after reset', () => {
+      const initialState = getInitialState({
+        nest: {
+          name: 'initial name',
+          email: 'initial email',
+        },
+      });
       const store = createStore(combineForms({
-        user: getInitialState({
-          nest: {
-            name: 'initial name',
-            email: 'initial email',
-          },
-        }),
+        user: initialState,
       }));
 
       TestUtils.renderIntoDocument(
@@ -975,9 +976,13 @@ Object.keys(testContexts).forEach((testKey) => {
 
       it('should reset the control to the last deeply loaded value', () => {
         store.dispatch(actions.load('user', getInitialState({
-          nest: { name: 'loaded name', email: 'loaded email' },
+          nest: {
+            name: 'loaded name',
+            email: 'loaded email',
+          },
         })));
-        store.dispatch(actions.reset('user'));
+
+        store.dispatch(actions.reset('user.nest'));
 
         assert.equal(get(store.getState().user, 'nest.name'), 'loaded name');
         assert.equal(get(store.getState().user, 'nest.email'), 'loaded email');
