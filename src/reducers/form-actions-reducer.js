@@ -18,6 +18,15 @@ import initialFieldState from '../constants/initial-field-state';
 import i from 'icepick';
 import { fieldOrForm, getMeta } from '../utils/create-field';
 
+const mergeValidity = (fieldValidity, actionValidity) => {
+  if (!isPlainObject(fieldValidity) || !isPlainObject(actionValidity)) {
+    // can't merge string/boolean validity with keyed validity
+    return actionValidity;
+  }
+
+  return merge({ ...fieldValidity }, actionValidity);
+};
+
 const resetFieldState = (field) => {
   if (!isPlainObject(field)) return field;
 
@@ -155,11 +164,11 @@ export default function formActionsReducer(state, action, localPath) {
       let validity;
       if (isErrors) {
         validity = action.merge
-          ? merge({ ...fieldState.errors }, action.errors)
+          ? mergeValidity(fieldState.errors, action.errors)
           : action.errors;
       } else {
         validity = action.merge
-          ? merge({ ...fieldState.validity }, action.validity)
+          ? mergeValidity(fieldState.validity, action.validity)
           : action.validity;
       }
 
