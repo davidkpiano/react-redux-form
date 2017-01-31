@@ -38,6 +38,8 @@ You can add your own types to the basic `<Control>` component as an attribute:
 
 For making custom controls that work with React Redux Form, see the [custom controls documentation](../guides/custom-controls.md).
 
+**Note:** Any standard valid control props, such as `name, disabled, onChange, onBlur, onFocus, onKeyPress`, etc. will be passed directly to the control, so feel free to use them.
+
 ```jsx
 import React from 'react';
 import { Control } from 'react-redux-form';
