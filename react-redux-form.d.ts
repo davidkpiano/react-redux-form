@@ -200,7 +200,7 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
     /**
      * Calls the callback provided to the getRef prop with the node instance. Similar to ref.
      */
-    getRef?: (node) => void;
+    getRef?: (node: T) => void;
     /**
      * Indicates that the model's fieldValue should be passed in
      * to event handlers as the second prop.
