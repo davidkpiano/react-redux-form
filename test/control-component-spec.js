@@ -1900,5 +1900,55 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.change(input);
       });
     });
+
+    describe('debouncing', () => {
+      it('should not update immediately on change', (done) => {
+        const initialState = getInitialState({ foo: 'bar' });
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        const control = testRender(
+          <Control.text
+            model="test.foo"
+            debounce={10}
+          />, store);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(control, 'input');
+        input.value = 'debounced';
+
+        TestUtils.Simulate.change(input);
+
+        assert.equal(get(store.getState().test, 'foo'), 'bar');
+
+        setTimeout(() => {
+          assert.equal(get(store.getState().test, 'foo'), 'debounced');
+          done();
+        }, 15); // 5ms buffer to eliminate race conditions
+      });
+
+      it('should always update viewValue immediately', () => {
+        const initialState = getInitialState({ foo: 'bar' });
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        const control = testRender(
+          <Control.text
+            model="test.foo"
+            debounce={10}
+          />, store);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(control, 'input');
+        input.value = 'debounced';
+
+        TestUtils.Simulate.change(input);
+
+        assert.equal(get(store.getState().test, 'foo'), 'bar');
+        assert.equal(input.value, 'debounced');
+      });
+    });
   });
 });

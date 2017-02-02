@@ -10,6 +10,7 @@ import isPlainObject from '../utils/is-plain-object';
 import i from 'icepick';
 import omit from '../utils/omit';
 import actionTypes from '../action-types';
+import debounce from '../utils/debounce';
 
 import getValue from '../utils/get-value';
 import getValidity from '../utils/get-validity';
@@ -109,6 +110,7 @@ const propTypes = {
   }),
   getRef: PropTypes.func,
   withField: PropTypes.bool,
+  debounce: PropTypes.number,
 };
 
 const defaultStrategy = {
@@ -141,6 +143,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       this.handleLoad = this.handleLoad.bind(this);
       this.getMappedProps = this.getMappedProps.bind(this);
       this.attachNode = this.attachNode.bind(this);
+
+      if (props.debounce) {
+        this.handleUpdate = debounce(this.handleUpdate, props.debounce);
+      }
 
       this.willValidate = false;
 
