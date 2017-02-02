@@ -395,7 +395,7 @@ If the promise fails, the action will:
 - set `.submitFailed` property of form for `model` to `true`
 - set `.errors` property of form for `model` to the response
 
-If a promise is not provided, e.g.: `actions.submit('user')`, then dispatching the action will trigger a `<Form>` with the specified `model` to submit itself.
+If a promise is not provided, e.g.: `actions.submit('user')`, then dispatching the action will trigger a `<Form>` with the specified `model` to call its `onSubmit` handler.
 
 ### Arguments
 - `model` _(String | Function)_: the model to be submitted

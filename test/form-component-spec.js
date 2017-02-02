@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
-import { combineReducers } from 'redux';
+import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import createTestStore from 'redux-test-store';
 import sinon from 'sinon';
@@ -19,6 +19,7 @@ import {
   Control as _Control,
   actions as _actions,
   actionTypes,
+  combineForms as _combineForms,
 } from '../src';
 import {
   Form as ImmutableForm,
@@ -27,6 +28,7 @@ import {
   Field as ImmutableField,
   Control as ImmutableControl,
   actions as immutableActions,
+  combineForms as immutableCombineForms,
 } from '../immutable';
 
 const testContexts = {
@@ -38,6 +40,7 @@ const testContexts = {
     Field: _Field,
     Control: _Control,
     actions: _actions,
+    combineForms: _combineForms,
   },
   immutable: {
     ...defaultTestContexts.immutable,
@@ -47,6 +50,7 @@ const testContexts = {
     Field: ImmutableField,
     Control: ImmutableControl,
     actions: immutableActions,
+    combineForms: immutableCombineForms,
   },
 };
 
@@ -61,6 +65,7 @@ Object.keys(testContexts).forEach((testKey) => {
   const object = testContext.object;
   const get = testContext.get;
   const getInitialState = testContext.getInitialState;
+  const combineForms = testContext.combineForms;
 
   describe(`<Form> component (${testKey} context)`, () => {
     describe('wraps component if specified', () => {
@@ -2104,6 +2109,44 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isTrue(handleSubmit.calledOnce,
           'called because sync validity is valid');
+      });
+    });
+
+    describe('form and field combined validation', () => {
+      it('should combine form and field validation', () => {
+        const initialUserState = getInitialState({ name: '' });
+
+        const store = createStore(combineForms({
+          user: initialUserState,
+        }));
+
+        const app = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Form
+              model="user"
+              validators={() => ({ name: { formValidation: false } })}
+              validateOn="submit"
+            >
+              <Field
+                model=".name"
+                validators={{ fieldValidation: (value) => value && value.length }} validateOn="blur"
+              >
+                <input type="text" />
+              </Field>
+
+              <button type="submit">Submit</button>
+            </Form>
+          </Provider>
+        );
+
+        const form = TestUtils.findRenderedDOMComponentWithTag(app, 'form');
+
+        TestUtils.Simulate.submit(form);
+
+        assert.deepEqual(store.getState().forms.user.name.validity, {
+          fieldValidation: false,
+          formValidation: false,
+        });
       });
     });
   });

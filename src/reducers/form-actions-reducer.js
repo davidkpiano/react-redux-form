@@ -16,33 +16,36 @@ import fieldActions from '../actions/field-actions';
 import toPath from '../utils/to-path';
 import initialFieldState from '../constants/initial-field-state';
 import i from 'icepick';
+import { fieldOrForm, getMeta } from '../utils/create-field';
 
-const resetFieldState = (field, key) => {
+const mergeValidity = (fieldValidity, actionValidity) => {
+  if (!isPlainObject(fieldValidity) || !isPlainObject(actionValidity)) {
+    // can't merge string/boolean validity with keyed validity
+    return actionValidity;
+  }
+
+  return merge({ ...fieldValidity }, actionValidity);
+};
+
+const resetFieldState = (field) => {
   if (!isPlainObject(field)) return field;
 
   const intents = [{ type: 'validate' }];
-  let resetValue = field.initialValue;
+  let resetValue = getMeta(field, 'initialValue');
 
-  if ('loadedValue' in field && field.initialValue !== field.loadedValue) {
-    intents.push({ type: 'load', value: field.loadedValue });
-    resetValue = field.loadedValue;
+  const loadedValue = getMeta(field, 'loadedValue');
+
+
+  if (loadedValue && (resetValue !== loadedValue)) {
+    intents.push({ type: 'load' });
+    resetValue = loadedValue;
   }
 
-  if (key === '$form') {
-    return i.assign(initialFieldState, {
-      value: resetValue,
-      model: field.model,
-      intents,
-    });
-  }
-
-  if (field.$form) return mapValues(field, resetFieldState);
-
-  return i.assign(initialFieldState, {
-    value: resetValue,
-    model: field.model,
-    intents,
-  });
+  return fieldOrForm(
+    getMeta(field, 'model'),
+    resetValue,
+    { intents }
+  );
 };
 
 const setInitialFieldState = (field, key) => {
@@ -161,11 +164,11 @@ export default function formActionsReducer(state, action, localPath) {
       let validity;
       if (isErrors) {
         validity = action.merge
-          ? merge({ ...fieldState.errors }, action.errors)
+          ? mergeValidity(fieldState.errors, action.errors)
           : action.errors;
       } else {
         validity = action.merge
-          ? merge({ ...fieldState.validity }, action.validity)
+          ? mergeValidity(fieldState.validity, action.validity)
           : action.validity;
       }
 
@@ -297,7 +300,9 @@ export default function formActionsReducer(state, action, localPath) {
     }
 
     case actionTypes.RESET: {
-      return updateField(state, localPath, resetFieldState, resetFieldState);
+      return localPath.length
+        ? i.setIn(state, localPath, resetFieldState(field))
+        : resetFieldState(field);
     }
 
     case actionTypes.SET_INITIAL: {

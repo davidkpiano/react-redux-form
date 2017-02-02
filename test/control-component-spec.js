@@ -955,13 +955,14 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('deep initial value after reset', () => {
+      const initialState = getInitialState({
+        nest: {
+          name: 'initial name',
+          email: 'initial email',
+        },
+      });
       const store = createStore(combineForms({
-        user: getInitialState({
-          nest: {
-            name: 'initial name',
-            email: 'initial email',
-          },
-        }),
+        user: initialState,
       }));
 
       TestUtils.renderIntoDocument(
@@ -975,9 +976,13 @@ Object.keys(testContexts).forEach((testKey) => {
 
       it('should reset the control to the last deeply loaded value', () => {
         store.dispatch(actions.load('user', getInitialState({
-          nest: { name: 'loaded name', email: 'loaded email' },
+          nest: {
+            name: 'loaded name',
+            email: 'loaded email',
+          },
         })));
-        store.dispatch(actions.reset('user'));
+
+        store.dispatch(actions.reset('user.nest'));
 
         assert.equal(get(store.getState().user, 'nest.name'), 'loaded name');
         assert.equal(get(store.getState().user, 'nest.email'), 'loaded email');
@@ -1839,6 +1844,110 @@ Object.keys(testContexts).forEach((testKey) => {
         TestUtils.Simulate.blur(input);
 
         assert.equal(get(store.getState().test, 'foo'), 'update on blur');
+      });
+    });
+
+    describe('withField prop', () => {
+      const initialState = getInitialState({ foo: 'bar' });
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
+
+      [undefined, true].forEach((withField) => {
+        it('should pass the fieldValue as the second argument to event'
+          + ` handlers ${withField ? '' : 'by default'}`, (done) => {
+          const handleChange = (_, fieldValue) => {
+            assert.ok(fieldValue);
+            assert.containSubset(fieldValue, {
+              model: 'test.foo',
+            });
+            done();
+          };
+
+          const control = testRender(
+            <Control.text
+              model="test.foo"
+              onChange={handleChange}
+              withField={withField}
+            />,
+            store);
+
+          const input = TestUtils.findRenderedDOMComponentWithTag(
+            control, 'input');
+
+          TestUtils.Simulate.change(input);
+        });
+      });
+
+      it('should not pass fieldValue if withField = false', (done) => {
+        const handleChange = (_, fieldValue) => {
+          assert.isUndefined(fieldValue);
+          done();
+        };
+
+        const control = testRender(
+          <Control.text
+            model="test.foo"
+            onChange={handleChange}
+            withField={false}
+          />,
+          store);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(
+          control, 'input');
+
+        TestUtils.Simulate.change(input);
+      });
+    });
+
+    describe('debouncing', () => {
+      it('should not update immediately on change', (done) => {
+        const initialState = getInitialState({ foo: 'bar' });
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        const control = testRender(
+          <Control.text
+            model="test.foo"
+            debounce={10}
+          />, store);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(control, 'input');
+        input.value = 'debounced';
+
+        TestUtils.Simulate.change(input);
+
+        assert.equal(get(store.getState().test, 'foo'), 'bar');
+
+        setTimeout(() => {
+          assert.equal(get(store.getState().test, 'foo'), 'debounced');
+          done();
+        }, 15); // 5ms buffer to eliminate race conditions
+      });
+
+      it('should always update viewValue immediately', () => {
+        const initialState = getInitialState({ foo: 'bar' });
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        const control = testRender(
+          <Control.text
+            model="test.foo"
+            debounce={10}
+          />, store);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(control, 'input');
+        input.value = 'debounced';
+
+        TestUtils.Simulate.change(input);
+
+        assert.equal(get(store.getState().test, 'foo'), 'bar');
+        assert.equal(input.value, 'debounced');
       });
     });
   });

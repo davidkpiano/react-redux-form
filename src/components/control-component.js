@@ -10,6 +10,7 @@ import isPlainObject from '../utils/is-plain-object';
 import i from 'icepick';
 import omit from '../utils/omit';
 import actionTypes from '../action-types';
+import debounce from '../utils/debounce';
 
 import getValue from '../utils/get-value';
 import getValidity from '../utils/get-validity';
@@ -108,6 +109,8 @@ const propTypes = {
     getState: PropTypes.func,
   }),
   getRef: PropTypes.func,
+  withField: PropTypes.bool,
+  debounce: PropTypes.number,
 };
 
 const defaultStrategy = {
@@ -140,6 +143,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       this.handleLoad = this.handleLoad.bind(this);
       this.getMappedProps = this.getMappedProps.bind(this);
       this.attachNode = this.attachNode.bind(this);
+
+      if (props.debounce) {
+        this.handleUpdate = debounce(this.handleUpdate, props.debounce);
+      }
 
       this.willValidate = false;
 
@@ -399,9 +406,9 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
             return;
 
           case 'load':
-            if (!shallowEqual(modelValue, intent.value)) {
+            if (!shallowEqual(modelValue, fieldValue.value)) {
               dispatch(actions.clearIntents(model, intent));
-              dispatch(actions.load(model, intent.value));
+              dispatch(actions.load(model, fieldValue.value));
             }
             return;
 
@@ -487,6 +494,8 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         controlProps = emptyControlProps,
         parser,
         ignore,
+        withField,
+        fieldValue,
       } = this.props;
 
       const eventAction = {
@@ -541,7 +550,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
           parser,
           getValue,
           persistEventWithCallback(controlEventHandler || identity)
-        )(event);
+        )(event, withField ? fieldValue : undefined);
       };
     }
 
@@ -623,6 +632,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     dynamic: false,
     mapProps: controlPropsMap.default,
     component: 'input',
+    withField: true,
   };
 
   function mapStateToProps(state, props) {

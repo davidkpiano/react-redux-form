@@ -40,6 +40,8 @@ function createControlPropsMap() {
       : props.value),
   };
 
+  const getModelValue = ({ modelValue }) => modelValue;
+
   return {
     default: textPropsMap,
     checkbox: {
@@ -57,12 +59,15 @@ function createControlPropsMap() {
     },
     select: {
       ...standardPropsMap,
-      value: (props) => (props.modelValue),
+      value: getModelValue,
     },
     text: textPropsMap,
     textarea: textPropsMap,
     file: standardPropsMap,
-    button: standardPropsMap,
+    button: {
+      ...standardPropsMap,
+      value: getModelValue,
+    },
     reset: {
       ...standardPropsMap,
       onClick: (props) => (event) => {

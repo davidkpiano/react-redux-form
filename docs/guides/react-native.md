@@ -50,13 +50,27 @@ The use of `updateOn="blur"` will work as expected for the controls, and is set 
 
 By default, the `<Form>` component is rendered as a `<View>`. It handles validity as expected, as well as partial models for child `<Control>` components, but it does not have an `onSubmit` mechanism.
 
-```js
+```jsx
 import { Form, Control } from 'react-redux-form/native';
 
 // render...
-<Form model="user">
+<Form model="user" onSubmit={/* ... */}>
   <Control.TextInput model=".firstName" />
   <Control.TextInput model=".lastName" />
+</Form>
+```
+
+To submit a React Native form programmatically:
+
+1. Ensure that the `<Form model="foo">` component has an `onSubmit={(values) => ...}` callback.
+2. Dispatch a submit action for the form's model (and no other arguments): `dispatch(actions.submit('foo'))`
+
+```jsx
+<Form model="user" onSubmit={(vals) => console.log(vals)}>
+  <Control.TextInput model=".firstName" />
+  <Control.TextInput model=".lastName" />
+
+  <Button onPress={() => dispatch(actions.submit('user'))} />
 </Form>
 ```
 

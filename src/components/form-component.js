@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import mapValues from '../utils/map-values';
-import merge from '../utils/merge';
 import omit from '../utils/omit';
 
 import actions from '../actions';
 import getValidity from '../utils/get-validity';
+import invertValidity from '../utils/invert-validity';
 import invertValidators from '../utils/invert-validators';
 import isValidityInvalid from '../utils/is-validity-invalid';
 import isValid from '../form/is-valid';
@@ -48,6 +48,9 @@ const propTypes = {
   onChange: PropTypes.func,
   getRef: PropTypes.func,
   getDispatch: PropTypes.func,
+
+  // standard HTML attributes
+  action: PropTypes.string,
 };
 
 const defaultStrategy = {
@@ -326,7 +329,7 @@ function createFormClass(s = defaultStrategy) {
     }
 
     handleSubmit(e) {
-      if (e) e.preventDefault();
+      if (e && !this.props.action) e.preventDefault();
 
       const {
         model,
@@ -348,11 +351,7 @@ function createFormClass(s = defaultStrategy) {
         return modelValue;
       }
 
-      const finalErrorValidators = validators
-        ? merge(invertValidators(validators), errorValidators)
-        : errorValidators;
-
-      const fieldsValidity = {};
+      let fieldsValidity = {};
 
       // this is (internally) mutative for performance reasons.
       const validateField = (validator, field) => {
@@ -377,12 +376,21 @@ function createFormClass(s = defaultStrategy) {
         }
       };
 
-      mapValues(finalErrorValidators, validateField);
+      if (typeof validators === 'function') {
+        Object.assign(fieldsValidity, validators(modelValue));
+      } else {
+        mapValues(validators, validateField);
+      }
+
+      fieldsValidity = invertValidity(fieldsValidity);
+
+      mapValues(errorValidators, validateField);
 
       dispatch(s.actions.batch(model, [
         s.actions.setFieldsErrors(
           model,
-          fieldsValidity
+          fieldsValidity,
+          { merge: true }
         ),
         s.actions.addIntent(model, { type: 'submit' }),
       ]));

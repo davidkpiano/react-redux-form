@@ -25,6 +25,7 @@ function updateFieldValue(field, action, parentModel = undefined) {
     pristine: silent
       ? fieldState.pristine
       : false,
+    value,
     loadedValue: load
       ? value
       : fieldState.loadedValue,
@@ -102,13 +103,15 @@ function updateFieldValue(field, action, parentModel = undefined) {
     }));
   });
 
+  // console.log('FIELD', field);
+
   const dirtyFormState = i.merge(field.$form || initialFieldState,
     i.set(changedFieldProps, 'retouched',
       field.submitted || (field.$form && field.$form.retouched)));
 
+  // console.log('DIRTY', dirtyFormState);
 
-  return i.set(updatedField, '$form',
-    i.set(dirtyFormState, 'value', value));
+  return i.set(updatedField, '$form', dirtyFormState);
 }
 
 function getFormValue(form) {

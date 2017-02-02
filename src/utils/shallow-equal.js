@@ -38,6 +38,10 @@ function shallowEqual(objA, objB, options = {}) {
     return false;
   }
 
+  if(objA instanceof Date && objB instanceof Date) {
+    return objA === objB;
+  }
+
   const keysA = Object.keys(objA);
   const keysB = Object.keys(objB);
 
