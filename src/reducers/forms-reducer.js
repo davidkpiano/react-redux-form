@@ -36,6 +36,7 @@ function createFormCombiner(strategy = defaultStrategy) {
     const {
       key,
       plugins,
+      ...formOptions,
     } = optionsWithDefaults;
 
     formKeys.forEach((formKey) => {
@@ -60,7 +61,10 @@ function createFormCombiner(strategy = defaultStrategy) {
 
     return {
       ...modelReducers,
-      [key]: strategy.formReducer(model, initialFormState, { plugins }),
+      [key]: strategy.formReducer(model, initialFormState, {
+        plugins,
+        ...formOptions,
+      }),
     };
   }
 

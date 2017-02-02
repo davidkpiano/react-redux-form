@@ -81,6 +81,29 @@ describe('combineForms()', () => {
     });
   });
 
+  describe('setting the "lazy" option', () => {
+    const initialState = { foo: 'bar' };
+    const lazyReducer = combineForms(initialState, '', { lazy: true });
+
+    it('should not initially create subfields', () => {
+      assert.notProperty(lazyReducer(undefined, { type: 'ANY' }).forms, 'foo');
+    });
+
+    it('should still have the initial state', () => {
+      assert.deepEqual(
+        lazyReducer(undefined, { type: 'ANY' }).forms.$form.initialValue,
+        initialState);
+    });
+
+    it('should create the fields only when interacted with', () => {
+      const action = actions.setTouched('foo');
+      const touchedState = lazyReducer(undefined, action);
+
+      assert.property(touchedState.forms, 'foo');
+      assert.isTrue(touchedState.forms.foo.touched);
+    });
+  });
+
   describe('deep forms', () => {
     const reducer = combineReducers({
       deep: combineForms({
