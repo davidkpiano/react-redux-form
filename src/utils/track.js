@@ -2,42 +2,50 @@ import findKey from '../utils/find-key';
 import _get from '../utils/get';
 import iteratee from '../utils/iteratee';
 
-function track(model, ...predicates) {
-  const isPartial = model[0] === '.';
+const defaultStrategy = {
+  get: _get,
+};
 
-  return (fullState, parentModel) => {
-    const childModel = isPartial
-      ? model.slice(1)
-      : model;
-    const state = isPartial
-      ? _get(fullState, parentModel)
-      : fullState;
+function createTrack(s = defaultStrategy) {
+  return function track(model, ...predicates) {
+    const isPartial = model[0] === '.';
 
-    const [
-      parentModelPath,
-      ...childModelPaths
-    ] = childModel.split(/\[\]\.?/);
+    return (fullState, parentModel) => {
+      const childModel = isPartial
+        ? model.slice(1)
+        : model;
+      const state = isPartial
+        ? s.get(fullState, parentModel)
+        : fullState;
 
-    let fullPath = parentModelPath;
-    let subState = _get(state, fullPath);
+      const [
+        parentModelPath,
+        ...childModelPaths
+      ] = childModel.split(/\[\]\.?/);
 
-    predicates.forEach((predicate, i) => {
-      const childModelPath = childModelPaths[i];
-      const predicateIteratee = iteratee(predicate);
+      let fullPath = parentModelPath;
+      let subState = s.get(state, fullPath);
 
-      const subPath = childModelPath
-        ? `${findKey(subState, predicateIteratee)}.${childModelPath}`
-        : `${findKey(subState, predicateIteratee)}`;
+      predicates.forEach((predicate, i) => {
+        const childModelPath = childModelPaths[i];
+        const predicateIteratee = iteratee(predicate);
 
-      subState = _get(subState, subPath);
-      fullPath += `.${subPath}`;
-    });
+        const subPath = childModelPath
+          ? `${findKey(subState, predicateIteratee)}.${childModelPath}`
+          : `${findKey(subState, predicateIteratee)}`;
 
-    return isPartial
-      ? [parentModel, fullPath].join('.')
-      : fullPath;
+        subState = s.get(subState, subPath);
+        fullPath += `.${subPath}`;
+      });
+
+      return isPartial
+        ? [parentModel, fullPath].join('.')
+        : fullPath;
+    };
   };
 }
+
+const track = createTrack();
 
 function trackable(actionCreator) {
   return (model, ...args) => {
@@ -55,5 +63,6 @@ function trackable(actionCreator) {
 
 export default track;
 export {
+  createTrack,
   trackable,
 };

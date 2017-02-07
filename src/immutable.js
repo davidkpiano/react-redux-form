@@ -8,6 +8,7 @@ import { createErrorsClass } from './components/errors-component';
 import { createControlClass } from './components/control-component';
 import { createFormClass } from './components/form-component';
 import { createFieldActions } from './actions/field-actions';
+import { createTrack } from './utils/track';
 import Fieldset from './components/fieldset-component';
 import batch from './actions/batch-actions';
 import getValue from './utils/get-value';
@@ -23,7 +24,6 @@ import {
   batched,
   form,
   getField,
-  track,
 } from './index';
 
 function immutableSet(state, path, value) {
@@ -146,6 +146,8 @@ const immutableFormCombiner = createFormCombiner({
 const immutableCombineForms = immutableFormCombiner.combineForms;
 const immutableCreateForms = immutableFormCombiner.createForms;
 
+const immutableTrack = createTrack(immutableStrategy);
+
 export {
   // Reducers
   immutableFormReducer as formReducer,
@@ -180,5 +182,5 @@ export {
   immutableGetFieldFromState as getField,
   immutableGetForm as getForm,
   immutableGetFormStateKey as getFormStateKey,
-  track,
+  immutableTrack as track,
 };
