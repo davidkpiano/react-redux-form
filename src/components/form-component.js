@@ -277,9 +277,7 @@ function createFormClass(s = defaultStrategy) {
         onSubmitFailed(formValue);
       }
 
-      if (!formValue.$form.submitFailed) {
-        dispatch(s.actions.setSubmitFailed(this.props.model));
-      }
+      dispatch(s.actions.setSubmitFailed(this.props.model));
     }
 
     handleReset(e) {
