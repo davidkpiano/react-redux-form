@@ -199,12 +199,6 @@ function createFormClass(s = defaultStrategy) {
               validityChanged = true;
             }
 
-            // Changed the below for a test that errors and validations
-            // get merged correctly, but it appears this wasn't actually
-            // supported for the same field? Also could have the side
-            // effect that errors wouldn't get cleared?
-            // fieldsErrors[field] = merge(fieldsErrors[field] || {}, fieldErrors);
-
             fieldsErrors[field] = fieldErrors;
           }
         }
@@ -215,15 +209,8 @@ function createFormClass(s = defaultStrategy) {
       mapValues(errors, validateField);
 
       if (typeof validators === 'function') {
-        const field = '';
-
-        const nextValue = field
-          ? s.get(nextProps.modelValue, field)
-          : nextProps.modelValue;
-
-        const currentValue = field
-          ? s.get(modelValue, field)
-          : modelValue;
+        const nextValue = nextProps.modelValue;
+        const currentValue = modelValue;
 
         // If the validators didn't change, the validity didn't change.
         if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
