@@ -2,12 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
-import mapValues from '../utils/map-values';
 import omit from '../utils/omit';
 
 import actions from '../actions';
 import getValidity from '../utils/get-validity';
-import invertValidity from '../utils/invert-validity';
 import invertValidators from '../utils/invert-validators';
 import isValidityInvalid from '../utils/is-validity-invalid';
 import isValid from '../form/is-valid';
@@ -16,6 +14,7 @@ import getModel from '../utils/get-model';
 import getField from '../utils/get-field';
 import deepCompareChildren from '../utils/deep-compare-children';
 import containsEvent from '../utils/contains-event';
+import mergeValidity from '../utils/merge-validity';
 import invariant from 'invariant';
 
 const propTypes = {
@@ -134,7 +133,7 @@ function createFormClass(s = defaultStrategy) {
       if (this.props.getRef) this.props.getRef(node);
     }
 
-    validate(nextProps, initial = false) {
+    validate(nextProps, initial = false, submit = false) {
       const {
         model,
         dispatch,
@@ -162,12 +161,31 @@ function createFormClass(s = defaultStrategy) {
 
       const validatorsChanged = validators !== this.props.validators
         || errors !== this.props.errors;
+      const fieldKeys = (validators ? Object.keys(validators) : [])
+        .concat(errors ? Object.keys(errors) : []);
 
       const fieldsErrors = {};
       let validityChanged = false;
 
-      // this is (internally) mutative for performance reasons.
-      const validateField = (errorValidator, field) => {
+      const keysToValidate = [];
+
+      fieldKeys.forEach(key => {
+        if (!!~keysToValidate.indexOf(key)) return;
+
+        const valuesChanged = key === ''
+          ? modelValue !== nextProps.modelValue
+          : (s.get(modelValue, key) !== s.get(nextProps.modelValue, key));
+
+        if (submit || initial
+          || valuesChanged
+          || (validators && (this.props.validators[key] !== validators[key]))
+          || (errors && (this.props.errors[key] !== errors[key]))
+          || !!~key.indexOf('[]')) {
+          keysToValidate.push(key);
+        }
+      });
+
+      const validateField = (field, errorValidator) => {
         if (!!~field.indexOf('[]')) {
           const [parentModel, childModel] = field.split('[]');
 
@@ -176,84 +194,82 @@ function createFormClass(s = defaultStrategy) {
             : nextProps.modelValue;
 
           nextValue.forEach((subValue, index) => {
-            validateField(errorValidator, `${parentModel}[${index}]${childModel}`);
+            validateField(`${parentModel}[${index}]${childModel}`, errorValidator);
           });
         } else {
           const nextValue = field
             ? s.get(nextProps.modelValue, field)
             : nextProps.modelValue;
 
-          const currentValue = field
-            ? s.get(modelValue, field)
-            : modelValue;
-
           const currentErrors = getField(formValue, field).errors;
+          const fieldErrors = getValidity(errorValidator, nextValue);
 
-          // If the validators didn't change, the validity didn't change.
-          if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
-            fieldsErrors[field] = getField(formValue, field).errors;
-          } else {
-            const fieldErrors = getValidity(errorValidator, nextValue);
-
-            if (!validityChanged && !shallowEqual(fieldErrors, currentErrors)) {
-              validityChanged = true;
-            }
-
-            fieldsErrors[field] = fieldErrors;
+          if (!validityChanged && !shallowEqual(fieldErrors, currentErrors)) {
+            validityChanged = true;
           }
+
+          fieldsErrors[field] = mergeValidity(fieldsErrors[field], fieldErrors);
         }
       };
 
-      // Run errors first, validations should take precendence.
-      // When run below will replace the contents of the fieldErrors[].
-      mapValues(errors, validateField);
+      keysToValidate.forEach(field => {
+        if (validators && validators[field]) {
+          validateField(field, invertValidators(validators[field]));
+        }
+        if (errors && errors[field]) {
+          validateField(field, errors[field]);
+        }
+      });
 
       if (typeof validators === 'function') {
         const nextValue = nextProps.modelValue;
         const currentValue = modelValue;
 
-        // If the validators didn't change, the validity didn't change.
-        if ((!initial && !validatorsChanged) && (nextValue === currentValue)) {
-          // TODO this will only set the errors on form when using the function.
-          // How handle? Safe to assume will be no dispatch?
-          // fieldsErrors[field] = getField(formValue, field).errors;
-        } else {
-          const multiFieldErrors = getValidity(validators, nextValue);
-
-          if (multiFieldErrors) {
-            Object.keys(multiFieldErrors).forEach((key) => {
-              // key will be the model value to apply errors to.
-              const fieldErrors = multiFieldErrors[key];
-              const currentErrors = getField(formValue, key).errors;
-
-              // Invert validators
-              Object.keys(fieldErrors).forEach((validationName) => {
-                fieldErrors[validationName] = !fieldErrors[validationName];
-              });
-
-              if (!validityChanged && !shallowEqual(fieldErrors, currentErrors)) {
-                validityChanged = true;
-              }
-
-              fieldsErrors[key] = fieldErrors;
-            });
-          }
+        if (!submit && (!initial && !validatorsChanged) && (nextValue === currentValue)) {
+          // If neither the validators nor the values have changed,
+          // the validity didn't change.
+          return;
         }
-      } else if (validators) {
-        const errorValidators = invertValidators(validators);
 
-        mapValues(errorValidators, validateField);
+        const multiFieldErrors = getValidity(validators, nextValue);
+
+        if (multiFieldErrors) {
+          Object.keys(multiFieldErrors).forEach((key) => {
+            // key will be the model value to apply errors to.
+            const fieldErrors = multiFieldErrors[key];
+            const currentErrors = getField(formValue, key).errors;
+
+            // Invert validators
+            Object.keys(fieldErrors).forEach((validationName) => {
+              fieldErrors[validationName] = !fieldErrors[validationName];
+            });
+
+            if (!validityChanged && !shallowEqual(fieldErrors, currentErrors)) {
+              validityChanged = true;
+            }
+
+            fieldsErrors[key] = mergeValidity(fieldsErrors[key], fieldErrors);
+          });
+        }
       }
 
       // Compute form-level validity
-      if (!fieldsErrors.hasOwnProperty('')) {
+      if (!fieldsErrors.hasOwnProperty('') && !~fieldKeys.indexOf('')) {
         fieldsErrors[''] = false;
         validityChanged = validityChanged
           || isValidityInvalid(formValue.$form.errors);
       }
 
       if (validityChanged) {
-        dispatch(s.actions.setFieldsErrors(model, fieldsErrors));
+        dispatch(s.actions.setFieldsErrors(
+          model,
+          fieldsErrors,
+          { merge: submit }
+        ));
+      }
+
+      if (submit) {
+        dispatch(s.actions.addIntent(model, { type: 'submit' }));
       }
     }
 
@@ -317,13 +333,10 @@ function createFormClass(s = defaultStrategy) {
       if (e && !this.props.action) e.preventDefault();
 
       const {
-        model,
         modelValue,
         formValue,
         onSubmit,
-        dispatch,
         validators,
-        errors: errorValidators,
       } = this.props;
 
       const formValid = formValue
@@ -336,49 +349,7 @@ function createFormClass(s = defaultStrategy) {
         return modelValue;
       }
 
-      let fieldsValidity = {};
-
-      // this is (internally) mutative for performance reasons.
-      const validateField = (validator, field) => {
-        if (!!~field.indexOf('[]')) {
-          const [parentModel, childModel] = field.split('[]');
-
-          const fieldValue = parentModel
-            ? s.get(modelValue, parentModel)
-            : modelValue;
-
-          fieldValue.forEach((subValue, index) => {
-            validateField(validator, `${parentModel}[${index}]${childModel}`);
-          });
-        } else {
-          const fieldValue = field
-            ? s.get(modelValue, field)
-            : modelValue;
-
-          const fieldValidity = getValidity(validator, fieldValue);
-
-          fieldsValidity[field] = fieldValidity;
-        }
-      };
-
-      if (typeof validators === 'function') {
-        Object.assign(fieldsValidity, validators(modelValue));
-      } else {
-        mapValues(validators, validateField);
-      }
-
-      fieldsValidity = invertValidity(fieldsValidity);
-
-      mapValues(errorValidators, validateField);
-
-      dispatch(s.actions.batch(model, [
-        s.actions.setFieldsErrors(
-          model,
-          fieldsValidity,
-          { merge: true }
-        ),
-        s.actions.addIntent(model, { type: 'submit' }),
-      ]));
+      this.validate(this.props, false, true);
 
       return modelValue;
     }
