@@ -29,6 +29,7 @@ import {
   getField,
   track,
 } from './src/index';
+import omit from './src/utils/omit';
 
 function getTextValue(value) {
   if (typeof value === 'string' || typeof value === 'number') {
@@ -43,14 +44,15 @@ const noop = () => undefined;
 Control.MapView = (props) => (
   <Control
     component={MapView}
+    updateOn="blur"
     mapProps={{
       onResponderGrant: ({ onFocus }) => onFocus,
       onRegionChange: ({ onChange }) => onChange,
       onRegionChangeComplete: ({ onBlur }) => onBlur,
       region: ({ modelValue }) => modelValue,
+      ...props.mapProps,
     }}
-    updateOn="blur"
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -63,8 +65,9 @@ Control.Picker = (props) => (
       selectedValue: ({ modelValue }) => modelValue,
       onValueChange: ({ onChange }) => onChange,
       onChange: noop,
+      ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -77,8 +80,9 @@ Control.Switch = (props) => (
       value: ({ modelValue }) => !!modelValue,
       onValueChange: ({ onChange }) => onChange,
       onChange: noop,
+      ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -94,8 +98,9 @@ Control.TextInput = (props) => (
       onChange: noop,
       onBlur: ({ onBlur, viewValue }) => () => onBlur(viewValue),
       onFocus: ({ onFocus }) => onFocus,
+      ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -108,8 +113,9 @@ Control.DatePickerIOS = (props) => (
       date: ({ modelValue }) => modelValue,
       onDateChange: ({ onChange }) => onChange,
       onChange: noop,
+      ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -121,8 +127,9 @@ Control.SegmentedControlIOS = (props) => (
       selectedIndex: ({ values, modelValue }) => values.indexOf(modelValue),
       onValueChange: ({ onChange }) => onChange,
       onChange: noop,
+      ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
@@ -135,13 +142,14 @@ Control.Slider = (props) => (
       onSlidingComplete: ({ onBlur }) => onBlur,
       onValueChange: ({ onChange }) => onChange,
       onChange: noop,
+      ...props.mapProps,
     }}
-    {...props}
+    {...omit(props, 'mapProps')}
   />
 );
 
-const NativeForm = (props) => <Form component={View} {...props} />;
-const NativeFieldset = (props) => <Fieldset component={View} {...props} />;
+const NativeForm = (props) => <Form component={View} {...omit(props, 'mapProps')} />;
+const NativeFieldset = (props) => <Fieldset component={View} {...omit(props, 'mapProps')} />;
 const NativeErrors = (props) => (
   <Errors
     wrapper={View}
