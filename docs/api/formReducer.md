@@ -1,4 +1,4 @@
-# `formReducer(model, [initialState])`
+# `formReducer(model, [initialState], [options])`
 
 Returns a form reducer that only responds to any actions on the model or model's child values.
 
@@ -49,7 +49,7 @@ If provided an `initialState`, the form reducer will initialize its fields based
 ### Arguments
 - `model` _(String)_: the model whose form and field states the reducer will update.
 - `initialState` _(any)_: the initial state of the model
-_ `options` _(Object)_: an object containing options for the form reducer:
+- `options` _(Object)_: an object containing options for the form reducer
 
 ### Options
 - `plugins` _(Array<Function>)_: an array of reducers that can be used to customize the return value of the form reducer. Each plugin is run _after_ the default form reducer, and takes in two arguments:
