@@ -47,7 +47,7 @@ _(String | Function)_: The string representing the model value of the entire for
 
 Typically, the `<Control>` (and/or `<Field>`) components nested inside `<Form>` would be _members_ of the form model; e.g. `user.email` and `user.password` are members of the `user` model.
 
-You can also use [partial models](../guides/partial-models) for `<Control>`, `<Field>`, `<Fieldset>`, and `<Errors>` components inside of `<Form>` - they will be resolved to the form's model.
+You can also use [partial models](../guides/partial-models.md) for `<Control>`, `<Field>`, `<Fieldset>`, and `<Errors>` components inside of `<Form>` - they will be resolved to the form's model.
 
 ## `validators={{...}}`
 _(Object)_: An object representing the validators for the fields inside the form, where:
@@ -73,7 +73,7 @@ _(Object)_: An object representing the error validators for the fields inside th
   - an error validator function, which receives the field model value, or
   - an error validator object, with validation keys and error validator functions as values, also receiving the field model value.
 
-Its behavior is identical to the `validators={{...}}` prop, with the exception that an error validator that returns anything truthy is interpreted as an _error_. See [the validation guide](../guides/validation) for more info.
+Its behavior is identical to the `validators={{...}}` prop, with the exception that an error validator that returns anything truthy is interpreted as an _error_. See [the validation guide](../guides/validation.md) for more info.
 
 ## `validateOn="..."`
 _(String)_: A string that indicates when `validators` or `errors` (for error validators) should run.
