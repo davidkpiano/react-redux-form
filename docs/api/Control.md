@@ -16,6 +16,7 @@
 - [`ignore`](#prop-ignore)
 - [`disabled`](#disabled)
 - [`getRef`](#prop-getRef)
+- [`persist`](#prop-persist)
 
 ## `<Control>`
 
@@ -345,5 +346,20 @@ _(Function)_: Calls the callback provided to the `getRef` prop with the node ins
 <Control.text
   model="user.name"
   getRef={(node) => this.attach(node)}
+/>
+```
+
+<h2 id="prop-persist"></h2>
+## `persist={false}`
+_(Boolean)_: Signifies that the field state (validation, etc.) should not persist when the component is unmounted. Default: `false`
+
+```jsx
+// If user.name is less than 8 characters and persist == true, its validity will be:
+// { length: false }
+// even when the control is unmounted.
+<Control.text
+  model="user.name"
+  validators={{ length: (value) => value.length > 8 }}
+  persist
 />
 ```

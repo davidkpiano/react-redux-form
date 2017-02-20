@@ -111,6 +111,7 @@ const propTypes = {
   getRef: PropTypes.func,
   withField: PropTypes.bool,
   debounce: PropTypes.number,
+  persist: PropTypes.bool,
 };
 
 const defaultStrategy = {
@@ -185,9 +186,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         dispatch,
         validators = {},
         errors = {},
+        persist,
       } = this.props;
 
-      if (fieldValue && !fieldValue.valid) {
+      if (!persist && fieldValue && !fieldValue.valid) {
         const keys = Object.keys(validators)
           .concat(Object.keys(errors), this.willValidate ? validityKeys : []);
 
@@ -595,7 +597,6 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         control,
         getRef,
       } = this.props;
-      // console.log('RENDERING', this.props.model);
 
       const mappedProps = omit(this.getMappedProps(), disallowedProps);
 
@@ -635,6 +636,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     mapProps: controlPropsMap.default,
     component: 'input',
     withField: true,
+    persist: false,
   };
 
   function mapStateToProps(state, props) {

@@ -1,4 +1,4 @@
-/* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
+ /* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
 import { assert } from 'chai';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -1948,6 +1948,56 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.equal(get(store.getState().test, 'foo'), 'bar');
         assert.equal(input.value, 'debounced');
+      });
+    });
+
+    describe('persist prop', () => {
+      const initialState = getInitialState({ foo: 'bar' });
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
+
+      it('should persist validation on unmount when persist = true', () => {
+        const container = document.createElement('div');
+
+        const field = ReactDOM.render(
+          <Provider store={store}>
+            <Control.input
+              model="test.foo"
+              validators={{ valid: () => false }}
+              persist
+            />
+          </Provider>,
+          container);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        ReactDOM.unmountComponentAtNode(container);
+
+        assert.isFalse(store.getState().testForm.foo.valid);
+        assert.deepEqual(store.getState().testForm.foo.validity, { valid: false });
+      });
+
+      it('should not persist validation on unmount when persist = false (default)', () => {
+        const container = document.createElement('div');
+
+        const field = ReactDOM.render(
+          <Provider store={store}>
+            <Control.input
+              model="test.foo"
+              validators={{ valid: () => false }}
+              persist={false}
+            />
+          </Provider>,
+          container);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        ReactDOM.unmountComponentAtNode(container);
+
+        assert.isTrue(store.getState().testForm.foo.valid);
+        assert.deepEqual(store.getState().testForm.foo.validity, {});
       });
     });
   });
