@@ -15,6 +15,7 @@
 - [`component`](#prop-component)
 - [`ignore`](#prop-ignore)
 - [`disabled`](#disabled)
+- [`getRef`](#prop-getRef)
 
 ## `<Control>`
 
@@ -336,6 +337,7 @@ For example:
 
 (since: version 1.3.0)
 
+<h2 id="prop-getRef"></h2>
 ## `getRef={() => ...}`
 _(Function)_: Calls the callback provided to the `getRef` prop with the node instance. Similar to `ref`.
 
