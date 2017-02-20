@@ -84,10 +84,9 @@ import { Control, Form, actions } from 'react-redux-form';
 
 class UserForm extends React.Component {
   handleSubmit(user) {
-    const { dispatch } = this.props;
-
     // Do whatever you like in here.
-    // You can use actions such as:
+    // If you connect the UserForm to the Redux store,
+    // you can dispatch actions such as:
     // dispatch(actions.submit('user', somePromise));
     // etc.
   }
