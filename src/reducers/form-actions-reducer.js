@@ -184,7 +184,11 @@ export default function formActionsReducer(state, action, localPath) {
       };
 
       if (action.async) {
-        fieldUpdates.asyncKeys = Object.keys(isErrors ? action.errors : action.validity);
+        const actionValidity = isErrors ? action.errors : action.validity;
+
+        fieldUpdates.asyncKeys = (isPlainObject(actionValidity) || Array.isArray(actionValidity))
+          ? Object.keys(actionValidity)
+          : true;
       }
 
       parentFormUpdates = (form) => ({ valid: isValid(form) });

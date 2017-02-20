@@ -12,7 +12,7 @@ import {
 
 import store from './store.js';
 
-const UPDATE_ON = 'blur';
+const UPDATE_ON = 'change';
 
 class Rows extends Component {
   constructor() {

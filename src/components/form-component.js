@@ -152,7 +152,7 @@ function createFormClass(s = defaultStrategy) {
         // If the form is invalid (due to async validity)
         // but its fields are valid and the value has changed,
         // the form should be "valid" again.
-        if (isValid(formValue, { async: false })) {
+        if (!formValue.$form.valid && isValid(formValue, { async: false })) {
           dispatch(s.actions.setValidity(model, true));
         }
 
@@ -264,7 +264,7 @@ function createFormClass(s = defaultStrategy) {
         dispatch(s.actions.setFieldsErrors(
           model,
           fieldsErrors,
-          { merge: submit }
+          { merge: true }
         ));
       }
 

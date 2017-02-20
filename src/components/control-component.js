@@ -234,6 +234,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
       return changeAction(model, getValue(value), {
         currentValue: modelValue,
+        external: false,
       });
     }
 
@@ -247,7 +248,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         fieldValue,
       } = this.props;
 
-      if (!validators && !errors && isNative) return false;
+      if (!validators && !errors) return false;
 
       const nodeErrors = this.getNodeErrors();
 
@@ -594,6 +595,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         control,
         getRef,
       } = this.props;
+      // console.log('RENDERING', this.props.model);
 
       const mappedProps = omit(this.getMappedProps(), disallowedProps);
 

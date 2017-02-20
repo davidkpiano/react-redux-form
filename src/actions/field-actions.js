@@ -218,7 +218,7 @@ function createFieldActions(s = defaultStrategies) {
 
         dispatch(batch(model, [
           setSubmitFailed(model),
-          errorsAction(model, error),
+          errorsAction(model, error, { async: true }),
         ]));
       });
 

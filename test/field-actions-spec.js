@@ -1390,7 +1390,12 @@ Object.keys(testContexts).forEach((testKey) => {
                 submitFailed: true,
                 model: 'test',
               },
-              { type: actionTypes.SET_ERRORS, errors, model: 'test' },
+              {
+                type: actionTypes.SET_ERRORS,
+                errors,
+                async: true,
+                model: 'test',
+              },
             ],
           },
         ];
