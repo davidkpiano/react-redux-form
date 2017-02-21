@@ -1,11 +1,9 @@
-# React Redux Form ❄️
+# React Redux Form
 
 [![Join the chat at https://gitter.im/react-redux-form/Lobby](https://badges.gitter.im/react-redux-form/Lobby.svg)](https://gitter.im/react-redux-form/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/davidkpiano/react-redux-form.svg?branch=master)](https://travis-ci.org/davidkpiano/react-redux-form) [![npm version](https://badge.fury.io/js/react-redux-form.svg)](https://badge.fury.io/js/react-redux-form)
 
 ## [🆕 Read the Documentation](https://davidkpiano.github.io/react-redux-form/docs.html)
-
-Or, if you're using an old version, [read the v0.14.x documentation](https://davidkpiano.gitbooks.io/react-redux-form/content/)
 
 React Redux Form is a collection of reducer creators and action creators that make implementing even the most complex and custom forms with React and Redux simple and performant.
 
@@ -49,6 +47,8 @@ export default class MyApp extends React.Component {
 ```
 
 That's all you need. Seriously. [Read the Documentation](http://davidkpiano.github.io/react-redux-form/docs/guides/local.html) for more information.
+
+**NOTE:** Please use `<LocalForm>` with `react-redux` version 4.x.x. 
 
 ## Quick Start
 For more fine-grained control (such as using custom reducers, storing form state globally, dispatching actions, etc.), you'll want to set up a Redux store for your forms.
@@ -110,4 +110,4 @@ export default MyForm;
 ## Posting Issues
 When posting an issue, please include a detailed description along with a relevant code sample. Attaching a failing test case with your issue will go a long way and is much appreciated.
 
-Feel free to [fork this esnextb.in gist](https://esnextb.in/?gist=b31277251f5c24df9b13b2cc95abc00c) for quickly creating reproducible examples!
+Feel free to [fork this CodePen](http://codepen.io/davidkpiano/pen/2cbfd61bdcff474ca6e40e8ed2221ef9) for quickly creating reproducible examples!
