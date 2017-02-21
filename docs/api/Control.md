@@ -34,6 +34,7 @@ The following pre-defined `<Control>`s are available:
 - `<Control.file>` for `<input type="file" />`
 - `<Control.select>` for `<select></select>`
 - `<Control.button>` for `<button></button>`
+- `<Control.reset>` for `<button type="reset"></button>`
 
 You can add your own types to the basic `<Control>` component as an attribute:
 `<Control type="password">`
