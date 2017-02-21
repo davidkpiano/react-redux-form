@@ -2000,5 +2000,33 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.deepEqual(store.getState().testForm.foo.validity, {});
       });
     });
+
+    describe('mixing controlProps and props', () => {
+      const initialState = getInitialState({ foo: 'bar' });
+      const store = testCreateStore({
+        user: modelReducer('user', initialState),
+        userForm: formReducer('user', initialState),
+      });
+
+      const control = testRender(
+        <Control.button
+          model="user"
+          controlProps={{ className: 'button-class' }}
+          lang="en"
+        >
+          Go
+        </Control.button>, store);
+
+      const button = TestUtils.findRenderedDOMComponentWithTag(control, 'button');
+
+      it('should have controlProps on the rendered control', () => {
+        assert.equal(button.getAttribute('class'), 'button-class');
+      });
+
+      it('should have normal, non-RRF-specific props passed to the rendered control', () => {
+        assert.equal(button.getAttribute('lang'), 'en');
+        assert.equal(button.textContent, 'Go');
+      });
+    });
   });
 });

@@ -642,8 +642,13 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
   function mapStateToProps(state, props) {
     const {
       model,
-      controlProps = omit(props, Object.keys(propTypes)),
+      controlProps,
     } = props;
+
+    const finalControlProps = {
+      ...controlProps,
+      ...omit(props, Object.keys(propTypes)),
+    };
 
     const modelString = getModel(model, state);
     const fieldValue = s.getFieldFromState(state, modelString)
@@ -653,7 +658,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       model: modelString,
       modelValue: s.get(state, modelString),
       fieldValue,
-      controlProps,
+      controlProps: finalControlProps,
     };
   }
 
