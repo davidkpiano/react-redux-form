@@ -231,5 +231,17 @@ _(Function)_ Provides the dispatcher for the `<Form>`'s store.
 />
 ```
 
+## `onBeforeSubmit={(event) => ...}`
+_(Function)_ Called every time a `submit` event is emitted from the form.
+
+(since: 1.6.1 - note: this is temporary and likely to be removed in version 2.0)
+
+```jsx
+<Form
+  model="user"
+  onBeforeSubmit={(event) => /* ... */}
+/>
+```
+
 ### Notes
 - This is most useful for use with `<LocalForm>`, and is primarily intended for `<LocalForm>`.

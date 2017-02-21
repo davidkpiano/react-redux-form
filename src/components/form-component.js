@@ -47,6 +47,7 @@ const propTypes = {
   onChange: PropTypes.func,
   getRef: PropTypes.func,
   getDispatch: PropTypes.func,
+  onBeforeSubmit: PropTypes.func,
 
   // standard HTML attributes
   action: PropTypes.string,
@@ -337,7 +338,10 @@ function createFormClass(s = defaultStrategy) {
         formValue,
         onSubmit,
         validators,
+        onBeforeSubmit,
       } = this.props;
+
+      if (onBeforeSubmit) onBeforeSubmit(e);
 
       const formValid = formValue
         ? formValue.$form.valid
