@@ -660,7 +660,17 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
   const ConnectedControl = resolveModel(connect(mapStateToProps)(Control));
 
   /* eslint-disable react/prop-types */
-  ConnectedControl.input = (props) => (
+  const DefaultConnectedControl = (props) => (
+    <ConnectedControl
+      mapProps={{
+        ...controlPropsMap.default,
+        ...props.mapProps,
+      }}
+      {...omit(props, 'mapProps')}
+    />
+  );
+
+  DefaultConnectedControl.input = (props) => (
     <ConnectedControl
       component="input"
       mapProps={{
@@ -671,7 +681,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.text = (props) => (
+  DefaultConnectedControl.text = (props) => (
     <ConnectedControl
       component="input"
       mapProps={{
@@ -683,7 +693,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.textarea = (props) => (
+  DefaultConnectedControl.textarea = (props) => (
     <ConnectedControl
       component="textarea"
       mapProps={{
@@ -694,7 +704,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.radio = (props) => (
+  DefaultConnectedControl.radio = (props) => (
     <ConnectedControl
       component="input"
       type="radio"
@@ -706,7 +716,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.checkbox = (props) => (
+  DefaultConnectedControl.checkbox = (props) => (
     <ConnectedControl
       component="input"
       type="checkbox"
@@ -719,7 +729,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.file = (props) => (
+  DefaultConnectedControl.file = (props) => (
     <ConnectedControl
       component="input"
       type="file"
@@ -731,7 +741,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.select = (props) => (
+  DefaultConnectedControl.select = (props) => (
     <ConnectedControl
       component="select"
       mapProps={{
@@ -742,7 +752,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.button = (props) => (
+  DefaultConnectedControl.button = (props) => (
     <ConnectedControl
       component="button"
       mapProps={{
@@ -753,7 +763,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.reset = (props) => (
+  DefaultConnectedControl.reset = (props) => (
     <ConnectedControl
       component="button"
       type="reset"
@@ -765,7 +775,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  return ConnectedControl;
+  return DefaultConnectedControl;
 }
 
 export {
