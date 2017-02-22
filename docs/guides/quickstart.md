@@ -15,7 +15,9 @@ Check out the above links if you need any help with those prerequisites.
 - `npm install redux react-redux --save`
 - `npm install react-redux-form --save`
 
-**Note:** - `redux-thunk` is no longer required for versions 1.3.0 and higher. If you are using a previous version, make sure to install it as well.
+**Note:** - `redux-thunk` is no longer required for versions 1.3.0 and higher, unless you are using action thunk creators (such as `actions.push`, etc.).
+Please see [the docs for action creators]('../api/actions.html') to see which actions do not require `redux-thunk`.
+If you are using a previous version, `redux-thunk` is still required, but upgrading to the latest version is highly recommended.
 
 ### 2. Setup your app.
 
@@ -82,10 +84,9 @@ import { Control, Form, actions } from 'react-redux-form';
 
 class UserForm extends React.Component {
   handleSubmit(user) {
-    const { dispatch } = this.props;
-
     // Do whatever you like in here.
-    // You can use actions such as:
+    // If you connect the UserForm to the Redux store,
+    // you can dispatch actions such as:
     // dispatch(actions.submit('user', somePromise));
     // etc.
   }

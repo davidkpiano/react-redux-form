@@ -2,6 +2,22 @@
 
 This list will be updated frequently!
 
+### How do you combine the reducer created by react-redux-form and `combineForms` with other reducers?
+
+Use it along side the other reducers and call [combineForms](https://davidkpiano.github.io/react-redux-form/docs/api/combineForms.html) with the second argument set to the reducer key of your choice, `deep` in the following example):
+
+```javascript
+const store = createStore(combineReducers({
+  nav: navReducer, // <== here
+  foo: fooReducer,
+  bar: barReducer,
+  deep: combineForms({
+    user: initialUserState,
+    goat: initialGoatState,
+  }, 'deep'),
+}));
+```
+
 ### How do you add conditional class names based on field state?
 
 Use the `mapProps={{...}}` property on `<Control>` components to set any props on the control component based on field state, like this:
@@ -72,3 +88,6 @@ You can use `getRef` on `<Field>`, `<Control>`, `<Form>`, or `<LocalForm>` compo
   getRef={(node) => this.attach(node)}
 />
 ```
+
+### Other Questions and Answers
+- https://github.com/davidkpiano/react-redux-form/issues/675#issuecomment-281164930

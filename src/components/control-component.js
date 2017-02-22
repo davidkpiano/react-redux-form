@@ -19,7 +19,7 @@ import getFieldFromState from '../utils/get-field-from-state';
 import getModel from '../utils/get-model';
 import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
-import defaultControlPropsMap from '../constants/control-props-map';
+import controlPropsMap from '../constants/control-props-map';
 import validityKeys from '../constants/validity-keys';
 import { dispatchBatchIfNeeded } from '../actions/batch-actions';
 import resolveModel from '../utils/resolve-model';
@@ -33,7 +33,7 @@ const findDOMNode = !isNative
 
 const disallowedProps = ['changeAction', 'getFieldFromState', 'store'];
 
-function getReadOnlyValue(props) {
+function getToggleValue(props) {
   const { modelValue, controlProps } = props;
 
   switch (controlProps.type) {
@@ -111,6 +111,7 @@ const propTypes = {
   getRef: PropTypes.func,
   withField: PropTypes.bool,
   debounce: PropTypes.number,
+  persist: PropTypes.bool,
 };
 
 const defaultStrategy = {
@@ -119,12 +120,7 @@ const defaultStrategy = {
   actions,
 };
 
-function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
-  const controlPropsMap = {
-    ...defaultControlPropsMap,
-    ...customControlPropsMap,
-  };
-
+function createControlClass(s = defaultStrategy) {
   const emptyControlProps = {};
 
   class Control extends Component {
@@ -160,9 +156,9 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       this.handleLoad();
     }
 
-    componentWillReceiveProps(nextProps) {
-      if (nextProps.modelValue !== this.props.modelValue) {
-        this.setViewValue(nextProps.modelValue);
+    componentWillReceiveProps({ modelValue }) {
+      if (modelValue !== this.props.modelValue) {
+        this.setViewValue(modelValue);
       }
     }
 
@@ -185,9 +181,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         dispatch,
         validators = {},
         errors = {},
+        persist,
       } = this.props;
 
-      if (fieldValue && !fieldValue.valid) {
+      if (!persist && fieldValue && !fieldValue.valid) {
         const keys = Object.keys(validators)
           .concat(Object.keys(errors), this.willValidate ? validityKeys : []);
 
@@ -228,12 +225,13 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         modelValue,
         changeAction,
       } = this.props;
-      const value = this.isReadOnlyValue()
-        ? getReadOnlyValue(this.props)
+      const value = this.isToggle()
+        ? getToggleValue(this.props)
         : event;
 
       return changeAction(model, getValue(value), {
         currentValue: modelValue,
+        external: false,
       });
     }
 
@@ -247,7 +245,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         fieldValue,
       } = this.props;
 
-      if (!validators && !errors && isNative) return false;
+      if (!validators && !errors) return false;
 
       const nodeErrors = this.getNodeErrors();
 
@@ -353,12 +351,12 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     }
 
     setViewValue(viewValue) {
-      if (!this.isReadOnlyValue()) {
+      if (!this.isToggle()) {
         this.setState({ viewValue: this.parse(viewValue) });
       }
     }
 
-    isReadOnlyValue() {
+    isToggle() {
       const { component, controlProps } = this.props;
 
       return component === 'input' && ~['radio', 'checkbox'].indexOf(controlProps.type);
@@ -387,7 +385,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
             if ((focused && this.node.focus)
               && (
-                !this.isReadOnlyValue()
+                !this.isToggle()
                 || typeof intent.value === 'undefined'
                 || intent.value === controlProps.value
               )) {
@@ -451,7 +449,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         model,
         modelValue,
         fieldValue,
-        controlProps = emptyControlProps,
+        controlProps,
         onLoad,
         dispatch,
         changeAction,
@@ -491,7 +489,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         updateOn,
         validateOn = updateOn,
         asyncValidateOn,
-        controlProps = emptyControlProps,
+        controlProps,
         parser,
         ignore,
         withField,
@@ -530,7 +528,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
             : event;
         }
 
-        if (this.isReadOnlyValue()) {
+        if (this.isToggle()) {
           return compose(
             dispatchBatchActions,
             persistEventWithCallback(controlEventHandler || identity)
@@ -589,7 +587,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
     render() {
       const {
-        controlProps = emptyControlProps,
+        controlProps,
         component,
         control,
         getRef,
@@ -633,13 +631,19 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     mapProps: controlPropsMap.default,
     component: 'input',
     withField: true,
+    persist: false,
   };
 
   function mapStateToProps(state, props) {
     const {
       model,
-      controlProps = omit(props, Object.keys(propTypes)),
+      controlProps,
     } = props;
+
+    const finalControlProps = {
+      ...controlProps,
+      ...omit(props, Object.keys(propTypes)),
+    };
 
     const modelString = getModel(model, state);
     const fieldValue = s.getFieldFromState(state, modelString)
@@ -649,14 +653,24 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
       model: modelString,
       modelValue: s.get(state, modelString),
       fieldValue,
-      controlProps,
+      controlProps: finalControlProps,
     };
   }
 
   const ConnectedControl = resolveModel(connect(mapStateToProps)(Control));
 
   /* eslint-disable react/prop-types */
-  ConnectedControl.input = (props) => (
+  const DefaultConnectedControl = (props) => (
+    <ConnectedControl
+      mapProps={{
+        ...controlPropsMap.default,
+        ...props.mapProps,
+      }}
+      {...omit(props, 'mapProps')}
+    />
+  );
+
+  DefaultConnectedControl.input = (props) => (
     <ConnectedControl
       component="input"
       mapProps={{
@@ -667,7 +681,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.text = (props) => (
+  DefaultConnectedControl.text = (props) => (
     <ConnectedControl
       component="input"
       mapProps={{
@@ -679,7 +693,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.textarea = (props) => (
+  DefaultConnectedControl.textarea = (props) => (
     <ConnectedControl
       component="textarea"
       mapProps={{
@@ -690,7 +704,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.radio = (props) => (
+  DefaultConnectedControl.radio = (props) => (
     <ConnectedControl
       component="input"
       type="radio"
@@ -702,7 +716,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.checkbox = (props) => (
+  DefaultConnectedControl.checkbox = (props) => (
     <ConnectedControl
       component="input"
       type="checkbox"
@@ -715,7 +729,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.file = (props) => (
+  DefaultConnectedControl.file = (props) => (
     <ConnectedControl
       component="input"
       type="file"
@@ -727,7 +741,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.select = (props) => (
+  DefaultConnectedControl.select = (props) => (
     <ConnectedControl
       component="select"
       mapProps={{
@@ -738,7 +752,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.button = (props) => (
+  DefaultConnectedControl.button = (props) => (
     <ConnectedControl
       component="button"
       mapProps={{
@@ -749,7 +763,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  ConnectedControl.reset = (props) => (
+  DefaultConnectedControl.reset = (props) => (
     <ConnectedControl
       component="button"
       type="reset"
@@ -761,7 +775,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     />
   );
 
-  return ConnectedControl;
+  return DefaultConnectedControl;
 }
 
 export {

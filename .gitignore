@@ -43,3 +43,6 @@ stats.json
 
 # Examples
 examples/sandbox
+
+# Other
+.vscode/

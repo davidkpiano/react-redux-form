@@ -206,6 +206,10 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
      * to event handlers as the second prop.
      */
     withField?: boolean;
+    /**
+     * Signifies that the field state (validation, etc.) should not persist when the component is unmounted. Default: false
+     */
+    persist?: boolean;
 }
 
 export class Control<T> extends React.Component<ControlProps<T>, {}> {
@@ -395,8 +399,8 @@ interface BaseFieldsetProps {
     className?: string;
     /**
      * The component that the <Fieldset> should be rendered to (default: "div").
-     * 
-     * * For React Native, the View component is used to render the fieldset, if you import { Fieldset } from 'react-redux-form/native'. 
+     *
+     * * For React Native, the View component is used to render the fieldset, if you import { Fieldset } from 'react-redux-form/native'.
      */
     component?: React.ComponentClass<any> | string;
 }
@@ -405,7 +409,7 @@ export interface FieldsetProps extends BaseFieldsetProps {
      * The string or tracker representing the model value of the entire form in the store.
 	 *
 	 * You can also use partial models for <Control>, <Field>, and <Errors> components inside of <Fieldset> - they will be resolved to the fieldset's model.
-	 * 
+	 *
 	 * In addition, you can use a partial model for <Fieldset> itself - it will resolve to the parent <Fieldset> (yes, you can nest fieldsets) or <Form> models.
      */
     model: string | ModelGetterFn;

@@ -32,6 +32,7 @@ export function createModelActions(s = defaultStrategies) {
     const changeOptions = {
       silent: false,
       multi: isMulti(model),
+      external: true,
       ...options,
     };
 

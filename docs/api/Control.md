@@ -15,6 +15,8 @@
 - [`component`](#prop-component)
 - [`ignore`](#prop-ignore)
 - [`disabled`](#disabled)
+- [`getRef`](#prop-getRef)
+- [`persist`](#prop-persist)
 
 ## `<Control>`
 
@@ -32,6 +34,7 @@ The following pre-defined `<Control>`s are available:
 - `<Control.file>` for `<input type="file" />`
 - `<Control.select>` for `<select></select>`
 - `<Control.button>` for `<button></button>`
+- `<Control.reset>` for `<button type="reset"></button>`
 
 You can add your own types to the basic `<Control>` component as an attribute:
 `<Control type="password">`
@@ -336,6 +339,7 @@ For example:
 
 (since: version 1.3.0)
 
+<h2 id="prop-getRef"></h2>
 ## `getRef={() => ...}`
 _(Function)_: Calls the callback provided to the `getRef` prop with the node instance. Similar to `ref`.
 
@@ -343,5 +347,20 @@ _(Function)_: Calls the callback provided to the `getRef` prop with the node ins
 <Control.text
   model="user.name"
   getRef={(node) => this.attach(node)}
+/>
+```
+
+<h2 id="prop-persist"></h2>
+## `persist={false}`
+_(Boolean)_: Signifies that the field state (validation, etc.) should not persist when the component is unmounted. Default: `false`
+
+```jsx
+// If user.name is less than 8 characters and persist == true, its validity will be:
+// { length: false }
+// even when the control is unmounted.
+<Control.text
+  model="user.name"
+  validators={{ length: (value) => value.length > 8 }}
+  persist
 />
 ```

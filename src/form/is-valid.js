@@ -7,7 +7,10 @@ export default function isValid(formState, options = { async: true }) {
     const { errors } = formState;
 
     if (!Array.isArray(errors) && !isPlainObject(errors)) {
-      return !errors;
+      // If asyncKeys = true and the error is not an
+      // array or object (e.g. string), form errors are entirely async
+      // and should be ignored when async = true.
+      return (!options.async && formState.asyncKeys) || !errors;
     }
 
     return Object.keys(formState.errors).every((errorKey) => {

@@ -2,12 +2,13 @@ import { createModeler } from './reducers/model-reducer';
 import formReducer from './reducers/form-reducer';
 import { createModelReducerEnhancer } from './enhancers/modeled-enhancer';
 import { createModelActions } from './actions/model-actions';
-import { createControlPropsMap } from './constants/control-props-map';
+import controlPropsMap from './constants/control-props-map';
 import { createFormCombiner } from './reducers/forms-reducer';
 import { createErrorsClass } from './components/errors-component';
 import { createControlClass } from './components/control-component';
 import { createFormClass } from './components/form-component';
 import { createFieldActions } from './actions/field-actions';
+import { createTrack } from './utils/track';
 import Fieldset from './components/fieldset-component';
 import batch from './actions/batch-actions';
 import getValue from './utils/get-value';
@@ -23,7 +24,6 @@ import {
   batched,
   form,
   getField,
-  track,
 } from './index';
 
 function immutableSet(state, path, value) {
@@ -115,13 +115,12 @@ const immutableActions = {
 
 const immutableModelReducer = createModeler(immutableStrategy);
 const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
-const immutableControlPropsMap = createControlPropsMap();
-const ImmutableControl = createControlClass(immutableControlPropsMap, {
+const ImmutableControl = createControlClass({
   get: immutableGetFromState,
   getFieldFromState: immutableGetFieldFromState,
   actions: immutableModelActions,
 });
-const ImmutableField = createFieldClass(immutableControlPropsMap, {
+const ImmutableField = createFieldClass(controlPropsMap, {
   Control: ImmutableControl,
   getter: immutableGetFromState,
   getFieldFromState: immutableGetFieldFromState,
@@ -146,6 +145,8 @@ const immutableFormCombiner = createFormCombiner({
 const immutableCombineForms = immutableFormCombiner.combineForms;
 const immutableCreateForms = immutableFormCombiner.createForms;
 
+const immutableTrack = createTrack(immutableStrategy);
+
 export {
   // Reducers
   immutableFormReducer as formReducer,
@@ -157,7 +158,7 @@ export {
   initialFieldState,
   immutableActions as actions,
   actionTypes,
-  immutableControlPropsMap as controls,
+  controlPropsMap as controls,
 
   // Components
   ImmutableField as Field,
@@ -180,5 +181,5 @@ export {
   immutableGetFieldFromState as getField,
   immutableGetForm as getForm,
   immutableGetFormStateKey as getFormStateKey,
-  track,
+  immutableTrack as track,
 };

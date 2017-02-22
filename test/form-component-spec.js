@@ -2129,7 +2129,8 @@ Object.keys(testContexts).forEach((testKey) => {
             >
               <Field
                 model=".name"
-                validators={{ fieldValidation: (value) => value && value.length }} validateOn="blur"
+                validators={{ fieldValidation: (value) => value && value.length }}
+                validateOn="blur"
               >
                 <input type="text" />
               </Field>

@@ -10,7 +10,7 @@ import updateParentForms from '../../utils/update-parent-forms';
 import invariant from 'invariant';
 
 function updateFieldValue(field, action, parentModel = undefined) {
-  const { value, removeKeys, silent, load, model } = action;
+  const { value, removeKeys, silent, load, model, external } = action;
 
   const fieldState = (field && field.$form)
     ? field.$form
@@ -21,7 +21,9 @@ function updateFieldValue(field, action, parentModel = undefined) {
     retouched: fieldState.submitted
       ? true
       : fieldState.retouched,
-    intents: [{ type: 'validate' }],
+    // If change originated from Control component (not externally),
+    // then there is no need to remind Control to validate itself.
+    intents: external ? [{ type: 'validate' }] : [],
     pristine: silent
       ? fieldState.pristine
       : false,

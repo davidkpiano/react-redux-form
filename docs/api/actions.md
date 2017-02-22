@@ -6,6 +6,7 @@
   - **Action thunk creators:**
     - [`actions.merge()`](#actions-merge)
     - [`actions.xor()`](#actions-xor)
+    - [`actions.push()`](#actions-push)
     - [`actions.toggle()`](#actions-toggle)
     - [`actions.filter()`](#actions-filter)
     - [`actions.map()`](#actions-map)
