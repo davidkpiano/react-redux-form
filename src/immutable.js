@@ -2,7 +2,7 @@ import { createModeler } from './reducers/model-reducer';
 import formReducer from './reducers/form-reducer';
 import { createModelReducerEnhancer } from './enhancers/modeled-enhancer';
 import { createModelActions } from './actions/model-actions';
-import { createControlPropsMap } from './constants/control-props-map';
+import controlPropsMap from './constants/control-props-map';
 import { createFormCombiner } from './reducers/forms-reducer';
 import { createErrorsClass } from './components/errors-component';
 import { createControlClass } from './components/control-component';
@@ -115,13 +115,12 @@ const immutableActions = {
 
 const immutableModelReducer = createModeler(immutableStrategy);
 const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
-const immutableControlPropsMap = createControlPropsMap();
-const ImmutableControl = createControlClass(immutableControlPropsMap, {
+const ImmutableControl = createControlClass(controlPropsMap, {
   get: immutableGetFromState,
   getFieldFromState: immutableGetFieldFromState,
   actions: immutableModelActions,
 });
-const ImmutableField = createFieldClass(immutableControlPropsMap, {
+const ImmutableField = createFieldClass(controlPropsMap, {
   Control: ImmutableControl,
   getter: immutableGetFromState,
   getFieldFromState: immutableGetFieldFromState,
@@ -159,7 +158,7 @@ export {
   initialFieldState,
   immutableActions as actions,
   actionTypes,
-  immutableControlPropsMap as controls,
+  controlPropsMap as controls,
 
   // Components
   ImmutableField as Field,
