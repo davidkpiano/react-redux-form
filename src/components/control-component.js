@@ -33,7 +33,7 @@ const findDOMNode = !isNative
 
 const disallowedProps = ['changeAction', 'getFieldFromState', 'store'];
 
-function getReadOnlyValue(props) {
+function getToggleValue(props) {
   const { modelValue, controlProps } = props;
 
   switch (controlProps.type) {
@@ -156,9 +156,9 @@ function createControlClass(s = defaultStrategy) {
       this.handleLoad();
     }
 
-    componentWillReceiveProps(nextProps) {
-      if (nextProps.modelValue !== this.props.modelValue) {
-        this.setViewValue(nextProps.modelValue);
+    componentWillReceiveProps({ modelValue }) {
+      if (modelValue !== this.props.modelValue) {
+        this.setViewValue(modelValue);
       }
     }
 
@@ -225,8 +225,8 @@ function createControlClass(s = defaultStrategy) {
         modelValue,
         changeAction,
       } = this.props;
-      const value = this.isReadOnlyValue()
-        ? getReadOnlyValue(this.props)
+      const value = this.isToggle()
+        ? getToggleValue(this.props)
         : event;
 
       return changeAction(model, getValue(value), {
@@ -351,12 +351,12 @@ function createControlClass(s = defaultStrategy) {
     }
 
     setViewValue(viewValue) {
-      if (!this.isReadOnlyValue()) {
+      if (!this.isToggle()) {
         this.setState({ viewValue: this.parse(viewValue) });
       }
     }
 
-    isReadOnlyValue() {
+    isToggle() {
       const { component, controlProps } = this.props;
 
       return component === 'input' && ~['radio', 'checkbox'].indexOf(controlProps.type);
@@ -385,7 +385,7 @@ function createControlClass(s = defaultStrategy) {
 
             if ((focused && this.node.focus)
               && (
-                !this.isReadOnlyValue()
+                !this.isToggle()
                 || typeof intent.value === 'undefined'
                 || intent.value === controlProps.value
               )) {
@@ -528,7 +528,7 @@ function createControlClass(s = defaultStrategy) {
             : event;
         }
 
-        if (this.isReadOnlyValue()) {
+        if (this.isToggle()) {
           return compose(
             dispatchBatchActions,
             persistEventWithCallback(controlEventHandler || identity)
