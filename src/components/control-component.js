@@ -19,7 +19,7 @@ import getFieldFromState from '../utils/get-field-from-state';
 import getModel from '../utils/get-model';
 import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
-import defaultControlPropsMap from '../constants/control-props-map';
+import controlPropsMap from '../constants/control-props-map';
 import validityKeys from '../constants/validity-keys';
 import { dispatchBatchIfNeeded } from '../actions/batch-actions';
 import resolveModel from '../utils/resolve-model';
@@ -120,12 +120,7 @@ const defaultStrategy = {
   actions,
 };
 
-function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
-  const controlPropsMap = {
-    ...defaultControlPropsMap,
-    ...customControlPropsMap,
-  };
-
+function createControlClass(s = defaultStrategy) {
   const emptyControlProps = {};
 
   class Control extends Component {
@@ -454,7 +449,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         model,
         modelValue,
         fieldValue,
-        controlProps = emptyControlProps,
+        controlProps,
         onLoad,
         dispatch,
         changeAction,
@@ -494,7 +489,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
         updateOn,
         validateOn = updateOn,
         asyncValidateOn,
-        controlProps = emptyControlProps,
+        controlProps,
         parser,
         ignore,
         withField,
@@ -592,7 +587,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
 
     render() {
       const {
-        controlProps = emptyControlProps,
+        controlProps,
         component,
         control,
         getRef,

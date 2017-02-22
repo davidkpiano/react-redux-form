@@ -115,7 +115,7 @@ const immutableActions = {
 
 const immutableModelReducer = createModeler(immutableStrategy);
 const immutableModelReducerEnhancer = createModelReducerEnhancer(immutableModelReducer);
-const ImmutableControl = createControlClass(controlPropsMap, {
+const ImmutableControl = createControlClass({
   get: immutableGetFromState,
   getFieldFromState: immutableGetFieldFromState,
   actions: immutableModelActions,
