@@ -13,7 +13,7 @@ export default function getFieldFromState(state, modelString, s = defaultStrateg
     ? state
     : s.getForm(state, modelString);
 
-  if (!form) return null;
+  if (!form || !form.$form) return null;
 
   if (!modelString.length) return form;
 
