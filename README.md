@@ -3,7 +3,7 @@
 [![Join the chat at https://gitter.im/react-redux-form/Lobby](https://badges.gitter.im/react-redux-form/Lobby.svg)](https://gitter.im/react-redux-form/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/davidkpiano/react-redux-form.svg?branch=master)](https://travis-ci.org/davidkpiano/react-redux-form) [![npm version](https://badge.fury.io/js/react-redux-form.svg)](https://badge.fury.io/js/react-redux-form)
 
-## [🆕 Read the Documentation](https://davidkpiano.github.io/react-redux-form/docs.html)
+## [Read the Documentation](https://davidkpiano.github.io/react-redux-form/docs.html)
 
 React Redux Form is a collection of reducer creators and action creators that make implementing even the most complex and custom forms with React and Redux simple and performant.
 
