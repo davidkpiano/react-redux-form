@@ -24,6 +24,15 @@ function getSubModelString(model, subModel) {
   return `${model}.${subModel}`;
 }
 
+export function updateFieldState(existingFieldState, updatedFieldState) {
+  const newField = {
+    ...existingFieldState,
+    ...updatedFieldState,
+  };
+
+  return newField;
+}
+
 export default function createFieldState(model, value, customInitialFieldState) {
   return {
     ...initialFieldState,
