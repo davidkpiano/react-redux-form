@@ -15,8 +15,8 @@ import isValidityInvalid from '../utils/is-validity-invalid';
 import fieldActions from '../actions/field-actions';
 import toPath from '../utils/to-path';
 import initialFieldState from '../constants/initial-field-state';
-import i from 'icepick';
-import { fieldOrForm, getMeta } from '../utils/create-field';
+import { fieldOrForm, getMeta, updateFieldState } from '../utils/create-field';
+import assocIn from '../utils/assoc-in';
 
 const resetFieldState = (field) => {
   if (!isPlainObject(field)) return field;
@@ -43,7 +43,7 @@ const setInitialFieldState = (field, key) => {
   if (!isPlainObject(field)) return field;
 
   if (key === '$form') {
-    return i.assign(initialFieldState, {
+    return updateFieldState(initialFieldState, {
       value: field.value,
       model: field.model,
     });
@@ -51,7 +51,7 @@ const setInitialFieldState = (field, key) => {
 
   if (field.$form) return mapValues(field, resetFieldState);
 
-  return i.assign(initialFieldState, {
+  return updateFieldState(initialFieldState, {
     value: field.value,
     model: field.model,
   });
@@ -296,7 +296,7 @@ export default function formActionsReducer(state, action, localPath) {
 
     case actionTypes.RESET: {
       return localPath.length
-        ? i.setIn(state, localPath, resetFieldState(field))
+        ? assocIn(state, localPath, resetFieldState(field))
         : resetFieldState(field);
     }
 

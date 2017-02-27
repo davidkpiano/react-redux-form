@@ -1,5 +1,6 @@
 import get from './get';
-import i from 'icepick';
+import assocIn from './assoc-in';
+import { updateFieldState } from './create-field';
 
 function updateSubField(subField, newSubState) {
   // Form
@@ -9,7 +10,7 @@ function updateSubField(subField, newSubState) {
 
     Object.keys(subField).forEach((key) => {
       if (key === '$form') {
-        result.$form = i.assign(subField.$form, newSubState);
+        result.$form = updateFieldState(subField.$form, newSubState);
       } else {
         result[key] = updateSubField(subField[key], newSubState);
       }
@@ -19,7 +20,7 @@ function updateSubField(subField, newSubState) {
   }
 
   // Field
-  return i.assign(subField, newSubState);
+  return updateFieldState(subField, newSubState);
 }
 
 export default function updateSubFields(state, localPath, newState) {
@@ -42,5 +43,5 @@ export default function updateSubFields(state, localPath, newState) {
 
   if (!localPath.length) return updatedField;
 
-  return i.assocIn(state, localPath, updatedField);
+  return assocIn(state, localPath, updatedField);
 }

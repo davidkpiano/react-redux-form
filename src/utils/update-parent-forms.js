@@ -1,5 +1,7 @@
 import i from 'icepick';
 import get from './get';
+import assocIn from './assoc-in';
+// import { updateFieldState } from './create-field';
 
 export default function updateParentForms(state, localPath, updater) {
   const parentLocalPath = localPath.slice(0, -1);
@@ -16,7 +18,9 @@ export default function updateParentForms(state, localPath, updater) {
     ? updater(value)
     : updater;
 
-  const newState = i.setIn(state, [...parentLocalPath, '$form'], i.merge(form, updatedValue));
+  // const updatedForm = updateFieldState(form, updatedValue);
+
+  const newState = assocIn(state, [...parentLocalPath, '$form'], i.merge(form, updatedValue));
 
   if (!parentLocalPath.length) return newState;
 
