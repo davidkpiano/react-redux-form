@@ -63,19 +63,3 @@ export function createFormState(model, values, customInitialFieldState, options 
 
   return state;
 }
-
-export function insertFormField(form, fieldModelPath, fieldValue) {
-  const subPath = fieldModelPath[0];
-
-  if (form[subPath]) {
-    return {
-      ...form,
-      [subPath]: insertFormField(form[subPath], fieldModelPath.slice(1), fieldValue[subPath]),
-    };
-  }
-
-  return {
-    ...form,
-    [subPath]: fieldOrForm(subPath, fieldValue),
-  };
-}
