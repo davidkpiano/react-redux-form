@@ -74,6 +74,7 @@ export default function formActionsReducer(state, action, localPath) {
   const fieldState = field && field.$form
     ? field.$form
     : field;
+
   const { intents } = fieldState;
 
   let fieldUpdates = {};

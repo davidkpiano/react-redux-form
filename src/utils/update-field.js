@@ -1,18 +1,8 @@
-import i from 'icepick';
 import get from './get';
 import mapValues from './map-values';
-import { createInitialState } from '../reducers/form-reducer';
-import { updateFieldState } from './create-field';
+import { updateFieldState, fieldOrForm } from './create-field';
 import assocIn from './assoc-in';
 import invariant from 'invariant';
-
-function tempInitialState(path, initialValue = null) {
-  if (path.length === 1) return { [path[0]]: initialValue };
-
-  return {
-    [path[0]]: tempInitialState(path.slice(1), initialValue),
-  };
-}
 
 export function getFieldAndForm(formState, modelPath) {
   let field = get(formState, modelPath);
@@ -24,10 +14,9 @@ export function getFieldAndForm(formState, modelPath) {
 
   if (!field) {
     const initialValue = get(formState.$form.initialValue, modelPath);
+    const formModel = formState.$form.model;
 
-    form = i.merge(createInitialState(
-      formState.$form.model,
-      tempInitialState(modelPath, initialValue)), formState);
+    form = assocIn(formState, modelPath, fieldOrForm([formModel, ...modelPath], initialValue));
 
     field = get(form, modelPath);
   }

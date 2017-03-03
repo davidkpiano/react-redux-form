@@ -4,11 +4,16 @@ import mapValues from './map-values';
 
 /* eslint-disable no-use-before-define */
 export function fieldOrForm(model, value, customInitialFieldState) {
+  // TODO: create toModel()
+  const stringModel = Array.isArray(model)
+    ? model.join('.')
+    : model;
+
   if (Array.isArray(value) || isPlainObject(value)) {
-    return createFormState(model, value, customInitialFieldState);
+    return createFormState(stringModel, value, customInitialFieldState);
   }
 
-  return createFieldState(model, value, customInitialFieldState);
+  return createFieldState(stringModel, value, customInitialFieldState);
 }
 /* eslint-enable no-use-before-define */
 
@@ -57,4 +62,20 @@ export function createFormState(model, values, customInitialFieldState, options 
   }));
 
   return state;
+}
+
+export function insertFormField(form, fieldModelPath, fieldValue) {
+  const subPath = fieldModelPath[0];
+
+  if (form[subPath]) {
+    return {
+      ...form,
+      [subPath]: insertFormField(form[subPath], fieldModelPath.slice(1), fieldValue[subPath]),
+    };
+  }
+
+  return {
+    ...form,
+    [subPath]: fieldOrForm(subPath, fieldValue),
+  };
 }
