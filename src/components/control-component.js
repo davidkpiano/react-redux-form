@@ -423,6 +423,8 @@ function createControlClass(s = defaultStrategy) {
     }
 
     handleChange(event) {
+      if (event && event.persist) event.persist();
+
       this.setViewValue(getValue(event));
       this.handleUpdate(event);
     }
