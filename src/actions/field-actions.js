@@ -11,7 +11,6 @@ import { trackable } from '../utils/track';
 import getForm from '../utils/get-form';
 import getFieldFromState from '../utils/get-field-from-state';
 import NULL_ACTION from '../constants/null-action';
-import isNative from '../utils/is-native';
 import invariant from 'invariant';
 
 const defaultStrategies = {
@@ -214,8 +213,6 @@ function createFieldActions(s = defaultStrategies) {
           setValidity(model, response),
         ]));
       }).catch(error => {
-        if (!isNative) console.error(error);
-
         dispatch(batch(model, [
           setSubmitFailed(model),
           errorsAction(model, error, { async: true }),
