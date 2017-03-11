@@ -24,6 +24,26 @@ const defaultStrategy = {
   toJS: identity,
 };
 
+const modelCache = {};
+
+function cacheModelState(state) {
+  const cacheId = Date.now();
+
+  modelCache[cacheId] = state;
+
+  return cacheId;
+}
+
+function cacheReducer(reducer, model, cacheId) {
+  return (state, action) => {
+    const newState = reducer(state, action);
+
+    modelCache[cacheId][model] = newState;
+
+    return newState;
+  };
+}
+
 function createFormCombiner(strategy = defaultStrategy) {
   function createForms(forms, model = '', options = {}) {
     const formKeys = Object.keys(forms);
@@ -39,6 +59,8 @@ function createFormCombiner(strategy = defaultStrategy) {
       ...formOptions,
     } = optionsWithDefaults;
 
+    const cacheId = cacheModelState({});
+
     formKeys.forEach((formKey) => {
       const formValue = forms[formKey];
       const subModel = getSubModelString(model, formKey);
@@ -51,20 +73,22 @@ function createFormCombiner(strategy = defaultStrategy) {
           initialState = null;
         }
 
-        modelReducers[formKey] = strategy.modeled(formValue, subModel);
+        modelReducers[formKey] = cacheReducer(
+          strategy.modeled(formValue, subModel), subModel, cacheId);
         initialFormState[formKey] = initialState;
       } else {
-        modelReducers[formKey] = strategy.modelReducer(subModel, formValue);
+        modelReducers[formKey] = cacheReducer(
+          strategy.modelReducer(subModel, formValue), subModel, cacheId);
         initialFormState[formKey] = strategy.toJS(formValue);
       }
     });
 
     return {
       ...modelReducers,
-      [key]: strategy.formReducer(model, initialFormState, {
+      [key]: (state, action) => strategy.formReducer(model, initialFormState, {
         plugins,
         ...formOptions,
-      }),
+      })(state, { ...action, state: modelCache[cacheId] }),
     };
   }
 

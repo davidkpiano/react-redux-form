@@ -6,7 +6,7 @@ import isPlainObject from '../../utils/is-plain-object';
 import mapValues from '../../utils/map-values';
 import { createInitialState } from '../form-reducer';
 import initialFieldState from '../../constants/initial-field-state';
-import updateParentForms from '../../utils/update-parent-forms';
+import assocIn from '../../utils/assoc-in';
 import invariant from 'invariant';
 
 function updateFieldValue(field, action, parentModel = undefined) {
@@ -53,13 +53,23 @@ function updateFieldValue(field, action, parentModel = undefined) {
     if (valueIsArray) {
       result = [];
 
+
       Object.keys(field).forEach((key) => {
         if (!!~removeKeysArray.indexOf(+key) || (key === '$form')) return;
 
-        result[key] = field[key];
+        result[key] = { ...field[key] };
       });
 
-      return { ...i.set(result.filter((f) => f), '$form', field.$form) };
+      const finalResult = result
+        .filter((f) => f)
+        .map((subField, index) => ({
+          ...subField,
+          model: `${model}.${index}`,
+        }));
+
+      finalResult.$form = field.$form;
+
+      return finalResult;
     }
 
     result = { ...field };
@@ -105,13 +115,9 @@ function updateFieldValue(field, action, parentModel = undefined) {
     }));
   });
 
-  // console.log('FIELD', field);
-
   const dirtyFormState = i.merge(field.$form || initialFieldState,
     i.set(changedFieldProps, 'retouched',
       field.submitted || (field.$form && field.$form.retouched)));
-
-  // console.log('DIRTY', dirtyFormState);
 
   return i.set(updatedField, '$form', dirtyFormState);
 }
@@ -143,18 +149,29 @@ export default function changeActionReducer(state, action, localPath) {
 
   if (!localPath.length) return updatedField;
 
-  const updatedState = i.setIn(state, localPath, updatedField);
+  const updatedState = assocIn(state, localPath, updatedField, (form) => {
+    if (!form.$form) return form;
 
-  if (action.silent) {
-    return updateParentForms(updatedState, localPath, (form) => {
-      const formValue = getFormValue(form);
+    const formValue = action.state
+      ? get(action.state, form.$form.model)
+      : getFormValue(form);
 
-      return {
-        value: formValue,
-        loadedValue: formValue,
-      };
-    });
-  }
+    const formUpdates = {
+      ...form.$form,
+      value: formValue,
+    };
 
-  return updateParentForms(updatedState, localPath, { pristine: false });
+    if (action.silent) {
+      formUpdates.loadedValue = formValue;
+    } else {
+      formUpdates.pristine = false;
+    }
+
+    return {
+      ...form,
+      $form: formUpdates,
+    };
+  });
+
+  return updatedState;
 }
