@@ -1088,6 +1088,6 @@ export const initialFieldState: {
   errors: {},
 };
 
-export function combineForms(data: any, deep?: string): any;
+export function combineForms(data: any, model?: string, options?: Object): any;
 
-export function createForms(data: any, deep?: string): any;
+export function createForms(data: any, model?: string, options?: Object): any;
