@@ -55,6 +55,7 @@ const propTypes = {
     dispatch: PropTypes.func,
     getState: PropTypes.func,
   }),
+  storeSubscription: PropTypes.any,
 };
 
 function showErrors(field, form, show = true) {
