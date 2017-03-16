@@ -241,6 +241,8 @@ dispatch(actions.move('foo.bar', 2, 0));
 ## `actions.load(model, value)`
 Dispatches an `actions.change(...)` action that loads (updates) the `model` with `value` silently. It does not trigger any effects of a `CHANGE` action in the form reducer.
 
+It also sets the `.loadedValue` of the model's `field` to the dispatched `value`.
+
 ### Arguments
 - `model` _(String | Function)_: the model whose value will be changed
 - `value` _(any)_: the value to load (update) the model with
@@ -248,7 +250,7 @@ Dispatches an `actions.change(...)` action that loads (updates) the `model` with
 ### Notes
 - This action is useful when you need to set an initial model value asynchronously.
 - If the initial model value is available at runtime, prefer setting it as part of the `initialState` of the `modelReducer` instead.
-- This is equivalent to calling `actions.change(model, value, { silent: true })`.
+- This is different than calling `actions.change(model, value, { silent: true })`. Both are similar with one main difference: `actions.load` also updates the `.loadedValue`, whereas a silent change does not.
 
 <h2 id="actions-omit"></h2>
 ## `actions.omit(model, props)`

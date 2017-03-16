@@ -150,7 +150,11 @@ function createFormClass(s = defaultStrategy) {
 
       if (!formValue) return;
 
+      window.c = window.c || 1;
+
       if (!validators && !errors && (modelValue !== nextProps.modelValue)) {
+        console.log(c, 'here');
+        if (window.c++ > 50) return;
         // If the form is invalid (due to async validity)
         // but its fields are valid and the value has changed,
         // the form should be "valid" again.

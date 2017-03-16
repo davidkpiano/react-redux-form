@@ -2029,7 +2029,7 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
-    describe('non-string/numeric values for custom controls', () => {
+    describe('non-string values for custom controls', () => {
       const initialState = getInitialState({
         extraData: { address: '221B Baker Street' },
       });
