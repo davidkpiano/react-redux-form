@@ -2028,5 +2028,31 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.equal(button.textContent, 'Go');
       });
     });
+
+    describe('non-string/numeric values for custom controls', () => {
+      const initialState = getInitialState({
+        extraData: { address: '221B Baker Street' },
+      });
+      const store = testCreateStore({
+        user: modelReducer('user', initialState),
+        userForm: formReducer('user', initialState),
+      });
+
+      /* eslint-disable react/prop-types */
+      const ExtraData = ({ value }) => <div>{JSON.stringify(value)}</div>;
+      /* eslint-enable */
+
+      const control = testRender(
+        <Control
+          model="user.extraData"
+          component={ExtraData}
+        />, store);
+
+      const div = TestUtils.findRenderedDOMComponentWithTag(control, 'div');
+
+      it('should render complex values correctly', () => {
+        assert.equal(div.textContent, '{"address":"221B Baker Street"}');
+      });
+    });
   });
 });

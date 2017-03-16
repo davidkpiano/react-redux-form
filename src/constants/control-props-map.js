@@ -5,11 +5,9 @@ import actions from '../actions';
 function getTextValue(value) {
   if (typeof value === 'string') {
     return `${value}`;
-  } else if (typeof value === 'number') {
-    return value;
   }
 
-  return '';
+  return value;
 }
 
 function isChecked(props) {
