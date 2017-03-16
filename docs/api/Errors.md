@@ -9,12 +9,12 @@ The `<Errors />` component provides a handy way of displaying form errors for a 
 <Control.text
   type="email"
   model="user.email"
-  validators={{ isEmail, isRequired }}
+  validators={\{ isEmail, isRequired }}
 />
 
 <Errors
   model="user.email"
-  messages={{
+  messages={\{
     isRequired: 'Please provide an email address.',
     isEmail: (val) => `${val} is not a valid email.`,
   }}
@@ -48,13 +48,13 @@ _(String | Function)_: the string representation of the model path to show the e
 ```jsx
 <Errors
   model="user"
-  messages={{
+  messages={\{
     passwordsMatch: 'Passwords do not match.',
   }}
 />
 ```
 
-## `messages={{...}}`
+## `messages={\{...}}`
 
 _(Object)_: a plain object mapping where:
 - the keys are error keys (such as `"required"`)
@@ -67,7 +67,7 @@ If the message value is a function, it will be called with the model value.
 ```jsx
 <Errors
   model="user.email"
-  messages={{
+  messages={\{
     required: 'Please enter an email address.',
     length: 'The email address is too long.',
     invalid: (val) => `${val} is not a valid email address.',
@@ -78,19 +78,19 @@ If the message value is a function, it will be called with the model value.
 ### Notes
 - The `messages` prop is a great place to keep custom error messages that can vary based on the location in the UI, instead of hardcoding error messages in validation fuctions.
 - If a message is _not_ provided for an error key, the message will default to the key value in the control's `.errors` property.
-  - This means if you're using `actions.setErrors` or the `errors={{...}}` prop in `<Control>` or `<Field>` to set error messages, they will automatically be shown in `<Errors />`.
+  - This means if you're using `actions.setErrors` or the `errors={\{...}}` prop in `<Control>` or `<Field>` to set error messages, they will automatically be shown in `<Errors />`.
 
 ## `show={...}`
 
 _(Any)_: The `show` prop determines when error messages should be shown, based on the model's field state (determined by the form reducer).
 
-It can be a boolean, or a function, string, or object as a [Lodash iteratee](https://lodash.com/docs#iteratee). 
+It can be a boolean, or a function, string, or object as a [Lodash iteratee](https://lodash.com/docs#iteratee).
 
 
 ### Examples
 - `show={true}` will always show the errors if they exist
 - `show={(field) => field.touched && !field.focus}` will show errors if the model's field is touched and not focused
-- `show={{touched: true, focus: false}}` is the same as above
+- `show={\{touched: true, focus: false}}` is the same as above
 - `show="touched"` will show errors if the model's field is touched
 
 ### Notes
@@ -112,7 +112,7 @@ _(String | Function | Element)_: The `wrapper` component, which is the component
 
 _(String | Function | Element)_: The `component`, which is the component for each error message, can be configured using this prop. Default: `"span"`.
 
-### Examples 
+### Examples
 - `component="li"` will wrap all errors in a `<li>`
 - `component={(props) => <div className="error">{props.children}</div>}` will render the error message in the specified functional component, with these props:
   - `modelValue` - the current value of the `model`

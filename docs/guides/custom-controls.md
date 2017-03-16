@@ -14,7 +14,7 @@ import CustomInput from '../path/to/custom-input-component';
 class MyCustomInput extends React.Component {
   render() {
     const { model, dispatch } = this.props;
-    
+
     return (
       <CustomInput
         onCustomChange={e => dispatch(actions.change(model, e))}
@@ -78,7 +78,7 @@ By default, any props on `<Control>` that are _not_ part of the `Control.propTyp
 <Control.checkbox
   model="user.active"
   component={MyCheckbox}
-  controlProps={{
+  controlProps={\{
     label: 'Is user active?', // will also be passed to MyCheckbox
   }}
 />
@@ -105,7 +105,7 @@ const CustomInput = (props) => (
 const CustomInputControl = (props) => (
   <Control
     component={CustomInput}
-    mapProps={{
+    mapProps={\{
       value: (props) => props.viewValue,
     }}
     {...props}
@@ -124,13 +124,13 @@ const CustomInputControl = (props) => (
 
 ## Advanced Custom Controls
 
-Some custom controls won't have prop keys that match up exactly with the standard event handler props, such as `onChangeText` in React Native's `<TextInput>` component corresponding to `onChange`. You can specify a prop mapping in the `mapProps={{...}}` prop to specify the mapping:
+Some custom controls won't have prop keys that match up exactly with the standard event handler props, such as `onChangeText` in React Native's `<TextInput>` component corresponding to `onChange`. You can specify a prop mapping in the `mapProps={\{...}}` prop to specify the mapping:
 
 ```jsx
 <Control
   model="..."
   component={DatePickerIOS}
-  mapProps={{
+  mapProps={\{
     date: (props) => props.modelValue,
     onDateChange: (props) => props.onChange,
   }}

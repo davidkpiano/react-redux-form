@@ -20,12 +20,12 @@ const store = createStore(combineReducers({
 
 ### How do you add conditional class names based on field state?
 
-Use the `mapProps={{...}}` property on `<Control>` components to set any props on the control component based on field state, like this:
+Use the `mapProps={\{...}}` property on `<Control>` components to set any props on the control component based on field state, like this:
 
 ```jsx
 <Control.text
   model="user.firstName"
-  mapProps={{
+  mapProps={\{
     className: ({fieldValue}) => fieldValue.focus
       ? 'focused'
       : ''
@@ -42,7 +42,7 @@ The props that are provided to each function value in your `mapProps` mapping ar
 
 as well as other additional props:
 - all props on the `<Control>`
-- all props on the `controlProps={{...}}` prop (if any)
+- all props on the `controlProps={\{...}}` prop (if any)
 - `onKeyPress`
 - `viewValue`
 
@@ -59,7 +59,7 @@ const BirthDate = ({forModel}) => (
   <Form
     model={`${forModel}.birth`}
     component="div"
-    validators={{
+    validators={\{
       '': ({day, month, year}) => isOver18(day, month, year),
     }}
   >

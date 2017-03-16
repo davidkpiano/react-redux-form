@@ -88,13 +88,13 @@ export default createStore(combineForms({
 It can also be a function that returns a string model. See [the documentation on tracking](../guides/tracking.md) for more information.
 
 <h2 id="prop-mapProps"></h2>
-## `mapProps={{...}}`
+## `mapProps={\{...}}`
 _(Object)_: A mapping of control-specific property keys to prop-getter functions that taken in the original props and return the result prop. See [the documentation on custom controls](../guides/custom-controls.md) for more information.
 
 Example:
 ```jsx
 <Control
-  mapProps={{
+  mapProps={\{
     customChange: (props) => props.change,
   }}
   model="..."
@@ -118,7 +118,7 @@ You can also specify `updateOn={['change', 'blur']}` as an array of one or more 
 - Use the `changeAction` prop if you want to dispatch custom actions along with the `actions.change(...)` action.
 
 <h2 id="prop-validators"></h2>
-## `validators={{...}}`
+## `validators={\{...}}`
 _(Object)_: A map where the keys are validation keys, and the values are the corresponding functions that determine the validity of each key, given the model's value.
 
 For example, this control validates that a username exists and is longer than 4 characters:
@@ -126,7 +126,7 @@ For example, this control validates that a username exists and is longer than 4 
 ```jsx
 <Control.text
   model="user.username"
-  validators={{
+  validators={\{
     required: (val) => val.length,
     length: (val) => val.length > 4
   }}
@@ -142,7 +142,7 @@ const length = (val) => val.length > 8;
 
 <Control.text
   model="user.username"
-  validators={{ required, length }}
+  validators={\{ required, length }}
 />
 ```
 
@@ -158,7 +158,7 @@ _(String | Array)_: A string/array of strings specifying when validation should 
 - To avoid displaying error messages on load (as controls might be invalid), use the `.pristine` property of the control when conditionally showing error messages, or use the `<Errors>` component.
 
 <h2 id="prop-asyncValidators"></h2>
-## `asyncValidators={{...}}`
+## `asyncValidators={\{...}}`
 _(Object)_: A map where the keys are validation keys, and the values are the corresponding functions that (asynchronously) determine the validity of each key, given the model's value.
 
 Each async validator function is called with 2 arguments:
@@ -172,7 +172,7 @@ For example, this control validates that a username is available via a promise:
 import isAvailable from '../path/to/is-available';
 
 <Control.text model="user.username"
-  asyncValidators={{
+  asyncValidators={\{
     isAvailable: (value, done) => {
       isAvailable(value)
         .then((result) => done(result));
@@ -191,7 +191,7 @@ _(String | Array)_: A string/array of strings specifying when async validation s
 - `"focus"` - validate on the `onFocus` event handler
 
 <h2 id="prop-errors"></h2>
-## `errors={{...}}`
+## `errors={\{...}}`
 _(Object)_: A map where the keys are error keys, and the values are the corresponding error validator functions that determine the invalidity of each key, given the model's value.
 
 An **error validator** is a function that returns `true` or a truthy value (such as a string) if invalid, and `false` if valid.
@@ -201,7 +201,7 @@ For example, this control validates that a username exists and is longer than 4 
 ```jsx
 <Control.text
   model="user.username"
-  errors={{
+  errors={\{
     isEmpty: (val) => !val.length,
     tooLong: (val) => val.length > 16,
   }}
@@ -270,7 +270,7 @@ function changeAndSubmit(model, value) {
 - Since `changeAction` expects an action creator and `redux-thunk` is used, you can asynchronously dispatch actions (like the example above).
 
 <h2 id="prop-controlProps"></h2>
-## `controlProps={{...}}`
+## `controlProps={\{...}}`
 _(Object)_: A mapping of control-specific props that will be applied directly to the rendered control. In some cases, this can be a safer way of applying props, especially if there are naming conflicts between `<Control>`-specific props (such as `"model"`) and props that need to go on the rendered control (e.g., `<input {...props} />`).
 
 The normal behavior is that any extraneous props on `<Control>` that are not part of `Control.propTypes` (which are documented here) will be given to the rendered input.
@@ -282,7 +282,7 @@ Example:
 <Control.text
   model="..."
   component={CustomInput}
-  controlProps={{errors: 'errors for CustomInput'}}
+  controlProps={\{errors: 'errors for CustomInput'}}
 />
 ```
 
@@ -325,7 +325,7 @@ However, in `<Control>`, it can be a boolean, or a function, string, or object a
 // Disable the submit button when the form is invalid
 <Control.button
   model="user"
-  disabled={{ valid: false }}
+  disabled={\{ valid: false }}
 >
   Submit!
 </Control.button>
@@ -334,7 +334,7 @@ However, in `<Control>`, it can be a boolean, or a function, string, or object a
 For example:
 - `disabled={true}` or `disabled={false}` will disable or enable the control respectively, as will any other primitive value, such as `undefined`, `null`, or a number
 - `disabled="touched"` will disable if the field is `touched` (works with any property on the field)
-- `disabled={{ valid: false, touched: true }}` will disable if the field is both `touched` and not `valid`
+- `disabled={\{ valid: false, touched: true }}` will disable if the field is both `touched` and not `valid`
 - `disabled={(fieldValue) => !fieldValue.valid}` will call the function provided with the `fieldValue` to determine its `disabled` state.
 
 (since: version 1.3.0)
@@ -360,7 +360,7 @@ _(Boolean)_: Signifies that the field state (validation, etc.) should not persis
 // even when the control is unmounted.
 <Control.text
   model="user.name"
-  validators={{ length: (value) => value.length > 8 }}
+  validators={\{ length: (value) => value.length > 8 }}
   persist
 />
 ```
