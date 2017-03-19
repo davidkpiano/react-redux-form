@@ -32,9 +32,12 @@ const standardPropsMap = {
 
 const textPropsMap = {
   ...standardPropsMap,
-  value: (props) => ((!props.defaultValue && !props.hasOwnProperty('value'))
-    ? getTextValue(props.viewValue)
-    : props.value),
+  // the value passed into the control is either the original control's
+  // value prop (if the control is controlled) or the value controlled by
+  // <Control>.
+  value: (props) => (props.hasOwnProperty('value')
+    ? props.value
+    : getTextValue(props.viewValue)),
 };
 
 const getModelValue = ({ modelValue }) => modelValue;

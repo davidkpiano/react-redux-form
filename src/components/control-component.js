@@ -61,6 +61,7 @@ const propTypes = {
   ]).isRequired,
   modelValue: PropTypes.any,
   viewValue: PropTypes.any,
+  defaultValue: PropTypes.any,
   control: PropTypes.any,
   onLoad: PropTypes.func,
   onSubmit: PropTypes.func,
@@ -463,6 +464,8 @@ function createControlClass(s = defaultStrategy) {
         defaultValue = controlProps.defaultValue;
       } else if (controlProps.hasOwnProperty('defaultChecked')) {
         defaultValue = controlProps.defaultChecked;
+      } else if (this.props.hasOwnProperty('defaultValue')) {
+        defaultValue = this.props.defaultValue;
       }
 
       const loadActions = [this.getValidateAction(defaultValue)];
