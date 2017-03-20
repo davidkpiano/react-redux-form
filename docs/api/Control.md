@@ -89,9 +89,12 @@ It can also be a function that returns a string model. See [the documentation on
 
 <h2 id="prop-mapProps"></h2>
 ## `mapProps={\{...}}`
-_(Object)_: A mapping of control-specific property keys to prop-getter functions that taken in the original props and return the result prop. See [the documentation on custom controls](../guides/custom-controls.md) for more information.
+_(Object | Function)_: A custom mapping from props provided by `Control` to props received by the component. Can be:
 
-Example:
+- An object, where each value is a function from original props to corresponding value in result props.
+- A function from original props to result props.
+
+Examples:
 ```jsx
 <Control
   mapProps={\{
@@ -99,8 +102,13 @@ Example:
   }}
   model="..."
 />
+<Control
+  mapProps={({change}) => { return {customChange: change}; }}
+  model="..."
+/>
 ```
 
+See [the documentation on custom controls](../guides/custom-controls.md) for more information.
 
 <h2 id="prop-updateOn"></h2>
 ## `updateOn="..."`
