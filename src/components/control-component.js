@@ -48,9 +48,10 @@ function getToggleValue(props) {
   }
 }
 
-function mergeOrSetErrors(model, errors) {
+function mergeOrSetErrors(model, errors, options) {
   return actions.setErrors(model, errors, {
     merge: isPlainObject(errors),
+    ...options,
   });
 }
 
@@ -399,15 +400,13 @@ function createControlClass(s = defaultStrategy) {
           }
           case 'validate':
             if (containsEvent(validateOn, 'change')) {
-              dispatch(actions.clearIntents(model, intent));
-              this.validate();
+              this.validate({ clearIntents: intent });
             }
             return;
 
           case 'load':
             if (!shallowEqual(modelValue, fieldValue.value)) {
-              dispatch(actions.clearIntents(model, intent));
-              dispatch(actions.load(model, fieldValue.value));
+              dispatch(actions.load(model, fieldValue.value, { clearIntents: intent }));
             }
             return;
 
@@ -563,7 +562,7 @@ function createControlClass(s = defaultStrategy) {
       if (node) this.node = node;
     }
 
-    validate() {
+    validate(options) {
       const {
         model,
         modelValue,
@@ -584,7 +583,9 @@ function createControlClass(s = defaultStrategy) {
         : fieldErrors;
 
       if (!shallowEqual(errors, fieldValue.errors)) {
-        dispatch(mergeOrSetErrors(model, errors));
+        dispatch(mergeOrSetErrors(model, errors, options));
+      } else if (options.clearIntents) {
+        dispatch(actions.clearIntents(options.clearIntents));
       }
 
       return modelValue;

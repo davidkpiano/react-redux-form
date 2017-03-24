@@ -147,9 +147,10 @@ export function createModelActions(s = defaultStrategies) {
     return newValue;
   }, {}, 2, (_, props) => ({ removeKeys: props }));
 
-  const load = (model, values) => change(model, values, {
+  const load = (model, values, options) => change(model, values, {
     silent: true,
     load: true,
+    ...options,
   });
 
   return mapValues({

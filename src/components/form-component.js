@@ -268,7 +268,7 @@ function createFormClass(s = defaultStrategy) {
       }
     }
 
-    handleValidSubmit() {
+    handleValidSubmit(options) {
       const {
         dispatch,
         model,
@@ -276,19 +276,19 @@ function createFormClass(s = defaultStrategy) {
         onSubmit,
       } = this.props;
 
-      dispatch(s.actions.setPending(model));
+      dispatch(s.actions.setPending(model, true, options));
 
       if (onSubmit) onSubmit(modelValue);
     }
 
-    handleInvalidSubmit() {
+    handleInvalidSubmit(options) {
       const { onSubmitFailed, formValue, dispatch } = this.props;
 
       if (onSubmitFailed) {
         onSubmitFailed(formValue);
       }
 
-      dispatch(s.actions.setSubmitFailed(this.props.model));
+      dispatch(s.actions.setSubmitFailed(this.props.model, true, options));
     }
 
     handleReset(e) {
@@ -307,12 +307,10 @@ function createFormClass(s = defaultStrategy) {
       formValue.$form.intents.forEach((intent) => {
         switch (intent.type) {
           case 'submit': {
-            dispatch(s.actions.clearIntents(model, intent));
-
             if (isValid(formValue, { async: false })) {
-              this.handleValidSubmit();
+              this.handleValidSubmit({ clearIntents: intent });
             } else {
-              this.handleInvalidSubmit();
+              this.handleInvalidSubmit({ clearIntents: intent });
             }
 
             return;

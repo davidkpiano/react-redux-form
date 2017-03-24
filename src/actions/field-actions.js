@@ -64,10 +64,11 @@ function createFieldActions(s = defaultStrategies) {
     model,
   });
 
-  const setPending = (model, pending = true) => ({
+  const setPending = (model, pending = true, options) => ({
     type: actionTypes.SET_PENDING,
     model,
     pending,
+    ...options,
   });
 
   const setValidating = (model, validating = true) => ({
@@ -153,10 +154,11 @@ function createFieldActions(s = defaultStrategies) {
     submitted,
   });
 
-  const setSubmitFailed = (model, submitFailed = true) => ({
+  const setSubmitFailed = (model, submitFailed = true, options) => ({
     type: actionTypes.SET_SUBMIT_FAILED,
     model,
     submitFailed,
+    ...options,
   });
 
   const submit = (model, promise, options = {}) => {

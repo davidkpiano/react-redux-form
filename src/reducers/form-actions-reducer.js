@@ -381,6 +381,10 @@ export function createFormActionsReducer(options) {
         return state;
     }
 
+    if (action.clearIntents) {
+      fieldUpdates.intents = clearIntents(intents, action.clearIntents);
+    }
+
     const updatedField = updateField(state, localPath, fieldUpdates);
     const updatedSubFields = Object.keys(subFieldUpdates).length
       ? updateSubFields(updatedField, localPath, subFieldUpdates)
