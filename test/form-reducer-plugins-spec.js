@@ -33,8 +33,8 @@ describe('formReducer plugins', () => {
     });
 
     it('should be able to persist initialFieldState', () => {
-      const actual1 = reducer(undefined, actions.change('foo', 'one'));
-      const actual2 = reducer(actual1, actions.change('foo', 'two'));
+      const actual1 = reducer(undefined, actions.change('test.foo', 'one'));
+      const actual2 = reducer(actual1, actions.change('test.foo', 'two'));
 
       assert.equal(actual2.$form.status, 'disabled');
       assert.equal(actual2.foo.status, 'disabled');
@@ -50,6 +50,38 @@ describe('formReducer plugins', () => {
 
       assert.equal(actual.$form.status, 'disabled');
       assert.equal(actual.foo.status, 'enabled');
+    });
+
+    it('should reset to the custom initial field state', () => {
+      const action = {
+        type: 'CHANGE_STATUS',
+        model: 'test.foo',
+        status: 'enabled',
+      };
+      const changedState = reducer(undefined, actions.change('test.foo', 'one'));
+      const changedStatusState = reducer(changedState, action);
+
+      assert.equal(changedStatusState.foo.status, 'enabled');
+
+      const resetState = reducer(changedStatusState, actions.reset('test.foo'));
+
+      assert.equal(resetState.foo.status, 'disabled');
+    });
+
+    it('should setInitial to the custom initial field state', () => {
+      const action = {
+        type: 'CHANGE_STATUS',
+        model: 'test.foo',
+        status: 'enabled',
+      };
+      const changedState = reducer(undefined, actions.change('test.foo', 'one'));
+      const changedStatusState = reducer(changedState, action);
+
+      assert.equal(changedStatusState.foo.status, 'enabled');
+
+      const resetState = reducer(changedStatusState, actions.setInitial('test.foo'));
+
+      assert.equal(resetState.foo.status, 'disabled');
     });
   });
 

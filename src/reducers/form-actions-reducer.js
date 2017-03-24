@@ -18,14 +18,12 @@ import initialFieldState from '../constants/initial-field-state';
 import { fieldOrForm, getMeta, updateFieldState } from '../utils/create-field';
 import assocIn from '../utils/assoc-in';
 
-const resetFieldState = (field) => {
+const resetFieldState = (field, customInitialFieldState) => {
   if (!isPlainObject(field)) return field;
 
   const intents = [{ type: 'validate' }];
   let resetValue = getMeta(field, 'initialValue');
-
   const loadedValue = getMeta(field, 'loadedValue');
-
 
   if (loadedValue && (resetValue !== loadedValue)) {
     intents.push({ type: 'load' });
@@ -35,15 +33,15 @@ const resetFieldState = (field) => {
   return fieldOrForm(
     getMeta(field, 'model'),
     resetValue,
-    { intents }
+    { ...customInitialFieldState, intents }
   );
 };
 
-const setInitialFieldState = (field, key) => {
+const setInitialFieldState = (customInitialFieldState) => (field, key) => {
   if (!isPlainObject(field)) return field;
 
   if (key === '$form') {
-    return updateFieldState(initialFieldState, {
+    return updateFieldState(customInitialFieldState, {
       value: field.value,
       model: field.model,
     });
@@ -51,7 +49,7 @@ const setInitialFieldState = (field, key) => {
 
   if (field.$form) return mapValues(field, resetFieldState);
 
-  return updateFieldState(initialFieldState, {
+  return updateFieldState(customInitialFieldState, {
     value: field.value,
     model: field.model,
   });
@@ -69,269 +67,296 @@ const clearIntents = (intents, oldIntent) => {
   return intents.filter(intent => intent.type !== oldIntent.type);
 };
 
-export default function formActionsReducer(state, action, localPath) {
-  const [field] = getFieldAndForm(state, localPath);
-  const fieldState = field && field.$form
-    ? field.$form
-    : field;
+const defaultOptions = {
+  initialFieldState,
+};
 
-  const { intents } = fieldState;
-
-  let fieldUpdates = {};
-  let subFieldUpdates = {};
-  let parentFormUpdates;
-
-  switch (action.type) {
-    case actionTypes.FOCUS: {
-      fieldUpdates = {
-        focus: true,
-        intents: action.silent
-          ? intents
-          : addIntent(intents, action),
-      };
-
-      break;
+export function createFormActionsReducer(options) {
+  const formOptions = options
+    ? {
+      ...defaultOptions,
+      ...options,
+      initialFieldState: {
+        ...defaultOptions.initialFieldState,
+        ...options.initialFieldState,
+      },
     }
+    : defaultOptions;
 
-    case actionTypes.BLUR:
-    case actionTypes.SET_TOUCHED: {
-      const fieldForm = getFieldForm(state, localPath).$form;
+  const customInitialFieldState = formOptions.initialFieldState;
 
-      fieldUpdates = {
-        focus: action.type === actionTypes.BLUR
-          ? false
-          : field.focus,
-        touched: true,
-        retouched: fieldForm
-          ? !!(fieldForm.submitted || fieldForm.submitFailed)
-          : false,
-      };
+  return function formActionsReducer(state, action, localPath) {
+    const [field] = getFieldAndForm(state, localPath);
+    const fieldState = field && field.$form
+      ? field.$form
+      : field;
 
-      parentFormUpdates = {
-        touched: true,
-        retouched: fieldUpdates.retouched,
-      };
+    const { intents } = fieldState;
 
-      break;
-    }
+    let fieldUpdates = {};
+    let subFieldUpdates = {};
+    let parentFormUpdates;
 
-    case actionTypes.SET_UNTOUCHED: {
-      fieldUpdates = {
-        focus: false,
-        touched: false,
-      };
+    switch (action.type) {
+      case actionTypes.FOCUS: {
+        fieldUpdates = {
+          focus: true,
+          intents: action.silent
+            ? intents
+            : addIntent(intents, action),
+        };
 
-      break;
-    }
-
-    case actionTypes.SET_PRISTINE:
-    case actionTypes.SET_DIRTY: {
-      const pristine = action.type === actionTypes.SET_PRISTINE;
-
-      fieldUpdates = {
-        pristine,
-      };
-
-      subFieldUpdates = {
-        pristine,
-      };
-
-      parentFormUpdates = (form) => ({ pristine: isPristine(form) });
-
-      break;
-    }
-
-    case actionTypes.SET_VALIDATING: {
-      fieldUpdates = {
-        validating: action.validating,
-        validated: !action.validating,
-      };
-
-      break;
-    }
-
-    case actionTypes.SET_VALIDITY:
-    case actionTypes.SET_ERRORS: {
-      const isErrors = action.type === actionTypes.SET_ERRORS;
-      let validity;
-      if (isErrors) {
-        validity = action.merge
-          ? mergeValidity(fieldState.errors, action.errors)
-          : action.errors;
-      } else {
-        validity = action.merge
-          ? mergeValidity(fieldState.validity, action.validity)
-          : action.validity;
+        break;
       }
 
-      const inverseValidity = isPlainObject(validity)
-        ? mapValues(validity, inverse)
-        : !validity;
+      case actionTypes.BLUR:
+      case actionTypes.SET_TOUCHED: {
+        const fieldForm = getFieldForm(state, localPath).$form;
 
-      // If the field is a form, its validity is
-      // also based on whether its fields are all valid.
-      const areFieldsValid = (field && field.$form)
-        ? fieldsValid(field)
-        : true;
+        fieldUpdates = {
+          focus: action.type === actionTypes.BLUR
+            ? false
+            : field.focus,
+          touched: true,
+          retouched: fieldForm
+            ? !!(fieldForm.submitted || fieldForm.submitFailed)
+            : false,
+        };
 
-      fieldUpdates = {
-        [isErrors ? 'errors' : 'validity']: validity,
-        [isErrors ? 'validity' : 'errors']: inverseValidity,
-        validating: false,
-        validated: true,
-        valid: areFieldsValid && (isErrors
-          ? !isValidityInvalid(validity)
-          : isValidityValid(validity)),
-      };
+        parentFormUpdates = {
+          touched: true,
+          retouched: fieldUpdates.retouched,
+        };
 
-      if (action.async) {
-        const actionValidity = isErrors ? action.errors : action.validity;
+        break;
+      }
 
-        fieldUpdates.asyncKeys = (isPlainObject(actionValidity) || Array.isArray(actionValidity))
-          ? Object.keys(actionValidity)
+      case actionTypes.SET_UNTOUCHED: {
+        fieldUpdates = {
+          focus: false,
+          touched: false,
+        };
+
+        break;
+      }
+
+      case actionTypes.SET_PRISTINE:
+      case actionTypes.SET_DIRTY: {
+        const pristine = action.type === actionTypes.SET_PRISTINE;
+
+        fieldUpdates = {
+          pristine,
+        };
+
+        subFieldUpdates = {
+          pristine,
+        };
+
+        parentFormUpdates = (form) => ({ pristine: isPristine(form) });
+
+        break;
+      }
+
+      case actionTypes.SET_VALIDATING: {
+        fieldUpdates = {
+          validating: action.validating,
+          validated: !action.validating,
+        };
+
+        break;
+      }
+
+      case actionTypes.SET_VALIDITY:
+      case actionTypes.SET_ERRORS: {
+        const isErrors = action.type === actionTypes.SET_ERRORS;
+        let validity;
+        if (isErrors) {
+          validity = action.merge
+            ? mergeValidity(fieldState.errors, action.errors)
+            : action.errors;
+        } else {
+          validity = action.merge
+            ? mergeValidity(fieldState.validity, action.validity)
+            : action.validity;
+        }
+
+        const inverseValidity = isPlainObject(validity)
+          ? mapValues(validity, inverse)
+          : !validity;
+
+        // If the field is a form, its validity is
+        // also based on whether its fields are all valid.
+        const areFieldsValid = (field && field.$form)
+          ? fieldsValid(field)
           : true;
+
+        fieldUpdates = {
+          [isErrors ? 'errors' : 'validity']: validity,
+          [isErrors ? 'validity' : 'errors']: inverseValidity,
+          validating: false,
+          validated: true,
+          valid: areFieldsValid && (isErrors
+            ? !isValidityInvalid(validity)
+            : isValidityValid(validity)),
+        };
+
+        if (action.async) {
+          const actionValidity = isErrors ? action.errors : action.validity;
+
+          fieldUpdates.asyncKeys = (isPlainObject(actionValidity) || Array.isArray(actionValidity))
+            ? Object.keys(actionValidity)
+            : true;
+        }
+
+        parentFormUpdates = (form) => ({ valid: isValid(form) });
+
+        break;
       }
 
-      parentFormUpdates = (form) => ({ valid: isValid(form) });
-
-      break;
-    }
-
-    case actionTypes.SET_FIELDS_VALIDITY: {
-      return map(action.fieldsValidity, (fieldValidity, subField) =>
-          fieldActions.setValidity(subField, fieldValidity, action.options)
-        ).reduce((accState, subAction) => formActionsReducer(
-          accState,
-          subAction,
-          localPath.concat(toPath(subAction.model))), state);
-    }
-
-    case actionTypes.RESET_VALIDITY: {
-      let validity = { ...fieldState.validity };
-      let errors = { ...fieldState.errors };
-      let valid;
-
-      if (action.omitKeys) {
-        action.omitKeys.forEach((key) => {
-          delete validity[key];
-          delete errors[key];
-        });
-        valid = isValidityValid(validity);
-      } else {
-        validity = initialFieldState.validity;
-        errors = initialFieldState.errors;
-        valid = initialFieldState.valid;
+      case actionTypes.SET_FIELDS_VALIDITY: {
+        return map(action.fieldsValidity, (fieldValidity, subField) =>
+            fieldActions.setValidity(subField, fieldValidity, action.options)
+          ).reduce((accState, subAction) => formActionsReducer(
+            accState,
+            subAction,
+            localPath.concat(toPath(subAction.model))), state);
       }
 
-      fieldUpdates = {
-        valid,
-        validity,
-        errors,
-      };
+      case actionTypes.RESET_VALIDITY: {
+        let validity = { ...fieldState.validity };
+        let errors = { ...fieldState.errors };
+        let valid;
 
-      subFieldUpdates = {
-        valid: initialFieldState.valid,
-        validity: initialFieldState.validity,
-        errors: initialFieldState.errors,
-      };
+        if (action.omitKeys) {
+          action.omitKeys.forEach((key) => {
+            delete validity[key];
+            delete errors[key];
+          });
+          valid = isValidityValid(validity);
+        } else {
+          validity = customInitialFieldState.validity;
+          errors = customInitialFieldState.errors;
+          valid = customInitialFieldState.valid;
+        }
 
-      break;
+        fieldUpdates = {
+          valid,
+          validity,
+          errors,
+        };
+
+        subFieldUpdates = {
+          valid: customInitialFieldState.valid,
+          validity: customInitialFieldState.validity,
+          errors: customInitialFieldState.errors,
+        };
+
+        break;
+      }
+
+      case actionTypes.SET_PENDING: {
+        fieldUpdates = {
+          pending: action.pending,
+          submitted: false,
+          submitFailed: false,
+          retouched: false,
+        };
+
+        parentFormUpdates = { pending: action.pending };
+
+        break;
+      }
+
+      case actionTypes.SET_SUBMITTED: {
+        const submitted = !!action.submitted;
+
+        fieldUpdates = {
+          pending: false,
+          submitted,
+          submitFailed: submitted
+            ? false
+            : fieldState && fieldState.submitFailed,
+          touched: true,
+          retouched: false,
+        };
+
+        subFieldUpdates = {
+          submitted,
+          submitFailed: submitted
+            ? false
+            : fieldUpdates.submitFailed,
+          retouched: false,
+        };
+
+        break;
+      }
+
+      case actionTypes.SET_SUBMIT_FAILED: {
+        fieldUpdates = {
+          pending: false,
+          submitted: fieldState.submitted && !action.submitFailed,
+          submitFailed: !!action.submitFailed,
+          touched: true,
+          retouched: false,
+        };
+
+        subFieldUpdates = {
+          pending: false,
+          submitted: !action.submitFailed,
+          submitFailed: !!action.submitFailed,
+          touched: true,
+          retouched: false,
+        };
+
+        break;
+      }
+
+      case actionTypes.RESET: {
+        return localPath.length
+          ? assocIn(state, localPath, resetFieldState(field, customInitialFieldState))
+          : resetFieldState(field, customInitialFieldState);
+      }
+
+      case actionTypes.SET_INITIAL: {
+        const setCustomInitialFieldState = setInitialFieldState(customInitialFieldState);
+
+        return updateField(
+          state,
+          localPath,
+          setCustomInitialFieldState,
+          setCustomInitialFieldState);
+      }
+
+      case actionTypes.ADD_INTENT: {
+        fieldUpdates = {
+          intents: addIntent(intents, action.intent),
+        };
+
+        break;
+      }
+
+      case actionTypes.CLEAR_INTENTS: {
+        fieldUpdates = {
+          intents: clearIntents(intents, action.intent),
+        };
+
+        break;
+      }
+
+      default:
+        return state;
     }
 
-    case actionTypes.SET_PENDING: {
-      fieldUpdates = {
-        pending: action.pending,
-        submitted: false,
-        submitFailed: false,
-        retouched: false,
-      };
+    const updatedField = updateField(state, localPath, fieldUpdates);
+    const updatedSubFields = Object.keys(subFieldUpdates).length
+      ? updateSubFields(updatedField, localPath, subFieldUpdates)
+      : updatedField;
+    const updatedParentForms = parentFormUpdates
+      ? updateParentForms(updatedSubFields, localPath, parentFormUpdates)
+      : updatedSubFields;
 
-      parentFormUpdates = { pending: action.pending };
-
-      break;
-    }
-
-    case actionTypes.SET_SUBMITTED: {
-      const submitted = !!action.submitted;
-
-      fieldUpdates = {
-        pending: false,
-        submitted,
-        submitFailed: submitted
-          ? false
-          : fieldState && fieldState.submitFailed,
-        touched: true,
-        retouched: false,
-      };
-
-      subFieldUpdates = {
-        submitted,
-        submitFailed: submitted
-          ? false
-          : fieldUpdates.submitFailed,
-        retouched: false,
-      };
-
-      break;
-    }
-
-    case actionTypes.SET_SUBMIT_FAILED: {
-      fieldUpdates = {
-        pending: false,
-        submitted: fieldState.submitted && !action.submitFailed,
-        submitFailed: !!action.submitFailed,
-        touched: true,
-        retouched: false,
-      };
-
-      subFieldUpdates = {
-        pending: false,
-        submitted: !action.submitFailed,
-        submitFailed: !!action.submitFailed,
-        touched: true,
-        retouched: false,
-      };
-
-      break;
-    }
-
-    case actionTypes.RESET: {
-      return localPath.length
-        ? assocIn(state, localPath, resetFieldState(field))
-        : resetFieldState(field);
-    }
-
-    case actionTypes.SET_INITIAL: {
-      return updateField(state, localPath, setInitialFieldState, setInitialFieldState);
-    }
-
-    case actionTypes.ADD_INTENT: {
-      fieldUpdates = {
-        intents: addIntent(intents, action.intent),
-      };
-
-      break;
-    }
-
-    case actionTypes.CLEAR_INTENTS: {
-      fieldUpdates = {
-        intents: clearIntents(intents, action.intent),
-      };
-
-      break;
-    }
-
-    default:
-      return state;
-  }
-
-  const updatedField = updateField(state, localPath, fieldUpdates);
-  const updatedSubFields = Object.keys(subFieldUpdates).length
-    ? updateSubFields(updatedField, localPath, subFieldUpdates)
-    : updatedField;
-  const updatedParentForms = parentFormUpdates
-    ? updateParentForms(updatedSubFields, localPath, parentFormUpdates)
-    : updatedSubFields;
-
-  return updatedParentForms;
+    return updatedParentForms;
+  };
 }
+
+export default createFormActionsReducer();

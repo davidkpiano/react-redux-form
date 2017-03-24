@@ -6,7 +6,7 @@ import composeReducers from '../utils/compose-reducers';
 import createBatchReducer from '../enhancers/batched-enhancer';
 
 import changeActionReducer from './form/change-action-reducer';
-import formActionsReducer from './form-actions-reducer';
+import { createFormActionsReducer } from './form-actions-reducer';
 import createFieldState, { createFormState } from '../utils/create-field';
 
 export function createInitialState(model, state, customInitialFieldState = {}, options = {}) {
@@ -33,11 +33,6 @@ function wrapFormReducer(plugin, modelPath, initialState) {
   };
 }
 
-const defaultPlugins = [
-  formActionsReducer,
-  changeActionReducer,
-];
-
 export default function createFormReducer(
   model,
   initialState = {},
@@ -51,6 +46,11 @@ export default function createFormReducer(
   const modelPath = toPath(model);
   const initialFormState = createInitialState(model, initialState,
     customInitialFieldState, options);
+
+  const defaultPlugins = [
+    createFormActionsReducer({ initialFieldState: customInitialFieldState }),
+    changeActionReducer,
+  ];
 
   const wrappedPlugins = plugins
     .concat(defaultPlugins)
