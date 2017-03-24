@@ -960,6 +960,7 @@ interface Actions {
      * This action allows you to set the errors for multiple submodels of a model at the same time. Similar to setFieldsValidity but for errors
      * @param model The top level form model
      * @param fieldsErrors An object where the keys are field paths and the value is error object
+     * @param options { async: true } if the error is an error from async validation.
      */
     setFieldsErrors: (model: string, fieldsErrors: FieldsObject<ErrorsObject | boolean | string>) => FieldAction;
 
@@ -989,6 +990,7 @@ interface Actions {
      *
      * @param model
      * @param errors A truthy/falsey value, a string error message, or an object indicating which error keys of the field model are invalid via booleans (where true is invalid) or strings (set specific error messages, not advised).
+     * @param options { async: true } if the error is an error from async validation.
      */
     setErrors: (model: string, errors: boolean | string | ErrorsObject) => FieldAction;
 
