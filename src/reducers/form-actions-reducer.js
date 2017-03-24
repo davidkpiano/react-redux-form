@@ -17,6 +17,7 @@ import toPath from '../utils/to-path';
 import initialFieldState from '../constants/initial-field-state';
 import { fieldOrForm, getMeta, updateFieldState } from '../utils/create-field';
 import assocIn from '../utils/assoc-in';
+import getFormValue from '../utils/get-form-value';
 
 const resetFieldState = (field, customInitialFieldState) => {
   if (!isPlainObject(field)) return field;
@@ -187,7 +188,7 @@ export function createFormActionsReducer(options) {
         // If the field is a form, its validity is
         // also based on whether its fields are all valid.
         const areFieldsValid = (field && field.$form)
-          ? fieldsValid(field)
+          ? fieldsValid(field, { async: false })
           : true;
 
         fieldUpdates = {
@@ -341,6 +342,39 @@ export function createFormActionsReducer(options) {
         };
 
         break;
+      }
+
+      case actionTypes.CHANGE: {
+        return updateParentForms(state, localPath, (parentForm) => {
+          const formModelValue = getFormValue(parentForm);
+
+          if (!parentForm.$form) {
+            return {
+              ...customInitialFieldState,
+              value: formModelValue,
+              initialValue: formModelValue,
+            };
+          }
+
+          // If the form is invalid (due to async validity)
+          // but its fields are valid and the value has changed,
+          // the form should be "valid" again.
+          if ((!Object.keys(parentForm.$form.validity).length
+              || !parentForm.$form.validity)
+            && !parentForm.$form.valid
+            && isValid(parentForm, { async: false })) {
+            return {
+              value: formModelValue,
+              validity: true,
+              errors: false,
+              valid: true,
+            };
+          }
+
+          return {
+            value: formModelValue,
+          };
+        });
       }
 
       default:

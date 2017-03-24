@@ -33,7 +33,7 @@ export default function isValid(formState, options = { async: true }) {
     .every((key) => isValid(formState[key], options));
 }
 
-export function fieldsValid(formState) {
+export function fieldsValid(formState, options = { async: true }) {
   return Object.keys(formState)
-    .every((key) => (key === '$form') || isValid(formState[key]));
+    .every((key) => (key === '$form') || isValid(formState[key], options));
 }

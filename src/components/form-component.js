@@ -151,13 +151,6 @@ function createFormClass(s = defaultStrategy) {
       if (!formValue) return;
 
       if (!validators && !errors && (modelValue !== nextProps.modelValue)) {
-        // If the form is invalid (due to async validity)
-        // but its fields are valid and the value has changed,
-        // the form should be "valid" again.
-        if (!formValue.$form.valid && isValid(formValue, { async: false })) {
-          dispatch(s.actions.setValidity(model, true));
-        }
-
         return;
       }
 
