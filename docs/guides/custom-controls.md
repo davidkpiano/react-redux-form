@@ -137,5 +137,20 @@ Some custom controls won't have prop keys that match up exactly with the standar
 />
 ```
 
-In `mapProps`, the **key** corresponds to the _custom_ control's prop key, and the **value** is a function that takes in the standard `props` applied to `<Control>` and returns the prop value that the custom prop should map to.
+If `mapProps` is an object, the **key** corresponds to the _custom_ control's prop key, and the **value** is a function that takes in the standard `props` applied to `<Control>` and returns the prop value that the custom prop should map to.
 
+
+```jsx
+<Control
+  model="..."
+  component={DatePickerIOS}
+  mapProps={ ({modelValue, onChange}) => {
+    return {
+      date: modelValue,
+      onDateChange: onChange,
+    };
+  }}
+/>
+```
+
+If `mapProps` is a function, it is applied to the standard `props`, and its return value is used as _custom_ control's props.
