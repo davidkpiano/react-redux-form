@@ -299,9 +299,7 @@ function createFormClass(s = defaultStrategy) {
 
     handleIntents() {
       const {
-        model,
         formValue,
-        dispatch,
       } = this.props;
 
       formValue.$form.intents.forEach((intent) => {
