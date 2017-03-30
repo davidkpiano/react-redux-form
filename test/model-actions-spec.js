@@ -125,7 +125,7 @@ describe('model actions', () => {
       });
 
       const store = createTestStore(testCreateStore({
-        ...reducer
+        ...reducer,
       }, thunk));
 
       store.dispatch(actions.load('foo', { bar: 'string' }));
