@@ -88,7 +88,7 @@ function createFormCombiner(strategy = defaultStrategy) {
       [key]: (state, action) => strategy.formReducer(model, initialFormState, {
         plugins,
         ...formOptions,
-      })(state, { ...action, state: modelCache[cacheId] }),
+      })(state, { ...action, state: Object.assign({}, modelCache[cacheId]) }),
     };
   }
 
