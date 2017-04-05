@@ -1,11 +1,15 @@
 import { assert } from 'chai';
 import { combineReducers } from 'redux';
 import Immutable from 'immutable';
-import { actions, modelReducer, formReducer, track, combineForms } from '../src';
+import thunk from 'redux-thunk';
+import { actions, modelReducer, formReducer, track, combineForms, createForms } from '../src';
 import {
   actions as immutableActions,
   modelReducer as immutableModelReducer,
 } from '../immutable';
+import createTestStore from 'redux-test-store';
+
+import { testCreateStore } from './utils';
 
 describe('model actions', () => {
   const testItems = [
@@ -111,6 +115,28 @@ describe('model actions', () => {
       assert.deepEqual(actual.foo, { bar: 'string' });
       assert.equal(actual.fooForm.$form.pristine, true);
       assert.equal(actual.fooForm.$form.touched, false);
+    });
+
+    it('after load model actions on non-set field should not fail', () => {
+      const reducer = createForms({
+        foo: {
+          bar: '',
+        },
+      });
+
+      const store = createTestStore(testCreateStore({
+        ...reducer,
+      }, thunk));
+
+      store.dispatch(actions.load('foo', { bar: 'string' }));
+      const actual = store.getState();
+      assert.deepEqual(actual.foo, { bar: 'string' });
+      assert.equal(actual.forms.$form.pristine, true);
+      assert.equal(actual.forms.$form.touched, false);
+
+
+      store.dispatch(actions.focus('foo.notExist', { silent: true }));
+      store.dispatch(actions.blur('foo.notExist'));
     });
   });
 
