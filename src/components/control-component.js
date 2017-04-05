@@ -585,7 +585,7 @@ function createControlClass(s = defaultStrategy) {
       if (!shallowEqual(errors, fieldValue.errors)) {
         dispatch(mergeOrSetErrors(model, errors, options));
       } else if (options.clearIntents) {
-        dispatch(actions.clearIntents(options.clearIntents));
+        dispatch(actions.clearIntents(model, options.clearIntents));
       }
 
       return modelValue;
