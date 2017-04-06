@@ -1,6 +1,6 @@
 /* eslint no-return-assign:0 */
 import React from 'react';
-import { Control, LocalForm } from '../src';
+import { Control, LocalForm, actions } from '../src';
 import TestUtils from 'react-addons-test-utils';
 import { assert } from 'chai';
 
@@ -93,6 +93,46 @@ describe('local forms', () => {
 
       assert.deepEqual(innerModelState, {
         foo: 'changed',
+      });
+    });
+  });
+
+  describe('getDispatch', () => {
+    let innerModelState;
+    let dispatcher;
+
+    TestUtils.renderIntoDocument(
+      <LocalForm
+        onChange={(modelValue) => innerModelState = modelValue}
+        getDispatch={dispatch => dispatcher = dispatch}
+        initialState={{
+          foo: '',
+          bar: '',
+        }}
+      >
+        <Control.text model=".foo" />
+      </LocalForm>
+    );
+
+    it('should provide a dispatch function', () => {
+      assert.isFunction(dispatcher);
+    });
+
+    it('should allow normal dispatch behavior', () => {
+      dispatcher(actions.change('local.foo', 'changed foo'));
+
+      assert.equal(innerModelState.foo, 'changed foo');
+    });
+
+    it('should allow thunk-like behaviour', () => {
+      dispatcher(actions.merge('local', {
+        foo: 'FOO',
+        bar: 'BAR',
+      }));
+
+      assert.deepEqual(innerModelState, {
+        foo: 'FOO',
+        bar: 'BAR',
       });
     });
   });
