@@ -219,18 +219,6 @@ _(Function)_: Calls the callback provided to the `getRef` prop with the node ins
 />
 ```
 
-## `getDispatch={(dispatch) => ...}`
-_(Function)_ Provides the dispatcher for the `<Form>`'s store.
-
-(since: 1.4.0)
-
-```jsx
-<Form
-  model="user"
-  getDispatch={(dispatch) => this.formDispatch = dispatch}
-/>
-```
-
 ## `onBeforeSubmit={(event) => ...}`
 _(Function)_ Called every time a `submit` event is emitted from the form.
 
