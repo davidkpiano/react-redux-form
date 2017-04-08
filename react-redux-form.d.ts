@@ -694,6 +694,10 @@ interface ValidityOptions {
     errors?: boolean;
 }
 
+interface SetErrorsOptions {
+    async?: boolean;
+}
+
 interface Actions {
     /* ------ ------ ------ ------ */
     /* ------ Model Actions ------ */
@@ -962,7 +966,7 @@ interface Actions {
      * @param fieldsErrors An object where the keys are field paths and the value is error object
      * @param options { async: true } if the error is an error from async validation.
      */
-    setFieldsErrors: (model: string, fieldsErrors: FieldsObject<ErrorsObject | boolean | string>) => FieldAction;
+    setFieldsErrors: (model: string, fieldsErrors: FieldsObject<ErrorsObject | boolean | string>, options?: SetErrorsOptions) => FieldAction;
 
 
 
@@ -992,7 +996,7 @@ interface Actions {
      * @param errors A truthy/falsey value, a string error message, or an object indicating which error keys of the field model are invalid via booleans (where true is invalid) or strings (set specific error messages, not advised).
      * @param options { async: true } if the error is an error from async validation.
      */
-    setErrors: (model: string, errors: boolean | string | ErrorsObject) => FieldAction;
+    setErrors: (model: string, errors: boolean | string | ErrorsObject, options?: SetErrorsOptions) => FieldAction;
 
     /**
      * Returns an action thunk that calculates the errors of the model based on the function/object errorValidators. Then, the thunk dispatches actions.setErrors(model, errors).
