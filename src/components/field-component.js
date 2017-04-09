@@ -140,6 +140,10 @@ function createFieldClass(customControlPropsMap = {}, s = defaultStrategy) {
     checkbox: {
       changeAction: s.actions.checkWithValue,
       getValue: getCheckboxValue,
+      isToggle: true,
+    },
+    radio: {
+      isToggle: true,
     },
   };
 

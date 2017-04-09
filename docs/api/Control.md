@@ -17,6 +17,8 @@
 - [`disabled`](#disabled)
 - [`getRef`](#prop-getRef)
 - [`persist`](#prop-persist)
+- [`getValue`](#prop-getValue)
+- [`isToggle`](#prop-isToggle)
 
 ## `<Control>`
 
@@ -372,3 +374,26 @@ _(Boolean)_: Signifies that the field state (validation, etc.) should not persis
   persist
 />
 ```
+
+## `getValue={(event, props) => ...}`
+_(Function)_: Determines the value given the `event` (from `onChange`) and optionally the control component's `props`.
+
+By default, the `getValue` function returns the value by hecking if the `event` is a DOM event.
+- If so, it returns `event.target.value`
+- If not, it returns the `event`.
+
+For `<Control.checkbox />`, the default `getValue` function is:
+- the original `value={...}` passed into the control, for multi-checkboxes (e.g., `model="user.hobbies[]"`)
+- the inverse boolean value of the `modelValue`.
+
+```jsx
+<Control.text
+  model="user.name"
+  getValue={(event) => event.target.value}
+/>
+```
+
+## `isToggle={false}`
+_(Boolean)_: Signifies that the control is a toggle (e.g., a checkbox or a radio). If `true`, then some optimizations are made.
+
+Default: `true` for `<Control.radio>` and `<Control.checkbox>`, `false` for all other controls.
