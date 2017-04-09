@@ -1,3 +1,5 @@
+import isMulti from './is-multi';
+
 function isEvent(event) {
   return !!(event && event.stopPropagation && event.preventDefault);
 }
@@ -27,4 +29,14 @@ function getEventValue(event) {
 
 export default function getValue(value) {
   return isEvent(value) ? getEventValue(value) : value;
+}
+
+export function getCheckboxValue(_, props) {
+  const { controlProps } = props;
+
+  if (isMulti(props.model)) {
+    return controlProps.value;
+  }
+
+  return !props.modelValue;
 }
