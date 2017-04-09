@@ -12,7 +12,7 @@ import omit from '../utils/omit';
 import actionTypes from '../action-types';
 import debounce from '../utils/debounce';
 
-import getValue from '../utils/get-value';
+import _getValue from '../utils/get-value';
 import getValidity from '../utils/get-validity';
 import invertValidity from '../utils/invert-validity';
 import getFieldFromState from '../utils/get-field-from-state';
@@ -114,6 +114,7 @@ const propTypes = {
   withField: PropTypes.bool,
   debounce: PropTypes.number,
   persist: PropTypes.bool,
+  getValue: PropTypes.func,
 };
 
 const defaultStrategy = {
@@ -226,6 +227,7 @@ function createControlClass(s = defaultStrategy) {
         model,
         modelValue,
         changeAction,
+        getValue,
       } = this.props;
       const value = this.isToggle()
         ? getToggleValue(this.props)
@@ -284,6 +286,7 @@ function createControlClass(s = defaultStrategy) {
         modelValue,
         updateOn,
         dispatch,
+        getValue,
       } = this.props;
 
       // If there are no async validators,
@@ -423,6 +426,8 @@ function createControlClass(s = defaultStrategy) {
     }
 
     handleChange(event) {
+      const { getValue } = this.props;
+
       if (event && event.persist) event.persist();
 
       this.setViewValue(getValue(event));
@@ -433,6 +438,7 @@ function createControlClass(s = defaultStrategy) {
       const {
         controlProps: { onKeyPress },
         dispatch,
+        getValue,
       } = this.props;
 
       // Get the value from the event
@@ -498,6 +504,7 @@ function createControlClass(s = defaultStrategy) {
         ignore,
         withField,
         fieldValue,
+        getValue,
       } = this.props;
 
       const eventAction = {
@@ -640,6 +647,7 @@ function createControlClass(s = defaultStrategy) {
     component: 'input',
     withField: true,
     persist: false,
+    getValue: _getValue,
   };
 
   function mapStateToProps(state, props) {
