@@ -35,15 +35,26 @@ const textPropsMap = {
   // the value passed into the control is either the original control's
   // value prop (if the control is controlled) or the value controlled by
   // <Control>.
-  value: (props) => (props.hasOwnProperty('value')
-    ? props.value
-    : getTextValue(props.viewValue)),
+  value: (props) => {
+    if (props.hasOwnProperty('value')) {
+      return props.value;
+    }
+
+    const value = getTextValue(props.viewValue);
+
+    return value === undefined ? '' : value;
+  },
 };
 
 const getModelValue = ({ modelValue }) => modelValue;
 
 const controlPropsMap = {
-  default: textPropsMap,
+  default: {
+    ...standardPropsMap,
+    value: (props) => (props.hasOwnProperty('value')
+      ? props.value
+      : props.viewValue),
+  },
   checkbox: {
     ...standardPropsMap,
     checked: (props) => (props.defaultChecked
