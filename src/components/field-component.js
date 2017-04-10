@@ -1,5 +1,5 @@
-import React, { Component, PropTypes } from 'react';
-
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import _get from '../utils/get';
 import identity from '../utils/identity';
 import omit from '../utils/omit';

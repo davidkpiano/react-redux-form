@@ -1,6 +1,7 @@
 /* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
 import { assert } from 'chai';
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import TestUtils from 'react-addons-test-utils';
 import { Provider } from 'react-redux';
 
@@ -248,7 +249,7 @@ describe('custom <Control /> components', () => {
     }
 
     TextInput.propTypes = {
-      onChangeText: React.PropTypes.func,
+      onChangeText: PropTypes.func,
     };
 
     const mapProps = {
@@ -314,9 +315,9 @@ describe('custom <Control /> components', () => {
     }
 
     TextInput.propTypes = {
-      onChangeText: React.PropTypes.func,
-      focus: React.PropTypes.bool,
-      touched: React.PropTypes.bool,
+      onChangeText: PropTypes.func,
+      focus: PropTypes.bool,
+      touched: PropTypes.bool,
     };
 
     const mapProps = {
