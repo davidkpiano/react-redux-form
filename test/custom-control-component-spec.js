@@ -348,4 +348,27 @@ describe('custom <Control /> components', () => {
 
     assert.equal(input.className.trim(), 'touched');
   });
+
+  it('should not pass default mapped props to custom controls', (done) => {
+    const store = testCreateStore({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: 'bar' }),
+    });
+
+    const CustomControl = (props) => {
+      assert.notProperty(props, 'onChange');
+      done();
+
+      return null;
+    };
+
+    TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Control
+          model="test.foo"
+          component={CustomControl}
+        />
+      </Provider>
+    );
+  });
 });
