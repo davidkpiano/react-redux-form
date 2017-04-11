@@ -31,7 +31,7 @@ class MyCustomInput extends React.Component {
 
 However, this can get a bit tedious, especially for complex controls. Thankfully, there's an easier way.
 
-## Custom Controls with `<Control>`
+## Standard Custom Controls with `<Control>`
 
 With the `<Control>` component, a custom component can be passed into the `component={...}` prop, and standard control props and event handlers (such as `onChange`, `onBlur`, `onFocus`, `value`, etc.) will be mapped as expected:
 
@@ -80,6 +80,21 @@ By default, any props on `<Control>` that are _not_ part of the `Control.propTyp
   component={MyCheckbox}
   controlProps={\{
     label: 'Is user active?', // will also be passed to MyCheckbox
+  }}
+/>
+```
+
+## Special Custom Controls with `<Control.custom>`
+
+If you do _not_ want any standard property mappings (such as `onChange`, `onBlur`, etc.) passed down to your custom control component, use `<Control.custom>` and define your own mappings:
+
+```jsx
+<Control.custom
+  component={SpecialCustomText}
+  mapProps={{
+    onTextChange: (props) => props.onChange,
+    onLoseFocus: (props) => props.onBlur,
+    // etc.
   }}
 />
 ```
