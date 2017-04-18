@@ -677,11 +677,11 @@ function createControlClass(s = defaultStrategy) {
     render() {
       return (
         <ConnectedControl
+          {...this.props}
           mapProps={{
             ...controlPropsMap.default,
             ...this.props.mapProps,
           }}
-          {...omit(this.props, 'mapProps')}
         />
       );
     }
@@ -694,11 +694,11 @@ function createControlClass(s = defaultStrategy) {
       return (
         <ConnectedControl
           component="input"
+          {...this.props}
           mapProps={{
             ...controlPropsMap.default,
             ...this.props.mapProps,
           }}
-          {...omit(this.props, 'mapProps')}
         />
       );
     }
@@ -711,12 +711,12 @@ function createControlClass(s = defaultStrategy) {
       return (
         <ConnectedControl
           component="input"
+          {...this.props}
           mapProps={{
             ...controlPropsMap.text,
             type: 'text',
             ...this.props.mapProps,
           }}
-          {...omit(this.props, 'mapProps')}
         />
       );
     }
@@ -729,11 +729,11 @@ function createControlClass(s = defaultStrategy) {
       return (
         <ConnectedControl
           component="textarea"
+          {...this.props}
           mapProps={{
             ...controlPropsMap.textarea,
             ...this.props.mapProps,
           }}
-          {...omit(this.props, 'mapProps')}
         />
       );
     }
@@ -748,11 +748,11 @@ function createControlClass(s = defaultStrategy) {
           component="input"
           type="radio"
           isToggle
+          {...this.props}
           mapProps={{
             ...controlPropsMap.radio,
             ...this.props.mapProps,
           }}
-          {...omit(this.props, 'mapProps')}
         />
       );
     }
@@ -767,13 +767,13 @@ function createControlClass(s = defaultStrategy) {
           component="input"
           type="checkbox"
           isToggle
+          {...this.props}
           mapProps={{
             ...controlPropsMap.checkbox,
             ...this.props.mapProps,
           }}
           getValue={getCheckboxValue}
           changeAction={this.props.changeAction || s.actions.checkWithValue}
-          {...omit(this.props, 'mapProps')}
         />
       );
     }
@@ -787,11 +787,11 @@ function createControlClass(s = defaultStrategy) {
         <ConnectedControl
           component="input"
           type="file"
+          {...this.props}
           mapProps={{
             ...controlPropsMap.file,
             ...this.props.mapProps,
           }}
-          {...omit(this.props, 'mapProps')}
         />
       );
     }
@@ -804,11 +804,11 @@ function createControlClass(s = defaultStrategy) {
       return (
         <ConnectedControl
           component="select"
+          {...this.props}
           mapProps={{
             ...controlPropsMap.select,
             ...this.props.mapProps,
           }}
-          {...omit(this.props, 'mapProps')}
         />
       );
     }
@@ -821,11 +821,11 @@ function createControlClass(s = defaultStrategy) {
       return (
         <ConnectedControl
           component="button"
+          {...this.props}
           mapProps={{
             ...controlPropsMap.button,
             ...this.props.mapProps,
           }}
-          {...omit(this.props, 'mapProps')}
         />
       );
     }
@@ -839,11 +839,11 @@ function createControlClass(s = defaultStrategy) {
         <ConnectedControl
           component="button"
           type="reset"
+          {...this.props}
           mapProps={{
             ...controlPropsMap.reset,
             ...this.props.mapProps,
           }}
-          {...omit(this.props, 'mapProps')}
         />
       );
     }
