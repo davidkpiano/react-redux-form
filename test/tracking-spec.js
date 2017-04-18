@@ -140,4 +140,25 @@ describe('tracking', () => {
       assert.equal(tracker(quizState), 'quiz.questions.0.choices.1');
     });
   });
+
+  describe('multiple levels of tracking with multi-value models', () => {
+    it('should ignore final set of brackets if following args mismatch count', () => {
+      const testState = {
+        foo: [
+          {
+            id: 1,
+            bar: [
+              {
+                id: 2,
+                multiple: ['a', 'b', 'c'],
+              },
+            ],
+          },
+        ],
+      };
+
+      const tracker = track('foo[].bar[].multiple[]', { id: 1 }, { id: 2 });
+      assert.equal(tracker(testState), 'foo.0.bar.0.multiple[]');
+    });
+  });
 });
