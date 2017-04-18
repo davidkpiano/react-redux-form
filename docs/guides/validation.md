@@ -19,7 +19,7 @@ const isEmail = (val) => /* check if val is email */
 // Keyed validation
 <Control.text
   model="user.email"
-  validators={\{
+  validators={{
     required: (val) => val && val.length,
     isEmail, // ES6 property shorthand
   }}
@@ -28,7 +28,7 @@ const isEmail = (val) => /* check if val is email */
 // Keyed errors
 <Control.text
   model="user.email"
-  errors={\{
+  errors={{
     required: (val) => !val || !val.length,
     isEmail: (val) => !isEmail(val),
   }}
@@ -39,7 +39,7 @@ const longEnough = (val) => val && val.length > 8;
 
 <Form
   model="user"
-  validators={\{
+  validators={{
     '': {
       // Form-level validator
       passwordsMatch: (vals) => vals.password === vals.confirmPassword,
@@ -239,7 +239,7 @@ import { isEmail } from '../path/to/validators';
 // in the component's render() method:
 <Field
   model="user.email"
-  validators={\{
+  validators={{
     required: (val) => val && val.length,
     isEmail,
   }}
@@ -250,17 +250,17 @@ import { isEmail } from '../path/to/validators';
 
 <Control.text
   model="user.firstName"
-  validators={\{
+  validators={{
     required: (val) => val && val.length,
   }}
   validateOn="change"
 />
 
 <Field model="user.username"
-  validators={\{
+  validators={{
     required: (val) => val && val.length
   }}
-  asyncValidators={\{
+  asyncValidators={{
     available: (val, done) => asyncCheckUsername(val)
       .then(res => done(res.available))
   }}
@@ -309,7 +309,7 @@ Any validation across models is best represented as a form-level validator. For 
 ```jsx
 <Form
   model="user"
-  validators={\{
+  validators={{
     '': {
       passwordsMatch: (vals) => vals.password === vals.confirmPassword,
     },
@@ -326,7 +326,7 @@ When any of the `user` model values change, the form-level validity will be upda
 
 ## Deep Model Validation in `<Form>`
 
-As of RRF version 1.2.4, you can have deep validators in the `<Form validators={\{...}}>` prop. Here's what it looks like:
+As of RRF version 1.2.4, you can have deep validators in the `<Form validators={{...}}>` prop. Here's what it looks like:
 
 ```jsx
 // Suppose you have a store with this 'user' model:
@@ -341,7 +341,7 @@ As of RRF version 1.2.4, you can have deep validators in the `<Form validators={
 // You can validate each individual phone number like so:
 <Form
   model="user"
-  validators={\{
+  validators={{
     'phones[].number': (value) => value && value.length === 10,
   }}
 >
@@ -357,7 +357,7 @@ Alternatively, you can just set this validator directly on each control; e.g.:
 {user.phones.map((phone, i) =>
   <Control
     model={`phones[${i}].number`}
-    validators={\{
+    validators={{
       validNumber: (value) => value && value.length === 10,
     }}
   />
@@ -408,7 +408,7 @@ import { isEmail } from '../path/to/validators';
 // in the component's render() method:
 <Field
   model="user.email"
-  errors={\{
+  errors={{
     required: (val) => !val || !val.length,
     isEmail: (val) => !isEmail(val),
   }}
@@ -419,7 +419,7 @@ import { isEmail } from '../path/to/validators';
 
 <Control.text
   model="user.firstName"
-  errors={\{
+  errors={{
     required: (val) => !val || !val.length,
   }}
   validateOn="change"

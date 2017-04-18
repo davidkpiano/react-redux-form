@@ -165,9 +165,9 @@ const SyncValidationForm = () => (
       <label>Username</label>
       <Control.text
         placeholder="Username"
-        validators={\{ required }}
+        validators={{ required }}
       />
-      <Errors messages={\{ required: 'Required' }} />
+      <Errors messages={{ required: 'Required' }} />
     </div>
   </Form>
 );
