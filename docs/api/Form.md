@@ -95,9 +95,11 @@ _(Function)_: The handler function called when the form is submitted. This works
 
 - The submit event's default action is prevented by default, using `event.preventDefault()`.
 - The `onSubmit` handler _will not execute_ if the form is invalid.
-- The `onSubmit` handler receives the form model data, not the event.
+- The `onSubmit` handler receives the form model data as the first argument, and the event as the second argument.
 
-The function passed into `onSubmit={...}` will be called with one argument: the form's model value.
+The function passed into `onSubmit={...}` will be called with two arguments:
+1. the form's model value
+2. the native submit event (if applicable).
 
 ### Example
 ```jsx

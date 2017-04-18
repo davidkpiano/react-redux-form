@@ -71,6 +71,10 @@ function createFormClass(s = defaultStrategy) {
       this.handleValidSubmit = this.handleValidSubmit.bind(this);
       this.handleInvalidSubmit = this.handleInvalidSubmit.bind(this);
       this.attachNode = this.attachNode.bind(this);
+
+      this.state = {
+        lastSubmitEvent: null,
+      };
     }
 
     getChildContext() {
@@ -279,7 +283,7 @@ function createFormClass(s = defaultStrategy) {
 
       dispatch(s.actions.setPending(model, true, options));
 
-      if (onSubmit) onSubmit(modelValue);
+      if (onSubmit) onSubmit(modelValue, this.state.lastSubmitEvent);
     }
 
     handleInvalidSubmit(options) {
@@ -323,6 +327,7 @@ function createFormClass(s = defaultStrategy) {
 
     handleSubmit(e) {
       if (e && !this.props.action) e.preventDefault();
+      if (e && e.persist) e.persist();
 
       const {
         modelValue,
@@ -339,10 +344,12 @@ function createFormClass(s = defaultStrategy) {
         : true;
 
       if (!validators && onSubmit && formValid) {
-        onSubmit(modelValue);
+        onSubmit(modelValue, e);
 
         return modelValue;
       }
+
+      this.setState({ lastSubmitEvent: e });
 
       this.validate(this.props, false, true);
 

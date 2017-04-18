@@ -118,5 +118,41 @@ For single or multiple checkboxes that represent boolean keyed values in a model
 <Control.checkbox model="user.pets.goat" />
 ```
 
+### How do I create a file upload form?
+The second argument of the `<Form onSubmit={(values, event) => ...}>` prop provides the event emitted when the form was submitted. Adapted from the [MDN docs](https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects):
+
+```jsx
+class UploadForm extends Component {
+  onSubmit = (values, event) => {
+    const formData = new FormData(event.target);
+
+    const request = new XMLHttpRequest();
+    request.open('POST', '/upload', true);
+    request.onload = function(oEvent) {
+      if (request.status == 200) {
+        console.log('Uploaded!');
+      } else {
+        console.log('Error uploading.');
+      }
+    };
+
+    request.send(formData);
+    event.preventDefault();
+  }
+  render() {
+    return (
+      <Form
+        model="user"
+        encType="multipart/form-data"
+        onSubmit={this.onSubmit}
+      >
+        <Control.file model=".avatar" />
+        <button>Upload!</button>
+      </Form>
+    );
+  };
+}
+```
+
 ### Other Questions and Answers
 - https://github.com/davidkpiano/react-redux-form/issues/675#issuecomment-281164930

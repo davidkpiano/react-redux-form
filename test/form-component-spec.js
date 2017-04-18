@@ -782,6 +782,7 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       let submitValue = null;
+      let submitEventValue = null;
 
       const form = TestUtils.renderIntoDocument(
         <Provider store={store}>
@@ -796,8 +797,9 @@ Object.keys(testContexts).forEach((testKey) => {
             errors={{
               bar: (val) => val !== 'bar' && 'bar invalid',
             }}
-            onSubmit={(val) => {
+            onSubmit={(val, event) => {
               submitValue = val;
+              submitEventValue = event;
               return true;
             }}
           >
@@ -834,6 +836,7 @@ Object.keys(testContexts).forEach((testKey) => {
           store.getState().testForm.foo.valid);
 
         assert.isNull(submitValue);
+        assert.isNull(submitEventValue);
       });
 
       it('should set submitFailed to true if form is invalid and submitted', () => {
@@ -842,7 +845,7 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(store.getState().testForm.$form.submitFailed);
       });
 
-      it('should call onSubmit with model value if form is valid', () => {
+      it('should call onSubmit with model value and event if form is valid', () => {
         barControl.value = 'bar';
 
         TestUtils.Simulate.change(barControl);
@@ -873,6 +876,9 @@ Object.keys(testContexts).forEach((testKey) => {
             baz: 'valid',
             foo: 'valid',
           });
+
+        assert.instanceOf(submitEventValue.target, window.HTMLElement,
+          'second argument should be event with a target');
       });
     });
 
