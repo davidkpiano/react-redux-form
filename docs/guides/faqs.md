@@ -89,5 +89,34 @@ You can use `getRef` on `<Field>`, `<Control>`, `<Form>`, or `<LocalForm>` compo
 />
 ```
 
+### How do I set up single/multiple-value checkboxes?
+
+For a single checkbox that represents a model's boolean `true` or `false` value, you can use `<Control.checkbox>` as expected:
+
+```jsx
+// if checked, user.hasPets = true, otherwise false.
+<Control.checkbox model="user.hasPets" />
+```
+
+For multiple checkboxes that represent multiple possible values for a model, append `[]` to the control to indicate that it is a multi-value model:
+
+```jsx
+// if dog and cat are checked, model will be:
+// user.pets = ['dog', 'cat']
+<Control.checkbox model="user.pets[]" value="dog" />
+<Control.checkbox model="user.pets[]" value="cat" />
+<Control.checkbox model="user.pets[]" value="goat" />
+```
+
+For single or multiple checkboxes that represent boolean keyed values in a model that's an object, use standard dot notation:
+
+```jsx
+// if dog and cat are checked, model will be
+// user.pets = { dog: true, cat: true, goat: false }
+<Control.checkbox model="user.pets.dog" />
+<Control.checkbox model="user.pets.cat" />
+<Control.checkbox model="user.pets.goat" />
+```
+
 ### Other Questions and Answers
 - https://github.com/davidkpiano/react-redux-form/issues/675#issuecomment-281164930

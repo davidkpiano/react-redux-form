@@ -29,6 +29,7 @@ It is a connected component, and will use the `model` prop to connect itself to 
 The following pre-defined `<Control>`s are available:
 
 - `<Control>` or `<Control.input>` for standard `<input />` controls
+- `<Control.custom>` for controls without any default prop mapping
 - `<Control.text>` for `<input type="text" />`
 - `<Control.textarea>` for `<textarea></textarea>`
 - `<Control.radio>` for `<input type="radio" />`

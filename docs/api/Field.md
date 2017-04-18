@@ -2,6 +2,8 @@
 
 The `<Field>` component recursively checks its children to see if they can be made into a [`<Control>`](./Control.md). It then maps all of its props over to each created child `<Control>`.
 
+If it reaches an unknown component, such as a `<SpecialComponent>`, it will stop recursing and leave the component as-is. In such cases, it is highly recommended to use `<Control>` over `<Field>` whenever possible.
+
 Example:
 ```jsx
 <Field model="user.favoriteColors">
