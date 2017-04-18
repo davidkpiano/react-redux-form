@@ -40,7 +40,7 @@ The following pre-defined `<Control>`s are available:
 - `<Control.button>` for `<button></button>`
 - `<Control.reset>` for `<button type="reset"></button>`
 
-You can add your own types to the basic `<Control>` component as an attribute:
+You can add other input types to the basic `<Control>` component as an attribute:
 `<Control type="password">`
 
 For making custom controls that work with React Redux Form, see the [custom controls documentation](../guides/custom-controls.md).
