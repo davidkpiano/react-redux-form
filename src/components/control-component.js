@@ -665,125 +665,191 @@ function createControlClass(s = defaultStrategy) {
   })(Control), ['controlProps'], ['mapProps']);
 
   /* eslint-disable react/prop-types */
-  const DefaultConnectedControl = (props) => (
-    <ConnectedControl
-      mapProps={{
-        ...controlPropsMap.default,
-        ...props.mapProps,
-      }}
-      {...omit(props, 'mapProps')}
-    />
-  );
+  /* eslint-disable react/no-multi-comp */
+  class DefaultConnectedControl extends React.Component {
+    shouldComponentUpdate(nextProps) {
+      return !shallowEqual(this.props, nextProps, {
+        deepKeys: ['controlProps'],
+        omitKeys: ['mapProps'],
+      });
+    }
+
+    render() {
+      return (
+        <ConnectedControl
+          mapProps={{
+            ...controlPropsMap.default,
+            ...this.props.mapProps,
+          }}
+          {...omit(this.props, 'mapProps')}
+        />
+      );
+    }
+  }
 
   DefaultConnectedControl.custom = ConnectedControl;
 
-  DefaultConnectedControl.input = (props) => (
-    <ConnectedControl
-      component="input"
-      mapProps={{
-        ...controlPropsMap.default,
-        ...props.mapProps,
-      }}
-      {...omit(props, 'mapProps')}
-    />
-  );
+  class DefaultConnectedControlInput extends DefaultConnectedControl {
+    render() {
+      return (
+        <ConnectedControl
+          component="input"
+          mapProps={{
+            ...controlPropsMap.default,
+            ...this.props.mapProps,
+          }}
+          {...omit(this.props, 'mapProps')}
+        />
+      );
+    }
+  }
 
-  DefaultConnectedControl.text = (props) => (
-    <ConnectedControl
-      component="input"
-      mapProps={{
-        ...controlPropsMap.text,
-        type: 'text',
-        ...props.mapProps,
-      }}
-      {...omit(props, 'mapProps')}
-    />
-  );
+  DefaultConnectedControl.input = DefaultConnectedControlInput;
 
-  DefaultConnectedControl.textarea = (props) => (
-    <ConnectedControl
-      component="textarea"
-      mapProps={{
-        ...controlPropsMap.textarea,
-        ...props.mapProps,
-      }}
-      {...omit(props, 'mapProps')}
-    />
-  );
+  class DefaultConnectedControlText extends DefaultConnectedControl {
+    render() {
+      return (
+        <ConnectedControl
+          component="input"
+          mapProps={{
+            ...controlPropsMap.text,
+            type: 'text',
+            ...this.props.mapProps,
+          }}
+          {...omit(this.props, 'mapProps')}
+        />
+      );
+    }
+  }
 
-  DefaultConnectedControl.radio = (props) => (
-    <ConnectedControl
-      component="input"
-      type="radio"
-      isToggle
-      mapProps={{
-        ...controlPropsMap.radio,
-        ...props.mapProps,
-      }}
-      {...omit(props, 'mapProps')}
-    />
-  );
+  DefaultConnectedControl.text = DefaultConnectedControlText;
 
-  DefaultConnectedControl.checkbox = (props) => (
-    <ConnectedControl
-      component="input"
-      type="checkbox"
-      isToggle
-      mapProps={{
-        ...controlPropsMap.checkbox,
-        ...props.mapProps,
-      }}
-      getValue={getCheckboxValue}
-      changeAction={props.changeAction || s.actions.checkWithValue}
-      {...omit(props, 'mapProps')}
-    />
-  );
+  class DefaultConnectedControlTextArea extends DefaultConnectedControl {
+    render() {
+      return (
+        <ConnectedControl
+          component="textarea"
+          mapProps={{
+            ...controlPropsMap.textarea,
+            ...this.props.mapProps,
+          }}
+          {...omit(this.props, 'mapProps')}
+        />
+      );
+    }
+  }
 
-  DefaultConnectedControl.file = (props) => (
-    <ConnectedControl
-      component="input"
-      type="file"
-      mapProps={{
-        ...controlPropsMap.file,
-        ...props.mapProps,
-      }}
-      {...omit(props, 'mapProps')}
-    />
-  );
+  DefaultConnectedControl.textarea = DefaultConnectedControlTextArea;
 
-  DefaultConnectedControl.select = (props) => (
-    <ConnectedControl
-      component="select"
-      mapProps={{
-        ...controlPropsMap.select,
-        ...props.mapProps,
-      }}
-      {...omit(props, 'mapProps')}
-    />
-  );
+  class DefaultConnectedControlRadio extends DefaultConnectedControl {
+    render() {
+      return (
+        <ConnectedControl
+          component="input"
+          type="radio"
+          isToggle
+          mapProps={{
+            ...controlPropsMap.radio,
+            ...this.props.mapProps,
+          }}
+          {...omit(this.props, 'mapProps')}
+        />
+      );
+    }
+  }
 
-  DefaultConnectedControl.button = (props) => (
-    <ConnectedControl
-      component="button"
-      mapProps={{
-        ...controlPropsMap.button,
-        ...props.mapProps,
-      }}
-      {...omit(props, 'mapProps')}
-    />
-  );
+  DefaultConnectedControl.radio = DefaultConnectedControlRadio;
 
-  DefaultConnectedControl.reset = (props) => (
-    <ConnectedControl
-      component="button"
-      type="reset"
-      mapProps={{
-        ...controlPropsMap.reset,
-        ...props.mapProps,
-      }}
-      {...omit(props, 'mapProps')}
-    />
-  );
+  class DefaultConnectedControlCheckbox extends DefaultConnectedControl {
+    render() {
+      return (
+        <ConnectedControl
+          component="input"
+          type="checkbox"
+          isToggle
+          mapProps={{
+            ...controlPropsMap.checkbox,
+            ...this.props.mapProps,
+          }}
+          getValue={getCheckboxValue}
+          changeAction={this.props.changeAction || s.actions.checkWithValue}
+          {...omit(this.props, 'mapProps')}
+        />
+      );
+    }
+  }
+
+  DefaultConnectedControl.checkbox = DefaultConnectedControlCheckbox;
+
+  class DefaultConnectedControlFile extends DefaultConnectedControl {
+    render() {
+      return (
+        <ConnectedControl
+          component="input"
+          type="file"
+          mapProps={{
+            ...controlPropsMap.file,
+            ...this.props.mapProps,
+          }}
+          {...omit(this.props, 'mapProps')}
+        />
+      );
+    }
+  }
+
+  DefaultConnectedControl.file = DefaultConnectedControlFile;
+
+  class DefaultConnectedControlSelect extends DefaultConnectedControl {
+    render() {
+      return (
+        <ConnectedControl
+          component="select"
+          mapProps={{
+            ...controlPropsMap.select,
+            ...this.props.mapProps,
+          }}
+          {...omit(this.props, 'mapProps')}
+        />
+      );
+    }
+  }
+
+  DefaultConnectedControl.select = DefaultConnectedControlSelect;
+
+  class DefaultConnectedControlButton extends DefaultConnectedControl {
+    render() {
+      return (
+        <ConnectedControl
+          component="button"
+          mapProps={{
+            ...controlPropsMap.button,
+            ...this.props.mapProps,
+          }}
+          {...omit(this.props, 'mapProps')}
+        />
+      );
+    }
+  }
+
+  DefaultConnectedControl.button = DefaultConnectedControlButton;
+
+  class DefaultConnectedControlReset extends DefaultConnectedControl {
+    render() {
+      return (
+        <ConnectedControl
+          component="button"
+          type="reset"
+          mapProps={{
+            ...controlPropsMap.reset,
+            ...this.props.mapProps,
+          }}
+          {...omit(this.props, 'mapProps')}
+        />
+      );
+    }
+  }
+
+  DefaultConnectedControl.reset = DefaultConnectedControlReset;
 
   return DefaultConnectedControl;
 }
