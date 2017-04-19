@@ -317,7 +317,7 @@ interface BaseFormProps {
      * The handler function called when the form is submitted. This works almost exactly like a normal <form onSubmit={...}> handler, with a few differences:
      * * The submit event's default action is prevented by default, using event.preventDefault().
      * * The onSubmit handler will not execute if the form is invalid.
-     * * The onSubmit handler receives the form model data, not the event.
+     * * The onSubmit handler receives the form model data as the first argument, and the event as the second argument.
      *
      * Tips:
      * * You can do anything in onSubmit; including firing off custom actions or handling (async) validation yourself.
