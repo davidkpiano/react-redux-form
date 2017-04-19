@@ -323,7 +323,7 @@ interface BaseFormProps {
      * * You can do anything in onSubmit; including firing off custom actions or handling (async) validation yourself.
      * @param formModelData The form's model data
      */
-    onSubmit?: (formModelData: any) => void;
+    onSubmit?: (formModelData: any, event?: Event) => void;
     /**
      * The handler function called when the form fails to submit. This happens when:
      * * attempting to submit an invalid form
