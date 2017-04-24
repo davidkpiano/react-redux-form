@@ -55,7 +55,7 @@ So what do we do?
 
 ## Model Getters
 
-Model getter functions answer the question, "What is the path to this entity?" especially if the path may change over time. It a function that:
+Model getter functions answer the question, "What is the path to this entity?" especially if the path may change over time. It's a function that:
 
 - takes one argument: `state` _(Object)_, which is the entire state tree of the store
 - and returns: `model` _(String)_ - the string representation of the path to the model.
