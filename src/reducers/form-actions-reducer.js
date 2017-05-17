@@ -15,7 +15,7 @@ import isValidityInvalid from '../utils/is-validity-invalid';
 import fieldActions from '../actions/field-actions';
 import toPath from '../utils/to-path';
 import initialFieldState from '../constants/initial-field-state';
-import { fieldOrForm, getMeta, updateFieldState } from '../utils/create-field';
+import { getMeta, fieldOrForm, updateFieldState } from '../utils/create-field';
 import assocIn from '../utils/assoc-in';
 import getFormValue from '../utils/get-form-value';
 
@@ -30,7 +30,6 @@ const resetFieldState = (field, customInitialFieldState) => {
     intents.push({ type: 'load' });
     resetValue = loadedValue;
   }
-
   return fieldOrForm(
     getMeta(field, 'model'),
     resetValue,
@@ -48,7 +47,10 @@ const setInitialFieldState = (customInitialFieldState) => (field, key) => {
     });
   }
 
-  if (field.$form) return mapValues(field, resetFieldState);
+  if (field.$form) {
+    return mapValues(field, (fieldState) =>
+      resetFieldState(fieldState, customInitialFieldState));
+  }
 
   return updateFieldState(customInitialFieldState, {
     value: field.value,
@@ -359,8 +361,7 @@ export function createFormActionsReducer(options) {
           // If the form is invalid (due to async validity)
           // but its fields are valid and the value has changed,
           // the form should be "valid" again.
-          if ((!Object.keys(parentForm.$form.validity).length
-              || !parentForm.$form.validity)
+          if ((!parentForm.$form.validity || !Object.keys(parentForm.$form.validity).length)
             && !parentForm.$form.valid
             && isValid(parentForm, { async: false })) {
             return {
