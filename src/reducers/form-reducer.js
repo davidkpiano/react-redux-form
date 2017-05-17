@@ -48,8 +48,8 @@ export default function createFormReducer(
     customInitialFieldState, options);
 
   const defaultPlugins = [
-    createFormActionsReducer({ initialFieldState: customInitialFieldState }),
     changeActionReducer,
+    createFormActionsReducer({ initialFieldState: customInitialFieldState }),
   ];
 
   const wrappedPlugins = plugins
