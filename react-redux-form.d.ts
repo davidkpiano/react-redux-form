@@ -94,12 +94,12 @@ interface CustomComponentProps extends WrapperProps {
 }
 
 interface MapPropsProps {
-  onChange: (event: any) => void;
-  onBlur: (event: any) => void;
-  onFocus: (event: any) => void;
-  fieldValue: FieldState;
-  modelValue: any;
-  viewValue: any;
+    onChange: (event: any) => void;
+    onBlur: (event: any) => void;
+    onFocus: (event: any) => void;
+    fieldValue: FieldState;
+    modelValue: any;
+    viewValue: any;
 }
 
 type MapPropsFunc = (props: MapPropsProps) => any;
@@ -705,6 +705,23 @@ interface Actions {
     /* ------ ------ ------ ------ */
 
     /**
+     * Returns an action that, when handled by a formReducer, adds the specified intent to this fields list of intents
+     *
+     * @param model
+     * @param intent
+     */
+    addIntent: (model: string, intent: any) => ModelAction;
+
+    /**
+     * Returns an action that, when handled by a formReducer, adds the specified intent to this fields list of intents
+     *
+     * @param model
+     * @param intents
+     * @param options
+     */
+    clearIntents: (model: string, intents: any[], options?: any) => ModelAction;
+
+    /**
      * Returns an action that, when handled by a modelReducer, changes the value of the model to the value.
      * When the change action is handled by a formReducer, the field model's .dirty state is set to true and its corresponding .pristine state is set to false.
      *
@@ -1000,6 +1017,22 @@ interface Actions {
     setErrors: (model: string, errors: boolean | string | ErrorsObject, options?: SetErrorsOptions) => FieldAction;
 
     /**
+     * Returns an action that, when handled by a formReducer, changes the .errors state of the field model in the form to true, false or error message
+     * It will also set the .valid state of the field model to true or false (inverse of the error).
+     * You can set errors to a boolean, object, array, string, etc. Truthy values indicate errors.
+     *
+     * It simultaneously sets the .validity on the field model to the inverse of the errors.
+     *
+     * Tips:
+     * * If you aren't hard-coding error messages, use actions.setValidity(model, validity) instead. It's a cleaner pattern.
+     *
+     * @param model
+     * @param errors A truthy/falsey value, a string error message, or an object indicating which error keys of the field model are invalid via booleans (where true is invalid) or strings (set specific error messages, not advised).
+     * @param options { async: true } if the error is an error from async validation.
+     */
+    asyncSetErrors: (model: string, asyncValidator: AsyncValidatorFn) => ActionThunk;
+
+    /**
      * Returns an action thunk that calculates the errors of the model based on the function/object errorValidators. Then, the thunk dispatches actions.setErrors(model, errors).
      *
      * An error validator is a function that returns true or a truthy value (such as a string) if invalid, and false if valid.
@@ -1054,10 +1087,13 @@ interface ActionTypes {
     SET_TOUCHED: string;
     SET_UNTOUCHED: string;
     SET_VALIDITY: string;
+    SET_VALIDATING: string;
     SET_FIELDS_VALIDITY: string;
     SET_VIEW_VALUE: string;
     RESET_VALIDITY: string;
     BATCH: string;
+    ADD_INTENT: string;
+    CLEAR_INTENTS: string;
 }
 
 export var actionTypes: ActionTypes;
@@ -1081,18 +1117,18 @@ export var actionTypes: ActionTypes;
 export function track(model: string, predicate: any): ModelGetterFn;
 
 export const initialFieldState: {
-  focus: false,
-  pending: false,
-  pristine: true,
-  submitted: false,
-  submitFailed: false,
-  retouched: false,
-  touched: false,
-  valid: true,
-  validating: false,
-  validated: false,
-  validity: {},
-  errors: {},
+    focus: false,
+    pending: false,
+    pristine: true,
+    submitted: false,
+    submitFailed: false,
+    retouched: false,
+    touched: false,
+    valid: true,
+    validating: false,
+    validated: false,
+    validity: {},
+    errors: {},
 };
 
 export function combineForms(data: any, model?: string, options?: Object): any;
