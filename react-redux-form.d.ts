@@ -894,7 +894,7 @@ interface Actions {
      * @param model The top-level model form key of the data to submit.
      * @param promise The promise that the submit action will wait to be resolved or rejected
      */
-    submit: (model: string, promise: Promise<any>) => ActionThunk;
+    submit: (model: string, promise?: Promise<any> | undefined, options?: any) => ActionThunk;
 
     /**
      * Waits for a submission promise to be completed, then, if successful:
