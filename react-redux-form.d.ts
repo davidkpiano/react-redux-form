@@ -364,6 +364,14 @@ interface BaseFormProps {
      * Provides the dispatcher for the form's Redux store.
      */
     getDispatch?: (dispatch: Function) => void;
+    /**
+     * Specify the action if you want the form to let the default happen on submit.
+     */
+    action?: string;
+    /**
+     * HTTP method
+     */
+    method?: string;
 }
 export interface FormProps extends BaseFormProps {
     /**
