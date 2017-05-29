@@ -1290,13 +1290,12 @@ Object.keys(testContexts).forEach((testKey) => {
     });
 
     describe('change on enter', () => {
-      const reducer = modelReducer('test');
-      const store = testCreateStore({
-        test: reducer,
-        testForm: formReducer('test'),
-      });
-
       it('should change the model upon pressing Enter', () => {
+        const reducer = modelReducer('test');
+        const store = testCreateStore({
+          test: reducer,
+          testForm: formReducer('test'),
+        });
         const field = TestUtils.renderIntoDocument(
           <Provider store={store}>
             <Control.text
@@ -1319,6 +1318,45 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.equal(
           get(store.getState().test, 'foo'),
           'testing');
+      });
+
+      it('should validate the model upon pressing Enter', () => {
+        const reducer = modelReducer('test');
+        const store = testCreateStore({
+          test: reducer,
+          testForm: formReducer('test'),
+        });
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.text
+              model="test.foo"
+              updateOn="blur"
+              validators={{
+                isNotBar: v => v !== 'bar',
+              }}
+            />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        control.value = 'bar';
+
+        TestUtils.Simulate.keyPress(control, {
+          key: 'Enter',
+          keyCode: 13,
+          which: 13,
+        });
+
+        assert.equal(
+          get(store.getState().test, 'foo'),
+          'bar');
+
+        assert.deepEqual(
+          store.getState().testForm.foo.errors,
+          { isNotBar: true });
+
+        assert.isFalse(store.getState().testForm.foo.valid);
       });
     });
 

@@ -226,7 +226,7 @@ function createControlClass(s = defaultStrategy) {
         });
     }
 
-    getValidateAction(value, eventName) {
+    getValidateAction(value, eventName, forceUpdate = false) {
       const {
         validators,
         errors,
@@ -241,7 +241,7 @@ function createControlClass(s = defaultStrategy) {
       const nodeErrors = this.getNodeErrors();
 
       // If it is not a change event, use the model value.
-      const valueToValidate = containsEvent(updateOn, eventName)
+      const valueToValidate = forceUpdate || containsEvent(updateOn, eventName)
         ? value
         : modelValue;
 
@@ -410,28 +410,22 @@ function createControlClass(s = defaultStrategy) {
         : value;
     }
 
-    handleChange(event) {
+    handleChange(event, forceUpdate = false) {
       if (event && event.persist) event.persist();
 
       this.setViewValue(this.getValue(event));
-      this.handleUpdate(event);
+      this.handleUpdate(event, forceUpdate);
     }
 
     handleKeyPress(event) {
       const {
         controlProps: { onKeyPress },
-        dispatch,
-        getValue,
       } = this.props;
 
       if (onKeyPress) onKeyPress(event);
 
-      // Get the value from the event
-      // in case updateOn="blur" (or something other than "change")
-      const parsedValue = this.parse(getValue(event));
-
       if (event.key === 'Enter') {
-        dispatch(this.getChangeAction(parsedValue));
+        this.handleChange(event, true);
       }
     }
 
@@ -500,12 +494,12 @@ function createControlClass(s = defaultStrategy) {
         change: controlProps.onChange,
       }[eventName];
 
-      const dispatchBatchActions = (persistedEvent) => {
+      const dispatchBatchActions = (persistedEvent, forceUpdate = false) => {
         const eventActions = [
           eventAction && eventAction(model),
-          containsEvent(validateOn, eventName)
-            && this.getValidateAction(persistedEvent, eventName),
-          containsEvent(updateOn, eventName)
+          (forceUpdate || containsEvent(validateOn, eventName))
+            && this.getValidateAction(persistedEvent, eventName, forceUpdate),
+          (forceUpdate || containsEvent(updateOn, eventName))
             && this.getChangeAction(persistedEvent),
         ];
 
@@ -514,7 +508,7 @@ function createControlClass(s = defaultStrategy) {
         return persistedEvent;
       };
 
-      return (event) => {
+      return (event, forceUpdate = false) => {
         if (containsEvent(ignore, eventName)) {
           return controlEventHandler
             ? controlEventHandler(event)
@@ -528,7 +522,6 @@ function createControlClass(s = defaultStrategy) {
           )(event);
         }
 
-
         return compose(
           (e) => {
             if (containsEvent(asyncValidateOn, eventName)) {
@@ -537,7 +530,7 @@ function createControlClass(s = defaultStrategy) {
 
             return e;
           },
-          dispatchBatchActions,
+          (e) => dispatchBatchActions(e, forceUpdate),
           parser,
           (e) => this.getValue(e),
           persistEventWithCallback(controlEventHandler || identity)
