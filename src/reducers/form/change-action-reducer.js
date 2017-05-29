@@ -61,12 +61,13 @@ function updateFieldValue(field, action, parentModel = undefined) {
         result[key] = { ...field[key] };
       });
 
-      const finalResult = result
+      const finalResult = { ...result
         .filter((f) => f)
         .map((subField, index) => ({
           ...subField,
           model: `${model}.${index}`,
-        }));
+        })),
+      };
 
       finalResult.$form = field.$form;
 

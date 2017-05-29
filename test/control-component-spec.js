@@ -1949,6 +1949,35 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.equal(get(store.getState().test, 'foo'), 'bar');
         assert.equal(input.value, 'debounced');
       });
+
+      it('should flush debounced changes when control is unmounted', () => {
+        const initialState = getInitialState({ foo: 'bar' });
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        const container = document.createElement('div');
+
+        const control = ReactDOM.render(
+          <Provider store={store}>
+            <Control.text
+              model="test.foo"
+              debounce={1000}
+            />
+          </Provider>,
+        container);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(control, 'input');
+        input.value = 'debounced';
+
+        TestUtils.Simulate.change(input);
+
+        ReactDOM.unmountComponentAtNode(container);
+
+        assert.equal(get(store.getState().test, 'foo'), 'debounced');
+        assert.equal(input.value, 'debounced');
+      });
     });
 
     describe('persist prop', () => {

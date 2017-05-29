@@ -1,13 +1,19 @@
 export default function debounce(func, delay) {
   let timeout;
+  let laterFunc;
 
-  return (...args) => {
-    const later = () => {
-      timeout = null;
-      func.apply(null, args);
-    };
-
-    clearTimeout(timeout);
-    timeout = setTimeout(later, delay);
+  const createLaterFunc = (args) => () => {
+    timeout = null;
+    func.apply(null, args);
   };
+
+  const debouncedFunc = (...args) => {
+    clearTimeout(timeout);
+    laterFunc = createLaterFunc(args);
+    timeout = setTimeout(laterFunc, delay);
+  };
+
+  debouncedFunc.flush = () => laterFunc();
+
+  return debouncedFunc;
 }

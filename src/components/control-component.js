@@ -181,6 +181,11 @@ function createControlClass(s = defaultStrategy) {
 
         dispatch(actions.resetValidity(model, keys));
       }
+
+      // flush debounced model changes
+      if (this.handleUpdate.flush) {
+        this.handleUpdate.flush();
+      }
     }
 
     getMappedProps() {
