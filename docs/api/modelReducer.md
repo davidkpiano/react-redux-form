@@ -3,7 +3,6 @@
 Creates a `modelReducer` instance function that responds to these actions:
 
 - `actionTypes.CHANGE`
-- `actionTypes.LOAD`
 - `actionTypes.RESET`
 
 and updates the state accordingly.
