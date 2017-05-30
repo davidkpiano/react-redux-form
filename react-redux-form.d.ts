@@ -504,59 +504,59 @@ interface _FieldState {
     /**
      * @default true
      */
-    blur: boolean;
+    blur?: boolean;
     /**
      * @default false
      */
-    dirty: boolean;
+    dirty?: boolean;
     /**
      * @default false
      */
-    focus: boolean;
+    focus?: boolean;
     /**
      * @default any
      */
-    initialValue: any;
+    initialValue?: any;
     /**
      * @default false
      */
-    pending: boolean;
+    pending?: boolean;
     /**
      * @default true
      */
-    pristine: boolean;
+    pristine?: boolean;
     /**
      * @default false
      */
-    retouched: boolean;
+    retouched?: boolean;
     /**
      * @default false
      */
-    submitted: boolean;
+    submitted?: boolean;
     /**
      * @default false
      */
-    touched: boolean;
+    touched?: boolean;
     /**
      * @default true
      */
-    untouched: boolean;
+    untouched?: boolean;
     /**
      * @default true
      */
-    valid: boolean;
+    valid?: boolean;
     /**
      * @default false
      */
-    validating: boolean;
+    validating?: boolean;
     /**
      * @default null
      */
-    viewValue: boolean;
+    viewValue?: boolean;
     /**
      * @default {}
      */
-    validity: any;
+    validity?: any;
 }
 
 export interface FieldState extends _FieldState {
@@ -564,7 +564,7 @@ export interface FieldState extends _FieldState {
      * Error object containing (key) validator name -> (value) boolean if is error (meaning INVALID is true)
      * @default {}
      */
-    errors: any;
+    errors?: any;
 }
 
 
