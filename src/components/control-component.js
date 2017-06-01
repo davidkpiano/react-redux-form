@@ -715,7 +715,7 @@ function createControlClass(s = defaultStrategy) {
           {...this.props}
           mapProps={{
             ...controlPropsMap.text,
-            type: 'text',
+            type: this.props.type || 'text',
             ...this.props.mapProps,
           }}
         />
