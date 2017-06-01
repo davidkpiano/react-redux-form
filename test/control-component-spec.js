@@ -1188,6 +1188,86 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('dynamic model', () => {
+      const initialState = getInitialState({
+        foo: 'initial',
+        bar: 'initial',
+      });
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test'),
+      });
+
+      class DynamicModelControl extends React.Component {
+        constructor() {
+          super();
+
+          this.state = { model: 'foo' };
+        }
+        render() {
+          const { model } = this.state;
+          return (
+            <div>
+              <button onClick={() => this.setState({ model: 'bar' })} />
+              <Control.text model={`test.${model}`} />
+            </div>
+          );
+        }
+      }
+
+      it('updates the proper field on change', () => {
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <DynamicModelControl />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+        const button = TestUtils.findRenderedDOMComponentWithTag(field, 'button');
+
+        control.value = 'value1';
+        TestUtils.Simulate.change(control);
+
+        TestUtils.Simulate.click(button);
+
+        control.value = 'value2';
+        TestUtils.Simulate.change(control);
+
+        assert.equal(get(store.getState().test, 'foo'), 'value1');
+        assert.equal(get(store.getState().test, 'bar'), 'value2');
+      });
+
+      it('updates the proper form state of field on focus/blur', () => {
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <DynamicModelControl />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+        const button = TestUtils.findRenderedDOMComponentWithTag(field, 'button');
+
+        TestUtils.Simulate.focus(control);
+        assert.equal(store.getState().testForm.foo.focus, true);
+        assert.equal(store.getState().testForm.bar.focus, false);
+
+        TestUtils.Simulate.blur(control);
+        assert.equal(store.getState().testForm.foo.focus, false);
+        assert.equal(store.getState().testForm.bar.focus, false);
+
+        TestUtils.Simulate.click(button);
+
+        TestUtils.Simulate.focus(control);
+        assert.equal(store.getState().testForm.foo.focus, false,
+          'Second field should be focused instead, we switched the model');
+        assert.equal(store.getState().testForm.bar.focus, true);
+
+        TestUtils.Simulate.blur(control);
+        assert.equal(store.getState().testForm.foo.focus, false);
+        assert.equal(store.getState().testForm.bar.focus, false);
+      });
+    });
+
     describe('updateOn prop', () => {
       const onEvents = [
         'change',
