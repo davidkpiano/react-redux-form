@@ -470,31 +470,19 @@ function createControlClass(s = defaultStrategy) {
     }
 
     createEventHandler(eventName) {
-      const {
-        dispatch,
-        model,
-        updateOn,
-        validateOn = updateOn,
-        asyncValidateOn,
-        controlProps,
-        parser,
-        ignore,
-        withField,
-        fieldValue,
-      } = this.props;
-
       const eventAction = {
         focus: actions.silentFocus,
         blur: actions.blur,
       }[eventName];
 
-      const controlEventHandler = {
-        focus: controlProps.onFocus,
-        blur: controlProps.onBlur,
-        change: controlProps.onChange,
-      }[eventName];
-
       const dispatchBatchActions = (persistedEvent, forceUpdate = false) => {
+        const {
+          dispatch,
+          model,
+          updateOn,
+          validateOn = updateOn,
+        } = this.props;
+
         const eventActions = [
           eventAction && eventAction(model),
           (forceUpdate || containsEvent(validateOn, eventName))
@@ -509,6 +497,21 @@ function createControlClass(s = defaultStrategy) {
       };
 
       return (event, forceUpdate = false) => {
+        const {
+          asyncValidateOn,
+          controlProps,
+          parser,
+          ignore,
+          withField,
+          fieldValue,
+        } = this.props;
+
+        const controlEventHandler = {
+          focus: controlProps.onFocus,
+          blur: controlProps.onBlur,
+          change: controlProps.onChange,
+        }[eventName];
+
         if (containsEvent(ignore, eventName)) {
           return controlEventHandler
             ? controlEventHandler(event)
