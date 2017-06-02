@@ -49,17 +49,14 @@ export default function createFieldState(model, value, customInitialFieldState) 
 }
 
 export function createFormState(model, values, customInitialFieldState, options = {}) {
-  const state = {
+  return {
     $form: createFieldState(model, values, customInitialFieldState, options),
+    ...(options.lazy
+      ? undefined
+      : mapValues(values, (value, key) => {
+        const subModel = getSubModelString(model, key);
+
+        return fieldOrForm(subModel, value, customInitialFieldState);
+      })),
   };
-
-  if (options.lazy) return state;
-
-  Object.assign(state, mapValues(values, (value, key) => {
-    const subModel = getSubModelString(model, key);
-
-    return fieldOrForm(subModel, value, customInitialFieldState);
-  }));
-
-  return state;
 }
