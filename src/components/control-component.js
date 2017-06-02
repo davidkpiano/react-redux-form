@@ -668,13 +668,6 @@ function createControlClass(s = defaultStrategy) {
   /* eslint-disable react/prop-types */
   /* eslint-disable react/no-multi-comp */
   class DefaultConnectedControl extends React.Component {
-    shouldComponentUpdate(nextProps) {
-      return !shallowEqual(this.props, nextProps, {
-        deepKeys: ['controlProps'],
-        omitKeys: ['mapProps'],
-      });
-    }
-
     render() {
       return (
         <ConnectedControl
