@@ -840,19 +840,32 @@ Object.keys(testContexts).forEach((testKey) => {
 
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Control.text
-            model="test.foo"
-            validators={{
-              required: (val) => val && val.length,
-            }}
-            asyncValidators={{
-              asyncValid: (_, asyncDone) => asyncDone(false),
-            }}
-          />
+          <div>
+            <Control.text
+              model="test.foo"
+              validators={{
+                required: (val) => val && val.length,
+              }}
+              asyncValidators={{
+                asyncValid: (_, asyncDone) => asyncDone(false),
+              }}
+            />
+            <Control.text
+              model="test.bar"
+              validators={{
+                required: (val) => val && val.length,
+              }}
+              asyncValidators={{
+                asyncValid: (_, asyncDone) => asyncDone(false),
+              }}
+              validateOn="change"
+              asyncValidateOn="change"
+            />
+          </div>
         </Provider>
       );
 
-      const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+      const [input, concurrentInput] = TestUtils.scryRenderedDOMComponentsWithTag(field, 'input');
 
       it('async validation should not run when field is invalid', () => {
         input.value = '';
@@ -866,6 +879,40 @@ Object.keys(testContexts).forEach((testKey) => {
           });
 
         assert.isUndefined(store.getState().testForm.foo.validity.asyncValid);
+      });
+
+      it('async validation should run on invalid field '
+        + 'when concurrent with sync validation', () => {
+        concurrentInput.value = '';
+        TestUtils.Simulate.change(concurrentInput);
+
+        assert.deepEqual(
+          store.getState().testForm.bar.validity,
+          {
+            required: false,
+            asyncValid: false,
+          });
+        assert.isDefined(store.getState().testForm.bar.validity.asyncValid);
+
+        concurrentInput.value = 'changed';
+        TestUtils.Simulate.change(concurrentInput);
+
+        assert.deepEqual(
+          store.getState().testForm.bar.validity,
+          {
+            required: true,
+            asyncValid: false,
+          });
+
+        concurrentInput.value = '';
+        TestUtils.Simulate.change(concurrentInput);
+
+        assert.deepEqual(
+          store.getState().testForm.bar.validity,
+          {
+            required: false,
+            asyncValid: false,
+          });
       });
 
       it('async validation should not override sync validity', () => {

@@ -272,6 +272,8 @@ function createControlClass(s = defaultStrategy) {
         model,
         modelValue,
         updateOn,
+        validateOn,
+        asyncValidateOn,
         dispatch,
         getValue,
       } = this.props;
@@ -287,15 +289,18 @@ function createControlClass(s = defaultStrategy) {
 
       // If any sync validity is invalid,
       // do not run async validation
-      const asyncValidatorKeys = Object.keys(asyncValidators);
-      const syncValid = Object.keys(fieldValue.validity).every((key) => {
-        // If validity is based on async validator, skip
-        if (!!~asyncValidatorKeys.indexOf(key)) return true;
+      // unless sync and async validation occur simultaneously
+      if (validateOn !== asyncValidateOn) {
+        const asyncValidatorKeys = Object.keys(asyncValidators);
+        const syncValid = Object.keys(fieldValue.validity).every((key) => {
+          // If validity is based on async validator, skip
+          if (!!~asyncValidatorKeys.indexOf(key)) return true;
 
-        return fieldValue.validity[key];
-      });
+          return fieldValue.validity[key];
+        });
 
-      if (!syncValid) return false;
+        if (!syncValid) return false;
+      }
 
       dispatch(actions.setValidating(model, true));
 
@@ -306,7 +311,7 @@ function createControlClass(s = defaultStrategy) {
           dispatch(actions.setValidity(model, validity));
         };
 
-        validator(getValue(valueToValidate), outerDone);
+        validator(getValue(valueToValidate, this.props), outerDone);
       });
 
       return valueToValidate;
@@ -481,12 +486,15 @@ function createControlClass(s = defaultStrategy) {
           model,
           updateOn,
           validateOn = updateOn,
+          asyncValidateOn,
         } = this.props;
 
         const eventActions = [
           eventAction && eventAction(model),
           (forceUpdate || containsEvent(validateOn, eventName))
             && this.getValidateAction(persistedEvent, eventName, forceUpdate),
+          (forceUpdate || containsEvent(asyncValidateOn, eventName))
+            && this.getAsyncValidateAction(persistedEvent, eventName),
           (forceUpdate || containsEvent(updateOn, eventName))
             && this.getChangeAction(persistedEvent),
         ];
@@ -498,7 +506,6 @@ function createControlClass(s = defaultStrategy) {
 
       return (event, forceUpdate = false) => {
         const {
-          asyncValidateOn,
           controlProps,
           parser,
           ignore,
@@ -526,13 +533,6 @@ function createControlClass(s = defaultStrategy) {
         }
 
         return compose(
-          (e) => {
-            if (containsEvent(asyncValidateOn, eventName)) {
-              this.getAsyncValidateAction(e, eventName);
-            }
-
-            return e;
-          },
           (e) => dispatchBatchActions(e, forceUpdate),
           parser,
           (e) => this.getValue(e),
