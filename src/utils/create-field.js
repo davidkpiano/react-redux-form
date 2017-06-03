@@ -40,11 +40,11 @@ export function updateFieldState(existingFieldState, updatedFieldState) {
 
 export default function createFieldState(model, value, customInitialFieldState) {
   return {
+    initialValue: value,
     ...initialFieldState,
     ...customInitialFieldState,
     model,
     value,
-    initialValue: value,
   };
 }
 

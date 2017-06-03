@@ -291,4 +291,25 @@ describe('formReducer()', () => {
       assert.equal(touchedState.bar.initialValue, 'initial');
     });
   });
+
+  describe('form reset after dynamically adding fields', () => {
+    const initialState = { filters: {} };
+    const reducer = formReducer('test', initialState);
+    const firstState = reducer(undefined, { type: 'any' });
+    const addedState = reducer(firstState, actions.change('test.filters.one', true));
+
+    it('form initial value should not change when adding fields', () => {
+      assert.deepEqual(addedState.filters.$form.initialValue, {});
+      assert.deepEqual(addedState.filters.$form.value, { one: true });
+      assert.isDefined(addedState.filters.one);
+    });
+
+    it('form should reset completely to its initial value', () => {
+      const resetState = reducer(addedState, actions.reset('test.filters'));
+
+      assert.deepEqual(resetState.filters.$form.initialValue, {});
+      assert.deepEqual(resetState.filters.$form.value, {});
+      assert.isUndefined(resetState.filters.one);
+    });
+  });
 });
