@@ -53,7 +53,12 @@ const propTypes = {
 
   // standard HTML attributes
   action: PropTypes.string,
+  noValidate: PropTypes.bool,
 };
+
+const htmlAttributes = ['action', 'noValidate'];
+const disallowedPropTypeKeys = Object.keys(propTypes)
+  .filter(key => htmlAttributes.indexOf(key) === -1);
 
 const defaultStrategy = {
   get: _get,
@@ -305,12 +310,13 @@ function createFormClass(s = defaultStrategy) {
     handleIntents() {
       const {
         formValue,
+        noValidate,
       } = this.props;
 
       formValue.$form.intents.forEach((intent) => {
         switch (intent.type) {
           case 'submit': {
-            if (isValid(formValue, { async: false })) {
+            if (noValidate || isValid(formValue, { async: false })) {
               this.handleValidSubmit({ clearIntents: intent });
             } else {
               this.handleInvalidSubmit({ clearIntents: intent });
@@ -363,7 +369,7 @@ function createFormClass(s = defaultStrategy) {
         formValue,
       } = this.props;
 
-      const allowedProps = omit(this.props, Object.keys(propTypes));
+      const allowedProps = omit(this.props, disallowedPropTypeKeys);
       const renderableChildren = typeof children === 'function'
         ? children(formValue)
         : children;
