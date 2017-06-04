@@ -55,11 +55,11 @@ class App extends React.Component {
   render() {
     return (
       <form>
-        <label>Name:</label>
-        <Control.text model="user.name" />
+        <label htmlFor="user.name">Name:</label>
+        <Control.text model="user.name" id="user.name" />
 
-        <label>Favorite color:</label>
-        <Control.select model="user.faveColor">
+        <label htmlFor="user.faveColor">Favorite color:</label>
+        <Control.select model="user.faveColor" id="user.faveColor">
           <option value="red">red</option>
           <option value="green">green</option>
           <option value="blue">blue</option>
