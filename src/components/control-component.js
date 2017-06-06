@@ -133,6 +133,7 @@ function createControlClass(s = defaultStrategy) {
       this.handleFocus = this.createEventHandler('focus').bind(this);
       this.handleBlur = this.createEventHandler('blur').bind(this);
       this.handleUpdate = this.createEventHandler('change').bind(this);
+      this.forceHandleUpdate = this.createEventHandler('change', true).bind(this);
       this.handleChange = this.handleChange.bind(this);
       this.handleLoad = this.handleLoad.bind(this);
       this.getMappedProps = this.getMappedProps.bind(this);
@@ -422,11 +423,11 @@ function createControlClass(s = defaultStrategy) {
         : value;
     }
 
-    handleChange(event, forceUpdate = false) {
+    handleChange(event) {
       if (event && event.persist) event.persist();
 
       this.setViewValue(this.getValue(event));
-      this.handleUpdate(event, forceUpdate);
+      this.handleUpdate(event);
     }
 
     handleKeyPress(event) {
@@ -437,7 +438,7 @@ function createControlClass(s = defaultStrategy) {
       if (onKeyPress) onKeyPress(event);
 
       if (event.key === 'Enter') {
-        this.handleChange(event, true);
+        this.forceHandleUpdate(event);
       }
     }
 
@@ -481,13 +482,13 @@ function createControlClass(s = defaultStrategy) {
       if (onLoad) onLoad(modelValue, fieldValue, this.node);
     }
 
-    createEventHandler(eventName) {
+    createEventHandler(eventName, forceUpdate = false) {
       const eventAction = {
         focus: actions.silentFocus,
         blur: actions.blur,
       }[eventName];
 
-      const dispatchBatchActions = (persistedEvent, forceUpdate = false) => {
+      const dispatchBatchActions = (persistedEvent) => {
         const {
           dispatch,
           model,
@@ -511,7 +512,7 @@ function createControlClass(s = defaultStrategy) {
         return persistedEvent;
       };
 
-      return (event, forceUpdate = false) => {
+      return (event) => {
         const {
           controlProps,
           parser,
@@ -540,7 +541,7 @@ function createControlClass(s = defaultStrategy) {
         }
 
         return compose(
-          (e) => dispatchBatchActions(e, forceUpdate),
+          dispatchBatchActions,
           parser,
           (e) => this.getValue(e),
           persistEventWithCallback(controlEventHandler || identity)
