@@ -676,8 +676,8 @@ function createControlClass(s = defaultStrategy) {
   /* eslint-disable react/prop-types */
   /* eslint-disable react/no-multi-comp */
   class DefaultConnectedControl extends React.Component {
-    shouldComponentUpdate(nextProps) {
-      return !shallowEqual(this.props, nextProps, {
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+      return !shallowEqual(this.context, nextContext) || !shallowEqual(this.props, nextProps, {
         deepKeys: ['controlProps'],
         omitKeys: ['mapProps'],
       });
@@ -695,6 +695,9 @@ function createControlClass(s = defaultStrategy) {
       );
     }
   }
+
+  // Copy the context types so that we can properly implement shouldComponentUpdate
+  DefaultConnectedControl.contextTypes = ConnectedControl.contextTypes;
 
   DefaultConnectedControl.custom = ConnectedControl;
 
