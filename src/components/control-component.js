@@ -7,7 +7,7 @@ import shallowEqual from '../utils/shallow-equal';
 import _get from '../utils/get';
 import merge from '../utils/merge';
 import mapValues from '../utils/map-values';
-import isPlainObject from '../utils/is-plain-object';
+import isPlainObject, { isObjectLike } from '../utils/is-plain-object';
 import i from 'icepick';
 import omit from '../utils/omit';
 import actionTypes from '../action-types';
@@ -36,7 +36,7 @@ const disallowedProps = ['changeAction', 'getFieldFromState', 'store'];
 
 function mergeOrSetErrors(model, errors, options) {
   return actions.setErrors(model, errors, {
-    merge: isPlainObject(errors),
+    merge: isObjectLike(errors),
     ...options,
   });
 }

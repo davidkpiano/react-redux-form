@@ -425,6 +425,36 @@ describe('formReducer() (V1)', () => {
           validated: true,
         },
       },
+      {
+        label: 'merging errors from array',
+        action: actions.setErrors,
+        model: 'user',
+        args: [{ from: 'object' }, { merge: true }],
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            errors: ['array'],
+          },
+        },
+        expectedForm: {
+          errors: { 0: 'array', from: 'object' },
+        },
+      },
+      {
+        label: 'merging errors from object',
+        action: actions.setErrors,
+        model: 'user',
+        args: [['array'], { merge: true }],
+        initialState: {
+          $form: {
+            ...initialFieldState,
+            errors: { from: 'object' },
+          },
+        },
+        expectedForm: {
+          errors: { 0: 'array', from: 'object' },
+        },
+      },
     ],
     [actionTypes.SET_FIELDS_VALIDITY]: [
       {
