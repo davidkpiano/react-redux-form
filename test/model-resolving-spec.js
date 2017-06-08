@@ -195,4 +195,40 @@ describe('model resolving', () => {
       assert.equal(controlInput.value, 'control value');
     });
   });
+
+  it('deep resolves with dynamic model', () => {
+    const deepInitialState = {
+      foo: { value: 'fooValue' },
+      bar: { value: 'barValue' },
+    };
+
+    const deepStore = testCreateStore({
+      test: modelReducer('test', deepInitialState),
+      testForm: formReducer('test', deepInitialState),
+    });
+
+    class DynamicSubform extends React.Component {
+      state = { model: '.foo' };
+      render() {
+        return (
+          <Fieldset model={this.state.model}>
+            <button onClick={() => this.setState({ model: '.bar' })} />
+            <Control.text model=".value" />
+          </Fieldset>
+        );
+      }
+    }
+
+    const app = testRender(
+      <Form model="test">
+        <DynamicSubform />
+      </Form>, deepStore);
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(app, 'input');
+    const button = TestUtils.findRenderedDOMComponentWithTag(app, 'button');
+
+    assert.equal(input.value, 'fooValue');
+    TestUtils.Simulate.click(button);
+    assert.equal(input.value, 'barValue');
+  });
 });
