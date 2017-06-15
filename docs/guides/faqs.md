@@ -170,6 +170,20 @@ Simply pass the `type="email"` or `type="password"`, etc. type as a prop to `<Co
 
 You will also get the native HTML5 constraint validation with these, as if you were using `<input type="email">`.
 
+### How do I hide native HTML5 validation messages, and still prevent the form from submitting if invalid?
+
+You might think that `noValidate` will solve this issue, but according to the [W3 spec for `noValidate`](https://dev.w3.org/html5/spec-preview/form-submission.html#attr-fs-novalidate), it does _not_ prevent a form from being submitted if the form is invalid due to HTML5 constraint validity. RRF follows the spec closely with regard to this behavior.
+
+Instead, use the native `onInvalid` handler to prevent the native HTML5 validation message from displaying:
+
+```jsx
+<Control.text
+  model="user.email"
+  type="email"
+  onInvalid={e => e.preventDefault()}
+/>
+```
+
 ### Other Questions and Answers
 - https://github.com/davidkpiano/react-redux-form/issues/675#issuecomment-281164930
 {% endraw %}
