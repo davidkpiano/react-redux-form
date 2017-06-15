@@ -18,7 +18,7 @@ export default function isValid(formState, options = { async: true }) {
       // current error key is an async validator key,
       // treat key as valid
       if (!options.async
-        && formState.asyncKeys
+        && Array.isArray(formState.asyncKeys)
         && !!~formState.asyncKeys.indexOf(errorKey)) {
         return true;
       }
