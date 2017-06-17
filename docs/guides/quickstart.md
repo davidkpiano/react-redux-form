@@ -58,19 +58,53 @@ import {
   createStore,
   applyMiddleware
 } from 'redux';
-import { combineForms } from 'react-redux-form';
+import {
+  combineForms,
+  createForms // optional
+} from 'react-redux-form';
 
 const initialUserState = {
   firstName: '',
   lastName: ''
 };
 
+// If you want your entire store to have the form state...
 const store = createStore(combineForms({
   user: initialUserState,
 }));
 
+// Or you have an existing store and want the form state to
+// exist alongside the existing state...
+const store = createStore(combineReducers({
+  existing: existingReducer,
+  foo: fooReducer,
+  bar: barReducer,
+
+  // ... use createForms, which will create:
+  // the model reducer at "user"
+  // the forms reducer at "forms" (e.g., "forms.user")
+  ...createForms({
+    user: initialUserState,
+  }),
+}));
+
+// Or you want to nest your form and model reducer under a specific key...
+const store = createStore(combineReducers({
+  existing: existingReducer,
+  foo: fooReducer,
+  bar: barReducer,
+
+  // Make sure to specify the key as the second argument, so that RRF
+  // knows where the form and model reducers exist in the store!
+  myForms: combineForms({
+    user: initialUserState,
+  }, 'myForms'),
+}));
+
 export default store;
 ```
+
+See [`createForms`](../api/createForms.html) and [`combineForms`](../api/combineForms.html) for more info on adding RRF to existing stores.
 
 **Note:** `redux-thunk` is no longer required for RRF versions 1.3.0 and higher. If you are using a previous version, make sure to configure your store to use `redux-thunk`.
 
