@@ -24,6 +24,7 @@ class App extends React.Component {
 export default App;
 ```
 
+<a name="native-controls"/>
 ## Native `<Control>`
 
 The following React Native iOS form controls are available:
@@ -110,12 +111,54 @@ export default Form;
 ```
 
 ## Using Custom Form Components
-If you want to use a third-party form control component, e.g., from Native Base, you need to use the base `react-redux-form/native` `Control` component directly. You also need to explicitly define the `mapProps`.
+If you are using a third-party form control component that delegates to a standard React Native iOS form control, you can use `Control.Custom` and provide a `delegate` prop. The `component` prop in this case is the custom component you're using.
+
+The supported controls are:
+
+* 'MapView'
+* 'Picker'
+* 'Switch'
+* 'TextInput'
+* 'DatePickerIOS'
+* 'SegmentedControlIOS'
+* 'Slider'
+
+Any custom form control can be used so long as it ultimately resolves to one of these React Native controls.
 
 ```jsx
 import React from 'react-native';
 import { Form, Control } from 'react-redux-form/native';
-import { Picker } from 'native-base';
+import { Input, Item } from 'native-base';
+
+class Form extends React.Component {
+  render() {
+    return (
+      <Form model="user"> 
+        <Item regular>
+          <Control.Custom
+            placeholder="Last Name"
+            model=".last_name"
+            component={Input}
+            delegate="TextInput"
+          />
+        </Item>
+      </Form>
+    );
+  }
+}
+
+export default Form;
+```
+
+## Using Non-Supported Custom Form Components
+If you are using a non-standard form control that does not implement one of the standard React Native iOS form controls ([listed here](#native-controls)), you will need to manually redefine `mapProps` for the control's event handlers.
+
+Below is an example of a custom `Picker` component with `mapProps` redefined.
+
+```jsx
+import React from 'react-native';
+import { Form, Control } from 'react-redux-form/native';
+import { Picker } from 'custom-form-library';
 
 class Form extends React.Component {
   render() {
@@ -148,12 +191,12 @@ class Form extends React.Component {
 export default Form;
 ```
 
-If you're using a custom `TextInput`, you will also need to define a special `getTextValue` method to stringify numeric inputs.
+Below is an example of a custom `Input` component. Note that an additional method is defined to handle coercing inputs to string format.
 
 ```jsx
 import React from 'react-native';
 import { Form, Control } from 'react-redux-form/native';
-import { Item, Input } from 'native-base';
+import { Input } from 'custom-form-library';
 
 function getTextValue(value) {
   if (typeof value === 'string' || typeof value === 'number') {
@@ -167,27 +210,25 @@ class Form extends React.Component {
   render() {
     return (
       <Form model="user">
-        <Item regular>
-          <Control
-            placeholder="First Name"
-            model=".first_name"
-            component={Input}
-            validators={{
-              required: val => val && val.length,
-            }}
-            mapProps={{
-              onResponderGrant: ({ onFocus }) => onFocus,
-              value: _props => ((! _props.defaultValue && 
-                ! _props.hasOwnProperty('value'))
-                ? getTextValue(_props.viewValue)
-                : _props.value),
-              onChangeText: ({ onChange }) => onChange,
-              onChange: undefined,   
-              onBlur: ({ onBlur, viewValue }) => () => onBlur(viewValue),
-              onFocus: ({ onFocus }) => onFocus,
-            }}
-          />
-        </Item>
+        <Control
+          placeholder="First Name"
+          model=".first_name"
+          component={Input}
+          validators={{
+            required: val => val && val.length,
+          }}
+          mapProps={{
+            onResponderGrant: ({ onFocus }) => onFocus,
+            value: _props => ((! _props.defaultValue && 
+              ! _props.hasOwnProperty('value'))
+              ? getTextValue(_props.viewValue)
+              : _props.value),
+            onChangeText: ({ onChange }) => onChange,
+            onChange: undefined,   
+            onBlur: ({ onBlur, viewValue }) => () => onBlur(viewValue),
+            onFocus: ({ onFocus }) => onFocus,
+          }}
+        />
       </Form>
     );
   }
