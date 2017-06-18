@@ -1,33 +1,43 @@
 import identity from './identity';
+import _get from '../utils/get';
 
-function matcher(object) {
-  return (compareObject) => {
-    if (compareObject === object) return true;
+const defaultStrategy = {
+  get: _get,
+};
 
-    return Object.keys(object)
-      .every((key) => object[key] === compareObject[key]);
+
+export function createIteratee(s = defaultStrategy) {
+  function matcher(object) {
+    return (compareObject) => {
+      if (compareObject === object) return true;
+
+      return Object.keys(object)
+        .every((key) => s.get(object, key) === s.get(compareObject, key));
+    };
+  }
+
+  function propChecker(prop) {
+    return (object) => object && !!s.get(object, prop);
+  }
+
+  return (value) => {
+    if (typeof value === 'function') {
+      return value;
+    }
+
+    if (value === null) {
+      return identity;
+    }
+
+    if (typeof value === 'object') {
+      return matcher(value);
+    }
+
+    return propChecker(value);
   };
 }
 
-function propChecker(prop) {
-  return (object) => object && !!object[prop];
-}
-
-export default function iteratee(value) {
-  if (typeof value === 'function') {
-    return value;
-  }
-
-  if (value === null) {
-    return identity;
-  }
-
-  if (typeof value === 'object') {
-    return matcher(value);
-  }
-
-  return propChecker(value);
-}
+const iteratee = createIteratee();
 
 export function iterateeValue(data, value) {
   if (typeof value === 'function') {
@@ -42,3 +52,5 @@ export function iterateeValue(data, value) {
 
   return iteratee(value)(data);
 }
+
+export default iteratee;
