@@ -314,6 +314,11 @@ interface BaseFormProps {
      */
     validateOn?: 'change' | 'submit';
     /**
+     * This handler function is called regardless of the validity of the form, and allows you to prevent the default action
+     * if using a form action url.
+     */
+    onBeforeSubmit?: (event?: Event) => void;
+    /**
      * The handler function called when the form is submitted. This works almost exactly like a normal <form onSubmit={...}> handler, with a few differences:
      * * The submit event's default action is prevented by default, using event.preventDefault().
      * * The onSubmit handler will not execute if the form is invalid.
