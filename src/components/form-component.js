@@ -348,7 +348,7 @@ function createFormClass(s = defaultStrategy) {
       const formValid = formValue
         ? formValue.$form.valid
         : true;
-      
+
       // prevent default form actions if the form is invalid.
       if (e && this.props.action && !formValid) e.preventDefault();
 
