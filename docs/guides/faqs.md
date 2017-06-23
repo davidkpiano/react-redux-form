@@ -198,7 +198,7 @@ You can always grab the fully resolved model string from the `<Control>`-specifi
 // e.g., "user.firstName"
 ```
 
-This is especially useful for custom components, such as a checkbox wrapped in a label, that need the fully resolved model name.
+This is especially useful for custom components, such as a checkbox wrapped in a label, that need the fully resolved model string.
 
 ### Other Questions and Answers
 - https://github.com/davidkpiano/react-redux-form/issues/675#issuecomment-281164930
