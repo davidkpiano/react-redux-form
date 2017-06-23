@@ -184,6 +184,22 @@ Instead, use the native `onInvalid` handler to prevent the native HTML5 validati
 />
 ```
 
+### With partial models, how do I get the fully resolved model string?
+
+You can always grab the fully resolved model string from the `<Control>`-specific props through `mapProps`:
+
+```jsx
+<Control.text
+
+  model=".firstName"
+  mapProps={{ model: ({ model }) => model }}
+/>
+// model will be the fully resolved model,
+// e.g., "user.firstName"
+```
+
+This is especially useful for custom components, such as a checkbox wrapped in a label, that need the fully resolved model name.
+
 ### Other Questions and Answers
 - https://github.com/davidkpiano/react-redux-form/issues/675#issuecomment-281164930
 {% endraw %}
