@@ -404,7 +404,7 @@ interface LocalFormProps extends BaseFormProps {
      */
     model?: string;
 }
-export class LocalForm extends React.Component<LocalFormProps, void> { }
+export class LocalForm extends React.Component<LocalFormProps, {}> { }
 
 interface BaseFieldsetProps {
     /**
