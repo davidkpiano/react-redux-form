@@ -123,20 +123,19 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
      */
     model: string | ModelGetterFn;
     /**
-     * If updateOn is a function, the function given will be called with the change action creator.
-     * The function given will be called in onChange.
+     * A string/array of strings specifying when the component should dispatch a change(...) action, with one of these values:
      *
-     * If a string, updateOn can be one of these values:
-     * * change - will dispatch in onChange
-     * * blur - will dispatch in onBlur
-     * * focus - will dispatch in onFocus
-     * @example
-     * import debounce from 'lodash/debounce';
-     * <Field model="test.bounce" updateOn={(change) => debounce(change, 1000)}>
-     *     <input type="text" />
-     * </Field>
+     * change - will dispatch in onChange
+     * blur - will dispatch in onBlur
+     * focus - will dispatch in onFocus
+     *
+     * @default change
      */
     updateOn?: UpdateOn | UpdateOn[];
+    /**
+     * The time in milliseconds, by which the change action will be debounced.
+     */
+    debounce?: number;
     /**
      * A map where the keys are validation keys, and the values are the corresponding functions that determine the validity of each key, given the model's value.
      * Validator functions accept the value and return true if the field is valid.

@@ -5,6 +5,7 @@
 - [`model` (required)](#prop-model)
 - [`mapProps`](#prop-mapProps)
 - [`updateOn`](#prop-updateOn)
+- [`debounce`](#prop-debounce)
 - [`validators`](#prop-validators)
 - [`validateOn`](#prop-validateOn)
 - [`asyncValidators`](#prop-asyncValidators)
@@ -153,6 +154,9 @@ const length = (val) => val.length > 8;
   validators={{ required, length }}
 />
 ```
+
+## `debounce={...}` {#prop-debounce}
+_(Number)_: The time in milliseconds, by which the change action will be debounced. 
 
 ## `validateOn="..."` {#prop-validateOn}
 _(String | Array)_: A string/array of strings specifying when validation should occur. By default, validation happens with whatever `updateOn` is set to. The `validateOn` property can have these values:
