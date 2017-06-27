@@ -126,7 +126,6 @@ class Form extends React.Component {
           placeholder="Last Name"
           model=".last_name"
           component={Input}
-          delegate="TextInput"
         />
       </Form>
     );
