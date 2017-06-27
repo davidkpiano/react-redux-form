@@ -77,7 +77,7 @@ Control.Switch = (props) => (
     mapProps={{
       onResponderGrant: ({ onFocus }) => onFocus,
       onResponderRelease: ({ onBlur }) => onBlur,
-      value: ({ modelValue }) => !!modelValue,
+      value: ({ modelValue }) => ! ! modelValue,
       onValueChange: ({ onChange }) => onChange,
       onChange: noop,
       ...props.mapProps,
@@ -91,7 +91,7 @@ Control.TextInput = (props) => (
     component={TextInput}
     mapProps={{
       onResponderGrant: ({ onFocus }) => onFocus,
-      value: (_props) => ((!_props.defaultValue && !_props.hasOwnProperty('value'))
+      value: (_props) => ((! _props.defaultValue && ! _props.hasOwnProperty('value'))
         ? getTextValue(_props.viewValue)
         : _props.value),
       onChangeText: ({ onChange }) => onChange,
