@@ -149,34 +149,6 @@ Control.Slider = (props) => (
   />
 );
 
-Control.Custom = (props) => {
-  const delegates = [
-    'MapView',
-    'Picker',
-    'Switch',
-    'TextInput',
-    'DatePickerIOS',
-    'SegmentedControlIOS',
-    'Slider',
-  ];
-
-  if (! props.delegate || ! delegates.includes(props.delegate)) {
-    throw new Error(`Delegate not found. Must be one of: [${delegates.map(d => `'${d}'`)}]`);
-  }
-  const CustomComponent = Control[props.delegate];
-
-  return (
-    <CustomComponent
-      component={props.component}
-      {...omit(props, 'mapProps')}
-    />
-  );
-};
-
-Control.Custom.propTypes = {
-  delegate: PropTypes.string.isRequired,
-};
-
 const NativeForm = (props) => <Form component={View} {...omit(props, 'mapProps')} />;
 const NativeFieldset = (props) => <Fieldset component={View} {...omit(props, 'mapProps')} />;
 const NativeErrors = (props) => (

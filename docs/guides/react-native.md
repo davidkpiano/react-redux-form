@@ -111,37 +111,23 @@ export default Form;
 ```
 
 ## Using Custom Form Components
-If you are using a third-party form control component that delegates to a standard React Native iOS form control, you can use `Control.Custom` and provide a `delegate` prop. The `component` prop in this case is the custom component you're using.
-
-The supported controls are:
-
-* 'MapView'
-* 'Picker'
-* 'Switch'
-* 'TextInput'
-* 'DatePickerIOS'
-* 'SegmentedControlIOS'
-* 'Slider'
-
-Any custom form control can be used so long as it ultimately resolves to one of these React Native controls.
+To use a third-party form control component select the appropriate `Control` type (e.g., `Control.TextInput`) and override the `component` prop with your custom component. The custom component must resolve to one of the supported React Native form control types. See the supported types [here](#native-controls). 
 
 ```jsx
 import React from 'react-native';
 import { Form, Control } from 'react-redux-form/native';
-import { Input, Item } from 'native-base';
+import { Input } from 'native-base';
 
 class Form extends React.Component {
   render() {
     return (
-      <Form model="user"> 
-        <Item regular>
-          <Control.Custom
-            placeholder="Last Name"
-            model=".last_name"
-            component={Input}
-            delegate="TextInput"
-          />
-        </Item>
+      <Form model="user">
+        <Control.TextInput
+          placeholder="Last Name"
+          model=".last_name"
+          component={Input}
+          delegate="TextInput"
+        />
       </Form>
     );
   }
