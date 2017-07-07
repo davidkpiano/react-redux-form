@@ -221,6 +221,7 @@ export class Control<T> extends React.Component<ControlProps<T>, {}> {
     static file: React.ComponentClass<ControlProps<HTMLInputElement>>;
     static select: React.ComponentClass<ControlProps<HTMLSelectElement>>;
     static reset: React.ComponentClass<ControlProps<HTMLButtonElement>>;
+    static button: React.ComponentClass<ControlProps<HTMLButtonElement>>;
 }
 
 export interface FieldProps<T> extends ControlProps<T> {
