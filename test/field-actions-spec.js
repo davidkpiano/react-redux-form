@@ -1510,6 +1510,25 @@ Object.keys(testContexts).forEach((testKey) => {
 
         store.dispatch(action);
       });
+
+      it('should capture thrown errors', (done) => {
+        const store = createTestStore(testCreateStore({
+          testForm: formReducer('test'),
+        }), done);
+
+        store.when(actionTypes.SET_ERRORS, (_, action) => {
+          assert.containSubset(action, {
+            model: 'test',
+            errors: 'Async error',
+          });
+        });
+
+        const action = actions.submit('test', new Promise(() => {
+          throw new Error('Async error');
+        }));
+
+        store.dispatch(action);
+      });
     });
 
     describe('validate() (thunk)', () => {
