@@ -26,7 +26,13 @@ module.exports = {
       commonjs2: 'redux',
       commonjs: 'redux',
       amd: 'redux',
-    }
+    },
+    'react-native': {
+      root: 'ReactNative',
+      commonjs2: 'react-native',
+      commonjs: 'react-native',
+      amd: 'react-native',
+    },
   },
   module: {
     loaders: [
