@@ -49,6 +49,7 @@ const propTypes = {
   onChange: PropTypes.func,
   getRef: PropTypes.func,
   getDispatch: PropTypes.func,
+  action: PropTypes.string,
 };
 
 const defaultStrategy = {
@@ -333,7 +334,7 @@ function createFormClass(s = defaultStrategy) {
     }
 
     handleSubmit(e) {
-      if (e) e.preventDefault();
+      if (e && !this.props.action) e.preventDefault();
 
       const {
         model,
