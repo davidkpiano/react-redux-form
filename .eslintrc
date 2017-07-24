@@ -23,7 +23,6 @@
       {"allowParens": true}
     ],
     "no-underscore-dangle": 0,
-    "import/no-unresolved": 0,
-    "global-require": 0
+    "import/no-unresolved": 0
   }
 }

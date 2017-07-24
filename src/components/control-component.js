@@ -28,16 +28,9 @@ import isNative from '../utils/is-native';
 import initialFieldState from '../constants/initial-field-state';
 import containsEvent from '../utils/contains-event';
 
-let findNode;
-try {
-  if (!isNative) {
-    findNode = require('react-dom').findDOMNode;
-  } else {
-    findNode = require('react-native').findNodeHandle;
-  }
-} catch (e) {
-  findNode = undefined;
-}
+const findDOMNode = !isNative
+  ? require('react-dom').findDOMNode
+  : null;
 
 const disallowedProps = ['changeAction', 'getFieldFromState', 'store'];
 
@@ -557,7 +550,7 @@ function createControlClass(s = defaultStrategy) {
     }
 
     attachNode() {
-      const node = findNode && findNode(this);
+      const node = findDOMNode && findDOMNode(this);
 
       if (node) {
         this.node = node;
