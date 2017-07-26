@@ -400,6 +400,13 @@ function createControlClass(s = defaultStrategy) {
             return;
           }
           case 'validate':
+          case 'reset':
+            if (intent.type === 'reset') {
+              this.setViewValue(modelValue);
+              if (this.handleUpdate.cancel) {
+                this.handleUpdate.cancel();
+              }
+            }
             if (containsEvent(validateOn, 'change')) {
               this.validate({ clearIntents: intent });
             }
