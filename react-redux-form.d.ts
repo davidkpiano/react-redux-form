@@ -489,6 +489,10 @@ export interface ErrorsProps {
      * * component={CustomError} will wrap the error in a <CustomError> component, which will receive the same props as above.
      */
     component?: string | React.StatelessComponent<ErrorsProps & CustomComponentProps> | React.ComponentClass<ErrorsProps & CustomComponentProps>;
+  /**
+   * CSS Class Name(s)
+   */
+  className?: string;
 }
 
 export class Errors extends React.Component<ErrorsProps, {}> {
