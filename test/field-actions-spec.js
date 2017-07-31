@@ -180,10 +180,10 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const resetState = reducer(undefined, actions.reset('test'));
 
-        assert.include(resetState.$form.intents, { type: 'validate' });
+        assert.include(resetState.$form.intents, { type: 'reset' });
 
-        assert.include(resetState.button.$form.intents, { type: 'validate' },
-          'should intend to revalidate subfields');
+        assert.include(resetState.button.$form.intents, { type: 'reset' },
+          'should intend to revalidate subfields (handled with reset)');
       });
     });
 

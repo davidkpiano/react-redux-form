@@ -18,5 +18,10 @@ export default function debounce(func, delay) {
     if (laterFunc) laterFunc();
   };
 
+  debouncedFunc.cancel = () => {
+    clearTimeout(timeout);
+    laterFunc = undefined;
+  };
+
   return debouncedFunc;
 }

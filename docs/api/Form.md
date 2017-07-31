@@ -235,3 +235,28 @@ _(Function)_ Called every time a `submit` event is emitted from the form.
 
 ### Notes
 - This is most useful for use with `<LocalForm>`, and is primarily intended for `<LocalForm>`.
+
+## `hideNativeErrors={true}`
+_(Boolean)_ Indicates whether native HTML5 constraint validation error messages should be shown. This does not preclude the form from failing to submit if native validation fails.
+
+(since: 1.14.0)
+
+```jsx
+// native errors will NOT show
+// <Errors /> will show when touched (or submit button clicked) as expected
+<Form model="user" hideNativeErrors>
+  <Control.text
+    model=".email"
+    type="email"
+  />
+  <Errors
+    model=".email"
+    messages={{
+      valueMissing: 'Hey, where is your email?',
+      typeMismatch: 'Not a valid email!'
+    }}
+    show="touched"
+  />
+  <button>Submit!</button>
+</Form>
+```

@@ -2144,6 +2144,66 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.equal(get(store.getState().test, 'foo'), 'debounced');
         assert.equal(input.value, 'debounced');
       });
+
+      it('should cancel debounced changes when control is reset', (done) => {
+        const initialState = getInitialState({ foo: 'bar' });
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        const control = testRender(
+          <Control.text
+            model="test.foo"
+            debounce={10}
+          />, store);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(control, 'input');
+        input.value = 'debounced';
+
+        TestUtils.Simulate.change(input);
+
+        store.dispatch(actions.reset('test'));
+
+        setTimeout(() => {
+          assert.equal(get(store.getState().test, 'foo'), 'bar');
+          assert.equal(input.value, 'bar');
+          done();
+        }, 20);
+      });
+
+      it('should cancel debounced changes when control is reset then unmounted', (done) => {
+        const initialState = getInitialState({ foo: 'bar' });
+        const store = testCreateStore({
+          test: modelReducer('test', initialState),
+          testForm: formReducer('test', initialState),
+        });
+
+        const container = document.createElement('div');
+
+        const control = ReactDOM.render(
+          <Provider store={store}>
+            <Control.text
+              model="test.foo"
+              debounce={10}
+            />
+          </Provider>,
+        container);
+
+        const input = TestUtils.findRenderedDOMComponentWithTag(control, 'input');
+        input.value = 'debounced';
+
+        TestUtils.Simulate.change(input);
+
+        store.dispatch(actions.reset('test'));
+        ReactDOM.unmountComponentAtNode(container);
+
+        setTimeout(() => {
+          assert.equal(get(store.getState().test, 'foo'), 'bar');
+          assert.equal(input.value, 'bar');
+          done();
+        }, 20);
+      });
     });
 
     describe('persist prop', () => {

@@ -400,6 +400,13 @@ function createControlClass(s = defaultStrategy) {
             return;
           }
           case 'validate':
+          case 'reset':
+            if (intent.type === 'reset') {
+              this.setViewValue(modelValue);
+              if (this.handleUpdate.cancel) {
+                this.handleUpdate.cancel();
+              }
+            }
             if (containsEvent(validateOn, 'change')) {
               this.validate({ clearIntents: intent });
             }
@@ -568,23 +575,27 @@ function createControlClass(s = defaultStrategy) {
         dispatch,
       } = this.props;
 
-      if (!validators && !errorValidators) return modelValue;
-      if (!fieldValue) return modelValue;
+      if ((!validators && !errorValidators && !this.willValidate) || !fieldValue) {
+        return;
+      }
 
       const fieldValidity = getValidity(validators, modelValue);
       const fieldErrors = getValidity(errorValidators, modelValue);
+      const nodeErrors = this.getNodeErrors();
 
-      const errors = validators
+      let errors = validators
         ? merge(invertValidity(fieldValidity), fieldErrors)
         : fieldErrors;
+
+      if (this.willValidate) {
+        errors = merge(errors, nodeErrors);
+      }
 
       if (!shallowEqual(errors, fieldValue.errors)) {
         dispatch(mergeOrSetErrors(model, errors, options));
       } else if (options.clearIntents) {
         dispatch(actions.clearIntents(model, options.clearIntents));
       }
-
-      return modelValue;
     }
 
     render() {

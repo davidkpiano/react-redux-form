@@ -174,7 +174,29 @@ You will also get the native HTML5 constraint validation with these, as if you w
 
 You might think that `noValidate` will solve this issue, but according to the [W3 spec for `noValidate`](https://dev.w3.org/html5/spec-preview/form-submission.html#attr-fs-novalidate), it does _not_ prevent a form from being submitted if the form is invalid due to HTML5 constraint validity. RRF follows the spec closely with regard to this behavior.
 
-Instead, use the native `onInvalid` handler to prevent the native HTML5 validation message from displaying:
+To solve this, since version 0.14.0, the `hideNativeErrors` prop can be used to indicate that you do not want native HTML5 constraint validation messages appearing. This will still retain the behavior that if a control is invalid due to HTML5 validation, the form will fail to submit:
+
+```jsx
+// native errors will NOT show
+// <Errors /> will show when touched (or submit button clicked) as expected
+<Form model="user" hideNativeErrors>
+  <Control.text
+    model=".email"
+    type="email"
+  />
+  <Errors
+    model=".email"
+    messages={{
+      valueMissing: 'Hey, where is your email?',
+      typeMismatch: 'Not a valid email!'
+    }}
+    show="touched"
+  />
+  <button>Submit!</button>
+</Form>
+```
+
+Using `hideNativeErrors` is the recommended way to solve this. However, if you want to prevent HTML5 validation messages from showing on individual controls, use the native `onInvalid` handler to prevent the native HTML5 validation message from displaying:
 
 ```jsx
 <Control.text
