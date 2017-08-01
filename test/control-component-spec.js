@@ -153,6 +153,7 @@ Object.keys(testContexts).forEach((testKey) => {
     const textFieldElements = [
       [''],
       ['text'],
+      ['password'],
       ['text', 'email'],
       ['input', 'text'],
       ['input', 'password'],
@@ -220,9 +221,9 @@ Object.keys(testContexts).forEach((testKey) => {
             'testing again');
         });
 
-        if (controlType === 'text' && !type) {
-          it('should have a type="text"', () => {
-            assert.equal(node.getAttribute('type'), 'text');
+        if ((controlType === 'text' || controlType === 'password') && !type) {
+          it(`should have a type="${controlType}"`, () => {
+            assert.equal(node.getAttribute('type'), controlType);
           });
         } else {
           it('should have the appropriate type attribute', () => {
