@@ -1,7 +1,7 @@
 /* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
 import { assert } from 'chai';
 import React from 'react';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 import { clearGetFormCache } from '../src/utils/get-form';
 
 import { testCreateStore, testRender } from './utils';

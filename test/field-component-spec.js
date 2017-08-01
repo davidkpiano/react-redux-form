@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { assert } from 'chai';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider, connect } from 'react-redux';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 import capitalize from 'lodash/capitalize';
 import mapValues from 'lodash/mapValues';
 import _get from 'lodash.get';

@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { findDOMNode } from 'react-dom';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import createTestStore from 'redux-test-store';

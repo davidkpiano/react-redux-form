@@ -2,7 +2,7 @@ import React from 'react';
 import { assert } from 'chai';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import { Field, Errors, modelReducer, formReducer, track } from '../src';
 

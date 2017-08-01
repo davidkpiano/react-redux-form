@@ -1,7 +1,7 @@
 /* eslint no-return-assign:0 */
 import React from 'react';
 import { Control, LocalForm, actions } from '../src';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 import { assert } from 'chai';
 
 describe('local forms', () => {

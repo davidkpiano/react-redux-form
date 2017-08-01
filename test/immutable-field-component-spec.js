@@ -3,7 +3,7 @@ import { assert } from 'chai';
 import Immutable from 'immutable';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 
 import { actions, formReducer } from '../src';
 import {

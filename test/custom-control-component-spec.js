@@ -2,7 +2,7 @@
 import { assert } from 'chai';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import TestUtils from 'react-addons-test-utils';
+import TestUtils from 'react-dom/test-utils';
 import { Provider } from 'react-redux';
 
 import { modelReducer, formReducer, Control } from '../src';
