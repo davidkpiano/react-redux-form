@@ -65,6 +65,22 @@ describe('model action creators', () => {
 
       fn(dispatch, getState);
     });
+
+    it('should change a collection by pushing an item to it via symmetric difference', done => {
+      const fn = actions.xor('foo.bar', 4);
+      const dispatch = action => {
+        done(assert.deepEqual(
+          action.value,
+          [1, 2, 3, 4]));
+      };
+      const getState = () => ({
+        foo: {
+          bar: [1, 2, 3],
+        },
+      });
+
+      fn(dispatch, getState);
+    });
   });
 
   describe('actions.push() thunk', () => {
