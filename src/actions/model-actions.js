@@ -74,7 +74,7 @@ export function createModelActions(s = defaultStrategies) {
     const valueWithoutItem = value.filter((_item) => !iteratee(_item));
 
     return (s.length(value) === s.length(valueWithoutItem))
-      ? [...value, item]
+      ? s.push(value, item)
       : valueWithoutItem;
   }, s.array, 3);
 

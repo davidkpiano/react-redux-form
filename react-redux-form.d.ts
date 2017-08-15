@@ -209,6 +209,22 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
      * Signifies that the field state (validation, etc.) should not persist when the component is unmounted. Default: false
      */
     persist?: boolean;
+    /**
+     * The disabled prop works just like you'd expect for controls that support the HTML5 disabled attribute.
+     */
+    disabled?: any;
+    /**
+     * The event(s) that you want the <Control> to ignore. This can be good for performance and/or for de-cluttering the console log.
+     */
+    ignore?: string|string[];
+    /**
+     * Determines the value given the event (from onChange) and optionally the control component's props.
+     */
+    getValue?: (e: Event, props: any) => any;
+    /**
+     * Signifies that the control is a toggle (e.g., a checkbox or a radio). If true, then some optimizations are made.
+     */
+    isToggle?: boolean;
 }
 
 export class Control<T> extends React.Component<ControlProps<T>, {}> {
