@@ -682,7 +682,7 @@ function createControlClass(s = defaultStrategy) {
         deepKeys: ['controlProps'],
       });
     },
-  })(Control), ['controlProps'], ['mapProps']);
+  })(Control));
 
   /* eslint-disable react/prop-types */
   /* eslint-disable react/no-multi-comp */

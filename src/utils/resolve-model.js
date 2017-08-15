@@ -1,8 +1,5 @@
-import React, { Component, PureComponent } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import shallowEqual from './shallow-equal';
-
-const ReactComponent = PureComponent || Component;
 
 function resolveModel(model, parentModel) {
   if (parentModel) {
@@ -18,14 +15,8 @@ function resolveModel(model, parentModel) {
   return model;
 }
 
-export default function wrapWithModelResolver(WrappedComponent, deepKeys = [], omitKeys = []) {
-  class ResolvedModelWrapper extends ReactComponent {
-    shouldComponentUpdate(nextProps, nextState, nextContext) {
-      return !shallowEqual(this.context, nextContext) || !shallowEqual(this.props, nextProps, {
-        deepKeys,
-        omitKeys,
-      });
-    }
+export default function wrapWithModelResolver(WrappedComponent) {
+  class ResolvedModelWrapper extends PureComponent {
     render() {
       const { model: parentModel, localStore } = this.context;
       const resolvedModel = resolveModel(
