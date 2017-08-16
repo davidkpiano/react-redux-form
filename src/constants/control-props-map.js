@@ -57,9 +57,7 @@ const controlPropsMap = {
   },
   checkbox: {
     ...standardPropsMap,
-    checked: (props) => (props.defaultChecked
-      ? props.checked
-      : isChecked(props)),
+    checked: isChecked,
   },
   radio: {
     ...standardPropsMap,
