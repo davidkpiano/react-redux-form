@@ -303,9 +303,10 @@ Object.keys(testContexts).forEach((testKey) => {
         test: modelReducer('test', initialState),
       });
 
+      const reactCheckbox = <Control.checkbox model="test.single" />;
       const field = TestUtils.renderIntoDocument(
         <Provider store={store}>
-          <Control.checkbox model="test.single" />
+          {reactCheckbox}
         </Provider>
       );
 
@@ -325,12 +326,14 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.equal(
           get(store.getState().test, 'single'),
           false, 'false');
+        assert.equal(checkbox.checked, false);
 
         TestUtils.Simulate.change(checkbox);
 
         assert.equal(
           get(store.getState().test, 'single'),
           true, 'true');
+        assert.equal(checkbox.checked, true);
       });
 
       it('should check/uncheck the checkbox when model is externally changed', () => {
@@ -345,6 +348,114 @@ Object.keys(testContexts).forEach((testKey) => {
 
       it('should uncheck the checkbox for any falsey value', () => {
         store.dispatch(actions.change('test.single', ''));
+
+        assert.equal(checkbox.checked, false);
+      });
+    });
+
+    describe('with <Control.checkbox /> (single toggle, dynamic form data, checked by default)', () => {
+      const initialState = getInitialState({ single: true });
+      const store = testCreateStore({
+        testForm: formReducer('test'),
+        test: modelReducer('test', initialState),
+      });
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.checkbox model="test.other" defaultChecked />
+        </Provider>
+      );
+
+      const checkbox = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      it('should initially set the checkbox to checked if the model is truthy', () => {
+        assert.equal(checkbox.checked, true);
+      });
+
+      it('should give each radio input a name attribute of the model', () => {
+        assert.equal(checkbox.name, 'test.other');
+      });
+
+      it('should dispatch a change event when changed', () => {
+        TestUtils.Simulate.change(checkbox);
+
+        assert.equal(
+          get(store.getState().test, 'other'),
+          false, 'false');
+        assert.equal(checkbox.checked, false);
+
+        TestUtils.Simulate.change(checkbox);
+
+        assert.equal(
+          get(store.getState().test, 'other'),
+          true, 'true');
+        assert.equal(checkbox.checked, true);
+      });
+
+      it('should check/uncheck the checkbox when model is externally changed', () => {
+        store.dispatch(actions.change('test.other', true));
+        assert.equal(checkbox.checked, true);
+
+        store.dispatch(actions.change('test.other', false));
+        assert.equal(checkbox.checked, false);
+      });
+
+      it('should uncheck the checkbox for any falsey value', () => {
+        store.dispatch(actions.change('test.other', ''));
+
+        assert.equal(checkbox.checked, false);
+      });
+    });
+
+    describe('with <Control.checkbox /> (single toggle, dynamic form data, unchecked by default)', () => {
+      const initialState = getInitialState({ single: true });
+      const store = testCreateStore({
+        testForm: formReducer('test'),
+        test: modelReducer('test', initialState),
+      });
+
+      const field = TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control.checkbox model="test.other" defaultChecked={false} />
+        </Provider>
+      );
+
+      const checkbox = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+      it('should initially set the checkbox to checked if the model is truthy', () => {
+        assert.equal(checkbox.checked, false);
+      });
+
+      it('should give each radio input a name attribute of the model', () => {
+        assert.equal(checkbox.name, 'test.other');
+      });
+
+      it('should dispatch a change event when changed', () => {
+        TestUtils.Simulate.change(checkbox);
+
+        assert.equal(
+          get(store.getState().test, 'other'),
+          true, 'true');
+
+        TestUtils.Simulate.change(checkbox);
+
+        assert.equal(
+          get(store.getState().test, 'other'),
+          false, 'false');
+      });
+
+      it('should check/uncheck the checkbox when model is externally changed', () => {
+        store.dispatch(actions.change('test.other', false));
+
+        assert.equal(checkbox.checked, false);
+
+        store.dispatch(actions.change('test.other', true));
+
+        assert.equal(checkbox.checked, true);
+      });
+
+      it('should uncheck the checkbox for any falsey value', () => {
+        store.dispatch(actions.change('test.other', ''));
 
         assert.equal(checkbox.checked, false);
       });

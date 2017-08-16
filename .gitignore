@@ -46,3 +46,4 @@ examples/sandbox
 
 # Other
 .vscode/
+.idea/
