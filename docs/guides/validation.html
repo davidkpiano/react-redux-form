@@ -1,0 +1,981 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Validation · React Redux Form</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        
+        <!-- Meta -->
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+
+        <!-- Fonts -->
+        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+
+        <!-- Styles -->
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="tracking.html" />
+    
+    
+    <link rel="prev" href="models.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="README.md">
+            
+                <span>
+            
+                    
+                    Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="quickstart.html">
+            
+                <a href="quickstart.html">
+            
+                    
+                    Quick Start
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="models.html">
+            
+                <a href="models.html">
+            
+                    
+                    Models
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2.3" data-path="validation.html">
+            
+                <a href="validation.html">
+            
+                    
+                    Validation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="tracking.html">
+            
+                <a href="tracking.html">
+            
+                    
+                    Tracking Collections
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="custom-controls.html">
+            
+                <a href="custom-controls.html">
+            
+                    
+                    Custom Controls
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="react-native.html">
+            
+                <a href="react-native.html">
+            
+                    
+                    React Native
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7" data-path="partial-models.html">
+            
+                <a href="partial-models.html">
+            
+                    
+                    Partial Models
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.8" data-path="compare-redux-form.html">
+            
+                <a href="compare-redux-form.html">
+            
+                    
+                    Compare to Redux-Form
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.9" data-path="immutable.html">
+            
+                <a href="immutable.html">
+            
+                    
+                    Immutable.js
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.10" data-path="local.html">
+            
+                <a href="local.html">
+            
+                    
+                    Local Forms
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.11" data-path="faqs.html">
+            
+                <a href="faqs.html">
+            
+                    
+                    FAQs
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../api/README.md">
+            
+                <span>
+            
+                    
+                    API Reference
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../api/Control.html">
+            
+                <a href="../api/Control.html">
+            
+                    
+                    Control component
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../api/Form.html">
+            
+                <a href="../api/Form.html">
+            
+                    
+                    Form component
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../api/Field.html">
+            
+                <a href="../api/Field.html">
+            
+                    
+                    Field component
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="../api/Fieldset.html">
+            
+                <a href="../api/Fieldset.html">
+            
+                    
+                    Fieldset component
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../api/Errors.html">
+            
+                <a href="../api/Errors.html">
+            
+                    
+                    Errors component
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6" data-path="../api/modelReducer.html">
+            
+                <a href="../api/modelReducer.html">
+            
+                    
+                    modelReducer
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7" data-path="../api/formReducer.html">
+            
+                <a href="../api/formReducer.html">
+            
+                    
+                    formReducer
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8" data-path="../api/combineForms.html">
+            
+                <a href="../api/combineForms.html">
+            
+                    
+                    combineForms
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9" data-path="../api/createForms.html">
+            
+                <a href="../api/createForms.html">
+            
+                    
+                    createForms
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10" data-path="../api/actions.html">
+            
+                <a href="../api/actions.html">
+            
+                    
+                    action creators
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../recipes/README.md">
+            
+                <span>
+            
+                    
+                    Recipes and Examples
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../recipes/quickstart.html">
+            
+                <a href="../recipes/quickstart.html">
+            
+                    
+                    Quick Start
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../recipes/redux-form.html">
+            
+                <a href="../recipes/redux-form.html">
+            
+                    
+                    Redux Form Examples
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../recipes/simple.html">
+            
+                <a href="../recipes/simple.html">
+            
+                    
+                    Simple Form
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../recipes/sync-validation.html">
+            
+                <a href="../recipes/sync-validation.html">
+            
+                    
+                    Sync Validation
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <a href="../.." >Validation</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="validation">Validation</h1>
+<p>Validation occurs as the result of dispatching validation actions, such as <code>actions.setValidity(model, validity)</code> or <code>actions.setErrors(model, errors)</code>. That action updates the form validity and error state of your model, and allows you to:</p>
+<ul>
+<li>validate any part of the model state (however deep),</li>
+<li>validate any key on that model (such as <code>{ required: true, length: false }</code>)</li>
+<li>call validation only when the model has been updated.</li>
+</ul>
+<h2 id="quick-reference">Quick Reference</h2>
+<p><strong>Component Validation</strong></p>
+<pre><code class="lang-jsx">const isEmail = (val) =&gt; /* check if val is email */
+
+// HTML5 validation
+// Works with any HTML5 constraint validation attributes
+&lt;Control.text type=&quot;email&quot; model=&quot;user.email&quot; required /&gt;
+
+// Keyed validation
+&lt;Control.text
+  model=&quot;user.email&quot;
+  validators={{
+    required: (val) =&gt; val &amp;&amp; val.length,
+    isEmail, // ES6 property shorthand
+  }}
+/&gt;
+
+// Keyed errors
+&lt;Control.text
+  model=&quot;user.email&quot;
+  errors={{
+    required: (val) =&gt; !val || !val.length,
+    isEmail: (val) =&gt; !isEmail(val),
+  }}
+/&gt;
+
+// Form-level validation
+const longEnough = (val) =&gt; val &amp;&amp; val.length &gt; 8;
+
+&lt;Form
+  model=&quot;user&quot;
+  validators={{
+    &apos;&apos;: {
+      // Form-level validator
+      passwordsMatch: (vals) =&gt; vals.password === vals.confirmPassword,
+    },
+    // Field-level validators
+    password: { longEnough },
+    confirmPassword: { longEnough },
+  }}
+/&gt;
+</code></pre>
+<p><strong>Actions</strong></p>
+<pre><code class="lang-jsx">// Set validity of entire model
+dispatch(actions.setValidity(&apos;foo.bar&apos;, true));
+
+// Set keyed validity of entire model
+dispatch(actions.setValidity(&apos;foo.bar&apos;, {
+  isLongEnough: true,
+  isRightFormat: false,
+}));
+
+// Set errors of entire model.
+// Truthy values indicate an error.
+dispatch(actions.setErrors(&apos;foo.bar&apos;, true));
+
+// Set keyed validity of entire model
+dispatch(actions.setErrors(&apos;foo.bar&apos;, {
+  isLongEnough: false, // not an error
+  isRightFormat: true, // an error
+}));
+</code></pre>
+<h2 id="simple-validation">Simple Validation</h2>
+<p>Suppose you are validating <code>&apos;user.email&apos;</code>. At any point, you can dispatch <code>actions.setValidity()</code> to set the validity of that model on your form state:</p>
+<pre><code class="lang-jsx">import { actions } from &apos;react-redux-form&apos;;
+
+function emailIsValid(email) {
+  // terrible validation, I know
+  return email &amp;&amp; email.length &gt; 0;
+}
+
+// in the connected component&apos;s render() method...
+const { dispatch, user } = this.props;
+
+return
+&lt;input type=&quot;text&quot;
+  onChange={(e) =&gt; dispatch(actions.change(&apos;user.email&apos;, e))}
+  onBlur={() =&gt; dispatch(actions.validate(&apos;user.email&apos;, emailIsValid))}
+/&gt;
+</code></pre>
+<h2 id="multiple-validation-keys">Multiple Validation Keys</h2>
+<p>You can also get more specific with validation by returning an object with validation keys. The API is the same -- this time, we&apos;ll use the excellent <a href="https://www.npmjs.com/package/validator" target="_blank">validator</a> library to help us.</p>
+<p><strong>Note:</strong> React Redux Form can work with any validator function library!</p>
+<pre><code class="lang-jsx">import { actions } from &apos;react-redux-form&apos;;
+import validator from &apos;validator&apos;;
+
+// wherever validation is occurring:
+dispatch(actions.validate(&apos;user.email&apos;, {
+  required: (value) =&gt; value &amp;&amp; value.length,
+  valid: validator.isEmail
+});
+</code></pre>
+<h2 id="updated-form-state">Updated Form State</h2>
+<p>Here&apos;s what happens when you set the validity of a model, via <code>dispatch(actions.setValidity(model, validity))</code>:</p>
+<ul>
+<li>The <code>.errors</code> property of the model&apos;s field is set:<ul>
+<li>if <code>validity</code> is boolean, <code>.errors = !validity</code>. If valid, <code>.errors = false</code>, and vice-versa</li>
+<li>if <code>validity</code> is an object, <code>.errors</code> is set to the opposite of each validation key (see example below)</li>
+</ul>
+</li>
+<li>The <code>.validity</code> property of the model&apos;s field is set as the inverse of <code>.errors</code></li>
+<li>The <code>.valid</code> property of the model&apos;s field is set:<ul>
+<li><code>.valid = true</code> if the validity is truthy or if each validation key value is truthy</li>
+<li><code>.valid = false</code> if the validity is falsey or if any validation key is falsey</li>
+</ul>
+</li>
+<li>The <code>.valid</code> property of all parent forms of the model are set:<ul>
+<li><code>.valid = true</code> if every field in the form is valid</li>
+<li><code>.valid = false</code> if any field in the form is invalid</li>
+</ul>
+</li>
+</ul>
+<p>Here&apos;s an example:</p>
+<pre><code class="lang-jsx">import { actions } from &apos;react-redux-form&apos;;
+
+// wherever validation occurs...
+const { userForm, dispatch } = this.props;
+
+dispatch(actions.setValidity(&apos;user.email&apos;, {
+  required: true,
+  isEmail: false
+}); // user entered email but email is invalid
+
+userForm.email.valid;
+// =&gt; false
+
+userForm.email.errors;
+// =&gt; { required: false, isEmail: true }
+
+userForm.$form.valid;
+// =&gt; false
+</code></pre>
+<h2 id="async-validity">Async Validity</h2>
+<p>There are multiple ways you can handle setting validity asynchronously. As long as a validation action such as <code>setValidity()</code> or <code>setErrors()</code> is dispatched, the validity will be updated. It&apos;s generally a good idea to dispatch <code>setPending(model, pending)</code> to indicate that the model is currently being validated.</p>
+<p>Here&apos;s a solution using an action thunk creator (with <code>redux-thunk</code>):</p>
+<pre><code class="lang-jsx">// username-actions.js
+import { actions } from &apos;react-redux-form&apos;;
+
+export function checkAvailability(username) {
+  return (dispatch) =&gt; {
+    dispatch(actions.setPending(&apos;user.username&apos;, true));
+
+    // some asynchronous validation function that returns a promise
+    asyncCheckUsername(username)
+      .then((response) =&gt; {
+         dispatch(actions.setValidity(&apos;user.username&apos;, {
+           available: response.available
+         }));
+
+         dispatch(actions.setPending(&apos;user.username&apos;, false));
+      });
+  }
+}
+</code></pre>
+<p>Alternatively, the <code>asyncSetValidity(model, validator)</code> action thunk creator does the above by using the <code>done</code> callback as the second argument to <code>validator(value, done)</code>:</p>
+<pre><code class="lang-jsx">import { actions } from &apos;react-redux-form&apos;;
+
+// wherever validation occurs...
+const { user, dispatch } = this.props;
+
+dispatch(actions.asyncSetValidity(&apos;user.username&apos;, (value, done) =&gt; {
+  asyncCheckUsername(value)
+    .then((response) =&gt; done({ available: response.available });
+}));
+</code></pre>
+<p>If you are working with <strong>promises</strong>, the <code>submit(model, promise)</code> action will automatically set the <code>.errors</code> of the <code>model</code> field if the promise is rejected:</p>
+<pre><code class="lang-jsx">import { actions } from &apos;react-redux-form&apos;;
+
+// your custom promise
+import checkUsernamePromise from &apos;../path/to/promise&apos;;
+
+// wherever dispatch() is available...
+dispatch(actions.submit(&apos;user&apos;, checkUsernamePromise));
+</code></pre>
+<p>If the promise you are working with can reject with errors for each individual field, such as:</p>
+<pre><code>{
+  &quot;email&quot;: [&quot;The email address is invalid.&quot;],
+  &quot;firstName&quot;: [&quot;Name contains illegal characters.&quot;]
+}
+</code></pre><p>then you can use <code>actions.submitFields(&apos;user&apos;, myPromise)</code>, which will set errors for each individual field (e.g., <code>&quot;user.email&quot;</code>, <code>&quot;user.firstName&quot;</code>), instead of just the <code>&quot;user&quot;</code> model.</p>
+<h2 id="validation-with-field-and-control-components">Validation with <code>&lt;Field&gt;</code> and <code>&lt;Control&gt;</code> components</h2>
+<p>The <code>&lt;Field&gt;</code> and <code>&lt;Control&gt;</code> components accept a few validation-specific props:</p>
+<ul>
+<li><code>validators</code> - an object with key-value pairs:<ul>
+<li><strong>validation key</strong> (string) and</li>
+<li><strong>validator</strong> (function) - a function that takes in the model <code>value</code> and returns a boolean (true/false if valid/invalid)</li>
+</ul>
+</li>
+<li><code>asyncValidators</code> - an object with key-value pairs:<ul>
+<li><strong>validation key</strong> (string) and</li>
+<li><strong>validator</strong> (function) - a function that takes in the model <code>value</code> and the <code>done</code> callback, similar to <code>asyncSetValidity(value, done)</code></li>
+</ul>
+</li>
+<li><code>validateOn</code> and <code>asyncValidateOn</code> - event to indicate when to validate:<ul>
+<li><code>&quot;change&quot;</code> (default for <code>validators</code>)</li>
+<li><code>&quot;blur&quot;</code> (default for <code>asyncValidators</code>)</li>
+<li><code>&quot;focus&quot;</code></li>
+<li>or multiple values, such as <code>[&quot;change&quot;, &quot;blur&quot;]</code></li>
+</ul>
+</li>
+</ul>
+<p>Here&apos;s an example with the above email and username fields:</p>
+<pre><code class="lang-jsx">import { Control } from &apos;react-redux-form&apos;;
+import { isEmail } from &apos;../path/to/validators&apos;;
+
+// in the component&apos;s render() method:
+&lt;Field
+  model=&quot;user.email&quot;
+  validators={{
+    required: (val) =&gt; val &amp;&amp; val.length,
+    isEmail,
+  }}
+  validateOn=&quot;blur&quot;
+&gt;
+  &lt;input type=&quot;email&quot; /&gt;
+&lt;/Field&gt;
+
+&lt;Control.text
+  model=&quot;user.firstName&quot;
+  validators={{
+    required: (val) =&gt; val &amp;&amp; val.length,
+  }}
+  validateOn=&quot;change&quot;
+/&gt;
+
+&lt;Field model=&quot;user.username&quot;
+  validators={{
+    required: (val) =&gt; val &amp;&amp; val.length
+  }}
+  asyncValidators={{
+    available: (val, done) =&gt; asyncCheckUsername(val)
+      .then(res =&gt; done(res.available))
+  }}
+  asyncValidateOn=&quot;blur&quot;
+&gt;
+  &lt;input type=&quot;text&quot; /&gt;
+&lt;/Field&gt;
+</code></pre>
+<h2 id="html5-validation">HTML5 Validation</h2>
+<p><a href="http://www.html5rocks.com/en/tutorials/forms/constraintvalidation/" target="_blank">HTML Constraint Validation</a> is recognized in RRF, and RRF will detect if the control&apos;s DOM node <code>.willValidate</code>. If so, then whenever validation occurs on the control, RRF will set the corresponding validation fields automatically.</p>
+<p>This means that validation such as the examples below will <em>just work</em>:</p>
+<pre><code class="lang-jsx">import { Field, Control } from &apos;react-redux-form&apos;;
+
+// ...
+
+&lt;Field model=&quot;user.email&quot;&gt;
+  &lt;input type=&quot;email&quot; /&gt;
+&lt;/Field&gt;
+
+&lt;Control.text
+  model=&quot;user.firstName&quot;
+  required
+/&gt;
+</code></pre>
+<p>If you want to disable HTML5 validation for a form, add a <code>noValidate</code> attribute to the form element:</p>
+<pre><code class="lang-jsx">import { Form } from &apos;react-redux-form&apos;;
+
+// email input will not be validated
+&lt;Form model=&quot;user&quot; noValidate&gt;
+  &lt;Control.email /&gt;
+&lt;/Form&gt;
+</code></pre>
+<h2 id="validating-across-models">Validating across models</h2>
+<p>Any validation across models is best represented as a form-level validator. For instance, say you have a form where the two password fields, <code>.password</code> and <code>.confirmPassword</code>, need to match:</p>
+<pre><code class="lang-jsx">&lt;Form
+  model=&quot;user&quot;
+  validators={{
+    &apos;&apos;: {
+      passwordsMatch: (vals) =&gt; vals.password === vals.confirmPassword,
+    },
+  }}
+&gt;
+  &lt;Control type=&quot;password&quot; model=&quot;.password&quot; /&gt;
+  &lt;Control type=&quot;password&quot; model=&quot;.confirmPassword&quot; /&gt;
+
+  &lt;Errors model=&quot;user&quot; /&gt;
+&lt;/Form&gt;
+</code></pre>
+<p>When any of the <code>user</code> model values change, the form-level validity will be updated. You can manually retrieve form-level validation by accessing <code>[form path].$form.validity</code>, which represents the validity of the entire form.</p>
+<h2 id="deep-model-validation-in-form">Deep Model Validation in <code>&lt;Form&gt;</code></h2>
+<p>As of RRF version 1.2.4, you can have deep validators in the <code>&lt;Form validators={{...}}&gt;</code> prop. Here&apos;s what it looks like:</p>
+<pre><code class="lang-jsx">// Suppose you have a store with this &apos;user&apos; model:
+// {
+//   name: &apos;Bob&apos;,
+//   phones: [
+//     { type: &apos;home&apos;, number: &apos;5551231234&apos; },
+//     { type: &apos;cell&apos;, number: &apos;5550980987&apos; },
+//   ],
+// }
+
+// You can validate each individual phone number like so:
+&lt;Form
+  model=&quot;user&quot;
+  validators={{
+    &apos;phones[].number&apos;: (value) =&gt; value &amp;&amp; value.length === 10,
+  }}
+&gt;
+  {/* etc. */}
+&lt;/Form&gt;
+</code></pre>
+<p>The empty brackets in the validator key <code>&apos;phones[].number&apos;</code> tell RRF to validate the <code>.number</code> property for each <code>phone</code> in the <code>user.phones[]</code> array.</p>
+<p>Alternatively, you can just set this validator directly on each control; e.g.:</p>
+<pre><code class="lang-jsx">{user.phones.map((phone, i) =&gt;
+  &lt;Control
+    model={`phones[${i}].number`}
+    validators={{
+      validNumber: (value) =&gt; value &amp;&amp; value.length === 10,
+    }}
+  /&gt;
+)}
+</code></pre>
+<h2 id="custom-error-messages">Custom Error Messages</h2>
+<p>Similar to how the <code>validators</code> prop and <code>setValidity()</code> action works, you can use the <code>errors</code> prop and <code>setErrors()</code> action to indicate errors. Keep in mind, these should express the <em>inverse</em> validity state of the model. This means that anything <em>truthy</em> indicates an error.</p>
+<p><strong>Disclaimer:</strong> I do <em>not</em> recommend hard-coding error messages in your validators. Messages are view concerns, and a simple boolean <code>true</code> or <code>false</code> is more than enough to indicate the validity of a model. When in doubt, use <code>validators</code> and/or <code>setValidity</code>.</p>
+<p>Here&apos;s how the <code>setErrors()</code> action works:</p>
+<pre><code class="lang-jsx">import { actions } from &apos;react-redux-form&apos;;
+import validator from &apos;validator&apos;;
+
+// wherever dispatch() is available:
+dispatch(actions.setErrors(&apos;user.email&apos;, {
+  invalid: (val) =&gt; !validator.isEmail(val) &amp;&amp; &apos;Not a valid email&apos;,
+  length: (val) =&gt; val &lt; 8 &amp;&amp; &apos;Email is too short&apos;
+}));
+</code></pre>
+<p>If a form reducer exists for <code>&apos;user&apos;</code>, this will set various properties of the <code>userForm.fields.email</code> state:</p>
+<pre><code class="lang-jsx">// Assuming a long but invalid email:
+
+userForm.email.valid;
+// =&gt; false
+
+userForm.email.errors;
+// =&gt; { invalid: &apos;Not a valid email&apos;, length: false }
+
+userForm.email.validity;
+// =&gt; { invalid: false, length: true }
+</code></pre>
+<p>Error validators can be defined in the <code>errors</code> prop of the <code>&lt;Form&gt;</code>, <code>&lt;Field&gt;</code>, and <code>&lt;Control&gt;</code> components, as well:</p>
+<pre><code class="lang-jsx">import { Control } from &apos;react-redux-form&apos;;
+import { isEmail } from &apos;../path/to/validators&apos;;
+
+// in the component&apos;s render() method:
+&lt;Field
+  model=&quot;user.email&quot;
+  errors={{
+    required: (val) =&gt; !val || !val.length,
+    isEmail: (val) =&gt; !isEmail(val),
+  }}
+  validateOn=&quot;blur&quot;
+&gt;
+  &lt;input type=&quot;email&quot; /&gt;
+&lt;/Field&gt;
+
+&lt;Control.text
+  model=&quot;user.firstName&quot;
+  errors={{
+    required: (val) =&gt; !val || !val.length,
+  }}
+  validateOn=&quot;change&quot;
+/&gt;
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="models.html" class="navigation navigation-prev " aria-label="Previous page: Models">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="tracking.html" class="navigation navigation-next " aria-label="Next page: Tracking Collections">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+    <script>
+/* http://prismjs.com/download.html?themes=prism-okaidia&languages=markup+css+clike+javascript+jsx */
+var _self="undefined"!=typeof window?window:"undefined"!=typeof WorkerGlobalScope&&self instanceof WorkerGlobalScope?self:{},Prism=function(){var e=/\blang(?:uage)?-(\w+)\b/i,t=0,n=_self.Prism={util:{encode:function(e){return e instanceof a?new a(e.type,n.util.encode(e.content),e.alias):"Array"===n.util.type(e)?e.map(n.util.encode):e.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/\u00a0/g," ")},type:function(e){return Object.prototype.toString.call(e).match(/\[object (\w+)\]/)[1]},objId:function(e){return e.__id||Object.defineProperty(e,"__id",{value:++t}),e.__id},clone:function(e){var t=n.util.type(e);switch(t){case"Object":var a={};for(var r in e)e.hasOwnProperty(r)&&(a[r]=n.util.clone(e[r]));return a;case"Array":return e.map&&e.map(function(e){return n.util.clone(e)})}return e}},languages:{extend:function(e,t){var a=n.util.clone(n.languages[e]);for(var r in t)a[r]=t[r];return a},insertBefore:function(e,t,a,r){r=r||n.languages;var i=r[e];if(2==arguments.length){a=arguments[1];for(var l in a)a.hasOwnProperty(l)&&(i[l]=a[l]);return i}var o={};for(var s in i)if(i.hasOwnProperty(s)){if(s==t)for(var l in a)a.hasOwnProperty(l)&&(o[l]=a[l]);o[s]=i[s]}return n.languages.DFS(n.languages,function(t,n){n===r[e]&&t!=e&&(this[t]=o)}),r[e]=o},DFS:function(e,t,a,r){r=r||{};for(var i in e)e.hasOwnProperty(i)&&(t.call(e,i,e[i],a||i),"Object"!==n.util.type(e[i])||r[n.util.objId(e[i])]?"Array"!==n.util.type(e[i])||r[n.util.objId(e[i])]||(r[n.util.objId(e[i])]=!0,n.languages.DFS(e[i],t,i,r)):(r[n.util.objId(e[i])]=!0,n.languages.DFS(e[i],t,null,r)))}},plugins:{},highlightAll:function(e,t){var a={callback:t,selector:'code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code'};n.hooks.run("before-highlightall",a);for(var r,i=a.elements||document.querySelectorAll(a.selector),l=0;r=i[l++];)n.highlightElement(r,e===!0,a.callback)},highlightElement:function(t,a,r){for(var i,l,o=t;o&&!e.test(o.className);)o=o.parentNode;o&&(i=(o.className.match(e)||[,""])[1].toLowerCase(),l=n.languages[i]),t.className=t.className.replace(e,"").replace(/\s+/g," ")+" language-"+i,o=t.parentNode,/pre/i.test(o.nodeName)&&(o.className=o.className.replace(e,"").replace(/\s+/g," ")+" language-"+i);var s=t.textContent,u={element:t,language:i,grammar:l,code:s};if(n.hooks.run("before-sanity-check",u),!u.code||!u.grammar)return n.hooks.run("complete",u),void 0;if(n.hooks.run("before-highlight",u),a&&_self.Worker){var c=new Worker(n.filename);c.onmessage=function(e){u.highlightedCode=e.data,n.hooks.run("before-insert",u),u.element.innerHTML=u.highlightedCode,r&&r.call(u.element),n.hooks.run("after-highlight",u),n.hooks.run("complete",u)},c.postMessage(JSON.stringify({language:u.language,code:u.code,immediateClose:!0}))}else u.highlightedCode=n.highlight(u.code,u.grammar,u.language),n.hooks.run("before-insert",u),u.element.innerHTML=u.highlightedCode,r&&r.call(t),n.hooks.run("after-highlight",u),n.hooks.run("complete",u)},highlight:function(e,t,r){var i=n.tokenize(e,t);return a.stringify(n.util.encode(i),r)},tokenize:function(e,t){var a=n.Token,r=[e],i=t.rest;if(i){for(var l in i)t[l]=i[l];delete t.rest}e:for(var l in t)if(t.hasOwnProperty(l)&&t[l]){var o=t[l];o="Array"===n.util.type(o)?o:[o];for(var s=0;s<o.length;++s){var u=o[s],c=u.inside,g=!!u.lookbehind,h=!!u.greedy,f=0,d=u.alias;if(h&&!u.pattern.global){var p=u.pattern.toString().match(/[imuy]*$/)[0];u.pattern=RegExp(u.pattern.source,p+"g")}u=u.pattern||u;for(var m=0,y=0;m<r.length;y+=(r[m].matchedStr||r[m]).length,++m){var v=r[m];if(r.length>e.length)break e;if(!(v instanceof a)){u.lastIndex=0;var b=u.exec(v),k=1;if(!b&&h&&m!=r.length-1){if(u.lastIndex=y,b=u.exec(e),!b)break;for(var w=b.index+(g?b[1].length:0),_=b.index+b[0].length,A=m,S=y,P=r.length;P>A&&_>S;++A)S+=(r[A].matchedStr||r[A]).length,w>=S&&(++m,y=S);if(r[m]instanceof a||r[A-1].greedy)continue;k=A-m,v=e.slice(y,S),b.index-=y}if(b){g&&(f=b[1].length);var w=b.index+f,b=b[0].slice(f),_=w+b.length,x=v.slice(0,w),O=v.slice(_),j=[m,k];x&&j.push(x);var N=new a(l,c?n.tokenize(b,c):b,d,b,h);j.push(N),O&&j.push(O),Array.prototype.splice.apply(r,j)}}}}}return r},hooks:{all:{},add:function(e,t){var a=n.hooks.all;a[e]=a[e]||[],a[e].push(t)},run:function(e,t){var a=n.hooks.all[e];if(a&&a.length)for(var r,i=0;r=a[i++];)r(t)}}},a=n.Token=function(e,t,n,a,r){this.type=e,this.content=t,this.alias=n,this.matchedStr=a||null,this.greedy=!!r};if(a.stringify=function(e,t,r){if("string"==typeof e)return e;if("Array"===n.util.type(e))return e.map(function(n){return a.stringify(n,t,e)}).join("");var i={type:e.type,content:a.stringify(e.content,t,r),tag:"span",classes:["token",e.type],attributes:{},language:t,parent:r};if("comment"==i.type&&(i.attributes.spellcheck="true"),e.alias){var l="Array"===n.util.type(e.alias)?e.alias:[e.alias];Array.prototype.push.apply(i.classes,l)}n.hooks.run("wrap",i);var o="";for(var s in i.attributes)o+=(o?" ":"")+s+'="'+(i.attributes[s]||"")+'"';return"<"+i.tag+' class="'+i.classes.join(" ")+'"'+(o?" "+o:"")+">"+i.content+"</"+i.tag+">"},!_self.document)return _self.addEventListener?(_self.addEventListener("message",function(e){var t=JSON.parse(e.data),a=t.language,r=t.code,i=t.immediateClose;_self.postMessage(n.highlight(r,n.languages[a],a)),i&&_self.close()},!1),_self.Prism):_self.Prism;var r=document.currentScript||[].slice.call(document.getElementsByTagName("script")).pop();return r&&(n.filename=r.src,document.addEventListener&&!r.hasAttribute("data-manual")&&("loading"!==document.readyState?window.requestAnimationFrame?window.requestAnimationFrame(n.highlightAll):window.setTimeout(n.highlightAll,16):document.addEventListener("DOMContentLoaded",n.highlightAll))),_self.Prism}();"undefined"!=typeof module&&module.exports&&(module.exports=Prism),"undefined"!=typeof global&&(global.Prism=Prism);
+Prism.languages.markup={comment:/<!--[\w\W]*?-->/,prolog:/<\?[\w\W]+?\?>/,doctype:/<!DOCTYPE[\w\W]+?>/i,cdata:/<!\[CDATA\[[\w\W]*?]]>/i,tag:{pattern:/<\/?(?!\d)[^\s>\/=$<]+(?:\s+[^\s>\/=]+(?:=(?:("|')(?:\\\1|\\?(?!\1)[\w\W])*\1|[^\s'">=]+))?)*\s*\/?>/i,inside:{tag:{pattern:/^<\/?[^\s>\/]+/i,inside:{punctuation:/^<\/?/,namespace:/^[^\s>\/:]+:/}},"attr-value":{pattern:/=(?:('|")[\w\W]*?(\1)|[^\s>]+)/i,inside:{punctuation:/[=>"']/}},punctuation:/\/?>/,"attr-name":{pattern:/[^\s>\/]+/,inside:{namespace:/^[^\s>\/:]+:/}}}},entity:/&#?[\da-z]{1,8};/i},Prism.hooks.add("wrap",function(a){"entity"===a.type&&(a.attributes.title=a.content.replace(/&amp;/,"&"))}),Prism.languages.xml=Prism.languages.markup,Prism.languages.html=Prism.languages.markup,Prism.languages.mathml=Prism.languages.markup,Prism.languages.svg=Prism.languages.markup;
+Prism.languages.css={comment:/\/\*[\w\W]*?\*\//,atrule:{pattern:/@[\w-]+?.*?(;|(?=\s*\{))/i,inside:{rule:/@[\w-]+/}},url:/url\((?:(["'])(\\(?:\r\n|[\w\W])|(?!\1)[^\\\r\n])*\1|.*?)\)/i,selector:/[^\{\}\s][^\{\};]*?(?=\s*\{)/,string:{pattern:/("|')(\\(?:\r\n|[\w\W])|(?!\1)[^\\\r\n])*\1/,greedy:!0},property:/(\b|\B)[\w-]+(?=\s*:)/i,important:/\B!important\b/i,"function":/[-a-z0-9]+(?=\()/i,punctuation:/[(){};:]/},Prism.languages.css.atrule.inside.rest=Prism.util.clone(Prism.languages.css),Prism.languages.markup&&(Prism.languages.insertBefore("markup","tag",{style:{pattern:/(<style[\w\W]*?>)[\w\W]*?(?=<\/style>)/i,lookbehind:!0,inside:Prism.languages.css,alias:"language-css"}}),Prism.languages.insertBefore("inside","attr-value",{"style-attr":{pattern:/\s*style=("|').*?\1/i,inside:{"attr-name":{pattern:/^\s*style/i,inside:Prism.languages.markup.tag.inside},punctuation:/^\s*=\s*['"]|['"]\s*$/,"attr-value":{pattern:/.+/i,inside:Prism.languages.css}},alias:"language-css"}},Prism.languages.markup.tag));
+Prism.languages.clike={comment:[{pattern:/(^|[^\\])\/\*[\w\W]*?\*\//,lookbehind:!0},{pattern:/(^|[^\\:])\/\/.*/,lookbehind:!0}],string:{pattern:/(["'])(\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/,greedy:!0},"class-name":{pattern:/((?:\b(?:class|interface|extends|implements|trait|instanceof|new)\s+)|(?:catch\s+\())[a-z0-9_\.\\]+/i,lookbehind:!0,inside:{punctuation:/(\.|\\)/}},keyword:/\b(if|else|while|do|for|return|in|instanceof|function|new|try|throw|catch|finally|null|break|continue)\b/,"boolean":/\b(true|false)\b/,"function":/[a-z0-9_]+(?=\()/i,number:/\b-?(?:0x[\da-f]+|\d*\.?\d+(?:e[+-]?\d+)?)\b/i,operator:/--?|\+\+?|!=?=?|<=?|>=?|==?=?|&&?|\|\|?|\?|\*|\/|~|\^|%/,punctuation:/[{}[\];(),.:]/};
+Prism.languages.javascript=Prism.languages.extend("clike",{keyword:/\b(as|async|await|break|case|catch|class|const|continue|debugger|default|delete|do|else|enum|export|extends|finally|for|from|function|get|if|implements|import|in|instanceof|interface|let|new|null|of|package|private|protected|public|return|set|static|super|switch|this|throw|try|typeof|var|void|while|with|yield)\b/,number:/\b-?(0x[\dA-Fa-f]+|0b[01]+|0o[0-7]+|\d*\.?\d+([Ee][+-]?\d+)?|NaN|Infinity)\b/,"function":/[_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*(?=\()/i,operator:/--?|\+\+?|!=?=?|<=?|>=?|==?=?|&&?|\|\|?|\?|\*\*?|\/|~|\^|%|\.{3}/}),Prism.languages.insertBefore("javascript","keyword",{regex:{pattern:/(^|[^\/])\/(?!\/)(\[.+?]|\\.|[^\/\\\r\n])+\/[gimyu]{0,5}(?=\s*($|[\r\n,.;})]))/,lookbehind:!0,greedy:!0}}),Prism.languages.insertBefore("javascript","string",{"template-string":{pattern:/`(?:\\\\|\\?[^\\])*?`/,greedy:!0,inside:{interpolation:{pattern:/\$\{[^}]+\}/,inside:{"interpolation-punctuation":{pattern:/^\$\{|\}$/,alias:"punctuation"},rest:Prism.languages.javascript}},string:/[\s\S]+/}}}),Prism.languages.markup&&Prism.languages.insertBefore("markup","tag",{script:{pattern:/(<script[\w\W]*?>)[\w\W]*?(?=<\/script>)/i,lookbehind:!0,inside:Prism.languages.javascript,alias:"language-javascript"}}),Prism.languages.js=Prism.languages.javascript;
+!function(a){var e=a.util.clone(a.languages.javascript);a.languages.jsx=a.languages.extend("markup",e),a.languages.jsx.tag.pattern=/<\/?[\w\.:-]+\s*(?:\s+[\w\.:-]+(?:=(?:("|')(\\?[\w\W])*?\1|[^\s'">=]+|(\{[\w\W]*?\})))?\s*)*\/?>/i,a.languages.jsx.tag.inside["attr-value"].pattern=/=[^\{](?:('|")[\w\W]*?(\1)|[^\s>]+)/i;var s=a.util.clone(a.languages.jsx);delete s.punctuation,s=a.languages.insertBefore("jsx","operator",{punctuation:/=(?={)|[{}[\];(),.:]/},{jsx:s}),a.languages.insertBefore("inside","attr-value",{script:{pattern:/=(\{(?:\{[^}]*\}|[^}])+\})/i,inside:s,alias:"language-javascript"}},a.languages.jsx.tag)}(Prism);
+
+    </script>
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Validation","level":"1.2.3","depth":2,"next":{"title":"Tracking Collections","level":"1.2.4","depth":2,"path":"docs/guides/tracking.md","ref":"docs/guides/tracking.md","articles":[]},"previous":{"title":"Models","level":"1.2.2","depth":2,"path":"docs/guides/models.md","ref":"docs/guides/models.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-highlight","-sharing","-fontsettings","github","theme-rrf"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"github":{"url":"https://github.com/davidkpiano/react-redux-form"},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"theme-rrf":{"showLevel":false,"styles":{"ebook":"styles/ebook.css","epub":"styles/epub.css","mobi":"styles/mobi.css","pdf":"styles/pdf.css","print":"styles/print.css","website":"styles/website.css"}},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"React Redux Form","gitbook":"3.x.x"},"file":{"path":"docs/guides/validation.md","mtime":"2017-04-18T14:00:51.000Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2017-08-17T15:57:35.599Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+
+    </body>
+</html>
+

@@ -1,0 +1,15 @@
+# Docs
+_book/
+docs/
+dist/
+
+# Misc
+node_modules/
+.editorconfig
+.eslintignore
+.eslintrc
+.babelrc
+.gitignore
+.travis.yml
+wallaby.config.js
+stats.json
