@@ -1,6 +1,6 @@
 {
   "name": "kj-react-redux-form",
-  "version": "1.5.33",
+  "version": "1.5.34",
   "description": "Create Forms Easily with React and Redux",
   "main": "lib/index.js",
   "typings": "react-redux-form.d.ts",
