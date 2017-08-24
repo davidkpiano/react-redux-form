@@ -109,7 +109,14 @@ const propTypes = {
     getState: PropTypes.func,
   }),
   getRef: PropTypes.func,
+
+  // HTML5 attributes
+  formNoValidate: PropTypes.bool,
 };
+
+const htmlAttribute = ['formNoValidate'];
+const disallowedPropTypeKeys = Object.keys(propTypes)
+  .filter(key => htmlAttributes.indexOf(key) === -1)
 
 const defaultStrategy = {
   get: _get,
@@ -329,10 +336,10 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
     getNodeErrors() {
       const {
         node,
-        props: { fieldValue },
+        props: { fieldValue, formNoValidate },
       } = this;
 
-      if (!node || !node.willValidate) {
+      if (formNoValidate || !node || (node && !node.willValidate)) {
         this.willValidate = false;
         return null;
       }
@@ -643,7 +650,7 @@ function createControlClass(customControlPropsMap = {}, s = defaultStrategy) {
   function mapStateToProps(state, props) {
     const {
       model,
-      controlProps = omit(props, Object.keys(propTypes)),
+      controlProps = omit(props, disallowedPropTypeKeys),
     } = props;
 
     const modelString = getModel(model, state);
