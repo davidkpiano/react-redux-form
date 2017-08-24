@@ -114,9 +114,9 @@ const propTypes = {
   formNoValidate: PropTypes.bool,
 };
 
-const htmlAttribute = ['formNoValidate'];
+const htmlAttributes = ['formNoValidate'];
 const disallowedPropTypeKeys = Object.keys(propTypes)
-  .filter(key => htmlAttributes.indexOf(key) === -1)
+  .filter(key => htmlAttributes.indexOf(key) === -1);
 
 const defaultStrategy = {
   get: _get,
