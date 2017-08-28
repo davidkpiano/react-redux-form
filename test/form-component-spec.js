@@ -1642,7 +1642,7 @@ Object.keys(testContexts).forEach((testKey) => {
             }}
           >
           {get(initialState, 'items').map((item, i) =>
-            <Control model={`test.items[${i}].name`} />
+            <Control model={`test.items[${i}].name`} key={`test.items[${i}].name`} />
           )}
           </Form>
         </Provider>
