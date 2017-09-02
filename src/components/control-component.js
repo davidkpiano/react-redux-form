@@ -102,6 +102,7 @@ const propTypes = {
   persist: PropTypes.bool,
   getValue: PropTypes.func,
   isToggle: PropTypes.bool,
+  updateOnEnter: PropTypes.bool,
 
   // HTML5 attributes
   formNoValidate: PropTypes.bool,
@@ -440,11 +441,12 @@ function createControlClass(s = defaultStrategy) {
     handleKeyPress(event) {
       const {
         controlProps: { onKeyPress },
+        updateOnEnter,
       } = this.props;
 
       if (onKeyPress) onKeyPress(event);
 
-      if (event.key === 'Enter') {
+      if (updateOnEnter && event.key === 'Enter') {
         this.forceHandleUpdate(event);
       }
     }
@@ -646,6 +648,7 @@ function createControlClass(s = defaultStrategy) {
     persist: false,
     getValue: _getValue,
     isToggle: false,
+    updateOnEnter: true,
   };
 
   function mapStateToProps(state, props) {
@@ -770,6 +773,7 @@ function createControlClass(s = defaultStrategy) {
       return (
         <ConnectedControl
           component="textarea"
+          updateOnEnter={false}
           {...this.props}
           mapProps={{
             ...controlPropsMap.textarea,

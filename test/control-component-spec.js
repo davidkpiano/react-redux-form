@@ -1487,6 +1487,35 @@ Object.keys(testContexts).forEach((testKey) => {
 
         assert.isFalse(store.getState().testForm.foo.valid);
       });
+
+      it('should not change blur-updated textareas upon pressing Enter', () => {
+        const reducer = modelReducer('test');
+        const store = testCreateStore({
+          test: reducer,
+          testForm: formReducer('test'),
+        });
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.textarea
+              model="test.foo"
+              updateOn="blur"
+            />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'textarea');
+
+        control.value = 'testing';
+
+        TestUtils.Simulate.keyPress(control, {
+          key: 'Enter',
+          keyCode: 13,
+          which: 13,
+        });
+
+        assert.isUndefined(
+          get(store.getState().test, 'foo'));
+      });
     });
 
     describe('handling onKeyPress', () => {
