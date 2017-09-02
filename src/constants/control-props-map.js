@@ -17,6 +17,11 @@ function isChecked(props) {
     return props.modelValue.some((item) =>
       item === props.value);
   }
+  if (typeof props.modelValue === 'undefined') {
+    if (typeof props.defaultChecked !== 'undefined') {
+      return props.defaultChecked;
+    }
+  }
 
   return !!props.modelValue;
 }
@@ -57,9 +62,7 @@ const controlPropsMap = {
   },
   checkbox: {
     ...standardPropsMap,
-    checked: (props) => (props.defaultChecked
-      ? props.checked
-      : isChecked(props)),
+    checked: isChecked,
   },
   radio: {
     ...standardPropsMap,

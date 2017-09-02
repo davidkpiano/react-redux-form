@@ -1690,7 +1690,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
     // TODO: control
     it('should remove the item at the specified index of the array'
-      + 'represented by the model', (done) => {
+      + ' represented by the model', (done) => {
       const initialState = {
         foo: [
           { val: 1 },

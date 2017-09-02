@@ -28,6 +28,8 @@ import isNative from '../utils/is-native';
 import initialFieldState from '../constants/initial-field-state';
 import containsEvent from '../utils/contains-event';
 
+import ComponentWrapper from './control-strip-defaults-component';
+
 const findDOMNode = !isNative
   ? require('react-dom').findDOMNode
   : null;
@@ -611,23 +613,29 @@ function createControlClass(s = defaultStrategy) {
       const mappedProps = omit(this.getMappedProps(), disallowedProps);
 
       if (getRef) {
-        mappedProps.ref = getRef;
+        mappedProps.getRef = getRef;
       }
 
       // If there is an existing control, clone it
       if (control) {
         return cloneElement(
           control,
-          mappedProps,
-          controlProps.children);
+          {
+            ...mappedProps,
+            defaultValue: undefined,
+            defaultChecked: undefined,
+          },
+          controlProps.children
+        );
       }
-
       return createElement(
-        component,
+        ComponentWrapper,
         {
+          component,
           ...controlProps,
           ...mappedProps,
-        });
+        }
+      );
     }
   }
 
@@ -665,23 +673,24 @@ function createControlClass(s = defaultStrategy) {
     const modelString = getModel(model, state);
     const fieldValue = s.getFieldFromState(state, modelString)
       || initialFieldState;
+    const modelValue = s.get(state, modelString);
 
     return {
       model: modelString,
-      modelValue: s.get(state, modelString),
+      modelValue,
       fieldValue,
       controlProps: finalControlProps,
     };
   }
 
   const ConnectedControl = resolveModel(connect(mapStateToProps, null, null, {
-    areOwnPropsEqual(ownProps, nextOwnProps) {
-      return shallowEqual(ownProps, nextOwnProps, {
+    areOwnPropsEqual(nextOwnProps, ownProps) {
+      return shallowEqual(nextOwnProps, ownProps, {
         omitKeys: ['mapProps'],
       });
     },
-    areStatePropsEqual(stateProps, nextStateProps) {
-      return shallowEqual(stateProps, nextStateProps, {
+    areStatePropsEqual(nextStateProps, stateProps) {
+      return shallowEqual(nextStateProps, stateProps, {
         deepKeys: ['controlProps'],
       });
     },

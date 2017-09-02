@@ -3,10 +3,22 @@ language: node_js
 node_js:
   - "4.0"
   - "4"
+  - "7"
   - "stable"
 
+# before_install:
+#   - npm config set ignore-scripts true
+
 script:
-  - npm test
+  - yarn test
+  - yarn run lint
+  - yarn run build
+  - yarn run tsdef
+
+cache: yarn
+# cache:
+#   directories:
+#     - node_modules
 
 branches:
   except:
