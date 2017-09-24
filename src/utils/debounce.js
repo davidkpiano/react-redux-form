@@ -5,6 +5,9 @@ export default function debounce(func, delay) {
   const createLaterFunc = (args) => () => {
     timeout = null;
     func.apply(null, args);
+
+    // Only run the deferred function once
+    laterFunc = undefined;
   };
 
   const debouncedFunc = (...args) => {
