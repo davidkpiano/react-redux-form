@@ -216,7 +216,7 @@ For example, this control validates that a username exists and is longer than 4 
 />
 ```
 
-### `parser={() => ...}` {#prop-parser}
+## `parser={() => ...}` {#prop-parser}
 _(Function)_: A function that _parses_ the view value of the control before it is changed. It takes in two arguments:
 - `value` - the view value that represents the _next_ model value
 - `previous` (optional) - the current model value _before_ it is changed
