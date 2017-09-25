@@ -369,7 +369,7 @@ _(Boolean)_: Signifies that the field state (validation, etc.) should not persis
 ## `getValue={(event, props) => ...}` {#prop-getValue}
 _(Function)_: Determines the value given the `event` (from `onChange`) and optionally the control component's `props`.
 
-By default, the `getValue` function returns the value by hecking if the `event` is a DOM event.
+By default, the `getValue` function returns the value by checking if the `event` is a DOM event.
 - If so, it returns `event.target.value`
 - If not, it returns the `event`.
 
