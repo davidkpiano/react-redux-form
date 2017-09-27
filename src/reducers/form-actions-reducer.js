@@ -265,6 +265,13 @@ export function createFormActionsReducer(options) {
           retouched: false,
         };
 
+        subFieldUpdates = {
+          pending: action.pending,
+          submitted: false,
+          submitFailed: false,
+          retouched: false,
+        };
+
         parentFormUpdates = { pending: action.pending };
 
         break;
