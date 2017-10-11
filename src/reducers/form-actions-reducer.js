@@ -265,6 +265,13 @@ export function createFormActionsReducer(options) {
           retouched: false,
         };
 
+        subFieldUpdates = {
+          pending: action.pending,
+          submitted: false,
+          submitFailed: false,
+          retouched: false,
+        };
+
         parentFormUpdates = { pending: action.pending };
 
         break;
@@ -361,9 +368,11 @@ export function createFormActionsReducer(options) {
           // If the form is invalid (due to async validity)
           // but its fields are valid and the value has changed,
           // the form should be "valid" again.
-          if ((!parentForm.$form.validity
-              || !parentForm.$form.validity
-              || !Object.keys(parentForm.$form.validity).length)
+          const validityIsBool = typeof parentForm.$form.validity === 'boolean';
+          const isInvalid = validityIsBool
+            ? !parentForm.$form.validity
+            : !Object.keys(parentForm.$form.validity).length;
+          if (isInvalid
             && !parentForm.$form.valid
             && isValid(parentForm, { async: false })) {
             return {

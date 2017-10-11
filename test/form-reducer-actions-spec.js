@@ -255,11 +255,20 @@ describe('formReducer() (V1)', () => {
             ...initialFieldState,
             retouched: true,
           },
+          name: {
+            ...initialFieldState,
+          },
         },
         expectedForm: {
           pending: true,
         },
         expectedField: {
+          pending: true,
+          submitted: false,
+          submitFailed: false,
+          retouched: false,
+        },
+        expectedSubField: {
           pending: true,
           submitted: false,
           submitFailed: false,
