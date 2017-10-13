@@ -1,9 +1,10 @@
-import findKey from '../utils/find-key';
+import _findKey from '../utils/find-key';
 import _get from '../utils/get';
 import { createIteratee } from '../utils/iteratee';
 import isMulti from '../utils/is-multi';
 
 const defaultStrategy = {
+  findKey: _findKey,
   get: _get,
 };
 
@@ -34,8 +35,8 @@ function createTrack(s = defaultStrategy) {
         const predicateIteratee = iteratee(predicate);
 
         const subPath = childModelPath
-          ? `${findKey(subState, predicateIteratee)}.${childModelPath}`
-          : `${findKey(subState, predicateIteratee)}`;
+          ? `${s.findKey(subState, predicateIteratee)}.${childModelPath}`
+          : `${s.findKey(subState, predicateIteratee)}`;
 
         subState = s.get(subState, subPath);
         fullPath += `.${subPath}`;
