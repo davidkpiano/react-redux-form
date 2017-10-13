@@ -15,6 +15,7 @@ import getValue from './utils/get-value';
 import immutableGetFromState from './utils/get-from-immutable-state';
 import getForm, { getFormStateKey } from './utils/get-form';
 import isPlainObject from './utils/is-plain-object';
+import immutableFindKey from './utils/find-key-immutable';
 import Immutable from 'immutable';
 
 import {
@@ -73,6 +74,7 @@ const immutableStrategy = {
   ...baseStrategy,
   getForm: immutableGetForm,
   getFieldFromState: immutableGetFieldFromState,
+  findKey: immutableFindKey,
 };
 
 function transformAction(action) {
