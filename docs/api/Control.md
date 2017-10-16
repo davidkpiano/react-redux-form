@@ -5,6 +5,7 @@
 - [`model` (required)](#prop-model)
 - [`mapProps`](#prop-mapProps)
 - [`updateOn`](#prop-updateOn)
+- [`defaultValue`](#prop-defaultValue)
 - [`debounce`](#prop-debounce)
 - [`validators`](#prop-validators)
 - [`validateOn`](#prop-validateOn)
@@ -126,6 +127,12 @@ You can also specify `updateOn={['change', 'blur']}` as an array of one or more 
 
 ### Notes
 - Use the `changeAction` prop if you want to dispatch custom actions along with the `actions.change(...)` action.
+
+## `defaultValue="..."` {#prop-defaultValue}
+_(Any)_: Sets the default value for the control. `boolean` for checkboxes, `string` for text input/textarea etc.
+
+### Notes
+- https://github.com/davidkpiano/react-redux-form/issues/631
 
 ## `validators={{...}}` {#prop-validators}
 _(Object)_: A map where the keys are validation keys, and the values are the corresponding functions that determine the validity of each key, given the model's value.
