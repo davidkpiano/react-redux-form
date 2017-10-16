@@ -73,7 +73,7 @@ const BirthDate = ({forModel}) => (
 export default BirthDate;
 ```
 
-Also, see [./validation.md](the validation guide) for more information.
+Also, see [the validation guide](./validation.md) for more information.
 
 ### How do I get the component instance? `ref={...}` doesn't work.
 
