@@ -136,7 +136,7 @@ export function createModelActions(s = defaultStrategies) {
     return inserted;
   }, s.array, 3);
 
-  const merge = createModifierAction(s.merge, {}, 2);
+  const merge = createModifierAction(s.merge, {}, 3);
 
   const omit = createModifierAction((value, props = []) => {
     const propsArray = typeof props === 'string'
