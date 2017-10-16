@@ -91,6 +91,10 @@ function getControlType(control, props, options) {
       || control.type.displayName
       || control.type.name
       || control.type;
+    
+    if (control.type.name === 'StyledComponent') {
+      controlDisplayName = control.type.target;
+    }
 
     if (controlDisplayName === 'input') {
       controlDisplayName = _controlPropsMap[control.props.type] ? control.props.type : 'text';
