@@ -13,9 +13,12 @@ import {
 // ... other imports
 
 class MyForm extends Component {
+  onFormSubmit(formObj) {
+    // ... access form fields e.g. formObj.get('name');
+  }
   render() {
     return (
-      <Form model="user">
+      <Form model="user" onSubmit={this.onFormSubmit}>
         <Control model=".name" />
         
         {/* ... other controls */}
