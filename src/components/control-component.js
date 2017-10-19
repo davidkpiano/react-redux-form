@@ -608,12 +608,17 @@ function createControlClass(s = defaultStrategy) {
         component,
         control,
         getRef,
+        fieldValue,
       } = this.props;
 
       const mappedProps = omit(this.getMappedProps(), disallowedProps);
 
       if (getRef) {
         mappedProps.getRef = getRef;
+      }
+
+      if (controlProps.withFieldValue) {
+        mappedProps.fieldValue = fieldValue;
       }
 
       // If there is an existing control, clone it

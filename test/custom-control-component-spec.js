@@ -355,6 +355,60 @@ describe('custom <Control /> components', () => {
     assert.equal(input.className.trim(), 'touched');
   });
 
+  it('should pass the fieldValue object when withFieldValue is true', () => {
+    const store = testCreateStore({
+      testForm: formReducer('test'),
+      test: modelReducer('test', { foo: '' }),
+    });
+
+    class TextInput extends React.Component {
+      render() {
+        const { fieldValue, ...otherProps } = this.props;
+        const className = [
+          fieldValue.focus ? 'focus' : '',
+          fieldValue.touched ? 'touched' : '',
+        ].join(' ');
+
+        return (
+          <div>
+            <input
+              className={className}
+              {...otherProps}
+              onChange={this.props.onChangeText}
+            />
+          </div>
+        );
+      }
+    }
+
+    TextInput.propTypes = {
+      onChangeText: PropTypes.func,
+      focus: PropTypes.bool,
+      touched: PropTypes.bool,
+      fieldValue: PropTypes.object,
+    };
+
+    const field = TestUtils.renderIntoDocument(
+      <Provider store={store}>
+        <Control
+          model="test.foo"
+          component={TextInput}
+          withFieldValue
+        />
+      </Provider>
+    );
+
+    const input = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+    TestUtils.Simulate.focus(input);
+
+    assert.equal(input.className.trim(), 'focus');
+
+    TestUtils.Simulate.blur(input);
+
+    assert.equal(input.className.trim(), 'touched');
+  });
+
   it('should not pass default mapped props to custom controls', (done) => {
     const store = testCreateStore({
       testForm: formReducer('test'),
