@@ -368,11 +368,9 @@ export function createFormActionsReducer(options) {
           // If the form is invalid (due to async validity)
           // but its fields are valid and the value has changed,
           // the form should be "valid" again.
-          const validityIsBool = typeof parentForm.$form.validity === 'boolean';
-          const isInvalid = validityIsBool
-            ? !parentForm.$form.validity
-            : !Object.keys(parentForm.$form.validity).length;
-          if (isInvalid
+          if ((!parentForm.$form.validity
+              || typeof parentForm.$form.validity === 'boolean'
+              || !Object.keys(parentForm.$form.validity).length)
             && !parentForm.$form.valid
             && isValid(parentForm, { async: false })) {
             return {
