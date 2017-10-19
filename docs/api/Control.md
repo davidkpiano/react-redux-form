@@ -163,7 +163,7 @@ const length = (val) => val.length > 8;
 ```
 
 ## `debounce={...}` {#prop-debounce}
-_(Number)_: The time in milliseconds, by which the change action will be debounced. 
+_(Number)_: The time in milliseconds, by which the change action will be debounced.
 
 ## `validateOn="..."` {#prop-validateOn}
 _(String | Array)_: A string/array of strings specifying when validation should occur. By default, validation happens with whatever `updateOn` is set to. The `validateOn` property can have these values:
@@ -395,4 +395,9 @@ For `<Control.checkbox />`, the default `getValue` function is:
 _(Boolean)_: Signifies that the control is a toggle (e.g., a checkbox or a radio). If `true`, then some optimizations are made.
 
 Default: `true` for `<Control.radio>` and `<Control.checkbox>`, `false` for all other controls.
+
+## `withFieldValue={false}` {#prop-withFieldValue}
+_(Boolean)_: When `true` the `fieldValue` prop is mapped on to the child component. This prop contains information about the field's state such as its validity and whether it has been touched. This is particularly useful when using a custom component as it allows you to dynamically alter the component based on the field's state.
+
+Default: `false`
 {% endraw %}
