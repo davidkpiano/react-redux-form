@@ -1097,19 +1097,47 @@ Object.keys(testContexts).forEach((testKey) => {
         test: modelReducer('test', initialState),
       });
 
-      TestUtils.renderIntoDocument(
-        <Provider store={store}>
-          <Control.text
-            model="test.foo"
-          />
-        </Provider>
-      );
-
       it('should reset the control to the last loaded value', () => {
+        TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.text
+              model="test.foo"
+            />
+          </Provider>
+        );
+
         store.dispatch(actions.load('test.foo', 'new foo'));
         store.dispatch(actions.reset('test.foo'));
 
         assert.equal(get(store.getState().test, 'foo'), 'new foo');
+      });
+
+      const onEvents = [
+        'change',
+        'focus',
+        'blur',
+      ];
+
+      onEvents.forEach((updateOn) => {
+        onEvents.forEach((validateOn) => {
+          const condition = `updateOn="${updateOn}", validateOn="${validateOn}"`;
+          it(`should clear reset intent when ${condition}`, () => {
+            TestUtils.renderIntoDocument(
+              <Provider store={store}>
+                <Control.text
+                  model="test.foo"
+                  updateOn={updateOn}
+                  validateOn={validateOn}
+                />
+              </Provider>
+            );
+
+            store.dispatch(actions.reset('test.foo'));
+            const hasResetIntent = store.getState().testForm.foo.intents
+              .some(intent => intent.type === 'reset');
+            assert.equal(hasResetIntent, false, 'has no pending reset intents');
+          });
+        });
       });
     });
 
