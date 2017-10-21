@@ -38,7 +38,6 @@ The `<LocalForm>` component takes all the [props from the `<Form>` component](..
 
 ### Notes
 - `redux` and `react-redux` _are_ still required as peer dependencies. This just allows you to not have to set up the boilerplate; e.g., the store and reducers.
-- `<LocalForm>` does not accept partial models. Instead of `model=".name"`, you can use `model="local.name"`. 
 - As with any React component, whenever the `<LocalForm>` is unmounted, the component's internal state is _gone_. This can be desirable (or undesirable) depending on your use case, so take this into consideration.
 - Just like with `<Form>`, the props `onSubmit` and `onSubmitFailed` will work as expected.
 
