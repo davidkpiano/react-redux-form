@@ -1081,7 +1081,7 @@ interface Actions {
      * Can be dispatched to reset the validity and errors of any model at any time.
      * @param model The model
      */
-    resetValidity: (model: string) => ActionThunk;
+    resetValidity: (model: string) => FieldAction;
     /**
      * Can be dispatched to reset the validity and errors of any model at any time.
      * @param model The model
