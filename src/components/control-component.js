@@ -88,6 +88,7 @@ const propTypes = {
   component: PropTypes.any,
   dispatch: PropTypes.func,
   parser: PropTypes.func,
+  formatter: PropTypes.func,
   ignore: PropTypes.oneOfType([
     PropTypes.arrayOf(PropTypes.string),
     PropTypes.string,
@@ -149,7 +150,7 @@ function createControlClass(s = defaultStrategy) {
       this.willValidate = false;
 
       this.state = {
-        viewValue: props.modelValue,
+        viewValue: this.format(props.modelValue),
       };
     }
 
@@ -360,7 +361,12 @@ function createControlClass(s = defaultStrategy) {
 
     setViewValue(viewValue) {
       if (!this.props.isToggle) {
-        this.setState({ viewValue: this.parse(viewValue) });
+        if (this.props.formatter) {
+          const parsedValue = this.parse(viewValue);
+          this.setState({ viewValue: this.format(parsedValue) });
+        } else {
+          this.setState({ viewValue: this.parse(viewValue) });
+        }
       }
     }
 
@@ -403,15 +409,18 @@ function createControlClass(s = defaultStrategy) {
             return;
           }
           case 'validate':
-          case 'reset':
-            if (intent.type === 'reset') {
-              this.setViewValue(modelValue);
-              if (this.handleUpdate.cancel) {
-                this.handleUpdate.cancel();
-              }
-            }
             if (containsEvent(validateOn, 'change')) {
               this.validate({ clearIntents: intent });
+            }
+            return;
+          case 'reset':
+            this.setViewValue(modelValue);
+            if (this.handleUpdate.cancel) {
+              this.handleUpdate.cancel();
+            }
+            dispatch(actions.clearIntents(model, intent));
+            if (containsEvent(validateOn, 'change')) {
+              this.validate({});
             }
             return;
 
@@ -430,6 +439,12 @@ function createControlClass(s = defaultStrategy) {
     parse(value) {
       return this.props.parser
         ? this.props.parser(value)
+        : value;
+    }
+
+    format(value) {
+      return this.props.formatter
+        ? this.props.formatter(value)
         : value;
     }
 
