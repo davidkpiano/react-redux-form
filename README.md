@@ -50,7 +50,7 @@ export default class MyApp extends React.Component {
 
 That's all you need. Seriously. [Read the Documentation](http://davidkpiano.github.io/react-redux-form/docs/guides/local.html) for more information.
 
-**NOTE:** Please use `<LocalForm>` with `react-redux` version 4.x.x. 
+**NOTE:** Please use `<LocalForm>` with `react-redux` version 4.x.x or 5.x.x. 
 
 ## Quick Start
 For more fine-grained control (such as using custom reducers, storing form state globally, dispatching actions, etc.), you'll want to set up a Redux store for your forms.
