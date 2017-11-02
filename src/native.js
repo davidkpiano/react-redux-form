@@ -20,7 +20,6 @@ import {
   combineForms,
   initialFieldState,
   actionTypes,
-  Control,
   Form,
   Fieldset,
   Errors,
@@ -30,6 +29,9 @@ import {
   track,
 } from './index';
 import omit from './utils/omit';
+import _get from './utils/get';
+import getFieldFromState from './utils/get-field-from-state';
+import createControlClass from './components/control-component-factory';
 
 function getTextValue(value) {
   if (typeof value === 'string' || typeof value === 'number') {
@@ -40,6 +42,12 @@ function getTextValue(value) {
 }
 
 const noop = () => undefined;
+
+const Control = createControlClass({
+  get: _get,
+  getFieldFromState,
+  actions,
+});
 
 Control.MapView = (props) => (
   <Control
