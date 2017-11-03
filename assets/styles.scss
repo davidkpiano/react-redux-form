@@ -1,0 +1,419 @@
+
+$easing: cubic-bezier(.61,0,.2,1);
+$color-primary: #31444F;
+$color-accent: #FEC214;
+$cursor-width: 0.5rem;
+$bar-height: 80%;
+
+*, *:before, *:after {
+  box-sizing: border-box;
+  position: relative;
+  transition: all 0.3s $easing;
+}
+
+body, html {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 18px;
+  font-family: 'Oxygen', sans-serif;
+}
+
+.ui-section {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  color: $color-primary;
+
+  > * {
+    flex: 1 1 50%;
+    width: 50%;
+    padding: 1rem;
+  }
+
+  &.-hero {
+    background: $color-primary;
+    color: white;
+
+    > .ui-aside:after {
+      color: white;
+      animation: bar-enter 1s 1.9s $easing both;
+    }
+
+    .ui-heading {
+      overflow: hidden;
+      height: 5rem;
+      animation: heading-enter 1s 1s $easing both;
+
+      &:after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: $cursor-width;
+        height: 100%;
+        background: white;
+        animation:
+          blink 1s step-start both;
+      }
+
+      @keyframes disappear {
+        to {
+          opacity: 0;
+        }
+      }
+
+      > .ui-heading-inner {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 2px solid white;
+        padding: 0 2rem 0 1rem;
+        text-align: right;
+        animation:
+          heading-span-enter 1s 1s $easing both,
+          heading-span-border 2s 1s $easing both;
+        overflow: hidden;
+
+        > span {
+          display: inline-block;
+          @for $i from 1 through 3 {
+            &:nth-child(#{$i}) {
+              animation: heading-word-enter 0.6s 1s + (0.2s * ($i - 1)) $easing both;
+            }
+          }
+
+          &:before { content: '\00a0'; }
+        }
+      }
+
+      @keyframes heading-enter {
+        from {
+          transform: translateX(calc(-100% + #{$cursor-width}));
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes heading-span-enter {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes heading-span-border {
+        from {
+          border-color: white;
+        }
+        50% {
+          border-color: white;
+        }
+        to {
+          border-color: transparent;
+        }
+      }
+
+      @keyframes heading-word-enter {
+        from {
+          opacity: 0;
+          transform: translateY(2rem);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes blink {
+        0%, 50%, 100% {
+          opacity: 1;
+        }
+        25%, 75% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes bar-enter {
+        from {
+          transform: scaleY(0);
+        }
+        to {
+          transform: scaleY(1);
+        }
+      }
+    }
+
+    > .ui-content {
+      animation: content-enter 1s 2s $easing both;
+      flex-direction: column-reverse;
+      height: $bar-height;
+      color: white;
+
+      @keyframes content-enter {
+        from {
+          transform: translateY(3rem);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+    }
+    
+    .ui-button {
+      color: white;
+      border-color: white;
+
+      &:hover {
+        border-color: $color-primary;
+      }
+    }
+  }
+
+  &:nth-child(2) {
+    color: #79BD8F;
+  }
+
+  &:nth-child(3) {
+    color: #1695A3;
+  }
+
+  &:nth-child(4) {
+    color: #EB8F00;
+  }
+
+  &:nth-child(5) {
+    color: #E74C3C;
+  }
+
+  @media (max-width: 700px) {
+    display: block;
+    height: auto;
+    overflow: visible;
+
+    > .ui-aside,
+    > .ui-content {
+      width: 100%;
+      height: auto;
+      padding: 1rem;
+
+      &:after {
+        display: none;
+      }
+    }
+
+    > .ui-aside {
+      text-align: center;
+      > * {
+        align-self: initial;
+        padding-left: 0;
+        padding-right: 0;
+        text-align: center;
+      }
+    }
+
+    .ui-heading {
+      font-size: 2rem;
+      text-align: center;
+    }
+
+    .ui-buttons {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    &.-hero {
+      > .ui-content {
+        text-align: center;
+      }
+    }
+  }
+}
+
+.ui-aside {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  padding-right: 0;
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    color: inherit;
+    width: $cursor-width;
+        background-image: linear-gradient(to top,
+          transparent,
+          transparent 9.99%,
+          currentColor 10%,
+          currentColor 90%,
+          transparent 90.01%,
+          transparent);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  > ul {
+    margin: 0;
+    text-align: right;
+    list-style-type: none;
+    padding-right: 2rem;
+  }
+
+  li {
+    line-height: 1.5;
+  }
+}
+
+.ui-content {
+  line-height: 1.5;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-right: 0;
+  padding-left: 2rem;
+  color: #111;
+
+  > * {
+    z-index: 1;
+  }
+}
+
+.ui-heading {
+  margin: 0;
+  font-size: 3rem;
+  text-align: right;
+  padding: 1rem 2rem;
+}
+
+.ui-screen {
+  pointer-events: none;
+  z-index: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: white;
+  transform: scaleX(0);
+  transform-origin: left center;
+
+  .ui-buttons:hover ~ & {
+    transform: scaleX(1);
+  }
+}
+
+.ui-buttons {
+  &:hover {
+    ~ * {
+      color: #111;
+    }
+
+    > .ui-button {
+      @extend .ui-button;
+    }
+  }
+}
+
+.ui-button {
+  display: inline-block;
+  appearance: none;
+  text-decoration: none;
+  display: inline-block;
+  text-transform: uppercase;
+  padding: 1rem;
+  font-weight: 700;
+  background: transparent;
+  color: $color-primary;
+  border: 1px solid $color-primary;
+  overflow: hidden;
+  outline: none;
+
+  + .ui-button {
+    margin-left: 1rem;
+  }
+
+  &:hover, &:focus {
+    color: white;
+    outline: none;
+
+    &:before {
+      transform: translateX(0) skewX(30deg);
+    }
+  }
+
+  &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% + 2rem);
+    height: 100%;
+    transform: scale(1.1) translateX(calc(-100% - 2rem)) skewX(30deg);
+    transform-origin: left bottom;
+    background: $color-primary;
+    transition: transform 0.3s $easing;
+    z-index: -1;
+  }
+}
+
+.ui-footer {
+  background: $color-primary;
+  width: 100%;
+  padding: 1rem;
+  text-align: center;
+  color: white;
+
+  a {
+    text-decoration: none;
+    color: $color-accent;
+    display: inline-block;
+    margin: 0 0.5rem;
+
+    &:before {
+      content: '';
+      position: absolute;
+      display: block;
+      top: calc(100% + 0.1rem);
+      left: 0;
+      height: 0.5ex;
+      width: 100%;
+      background: $color-accent;
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+
+    &:hover:before {
+      transform: scaleX(1);
+    }
+  }
+}
+
+.ui-npm-badge {
+  align-self: flex-end;
+  padding: 0 2rem;
+}

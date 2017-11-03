@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>React Redux Form</title>
+  <link rel="stylesheet" href="./assets/styles.css">
+  <link rel="stylesheet" href="./assets/prism.css">
+  <link href="https://fonts.googleapis.com/css?family=Oxygen:300,700" rel="stylesheet">
+</head>
+<body>
+  <section class="ui-section -hero">
+    <div class="ui-aside">    
+      <h1 class="ui-heading">
+        <span class="ui-heading-inner">
+          <span>react</span>
+          <span>redux</span>
+          <span>form</span>
+        </span>
+      </h1>
+    </div>
+    <div class="ui-content">
+      <div class="ui-buttons">
+        <a href="https://github.com/davidkpiano/react-redux-form" class="ui-button">Github</a>
+        <a href="https://davidkpiano.github.io/react-redux-form/docs.html" class="ui-button">Documentation</a>
+      </div>
+      <p>
+        A versatile, fast, and intuitive library for creating complex and performant forms in React and Redux.
+      </p>
+      <div class="ui-screen"></div>
+    </div>
+  </section>
+  <section class="ui-section">
+    <div class="ui-aside">
+      <h1 class="ui-heading">Quick Start</h1>
+      <a class="ui-npm-badge" href="https://badge.fury.io/js/react-redux-form">
+        <img src="https://badge.fury.io/js/react-redux-form.svg" alt="">
+      </a>
+    </div>
+    <div class="ui-content">
+      <p>Install the dependencies (you probably already have these):</p>
+      <pre><code class="language-bash">
+npm install react react-dom redux react-redux redux-thunk --save
+      </code></pre>
+      <p>Install React Redux Form:</p>
+      <pre><code class="language-bash">
+npm install react-redux-form@latest --save
+      </code></pre>
+      <p>Get started:</p>
+      <a href="http://davidkpiano.github.io/react-redux-form/docs/guides/quickstart.html" class="ui-button">
+        Quick Start Guide
+      </a>
+    </div>
+  </section>
+  <section class="ui-section">
+    <div class="ui-aside">
+      <h1 class="ui-heading">Stores<br>&amp; Reducers</h1>
+      <ul>
+        <li>Little boilerplate</li>
+        <li>Separation of model and form states</li>
+        <li>Reuse your existing reducers</li>
+        <li>Infinitely nestable forms</li>
+      </ul>
+    </div>
+    <div class="ui-content">
+      <pre><code class="language-jsx">
+import { createStore } from 'redux';
+import { combineForms } from 'react-redux-form';
+
+const initialUser = {
+  firstName: '',
+  lastName: '',
+};
+
+export const store = createStore(combineForms({
+  user: initialUser,
+}));
+      </code></pre>
+    </div>
+  </section>
+  <section class="ui-section">
+    <div class="ui-aside">
+      <h1 class="ui-heading">Forms<br>&amp; Controls</h1>
+      <ul>
+        <li>Terse syntax</li>
+        <li>Supports custom components</li>
+        <li>Update on change or blur</li>
+        <li>Controlled components</li>
+      </ul>
+    </div>
+    <div class="ui-content">
+      <pre><code class="language-jsx">
+import React from 'react';
+import { Form, Control } from 'react-redux-form';
+
+class MyForm extends React.Component {
+  handleSubmit(values) {
+    // Do anything you want with the form value
+    console.log(values);
+  }
+
+  render() {
+    return (
+      &lt;Form
+        model="user"
+        onSubmit={(val) =&gt; this.handleSubmit(val)}
+      &gt;
+        &lt;label&gt;Your name?&lt;/label&gt;
+        &lt;Control.text model="user.name" /&gt;
+
+        &lt;label&gt;
+          &lt;Control.checkbox model="user.remember" /&gt;
+          Remember me
+        &lt;/label&gt;
+
+        &lt;button&gt;Submit!&lt;/button&gt;
+      &lt;/Form&gt;
+    );
+  }
+}
+
+// No need to connect()!
+export default MyForm;
+      </code></pre>
+    </div>
+  </section>
+  <section class="ui-section">
+    <div class="ui-aside">
+      <h1 class="ui-heading">Validators<br>&amp; Errors</h1>
+      <ul>
+        <li>Sync and async validity</li>
+        <li>Validate on change or blur</li>
+        <li>Modular, key-based validators</li>
+        <li>Form-level validation</li>
+      </ul>
+    </div>
+    <div class="ui-content">
+      <pre><code class="language-jsx">
+import React from 'react';
+import { Form, Control } from 'react-redux-form';
+
+class MyForm extends React.Component {
+  render() {
+    return (
+      &lt;Form model="user"&gt;
+        &lt;label&gt;Username&lt;/label&gt;
+        &lt;Control.text
+          model="user.username"
+          validators={{
+            required: (val) => !!val.length,
+            minLength: (val) => val.length > 8,
+          }}
+        /&gt;
+        &lt;Errors
+          model="user.username"
+          messages={{
+            required: 'Username is required.',
+            minLength: 'Username must be more than 8 characters.',
+          }}
+        /&gt;
+        &lt;button&gt;Submit!&lt;/button&gt;
+      &lt;/Form&gt;
+    );
+  }
+}
+
+// No need to connect()!
+export default MyForm;
+      </code></pre>
+    </div>
+  </section>
+  <div class="ui-footer">
+    Created by <strong>David Khourshid</strong>.
+    <a href="https://github.com/davidkpiano/react-redux-form">Contribute on Github</a>
+    <a href="http://davidkpiano.github.io/react-redux-form/docs.html">Read the Docs</a>
+  </div>
+</body>
+<script src="./assets/prism.min.js"></script>
+</html>

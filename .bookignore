@@ -1,0 +1,7 @@
+src/
+lib/
+test/
+examples/
+home/
+package.json
+webpack*
