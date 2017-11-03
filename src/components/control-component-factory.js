@@ -16,7 +16,6 @@ import debounce from '../utils/debounce';
 import _getValue, { getCheckboxValue } from '../utils/get-value';
 import getValidity from '../utils/get-validity';
 import invertValidity from '../utils/invert-validity';
-import getFieldFromState from '../utils/get-field-from-state';
 import getModel from '../utils/get-model';
 import persistEventWithCallback from '../utils/persist-event-with-callback';
 import actions from '../actions';
