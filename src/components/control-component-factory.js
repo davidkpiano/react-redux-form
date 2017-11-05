@@ -274,7 +274,7 @@ function createControlClass(s) {
         model,
         modelValue,
         updateOn,
-        validateOn,
+        validateOn = updateOn,
         asyncValidateOn,
         dispatch,
         getValue,
