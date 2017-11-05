@@ -112,4 +112,4 @@ export default MyForm;
 ## Posting Issues
 When posting an issue, please include a detailed description along with a relevant code sample. Attaching a failing test case with your issue will go a long way and is much appreciated.
 
-Feel free to [fork this CodePen](http://codepen.io/davidkpiano/pen/yJwmEa) for quickly creating reproducible examples!
+Feel free to [fork this CodePen](http://codepen.io/davidkpiano/pen/yJwmEa) or [this CodeSandbox](https://codesandbox.io/s/k3jyzwqo53) for quickly creating reproducible examples!
