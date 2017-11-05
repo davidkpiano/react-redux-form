@@ -52,13 +52,13 @@ const textPropsMap = {
 };
 
 const getModelValue = ({ modelValue }) => modelValue;
+const getViewValue = (props) =>
+  (props.hasOwnProperty('value') ? props.value : props.viewValue);
 
 const controlPropsMap = {
   default: {
     ...standardPropsMap,
-    value: (props) => (props.hasOwnProperty('value')
-      ? props.value
-      : props.viewValue),
+    value: getViewValue,
   },
   checkbox: {
     ...standardPropsMap,
@@ -73,7 +73,7 @@ const controlPropsMap = {
   },
   select: {
     ...standardPropsMap,
-    value: getModelValue,
+    value: getViewValue,
   },
   text: textPropsMap,
   textarea: textPropsMap,
