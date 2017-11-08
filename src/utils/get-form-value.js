@@ -1,4 +1,5 @@
 import mapValues from './map-values';
+import toArray from './to-array';
 
 export default function getFormValue(form) {
   if (form && !form.$form) {
@@ -15,5 +16,7 @@ export default function getFormValue(form) {
 
   delete result.$form;
 
-  return result;
+  const isArray = form && form.$form && Array.isArray(form.$form.value);
+
+  return isArray ? toArray(result) : result;
 }
