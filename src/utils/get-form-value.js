@@ -15,5 +15,7 @@ export default function getFormValue(form) {
 
   delete result.$form;
 
-  return result;
+  const isArray = Array.isArray(form.$form.value);
+
+  return isArray ? Object.values(result) : result;
 }
