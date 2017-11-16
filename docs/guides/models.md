@@ -93,5 +93,21 @@ const store = createStore(combineForms({
 
 You will then be able to pass your custom reducer's own actions and have it respond appropriately, and you will also be able to use RRF's `actions` to update the same model.
 
+If you have other custom reducers you dont want modelled, the same result can be achieved with `createForms()`, using a custom reducer instead of an initialState object will give you access to RRF's `actions` and the model changes.
+
+```jsx
+// ...
+import myCustomReducer from './myCustomReducer.js';
+import someOtherReducer from './someOtherReducer.js';
+
+const store = createStore(combineReducers({
+  someOther:someOtherReducer,//<= won't be modeled()
+  ...createForms({
+    custom: myCustomReducer, // <= will be modeled()
+  })
+}));
+// ...
+```
+
 
 
