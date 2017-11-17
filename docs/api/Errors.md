@@ -1,4 +1,3 @@
-{% raw %}
 # Errors Component
 
 ## `<Errors />`
@@ -120,4 +119,3 @@ _(String | Function | Element)_: The `component`, which is the component for eac
   - `fieldValue` - the current field state of the `model`
   - `children` - the error message (text).
 - `component={CustomError}` will wrap the error in a `<CustomError>` component, which will receive the same props as above.
-{% endraw %}
