@@ -1,45 +1,45 @@
 # Action Creators
 
 - [Model Action Creators](#model-action-creators)
-  - [`actions.change()`](#actions-change)
-  - [`actions.reset()`](#actions-reset)
+  - [`actions.change()`](#actionschangemodel-value-options)
+  - [`actions.reset()`](#actionsresetmodel)
   - **Action thunk creators:**
-    - [`actions.merge()`](#actions-merge)
-    - [`actions.xor()`](#actions-xor)
-    - [`actions.push()`](#actions-push)
-    - [`actions.toggle()`](#actions-toggle)
-    - [`actions.filter()`](#actions-filter)
-    - [`actions.map()`](#actions-map)
-    - [`actions.remove()`](#actions-remove)
-    - [`actions.move()`](#actions-move)
-    - [`actions.load()`](#actions-load)
-    - [`actions.omit()`](#actions-omit)
+    - [`actions.merge()`](#actionsmergemodel-values)
+    - [`actions.xor()`](#actionsxormodel-item)
+    - [`actions.push()`](#actionspushmodel-item)
+    - [`actions.toggle()`](#actionstogglemodel)
+    - [`actions.filter()`](#actionsfiltermodel-iteratee)
+    - [`actions.map()`](#actionsmapmodel-iteratee)
+    - [`actions.remove()`](#actionsremovemodel-index)
+    - [`actions.move()`](#actionsmovemodel-fromindex-toindex)
+    - [`actions.load()`](#actionsloadmodel-value)
+    - [`actions.omit()`](#actionsomitmodel-props)
 - [Field Action Creators](#field-action-creators)
-  - [`actions.focus()`](#actions-focus)
-  - [`actions.blur()`](#actions-blur)
-  - [`actions.setPristine()`](#actions-setPristine)
-  - [`actions.setDirty()`](#actions-setDirty)
-  - [`actions.setPending()`](#actions-setPending)
-  - [`actions.setTouched()`](#actions-setTouched)
-  - [`actions.setUntouched()`](#actions-setUntouched)
-  - [`actions.setSubmitted()`](#actions-setSubmitted)
-  - [`actions.setSubmitFailed()`](#actions-setSubmitFailed)
-  - [`actions.setInitial()`](#actions-setInitial)
+  - [`actions.focus()`](#actionsfocusmodel)
+  - [`actions.blur()`](#actionsblurmodel)
+  - [`actions.setPristine()`](#actionssetpristinemodel)
+  - [`actions.setDirty()`](#actionssetdirtymodel)
+  - [`actions.setPending()`](#actionssetpendingmodel-pending)
+  - [`actions.setTouched()`](#actionssettouchedmodel)
+  - [`actions.setUntouched()`](#actionssetuntouchedmodel)
+  - [`actions.setSubmitted()`](#actionssetsubmittedmodel-submitted)
+  - [`actions.setSubmitFailed()`](#actionssetsubmitfailedmodel)
+  - [`actions.setInitial()`](#actionssetinitialmodel)
   - **Action thunk creators:**
-    - [`actions.submit()`](#actions-submit)
-    - [`actions.submitFields()`](#actions-submitFields)
+    - [`actions.submit()`](#actionssubmitmodel-promise)
+    - [`actions.submitFields()`](#actionssubmitfieldsmodel-promise)
 - [Validation Action Creators](#validation-action-creators)
-  - [`actions.setValidity()`](#actions-setValidity)
-  - [`actions.setFieldsValidity()`](#actions-setFieldsValidity)
-  - [`actions.setErrors()`](#actions-setErrors)
-  - [`actions.setFieldsErrors()`](#actions-setFieldsErrors)
-  - [`actions.resetValidity()`](#actions-resetValidity)
+  - [`actions.setValidity()`](#actionssetvaliditymodel-validity-options)
+  - [`actions.setFieldsValidity()`](#actionssetfieldsvaliditymodel-fieldsvalidity)
+  - [`actions.setErrors()`](#actionsseterrorsmodel-errors)
+  - [`actions.setFieldsErrors()`](#actionssetfieldserrorsmodel-fieldserrors)
+  - [`actions.resetValidity()`](#actionsresetvaliditymodel-omitkeys)
   - **Action thunk creators:**
-    - [`actions.validate()`](#actions-validate)
-    - [`actions.validateFields()`](#actions-validate)
-    - [`actions.asyncSetValidity()`](#actions-asyncSetValidity)
-    - [`actions.validateErrors()`](#actions-validateErrors)
-    - [`actions.validateFieldsErrors()`](#actions-validateFieldsErrors)
+    - [`actions.validate()`](#actionsvalidatemodel-validators)
+    - [`actions.validateFields()`](#actionsvalidatefieldsmodel-fieldvalidators)
+    - [`actions.asyncSetValidity()`](#actionsasyncsetvaliditymodel-asyncvalidator)
+    - [`actions.validateErrors()`](#actionsvalidateerrorsmodel-errorvalidators)
+    - [`actions.validateFieldsErrors()`](#actionsvalidatefieldserrorsmodel-fielderrorsvalidators)
 
 
 # Model Action Creators
@@ -58,7 +58,7 @@ dispatch(actions.change(
   'black'));
 ```
 
-## `actions.change(model, value, [options])` {#actions-change}
+## `actions.change(model, value, [options])`
 
 Returns an action that, when handled by a `modelReducer`, changes the value of the `model` to the `value`.
 
@@ -92,7 +92,7 @@ userReducer(initialState, actions.change('user.name', 'Billy'));
 ### Notes
 - The `model` path can be as deep as you want. E.g. `actions.change('user.phones[0].type', 'home')`
 
-## `actions.reset(model)` {#actions-reset}
+## `actions.reset(model)`
 Returns an action that, when handled by a `modelReducer`, changes the value of the respective model to its initial value.
 
 ### Arguments
@@ -122,7 +122,7 @@ const resetState = counterReducer(nextState,
 - This action will reset both the model value in the model reducer, _and_ the model field state in the form reducer (if it exists).
 - To reset just the field state (in the form reducer), use `actions.setInitial(model)`.
 
-## `actions.merge(model, values)` {#actions-merge}
+## `actions.merge(model, values)`
 Dispatches an `actions.change(...)` action that merges the `values` into the value specified by the `model`.
 
 ### Arguments
@@ -133,7 +133,7 @@ Dispatches an `actions.change(...)` action that merges the `values` into the val
 - Use this action to update multiple and/or deep properties into a model, if the model represents an object.
 - This uses `icepick.merge(modelValue, values)` internally.
 
-## `actions.xor(model, item)` {#actions-xor}
+## `actions.xor(model, item)`
 Dispatches an `actions.change(...)` action that applies an "xor" operation to the array represented by the `model`; that is, it "toggles" an item in an array.
 
 If the model value contains `item`, it will be removed. If the model value doesn't contain `item`, it will be added.
@@ -159,7 +159,7 @@ dispatch(actions.xor('user.numbers', 6));
 ### Notes
 - This action is most useful for toggling a checkboxes whose values represent items in a model's array.
 
-## `actions.push(model, item)` {#actions-push}
+## `actions.push(model, item)`
 Dispatches an `actions.change(...)` action that "pushes" the `item` to the array represented by the `model`.
 
 ### Arguments
@@ -169,7 +169,7 @@ Dispatches an `actions.change(...)` action that "pushes" the `item` to the array
 ### Notes
 - This action does not mutate the model. It only simulates the mutable `.push()` method.
 
-## `actions.toggle(model)` {#actions-toggle}
+## `actions.toggle(model)`
 Dispatches an `actions.change(...)` action that sets the `model` to true if it is falsey, and false if it is truthy.
 
 ### Arguments
@@ -178,7 +178,7 @@ Dispatches an `actions.change(...)` action that sets the `model` to true if it i
 ### Notes
 - This action is most useful for single checkboxes.
 
-## `actions.filter(model, iteratee)` {#actions-filter}
+## `actions.filter(model, iteratee)`
 Dispatches an `actions.change(...)` action that filters the array represented by the `model` through the `iteratee` function.
 
 If no `iteratee` is specified, the identity function is used by default.
@@ -188,7 +188,7 @@ If no `iteratee` is specified, the identity function is used by default.
 - `iteratee` _(Function)_: the filter iteratee function that filters the array represented by the model.
   - default: `identity` (`a => a`)
 
-## `actions.map(model, iteratee)` {#actions-map}
+## `actions.map(model, iteratee)`
 Dispatches an `actions.change(...)` action that maps the array represented by the `model` through the `iteratee` function.
 
 If no `iteratee` is specified, the identity function is used by default.
@@ -197,14 +197,14 @@ If no `iteratee` is specified, the identity function is used by default.
 - `model` _(String | Function)_: the array model to be mapped.
 - `iteratee` _(Function)_: the map iteratee function that maps the array represented by the model.
 
-## `actions.remove(model, index)` {#actions-remove}
+## `actions.remove(model, index)`
 Dispatches an `actions.change(...)` action that removes the item at the specified `index` of the array represented by the `model`.
 
 ### Arguments
 - `model` _(String | Function)_: the array model to be updated.
 - `index` _(Number)_: the index that should be removed from the array.
 
-## `actions.move(model, fromIndex, toIndex)` {#actions-move}
+## `actions.move(model, fromIndex, toIndex)`
 Dispatches an `actions.change(...)` action that moves the item at the specified `fromIndex` of the array to the `toIndex` of the array represented by the `model`.
 
 If `fromIndex` or `toIndex` are out of bounds, an error will be thrown.
@@ -228,7 +228,7 @@ dispatch(actions.move('foo.bar', 2, 0));
 // => [3, 1, 2, 4]
 ```
 
-## `actions.load(model, value)` {#actions-load}
+## `actions.load(model, value)`
 Dispatches an `actions.change(...)` action that loads (updates) the `model` with `value` silently. It does not trigger any effects of a `CHANGE` action in the form reducer.
 
 It also sets the `.loadedValue` of the model's `field` to the dispatched `value`.
@@ -242,7 +242,7 @@ It also sets the `.loadedValue` of the model's `field` to the dispatched `value`
 - If the initial model value is available at runtime, prefer setting it as part of the `initialState` of the `modelReducer` instead.
 - This is different than calling `actions.change(model, value, { silent: true })`. Both are similar with one main difference: `actions.load` also updates the `.loadedValue`, whereas a silent change does not.
 
-## `actions.omit(model, props)` {#actions-omit}
+## `actions.omit(model, props)`
 Dispatches an `actions.change(...)` action with the `model` value updated to not include any of the omitted `props`.
 
 ### Arguments
@@ -269,11 +269,11 @@ dispatch(actions.omit('test', ['foo', 'baz']);
 // => { test: { bar: 2 } }
 ```
 
-# Field Action Creators {#field-action-creators}
+# Field Action Creators
 
 All model and field actions can be imported via `import { actions } from 'react-redux-form'`.
 
-## `actions.focus(model)` {#actions-focus}
+## `actions.focus(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.focus` state of the field model in the form to `true`.
 
 The "focus" state indicates that the field model is the currently focused field in the form.
@@ -303,7 +303,7 @@ const Newsletter = (props) => {
 ### Notes
 - If possible, RRF will actually call `.focus()` on the DOM node if it is focusable.
 
-## `actions.blur(model)` {#actions-blur}
+## `actions.blur(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.focus` state to `false`. It also indicates that the field model has been `.touched`, and will set that state to `true`.
 
 A "blurred" field indicates that the field model control is not currently focused.
@@ -311,7 +311,7 @@ A "blurred" field indicates that the field model control is not currently focuse
 ### Arugments
 - `model` _(String | Function)_: the model indicated as blurred (not focused)
 
-## `actions.setPristine(model)` {#actions-setPristine}
+## `actions.setPristine(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.pristine` state of the field model in the form to `true`.
 
 The "pristine" state indicates that the user has not interacted with this field model yet.
@@ -324,7 +324,7 @@ The "pristine" state indicates that the user has not interacted with this field 
   - pristine _if_ all other fields are pristine
   - otherwise, dirty.
 
-## `actions.setDirty(model)` {#actions-setDirty}
+## `actions.setDirty(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.pristine` state to `false`.
 
 A "dirty" field indicates that the model value has been changed, and is no longer pristine.
@@ -335,7 +335,7 @@ A "dirty" field indicates that the model value has been changed, and is no longe
 ### Notes
 - Whenever a field is set to not pristine (dirty), the entire form is set to not pristine (dirty).
 
-## `actions.setPending(model, [pending])` {#actions-setPending}
+## `actions.setPending(model, [pending])`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.pending` state of the field model in the form to `true`. It simultaneously sets the `.submitted` state to `false`.
 
 ### Arguments
@@ -346,7 +346,7 @@ Returns an action that, when handled by a [`formReducer`](./formReducer), change
 ### Notes
 - This action is useful when asynchronously validating or submitting a model. It represents the state between the initial and final state of a field model's validation/submission.
 
-## `actions.setTouched(model)` {#actions-setTouched}
+## `actions.setTouched(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.touched` state of the field model in the form to `true`. It simultaneously sets the `.untouched` state to `false`.
 
 The "touched" state indicates that this model has been interacted with.
@@ -358,7 +358,7 @@ The "touched" state indicates that this model has been interacted with.
 - Setting a `model` to touched also sets the entire form to touched.
 - Touched also sets the `model` to not focused (blurred).
 
-## `actions.setUntouched(model)` {#actions-setUntouched}
+## `actions.setUntouched(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.touched` state to `false`.
 
 An "untouched" field indicates that this model has not been interacted with yet.
@@ -369,7 +369,7 @@ An "untouched" field indicates that this model has not been interacted with yet.
 ### Notes
 - This action is useful for conditionally displaying error messages based on whether the field has been touched.
 
-## `actions.submit(model, [promise])` {#actions-submit}
+## `actions.submit(model, [promise])`
 
 Waits for a submission `promise` to be completed, then, if successful:
 - Sets `.submitted` property of form for `model` to `true`
@@ -409,7 +409,7 @@ const postUser = api.post({/* user data */})
 dispatch(actions.submit('user', postUser));
 ```
 
-## `actions.submitFields(model, promise)` {#actions-submitFields}
+## `actions.submitFields(model, promise)`
 
 Waits for a submission `promise` to be completed, then, if successful:
 - Sets `.submitted` property of form for `model` to `true`
@@ -449,7 +449,7 @@ dispatch(actions.submitFields('user', postUser));
 // to the above values.
 ```
 
-## `actions.setSubmitted(model, [submitted])` {#actions-setSubmitted}
+## `actions.setSubmitted(model, [submitted])`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.submitted` state of the field model in the form to `submitted` (`true` or `false`). It simultaneously sets the `.pending` state to the inverse of `submitted`.
 
 The "submitted" state indicates that this model has been "sent off," or an action has been completed for the model.
@@ -480,7 +480,7 @@ export default function submitUser(data) {
 ### Notes
 - Use the `setPending()` and `setSubmitted()` actions together to update the state of the field model during some async action.
 
-## `actions.setSubmitFailed(model)` {#actions-setSubmitFailed}
+## `actions.setSubmitFailed(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.submitFailed` state of the field model in the form to `true`. It simultaneously sets the `.pending` state to `false`, and the `.retouched` state to `false`.
 
 ### Arguments
@@ -493,7 +493,7 @@ Returns an action that, when handled by a [`formReducer`](./formReducer), change
 - If submit failed, `.submitFailed = true`
 - If resubmitting, `.submitFailed = false` again.
 
-## `actions.setInitial(model)` {#actions-setInitial}
+## `actions.setInitial(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the state of the field model in the form to its initial state.
 
 Here is the default initial field state:
@@ -521,7 +521,7 @@ const initialFieldState = {
 
 # Validation Action Creators
 
-## `actions.setValidity(model, validity, [options])` {#actions-setValidity}
+## `actions.setValidity(model, validity, [options])`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.valid` state of the field model in the form to `true` or `false`, based on the `validity` (see below). It will also set the `.validity` state of the field model to the `validity`.
 
 It also sets the `.errors` on the field model to the inverse of the `validity`.
@@ -567,7 +567,7 @@ dispatch(actions.setValidity('user.password', {
 - If you _really_ want to set error messages instead, use `actions.setErrors(model, errors)`.
 - Since arrays are objects, the `validity` argument _can_ be an array. Only do this if your use case requires it.
 
-## `actions.setFieldsValidity(model, fieldsValidity)` {#actions-setFieldsValidity}
+## `actions.setFieldsValidity(model, fieldsValidity)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), sets the `.validity` state of each sub-model key in the `fieldsValidity` object to that key's value.
 
 It simultaneously sets the `.errors` on each sub-model to the inverse of its validity.
@@ -576,7 +576,7 @@ It simultaneously sets the `.errors` on each sub-model to the inverse of its val
 - `model` _(String | Function)_: the model whose sub-model's validities will be set
 - `fieldsValidity` _(Object)_: an object whose keys are sub-models (e.g., `'name'` for `user.name`) and whose values are the validities for each sub-model.
 
-## `actions.validate(model, validators)` {#actions-validate}
+## `actions.validate(model, validators)`
 Returns an action thunk that calculates the `validity` of the `model` based on the function/object `validators`. Then, the thunk dispatches `actions.setValidity(model, validity)`.
 
 A **validator** is a function that returns `true` if valid, and `false` if invalid.
@@ -607,7 +607,7 @@ dispatch(actions.validate('user.email', {
 // });
 ```
 
-## `actions.asyncSetValidity(model, asyncValidator)` {#actions-asyncSetValidity}
+## `actions.asyncSetValidity(model, asyncValidator)`
 Returns an action thunk that calculates the `validity` of the `model` based on the async function `asyncValidator`. That function dispatches `actions.setValidity(model, validity)` by calling `done(validity)`.
 
 ### Arguments
@@ -637,7 +637,7 @@ dispatch(actions.asyncSetValidity('user.email', isEmailAvailable));
 ### Notes
 - This action is useful for general-purpose asynchronous validation using callbacks.  If you are using _promises_, using `actions.submit(model, promise)` is a simpler pattern.
 
-## `actions.setErrors(model, errors)` {#actions-setErrors}
+## `actions.setErrors(model, errors)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.valid` state of the field model in the form to `true` or `false`, based on the `errors` (see below). It will also set the `.errors` state of the field model to the `errors`.
 
 It simultaneously sets the `.validity` on the field model to the inverse of the `errors`.
@@ -687,7 +687,7 @@ dispatch(actions.setErrors('user.password', {
 - If you aren't hard-coding error messages, use `actions.setValidity(model, validity)` instead. It's a cleaner pattern.
 - You can set `errors` to a boolean, object, array, string, etc. Remember: truthy values indicate errors in `errors`.
 
-## `actions.setFieldsErrors(model, fieldsErrors)` {#actions-setFieldsErrors}
+## `actions.setFieldsErrors(model, fieldsErrors)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), sets the `.errors` state of each sub-model key in the `fieldsErrors` object to that key's value.
 
 It simultaneously sets the `.validity` on each sub-model to the inverse of its errors.
@@ -696,7 +696,7 @@ It simultaneously sets the `.validity` on each sub-model to the inverse of its e
 - `model` _(String | Function)_: the model whose sub-models validities will be set
 - `fieldsErrors` _(Object)_: an object whose keys are sub-models (e.g., `'name'` for `user.name`) and whose values are the errors for each sub-model.
 
-## `actions.validateErrors(model, errorValidators)` {#actions-validateErrors}
+## `actions.validateErrors(model, errorValidators)`
 Returns an action thunk that calculates the `errors` of the `model` based on the function/object `errorValidators`. Then, the thunk dispatches `actions.setErrors(model, errors)`.
 
 An **error validator** is a function that returns `true` or a truthy value (such as a string) if invalid, and `false` if valid.
@@ -731,7 +731,7 @@ dispatch(actions.validateErrors('user.email', {
 ### Notes
 - As previously stated, if you aren't using error messages, use `actions.validate(model, validators)` as a cleaner pattern.
 
-## `actions.validateFields(model, fieldValidators)` {#actions-validateFields}
+## `actions.validateFields(model, fieldValidators)`
 Returns an action thunk that calculates the `validity` for each sub-model key of the `fieldValidators` object based on the value, which is a `validator`. Then, the thunk dispatches `actions.setValidity(model, validity)` for all of the sub-models.
 
 A **validator** is a function that returns `true` or a truthy value (such as a string) if valid, and `false` if invalid.
@@ -758,7 +758,7 @@ dispatch(actions.validateFields('user', {
 }));
 ```
 
-## `actions.validateFieldsErrors(model, fieldErrorsValidators)` {#actions-validateFieldsErrors}
+## `actions.validateFieldsErrors(model, fieldErrorsValidators)`
 Returns an action thunk that calculates the `errors` for each sub-model key of the `fieldErrorsValidators` object based on the value, which is an `errorValidator`. Then, the thunk dispatches `actions.setErrors(model, errors)` for all of the sub-models.
 
 An **error validator** is a function that returns `true` or a truthy value (such as a string) if invalid, and `false` if valid.
@@ -783,7 +783,7 @@ dispatch(actions.validateFieldsErrors('user', {
 }));
 ```
 
-## `actions.resetValidity(model, [omitKeys])` {#actions-resetValidity}
+## `actions.resetValidity(model, [omitKeys])`
 Resets the `.validity` and `.errors` for the field model to the `.validity` and `.errors` of the initial field state.
 
 If `omitKeys` is specified as an array, it will only reset the validity to the omitted keys by removing them from the current validity/errors.
@@ -793,6 +793,3 @@ _Alias:_ `actions.resetErrors(model)`
 ### Arguments
 - `model` _(String | Function)_: the model whose validity and errors will be reset.
 - `omitKeys` _(Array)_: the keys to reset by omitting them. Default: `false` (will reset all keys)
-
-
-

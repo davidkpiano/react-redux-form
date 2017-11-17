@@ -94,7 +94,7 @@ import { Control } from 'react-redux-form';
   <option value="ff0000">Red</option>
   <option value="00ff00">Green</option>
   <option value="0000ff">Blue</option>
-</Control>
+</Control.select>
 ```
 
 ---
@@ -277,7 +277,7 @@ const ClubForm = ({ club, dispatch }) => (
     <button
       type="button"
       onClick={() => dispatch(actions.push('club.members', initialMember))}
-    />
+    >
       Add Member
     </button>
 
@@ -295,7 +295,7 @@ const ClubForm = ({ club, dispatch }) => (
         <button
           type="button"
           onClick={() => dispatch(actions.push(`club.members[${i}].hobbies`, initialHobby))}
-        />
+        >
           Add Hobby
         </button>
         {member.hobbies.map((hobby, j) =>
@@ -311,4 +311,3 @@ const ClubForm = ({ club, dispatch }) => (
 
 export default connect(({club}) => ({club}))(ClubForm);
 ```
-
