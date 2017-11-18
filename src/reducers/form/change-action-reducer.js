@@ -92,15 +92,17 @@ function updateFieldValue(field, action, parentModel = undefined) {
   const updatedField = mapValues(value, (subValue, index) => {
     // TODO: refactor
     const subField = field[index]
-      || createInitialState(`${`${(parentModel
-        ? `${parentModel}.`
-        : '')
-      }${model}`}.${index}`, subValue);
+    || createInitialState(`${`${(parentModel
+      ? `${parentModel}.`
+      : '')
+    }${model}`}.${index}`, subValue);
 
     if (Object.hasOwnProperty.call(subField, '$form')) {
       return updateFieldValue(subField, {
         model: index,
         value: subValue,
+        external,
+        silent,
         load,
       }, parentModel ? `${parentModel}.${model}` : model);
     }
