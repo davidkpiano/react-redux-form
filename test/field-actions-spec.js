@@ -1107,6 +1107,14 @@ Object.keys(testContexts).forEach((testKey) => {
             value: 'changed',
           });
       });
+
+      it('should maintain the expected state shape in sub forms', () => {
+        const reducer = formReducer('test', { somePrimitive: 1, someArray: [] });
+
+        const changedState = reducer(undefined, actions.setInitial('test'));
+
+        assert.isUndefined(changedState.someArray.$form.$form);
+      });
     });
 
     describe('resetValidity() and resetErrors()', () => {
