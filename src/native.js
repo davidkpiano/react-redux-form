@@ -190,6 +190,6 @@ export {
   form,
 
   // Utilities
-  getField,
+  getFieldFromState as getField,
   track,
 };
