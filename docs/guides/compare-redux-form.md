@@ -160,14 +160,19 @@ import { Form, Control, Errors } from 'react-redux-form';
 const required = (val) => !!(val && val.length);
 
 const SyncValidationForm = () => (
-  <Form model="syncValidation" onSubmit={...}>
+  <Form model="syncValidation" onSubmit={(vals) => console.log(vals)}>
     <div>
       <label>Username</label>
       <Control.text
         placeholder="Username"
         validators={{ required }}
+        model=".username"
       />
-      <Errors messages={{ required: 'Required' }} />
+      <Errors
+        model="syncValidation.username"
+        messages={{ required: 'Required' }}
+        show="touched"
+      />
     </div>
   </Form>
 );
