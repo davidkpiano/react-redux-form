@@ -37,19 +37,19 @@ const resetFieldState = (field, customInitialFieldState) => {
   );
 };
 
-const setInitialFieldState = (customInitialFieldState) => (field, key) => {
+const setInitialFieldState = (customInitialFieldState) => field => {
   if (!isPlainObject(field)) return field;
 
-  if (key === '$form') {
-    return updateFieldState(customInitialFieldState, {
-      value: field.value,
-      model: field.model,
-    });
-  }
-
   if (field.$form) {
-    return mapValues(field, (fieldState) =>
-      resetFieldState(fieldState, customInitialFieldState));
+    // eslint-disable-next-line arrow-body-style
+    return mapValues(field, (fieldState, key) => {
+      return key === '$form'
+        ? updateFieldState(customInitialFieldState, {
+          value: field.value,
+          model: field.model,
+        })
+        : resetFieldState(fieldState, customInitialFieldState);
+    });
   }
 
   return updateFieldState(customInitialFieldState, {
