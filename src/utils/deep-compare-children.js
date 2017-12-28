@@ -1,5 +1,5 @@
 import React from 'react';
-import shallowCompare from 'react/lib/shallowCompare';
+import shallowCompare from 'react-addons-shallow-compare';
 import shallowEqual from './shallow-equal';
 
 export function compareChildren(props, nextProps) {
