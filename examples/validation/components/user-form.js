@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { Field, Form, Errors, actions } from 'react-redux-form';
@@ -87,7 +88,7 @@ class UserForm extends React.Component {
 }
 
 UserForm.propTypes = {
-  dispatch: React.PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
 
 export default connect()(UserForm);

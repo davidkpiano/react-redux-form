@@ -1,4 +1,5 @@
-import React, { Component, createElement, cloneElement, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component, createElement, cloneElement } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import identity from '../utils/identity';

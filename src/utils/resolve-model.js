@@ -1,4 +1,5 @@
-import React, { Component, PureComponent, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component, PureComponent } from 'react';
 import shallowEqual from './shallow-equal';
 
 const ReactComponent = PureComponent || Component;

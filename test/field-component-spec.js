@@ -1,5 +1,7 @@
 /* eslint react/no-multi-comp:0 react/jsx-no-bind:0 */
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { assert } from 'chai';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
@@ -191,7 +193,7 @@ Object.keys(testContexts).forEach((testKey) => {
       }
 
       ChildOnlyComp.propTypes = {
-        children: React.PropTypes.node,
+        children: PropTypes.node,
       };
 
       const field = TestUtils.renderIntoDocument(

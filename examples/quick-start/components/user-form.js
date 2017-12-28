@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { LocalForm, Form, actions, Control, Field, Errors } from 'react-redux-form';
 import { connect } from 'react-redux';
@@ -7,11 +8,11 @@ window.i = icepick;
 
 const required = (val) => !!(val && val.length);
 
-        function hasToBeTrue(value) {
-    if (value === false || typeof value !== 'boolean') {
-        return false;
-    }
-    return true;
+function hasToBeTrue(value) {
+if (value === false || typeof value !== 'boolean') {
+return false;
+}
+return true;
 }
 
 // control
@@ -82,10 +83,10 @@ class UserForm extends React.Component {
 }
 
 UserForm.propTypes = {
-  dispatch: React.PropTypes.func.isRequired,
-  user: React.PropTypes.shape({
-    firstName: React.PropTypes.string.isRequired,
-    lastName: React.PropTypes.string.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  user: PropTypes.shape({
+    firstName: PropTypes.string.isRequired,
+    lastName: PropTypes.string.isRequired,
   }).isRequired,
 };
 
