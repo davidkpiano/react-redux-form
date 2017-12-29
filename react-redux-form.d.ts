@@ -561,6 +561,10 @@ interface _FieldState {
     /**
      * @default false
      */
+    submitFailed?: boolean;
+    /**
+     * @default false
+     */
     touched?: boolean;
     /**
      * @default true
