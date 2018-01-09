@@ -4,6 +4,7 @@ import {
   MapView,
   Picker,
   DatePickerIOS,
+  DatePickerAndroid,
   Switch,
   TextInput,
   SegmentedControlIOS,
@@ -125,6 +126,14 @@ Control.DatePickerIOS = (props) => (
     {...omit(props, 'mapProps')}
   />
 );
+
+Control.DatePickerAndroid = (...args) => ({
+  open: async () => {
+    const { action, year, month, day } = await DatePickerAndroid.open(...args);
+    const dismissed = action === DatePickerAndroid.dismissedAction;
+    return { dismissed, action, year, month, day };
+  },
+});
 
 Control.SegmentedControlIOS = (props) => (
   <Control
