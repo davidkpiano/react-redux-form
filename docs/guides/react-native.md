@@ -27,7 +27,7 @@ export default App;
 <a name="native-controls"/>
 ## Native `<Control>`
 
-The following React Native iOS form controls are available:
+The following React Native iOS and Android form controls are available:
 
 - `<Control.MapView>`
 - `<Control.Picker>`
@@ -36,6 +36,7 @@ The following React Native iOS form controls are available:
 - `<Control.Slider>` (note: `SliderIOS` is deprecated.)
 - `<Control.DatePickerIOS>`
 - `<Control.SegmentedControlIOS>`
+- `<Control.SegmentedControlAndroid>`
 - [Control.DatePickerAndroid](#datePickerAndroid) (note: this is a function wrapper around `DatePickerAndroid`, and not a component.)
 
 See [below](#examples) for examples.
@@ -75,6 +76,9 @@ try {
 ```
 
 [Full list of DatePickerAndroid arguments](https://facebook.github.io/react-native/docs/datepickerandroid.html#open)
+
+## Control.SegmentedControlAndroid
+This component wraps `react-native-segmented-control-tab`, full props reference [available here.](https://github.com/kirankalyan5/react-native-segmented-control-tab#props)
 
 ## Native `<Form>`
 

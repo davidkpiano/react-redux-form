@@ -12,6 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import SegmentedControlAndroid from 'react-native-segmented-control-tab';
 
 
 import modelReducer from './reducers/model-reducer';
@@ -140,6 +141,20 @@ Control.DatePickerAndroid = DatePickerAndroid;
 Control.SegmentedControlIOS = (props) => (
   <Control
     component={SegmentedControlIOS}
+    mapProps={{
+      onResponderGrant: ({ onFocus }) => onFocus,
+      selectedIndex: ({ values, modelValue }) => values.indexOf(modelValue),
+      onValueChange: ({ onChange }) => onChange,
+      onChange: noop,
+      ...props.mapProps,
+    }}
+    {...omit(props, 'mapProps')}
+  />
+);
+
+Control.SegmentedControlAndroid = (props) => (
+  <Control
+    component={SegmentedControlAndroid}
     mapProps={{
       onResponderGrant: ({ onFocus }) => onFocus,
       selectedIndex: ({ values, modelValue }) => values.indexOf(modelValue),
