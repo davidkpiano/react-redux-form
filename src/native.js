@@ -4,7 +4,7 @@ import {
   MapView,
   Picker,
   DatePickerIOS,
-  DatePickerAndroid,
+  DatePickerAndroid as RNDatePickerAndroid,
   Switch,
   TextInput,
   SegmentedControlIOS,
@@ -40,6 +40,14 @@ function getTextValue(value) {
 
   return '';
 }
+
+const DatePickerAndroid = (...args) => ({
+  open: async () => {
+    const { action, year, month, day } = await RNDatePickerAndroid.open(...args);
+    const dismissed = action === RNDatePickerAndroid.dismissedAction;
+    return { dismissed, action, year, month, day };
+  },
+});
 
 const noop = () => undefined;
 
@@ -127,13 +135,7 @@ Control.DatePickerIOS = (props) => (
   />
 );
 
-Control.DatePickerAndroid = (...args) => ({
-  open: async () => {
-    const { action, year, month, day } = await DatePickerAndroid.open(...args);
-    const dismissed = action === DatePickerAndroid.dismissedAction;
-    return { dismissed, action, year, month, day };
-  },
-});
+Control.DatePickerAndroid = DatePickerAndroid;
 
 Control.SegmentedControlIOS = (props) => (
   <Control

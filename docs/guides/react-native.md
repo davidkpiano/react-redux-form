@@ -29,13 +29,14 @@ export default App;
 
 The following React Native iOS form controls are available:
 
-- `<Control.DatePickerIOS>`
 - `<Control.MapView>`
 - `<Control.Picker>`
-- `<Control.SegmentedControlIOS>`
-- `<Control.Slider>` (note: `SliderIOS` is deprecated.)
 - `<Control.Switch>`
 - `<Control.TextInput>`
+- `<Control.Slider>` (note: `SliderIOS` is deprecated.)
+- `<Control.DatePickerIOS>`
+- `<Control.SegmentedControlIOS>`
+- [Control.DatePickerAndroid](#datePickerAndroid) (note: this is a function wrapper around `DatePickerAndroid`, and not a component.)
 
 See [below](#examples) for examples.
 
@@ -48,6 +49,32 @@ For most controls, the original `onFocus` and `onBlur` props are mapped to:
 The use of `updateOn="blur"` will work as expected for the controls, and is set by default on `<Control.MapView>` for performance reasons.
 
 **Important:** The use of `<Field>` in RRF Native is no longer necessary, and is deprecated. `<Control>` provides a much cleaner, succinct solution without superfluous React warnings about prop types.
+
+<a name="datePickerAndroid"></a>
+## Control.DatePickerAndroid
+A simple wrapper around [`DatePickerAndroid`](https://facebook.github.io/react-native/docs/datepickerandroid.html) added to give Android feature parity with iOS.
+
+Example usage:
+```
+export const MyDatePicker = Control.DatePickerAndroid({
+    date: new Date(),
+    mode: 'calendar',
+});
+```
+```
+try {
+    const { dismissed, year, month, day } = await MyDatePicker.open();
+    
+    if (!dismissed) {
+        const date = `${day}/${month}/${year}`
+        dispatch(setChosenDate({ date }));
+    }
+} catch (err) {
+    console.log('Uh oh, spaghetti-o...');
+}
+```
+
+[Full list of DatePickerAndroid arguments](https://facebook.github.io/react-native/docs/datepickerandroid.html#open)
 
 ## Native `<Form>`
 
