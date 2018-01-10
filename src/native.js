@@ -4,6 +4,7 @@ import {
   MapView,
   Picker,
   DatePickerIOS,
+  DatePickerAndroid as RNDatePickerAndroid,
   Switch,
   TextInput,
   SegmentedControlIOS,
@@ -11,6 +12,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import SegmentedControlAndroid from 'react-native-segmented-control-tab';
 
 
 import modelReducer from './reducers/model-reducer';
@@ -39,6 +41,14 @@ function getTextValue(value) {
 
   return '';
 }
+
+const DatePickerAndroid = (...args) => ({
+  open: async () => {
+    const { action, year, month, day } = await RNDatePickerAndroid.open(...args);
+    const dismissed = action === RNDatePickerAndroid.dismissedAction;
+    return { dismissed, action, year, month, day };
+  },
+});
 
 const noop = () => undefined;
 
@@ -126,9 +136,25 @@ Control.DatePickerIOS = (props) => (
   />
 );
 
+Control.DatePickerAndroid = DatePickerAndroid;
+
 Control.SegmentedControlIOS = (props) => (
   <Control
     component={SegmentedControlIOS}
+    mapProps={{
+      onResponderGrant: ({ onFocus }) => onFocus,
+      selectedIndex: ({ values, modelValue }) => values.indexOf(modelValue),
+      onValueChange: ({ onChange }) => onChange,
+      onChange: noop,
+      ...props.mapProps,
+    }}
+    {...omit(props, 'mapProps')}
+  />
+);
+
+Control.SegmentedControlAndroid = (props) => (
+  <Control
+    component={SegmentedControlAndroid}
     mapProps={{
       onResponderGrant: ({ onFocus }) => onFocus,
       selectedIndex: ({ values, modelValue }) => values.indexOf(modelValue),
