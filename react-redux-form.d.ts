@@ -767,7 +767,7 @@ interface Actions {
      * @param model
      * @param value
      */
-    change: (model: string, value: any, options?: ChangeOptions) => ModelAction;
+    change: (model: string | ModelGetterFn, value: any, options?: ChangeOptions) => ModelAction;
 
     /**
      * Returns an action that, when handled by a modelReducer, changes the value of the model to the value.
@@ -780,7 +780,7 @@ interface Actions {
      * @param model
      * @param value
      */
-    load: (model: string, value: any) => ModelAction;
+    load: (model: string | ModelGetterFn, value: any) => ModelAction;
 
     /**
      * Returns an action that, when handled by a modelReducer, changes the value of the respective model to its initial value.
@@ -788,14 +788,14 @@ interface Actions {
      * This action will reset both the model value in the model reducer, and the model field state in the form reducer (if it exists).
      * To reset just the field state (in the form reducer), use actions.setInitial(model).
      */
-    reset: (model: string) => ModelAction;
+    reset: (model: string | ModelGetterFn) => ModelAction;
     /**
      * Dispatches an actions.change(...) action that merges the values into the value specified by the model.
      *
      * Use this action to update multiple and/or deep properties into a model, if the model represents an object.
      * This uses icepick.merge(modelValue, values) internally.
      */
-    merge: (model: string, values: any) => ActionThunk;
+    merge: (model: string | ModelGetterFn, values: any) => ActionThunk;
     /**
      * Dispatches an actions.change(...) action that applies an "xor" operation to the array represented by the model; that is, it "toggles" an item in an array.
      * If the model value contains item, it will be removed. If the model value doesn't contain item, it will be added.
@@ -803,34 +803,34 @@ interface Actions {
      * This action is most useful for toggling a checkboxes whose values represent items in a model's array.
      * @param item the item to be "toggled" in the model value.
      */
-    xor: (model: string, item: any) => ActionThunk;
+    xor: (model: string | ModelGetterFn, item: any) => ActionThunk;
     /**
      * Dispatches an actions.change(...) action that "pushes" the item to the array represented by the model.
      *
      * This action does not mutate the model. It only simulates the mutable .push() method.
      */
-    push: (model: string, item: any) => ActionThunk;
+    push: (model: string | ModelGetterFn, item: any) => ActionThunk;
     /**
      * Dispatches an actions.change(...) action that sets the model to true if it is falsey, and false if it is truthy.
      *
      * This action is most useful for single checkboxes.
      */
-    toggle: (model: string) => ActionThunk;
+    toggle: (model: string | ModelGetterFn) => ActionThunk;
     /**
      * Dispatches an actions.change(...) action that filters the array represented by the model through the iteratee function.
      * If no iteratee is specified, the identity function is used by default.
      * @param iteratee Filter iteratee function that filters the array represented by the model.
      */
-    filter: (model: string, iteratee: (value: any) => boolean) => ActionThunk;
+    filter: (model: string | ModelGetterFn, iteratee: (value: any) => boolean) => ActionThunk;
     /**
      * Dispatches an actions.change(...) action that maps the array represented by the model through the iteratee function.
      * If no iteratee is specified, the identity function is used by default.
      */
-    map: (model: string, iteratee: Function) => ActionThunk;
+    map: (model: string | ModelGetterFn, iteratee: Function) => ActionThunk;
     /**
      * Dispatches an actions.change(...) action that removes the item at the specified index of the array represented by the model.
      */
-    remove: (model: string, index: number) => ActionThunk;
+    remove: (model: string | ModelGetterFn, index: number) => ActionThunk;
     /**
      * Dispatches an actions.change(...) action that moves the item at the specified fromIndex of the array to the toIndex of the array represented by the model.
      * If `fromIndex` or `toIndex` are out of bounds, an error will be thrown.
@@ -838,13 +838,13 @@ interface Actions {
      * @param fromIndex The index of the item that should be moved in the array.
      * @param toIndex The index to move the item to in the array.
      */
-    move: (model: string, fromIndex: number, toIndex: number) => ActionThunk;
+    move: (model: string | ModelGetterFn, fromIndex: number, toIndex: number) => ActionThunk;
     /**
      * Dispatches an actions.change(...) action with the model value updated to not include any of the omitted props.
      * @param model The model to be modified with the omitted props
      * @param props The props to omit from the model value
      */
-    omit: (model: string, props: string | string[]) => ActionThunk;
+    omit: (model: string | ModelGetterFn, props: string | string[]) => ActionThunk;
 
     /* ------ ------ ------ ------ */
     /* ------ Field Actions ------ */
@@ -856,14 +856,14 @@ interface Actions {
      *
      * The "focus" state indicates that the field model is the currently focused field in the form.
      */
-    focus: (model: string) => FieldAction;
+    focus: (model: string | ModelGetterFn) => FieldAction;
     /**
      * Returns an action that, when handled by a formReducer, changes the .blur state of the field model in the form to true, as well as the corresponding .focus state to false.
      * It also indicates that the field model has been .touched, and will set that state to true and the untouched state to false.
      *
      * The "blur" state indicates that the field model is not focused.
      */
-    blur: (model: string) => FieldAction;
+    blur: (model: string | ModelGetterFn) => FieldAction;
     /**
      * Returns an action that, when handled by a formReducer, changes the .pristine state of the field model in the form to true, as well as the corresponding .dirty state to false.
      *
@@ -873,21 +873,21 @@ interface Actions {
      * * Pristine if all other fields are pristine
      * * Otherwise, dirty.
      */
-    setPristine: (model: string) => FieldAction;
+    setPristine: (model: string | ModelGetterFn) => FieldAction;
     /**
      * Returns an action that, when handled by a formReducer, changes the .dirty state of the field model in the form to true, as well as the corresponding .pristine state to false.
      * The "dirty" state indicates that the model value has been changed.
      *
      * Whenever a field is set to dirty, the entire form is set to dirty.
      */
-    setDirty: (model: string) => FieldAction;
+    setDirty: (model: string | ModelGetterFn) => FieldAction;
     /**
      * Returns an action that, when handled by a formReducer, changes the .pending state of the field model in the form to true. It simultaneously sets the .submitted state to false.
      *
      * Tips:
      * * This action is useful when asynchronously validating or submitting a model. It represents the state between the initial and final state of a field model's validation/submission.
      */
-    setPending: (model: string, pending?: boolean) => FieldAction;
+    setPending: (model: string | ModelGetterFn, pending?: boolean) => FieldAction;
     /**
      * Returns an action that, when handled by a formReducer, changes the .touched state of the field model in the form to true. It simultaneously sets the .untouched state to false.
      *
@@ -906,7 +906,7 @@ interface Actions {
      * Tips:
      * * This action is useful for conditionally displaying error messages based on whether the field has been touched.
      */
-    setUntouched: (model: string) => FieldAction;
+    setUntouched: (model: string | ModelGetterFn) => FieldAction;
     /**
      * Returns an action that, when handled by a formReducer, changes the .submitted state of the field model in the form to submitted (true or false).
      * It simultaneously sets the .pending state to the inverse of submitted.
@@ -916,7 +916,7 @@ interface Actions {
      * Tips:
      * * Use the setPending() and setSubmitted() actions together to update the state of the field model during some async action.
      */
-    setSubmitted: (model: string, submitted?: boolean) => FieldAction;
+    setSubmitted: (model: string | ModelGetterFn, submitted?: boolean) => FieldAction;
     /**
      * Returns an action that, when handled by a formReducer, changes the .submitFailed state of the field model in the form to true.
      * It simultaneously sets the .pending state to false, and the .retouched state to false.
@@ -926,7 +926,7 @@ interface Actions {
      * * If submit failed, .submitFailed = true
      * * If resubmitting, .submitFailed = false again.
      */
-    setSubmitFailed: (model: string) => FieldAction;
+    setSubmitFailed: (model: string | ModelGetterFn) => FieldAction;
 
     /**
      * Returns an action that, when handled by a formReducer, changes the state of the field model in the form to its initial state.
@@ -934,7 +934,7 @@ interface Actions {
      * Tips:
      * * This action will reset the field state, but will not reset the model value in the model reducer. To reset both the field and model, use actions.reset(model).
      */
-    setInitial: (model: string) => FieldAction;
+    setInitial: (model: string | ModelGetterFn) => FieldAction;
 
     /**
      * Waits for a submission promise to be completed, then, if successful:
@@ -948,7 +948,7 @@ interface Actions {
      * @param model The top-level model form key of the data to submit.
      * @param promise The promise that the submit action will wait to be resolved or rejected
      */
-    submit: (model: string, promise?: Promise<any> | undefined, options?: any) => ActionThunk;
+    submit: (model: string | ModelGetterFn, promise?: Promise<any> | undefined, options?: any) => ActionThunk;
 
     /**
      * Waits for a submission promise to be completed, then, if successful:
@@ -963,7 +963,7 @@ interface Actions {
      * @param model (String | Function): the model to be submitted
      * @param promise (Promise): the promise that the submit action will wait to be resolved or rejected
      */
-    submitFields: (model: string, promise: Promise<any>) => ActionThunk;
+    submitFields: (model: string | ModelGetterFn, promise: Promise<any>) => ActionThunk;
 
     /* -------------------------------- */
     /* ------ Validation Actions ------ */
@@ -981,7 +981,7 @@ interface Actions {
      * @param model The model whose validity will be set.
      * @param validity Boolean value or an object indicating which validation keys of the field model are valid.
      */
-    setValidity: (model: string, validity: boolean | string | ValidityObject | ErrorsObject, options?: ValidityOptions) => FieldAction;
+    setValidity: (model: string | ModelGetterFn, validity: boolean | string | ValidityObject | ErrorsObject, options?: ValidityOptions) => FieldAction;
 
     /**
      * Returns an action thunk that calculates the validity of the model based on the function/object validators. Then, the thunk dispatches actions.setValidity(model, validity).
@@ -990,7 +990,7 @@ interface Actions {
      * @param model The model whose validity will be calculated.
      * @param validators A validator function or an object whose keys are validation keys (such as 'required') and values are validators.
      */
-    validate: (model: string, validators: Function | Validators) => ActionThunk;
+    validate: (model: string | ModelGetterFn, validators: Function | Validators) => ActionThunk;
 
     /**
      * Explicit action created for validating fields of a form.
@@ -998,7 +998,7 @@ interface Actions {
      * @param fieldValidators an object where the keys are the field paths (such as "email" for user.email), and the values are validators (either functions or a validation object)
      * @param options Options
      */
-    validateFields: (model: string, fieldValidators: FieldsObject<ValidatorFn | Validators>, options?: { onValid?: Function; onInvalid?: Function; errors?: any }) => ActionThunk;
+    validateFields: (model: string | ModelGetterFn, fieldValidators: FieldsObject<ValidatorFn | Validators>, options?: { onValid?: Function; onInvalid?: Function; errors?: any }) => ActionThunk;
 
     /**
      * Runs error validation on each of the error validators for each submodel of model
@@ -1006,14 +1006,14 @@ interface Actions {
      * @param fieldErrorsValidators An object where the keys are the field paths (such as "email" for user.email) and the values are errors
      * @param options Options
      */
-    validateFieldsErrors: (model: string, fieldErrorsValidators: FieldsObject<ErrorFn | ErrorsObject>, options?: any) => ActionThunk;
+    validateFieldsErrors: (model: string | ModelGetterFn, fieldErrorsValidators: FieldsObject<ErrorFn | ErrorsObject>, options?: any) => ActionThunk;
 
     /**
      * This action allows you to set the validity for multiple submodels of a model at the same time.
      * @param model The top level form model
      * @param fieldsValidity An object where the keys are field paths and the value is validity object
      */
-    setFieldsValidity: (model: string, fieldsValidity: FieldsObject<ValidityObject | boolean>) => FieldAction;
+    setFieldsValidity: (model: string | ModelGetterFn, fieldsValidity: FieldsObject<ValidityObject | boolean>) => FieldAction;
 
     /**
      * This action allows you to set the errors for multiple submodels of a model at the same time. Similar to setFieldsValidity but for errors
@@ -1021,7 +1021,7 @@ interface Actions {
      * @param fieldsErrors An object where the keys are field paths and the value is error object
      * @param options { async: true } if the error is an error from async validation.
      */
-    setFieldsErrors: (model: string, fieldsErrors: FieldsObject<ErrorsObject | boolean | string>, options?: SetErrorsOptions) => FieldAction;
+    setFieldsErrors: (model: string | ModelGetterFn, fieldsErrors: FieldsObject<ErrorsObject | boolean | string>, options?: SetErrorsOptions) => FieldAction;
 
 
 
@@ -1035,7 +1035,7 @@ interface Actions {
      * @param model The model whose validity will be set
      * @param asyncValidator A function that is given two arguments: value - the value of the model, done - the callback where the calculated validity is passed in as the argument.
      */
-    asyncSetValidity: (model: string, asyncValidator: AsyncValidatorFn) => ActionThunk;
+    asyncSetValidity: (model: string | ModelGetterFn, asyncValidator: AsyncValidatorFn) => ActionThunk;
 
     /**
      * Returns an action that, when handled by a formReducer, changes the .valid state of the field model in the form to true or false, based on the errors.
@@ -1051,7 +1051,7 @@ interface Actions {
      * @param errors A truthy/falsey value, a string error message, or an object indicating which error keys of the field model are invalid via booleans (where true is invalid) or strings (set specific error messages, not advised).
      * @param options { async: true } if the error is an error from async validation.
      */
-    setErrors: (model: string, errors: boolean | string | ErrorsObject, options?: SetErrorsOptions) => FieldAction;
+    setErrors: (model: string | ModelGetterFn, errors: boolean | string | ErrorsObject, options?: SetErrorsOptions) => FieldAction;
 
     /**
      * Returns an action that, when handled by a formReducer, changes the .errors state of the field model in the form to true, false or error message
@@ -1079,18 +1079,18 @@ interface Actions {
      * @param model
      * @param errorValidators An error validator or an object whose keys are error keys (such as 'incorrect') and values are error validators.
      */
-    validateErrors: (model: string, errorValidators: ValidatorFn | Validators) => ActionThunk;
+    validateErrors: (model: string | ModelGetterFn, errorValidators: ValidatorFn | Validators) => ActionThunk;
 
     /**
      * Can be dispatched to reset the validity and errors of any model at any time.
      * @param model The model
      */
-    resetValidity: (model: string) => FieldAction;
+    resetValidity: (model: string | ModelGetterFn) => FieldAction;
     /**
      * Can be dispatched to reset the validity and errors of any model at any time.
      * @param model The model
      */
-    resetErrors: (model: string) => ActionThunk;
+    resetErrors: (model: string | ModelGetterFn) => ActionThunk;
 
 
     /**
