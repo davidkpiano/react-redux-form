@@ -2,6 +2,7 @@
 
 **Prop Types**
 - [`model` (required)](#model-required)
+- [`render`](#render)
 - [`mapProps`](#mapprops)
 - [`updateOn`](#updateon)
 - [`defaultValue`](#defaultvalue)
@@ -85,12 +86,22 @@ export default createStore(combineForms({
   'user': { name: '' },
 }));
 
-
 // in component's render() method
 <Control.text model="user.name" />
 ```
 
 It can also be a function that returns a string model. See [the documentation on tracking](../guides/tracking.md) for more information.
+
+## `render={() => ...}`
+_(Function)_: A function that receives a field object and returns a react node. A field object includes:
+
+- `modelValue` - the model value for the given model
+- `viewValue` - the view value for the given model (read "Custom Controls: Model and View Values")
+- `fieldValue` - the field value for the given model
+- `onChange` - the onChange handler to be used for this field
+- `onFocus` - the onFocus handler to be used for this field
+- `onBlur` - the onBlur handler to be used for this field
+- `onKeyPress` - the onKeyPress handler to be used for this field
 
 ## `mapProps={{...}}`
 _(Object | Function)_: A custom mapping from props provided by `Control` to props received by the component. Can be:
