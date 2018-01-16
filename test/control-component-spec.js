@@ -113,6 +113,36 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('render prop', () => {
+      const initialState = getInitialState({ foo: 'bar' });
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
+
+      const callback = sinon.spy(() => (
+        <div />
+      ));
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control model="test.foo" render={callback} />
+        </Provider>
+      );
+
+      const renderPropObject = callback.args[0][0];
+
+      it('should call render callback with an object containing all relevant properties', () => {
+        assert.equal(renderPropObject.viewValue, 'bar');
+        assert.equal(renderPropObject.modelValue, 'bar');
+        assert.deepEqual(renderPropObject.fieldValue, store.getState().testForm.foo);
+        assert.property(renderPropObject, 'onFocus');
+        assert.property(renderPropObject, 'onBlur');
+        assert.property(renderPropObject, 'onChange');
+        assert.property(renderPropObject, 'onKeyPress');
+      });
+    });
+
     describe('onLoad prop', () => {
       const initialState = getInitialState({ foo: 'bar' });
       const store = testCreateStore({

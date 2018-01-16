@@ -101,6 +101,7 @@ const propTypes = {
   getValue: PropTypes.func,
   isToggle: PropTypes.bool,
   updateOnEnter: PropTypes.bool,
+  render: PropTypes.func,
 
   // HTML5 attributes
   formNoValidate: PropTypes.bool,
@@ -131,6 +132,7 @@ function createControlClass(s) {
       this.handleChange = this.handleChange.bind(this);
       this.handleLoad = this.handleLoad.bind(this);
       this.getMappedProps = this.getMappedProps.bind(this);
+      this.getRenderProps = this.getRenderProps.bind(this);
       this.attachNode = this.attachNode.bind(this);
 
       if (props.debounce) {
@@ -188,6 +190,20 @@ function createControlClass(s) {
       if (this.handleUpdate.flush) {
         this.handleUpdate.flush();
       }
+    }
+
+    getRenderProps() {
+      const props = this.props;
+      const { viewValue } = this.state;
+      return {
+        modelValue: props.modelValue,
+        fieldValue: props.fieldValue,
+        onFocus: this.handleFocus,
+        onBlur: this.handleBlur,
+        onChange: this.handleChange,
+        onKeyPress: this.handleKeyPress,
+        viewValue,
+      };
     }
 
     getMappedProps() {
@@ -609,12 +625,17 @@ function createControlClass(s) {
 
     render() {
       const {
+        render,
         controlProps,
         component,
         control,
         getRef,
         fieldValue,
       } = this.props;
+
+      if (render) {
+        return render(this.getRenderProps());
+      }
 
       const mappedProps = omit(this.getMappedProps(), disallowedProps);
 
