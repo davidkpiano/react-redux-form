@@ -7,7 +7,7 @@ window.i = icepick;
 
 const required = (val) => !!(val && val.length);
 
-        function hasToBeTrue(value) {
+function hasToBeTrue(value) {
     if (value === false || typeof value !== 'boolean') {
         return false;
     }
@@ -39,7 +39,7 @@ class UserForm extends React.Component {
   }
   render() {
     return (
-      <Form model="user" onSubmit={this.handleSubmit.bind(this)}>
+      <Form model="user" onSubmit={this.handleSubmit}>
         <div>
           <label>First name:</label>
           <Control.text
