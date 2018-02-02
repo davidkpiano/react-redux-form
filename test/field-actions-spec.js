@@ -1140,7 +1140,7 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(isValid(actualState.foo));
       });
 
-      it('should reset the validity and errors of invalid field with omitKeys set as empty array', () => {
+      it('should handle omitKeys option beeing empty array for string type field errors', () => {
         const stateWithErrors = reducer(
           undefined,
           actions.setErrors('test.foo', 'String error'));
