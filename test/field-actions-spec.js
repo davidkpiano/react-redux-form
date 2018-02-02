@@ -1140,6 +1140,34 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(isValid(actualState.foo));
       });
 
+      it('should reset the validity and errors of invalid field with omitKeys set as empty array', () => {
+        const stateWithErrors = reducer(
+          undefined,
+          actions.setErrors('test.foo', 'String error'));
+
+        assert.containSubset(
+          stateWithErrors.foo,
+          {
+            validity: false,
+            errors: 'String error',
+          });
+
+        assert.isFalse(isValid(stateWithErrors.foo));
+
+        const actualState = reducer(
+          stateWithErrors,
+          actions.resetValidity('test.foo', []));
+
+        assert.containSubset(
+          actualState.foo,
+          {
+            validity: {},
+            errors: {},
+          });
+
+        assert.isTrue(isValid(actualState.foo));
+      });
+
       it('should reset the validity and errors of a form', () => {
         const stateWithErrors = reducer(
           undefined,

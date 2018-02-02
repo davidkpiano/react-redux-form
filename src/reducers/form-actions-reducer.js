@@ -230,7 +230,7 @@ export function createFormActionsReducer(options) {
         let errors = { ...fieldState.errors };
         let valid;
 
-        if (action.omitKeys) {
+        if (action.omitKeys && action.omitKeys.length > 0) {
           action.omitKeys.forEach((key) => {
             delete validity[key];
             delete errors[key];
