@@ -1171,3 +1171,5 @@ export const initialFieldState: {
 export function combineForms(data: any, model?: string, options?: Object): any;
 
 export function createForms(data: any, model?: string, options?: Object): any;
+
+export function isValid(form: any, options?: { async?: boolean }): boolean;
