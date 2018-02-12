@@ -173,7 +173,13 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
      * @param previous The current model value before it is changed
      * @returns {typeof value} The parsed/processed value
      */
-    parser?: (value: any, previous?: any) => any;
+    parser?: (value: any) => any;
+    /**
+     * A function that formattes the model value of the field before it is rendered.
+     * @param value The model value that represents the next model value
+     * @returns {typeof value} The formatted value
+     */
+    formatter?: (value: any) => any;
     /**
      * An action creator (function) that specifies which action the <Field> component should use when dispatching a change to the model.
      *
@@ -393,6 +399,10 @@ interface BaseFormProps {
      * HTTP method
      */
     method?: string;
+    /**
+     * Indicates whether native HTML5 constraint validation error messages should be shown. This does not preclude the form from failing to submit if native validation fails.
+     */
+    hideNativeErrors: boolean;
 }
 export interface FormProps extends BaseFormProps {
     /**
