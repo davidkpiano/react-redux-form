@@ -97,6 +97,7 @@ interface MapPropsProps {
     onChange: (event: any) => void;
     onBlur: (event: any) => void;
     onFocus: (event: any) => void;
+    onKeyPress: (event: any) => void;
     fieldValue: FieldState;
     modelValue: any;
     viewValue: any;
@@ -115,6 +116,11 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
      * Wrap field into custom component
      */
     component?: React.ReactType;
+
+    /**
+     * Function that receives a field props and returns a custom component
+     */
+    render?: (props: MapPropsProps) => React.ReactNode;
 
     /**
      * The string representing the store model value
