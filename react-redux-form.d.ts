@@ -652,7 +652,7 @@ export interface FormState {
  * @param model The model whose form state (and child field states) the reducer will update
  * @param initialState The initial state of the model
  */
-export function formReducer(model: string, initialState?: any): Reducer<FormState>;
+export function formReducer(model: string, initialState?: any, options?: object): Reducer<FormState>;
 /**
  * Returns the field from the formState calculated by the formReducer(s), if the field exists (has been initialized).
  * If the field doesn't exist, the initialFieldState is returned.
