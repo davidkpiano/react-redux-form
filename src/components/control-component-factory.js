@@ -392,7 +392,7 @@ function createControlClass(s) {
         validateOn = updateOn,
       } = this.props;
 
-      if (!intents.length) return;
+      if (!Array.isArray(intents) || !intents.length) return;
 
       intents.forEach((intent) => {
         switch (intent.type) {
