@@ -314,7 +314,7 @@ A "blurred" field indicates that the field model control is not currently focuse
 ## `actions.setPristine(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.pristine` state of the field model in the form to `true`.
 
-The "pristine" state indicates that the user has not interacted with this field model yet.
+The "pristine" state indicates that the user has not changed the value of this model yet.
 
 ### Arguments
 - `model` _(String | Function)_: the model indicated as pristine
@@ -349,7 +349,7 @@ Returns an action that, when handled by a [`formReducer`](./formReducer), change
 ## `actions.setTouched(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.touched` state of the field model in the form to `true`. It simultaneously sets the `.untouched` state to `false`.
 
-The "touched" state indicates that this model has been interacted with.
+The "touched" state indicates that this model has been focused and then blurred.
 
 ### Arguments
 - `model`: (String) the model indicated as touched
@@ -361,7 +361,7 @@ The "touched" state indicates that this model has been interacted with.
 ## `actions.setUntouched(model)`
 Returns an action that, when handled by a [`formReducer`](./formReducer), changes the `.touched` state to `false`.
 
-An "untouched" field indicates that this model has not been interacted with yet.
+An "untouched" field indicates that this model has not been focused and blurred yet.
 
 ### Arguments
 - `model` _(String | Function)_: the model indicated as not touched (untouched)
