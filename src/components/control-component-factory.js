@@ -137,6 +137,11 @@ function createControlClass(s) {
 
       if (props.debounce) {
         this.handleUpdate = debounce(this.handleUpdate, props.debounce);
+        const oldHandleBlur = this.handleBlur;
+        this.handleBlur = (...args) => {
+          this.handleUpdate.flush();
+          oldHandleBlur.call(this, args);
+        };
       }
 
       this.willValidate = false;
