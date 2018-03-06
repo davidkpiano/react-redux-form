@@ -408,7 +408,7 @@ interface BaseFormProps {
     /**
      * Indicates whether native HTML5 constraint validation error messages should be shown. This does not preclude the form from failing to submit if native validation fails.
      */
-    hideNativeErrors: boolean;
+    hideNativeErrors?: boolean;
 }
 export interface FormProps extends BaseFormProps {
     /**
