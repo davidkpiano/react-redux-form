@@ -291,6 +291,7 @@ export function createFormActionsReducer(options) {
         };
 
         subFieldUpdates = {
+          pending: false,
           submitted,
           submitFailed: submitted
             ? false
