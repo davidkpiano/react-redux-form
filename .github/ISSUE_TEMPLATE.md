@@ -11,4 +11,4 @@
 
 
 ### Reproducible Code Example
-(please fork from [this CodePen template](http://codepen.io/davidkpiano/pen/yJwmEa))
+(please fork from [this CodePen template](http://codepen.io/davidkpiano/pen/yJwmEa) or [this CodeSandbox template](https://codesandbox.io/s/k3jyzwqo53))

@@ -1107,6 +1107,14 @@ Object.keys(testContexts).forEach((testKey) => {
             value: 'changed',
           });
       });
+
+      it('should maintain the expected state shape in sub forms', () => {
+        const reducer = formReducer('test', { somePrimitive: 1, someArray: [] });
+
+        const changedState = reducer(undefined, actions.setInitial('test'));
+
+        assert.isUndefined(changedState.someArray.$form.$form);
+      });
     });
 
     describe('resetValidity() and resetErrors()', () => {
@@ -1129,6 +1137,34 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualState = reducer(
           stateWithErrors,
           actions.resetValidity('test.foo'));
+
+        assert.containSubset(
+          actualState.foo,
+          {
+            validity: {},
+            errors: {},
+          });
+
+        assert.isTrue(isValid(actualState.foo));
+      });
+
+      it('should handle omitKeys option beeing empty array for string type field errors', () => {
+        const stateWithErrors = reducer(
+          undefined,
+          actions.setErrors('test.foo', 'String error'));
+
+        assert.containSubset(
+          stateWithErrors.foo,
+          {
+            validity: false,
+            errors: 'String error',
+          });
+
+        assert.isFalse(isValid(stateWithErrors.foo));
+
+        const actualState = reducer(
+          stateWithErrors,
+          actions.resetValidity('test.foo', []));
 
         assert.containSubset(
           actualState.foo,

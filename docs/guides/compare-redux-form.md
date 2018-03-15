@@ -94,7 +94,7 @@ import { Control } from 'react-redux-form';
   <option value="ff0000">Red</option>
   <option value="00ff00">Green</option>
   <option value="0000ff">Blue</option>
-</Control>
+</Control.select>
 ```
 
 ---
@@ -160,14 +160,19 @@ import { Form, Control, Errors } from 'react-redux-form';
 const required = (val) => !!(val && val.length);
 
 const SyncValidationForm = () => (
-  <Form model="syncValidation" onSubmit={...}>
+  <Form model="syncValidation" onSubmit={(vals) => console.log(vals)}>
     <div>
       <label>Username</label>
       <Control.text
         placeholder="Username"
         validators={{ required }}
+        model=".username"
       />
-      <Errors messages={{ required: 'Required' }} />
+      <Errors
+        model="syncValidation.username"
+        messages={{ required: 'Required' }}
+        show="touched"
+      />
     </div>
   </Form>
 );
@@ -277,7 +282,7 @@ const ClubForm = ({ club, dispatch }) => (
     <button
       type="button"
       onClick={() => dispatch(actions.push('club.members', initialMember))}
-    />
+    >
       Add Member
     </button>
 
@@ -295,7 +300,7 @@ const ClubForm = ({ club, dispatch }) => (
         <button
           type="button"
           onClick={() => dispatch(actions.push(`club.members[${i}].hobbies`, initialHobby))}
-        />
+        >
           Add Hobby
         </button>
         {member.hobbies.map((hobby, j) =>
@@ -311,4 +316,3 @@ const ClubForm = ({ club, dispatch }) => (
 
 export default connect(({club}) => ({club}))(ClubForm);
 ```
-

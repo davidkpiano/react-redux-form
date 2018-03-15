@@ -1,6 +1,6 @@
 {
   "name": "react-redux-form",
-  "version": "1.15.0",
+  "version": "1.16.8",
   "description": "Create Forms Easily with React and Redux",
   "main": "lib/index.js",
   "typings": "react-redux-form.d.ts",
@@ -93,6 +93,7 @@
     "lodash.get": "~4.4.2",
     "lodash.topath": "~4.5.2",
     "prop-types": "^15.5.6",
+    "react-native-segmented-control-tab": "^3.2.1",
     "shallow-compare": "^1.2.1"
   },
   "peerDependencies": {

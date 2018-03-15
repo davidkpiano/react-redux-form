@@ -113,6 +113,36 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+    describe('render prop', () => {
+      const initialState = getInitialState({ foo: 'bar' });
+      const store = testCreateStore({
+        test: modelReducer('test', initialState),
+        testForm: formReducer('test', initialState),
+      });
+
+      const callback = sinon.spy(() => (
+        <div />
+      ));
+
+      TestUtils.renderIntoDocument(
+        <Provider store={store}>
+          <Control model="test.foo" render={callback} />
+        </Provider>
+      );
+
+      const renderPropObject = callback.args[0][0];
+
+      it('should call render callback with an object containing all relevant properties', () => {
+        assert.equal(renderPropObject.viewValue, 'bar');
+        assert.equal(renderPropObject.modelValue, 'bar');
+        assert.deepEqual(renderPropObject.fieldValue, store.getState().testForm.foo);
+        assert.property(renderPropObject, 'onFocus');
+        assert.property(renderPropObject, 'onBlur');
+        assert.property(renderPropObject, 'onChange');
+        assert.property(renderPropObject, 'onKeyPress');
+      });
+    });
+
     describe('onLoad prop', () => {
       const initialState = getInitialState({ foo: 'bar' });
       const store = testCreateStore({
@@ -1039,6 +1069,77 @@ Object.keys(testContexts).forEach((testKey) => {
             required: true,
             asyncValid: false,
           });
+      });
+    });
+
+    describe('simultaneous sync and async validation', () => {
+      it('should execute sync and async validation simultaneously'
+        + ' if specified', () => {
+        const initialState = getInitialState({ foo: '' });
+        const reducer = formReducer('test');
+        const store = testCreateStore({
+          testForm: reducer,
+          test: modelReducer('test', initialState),
+        });
+        const syncValid = () => true;
+        const asyncValid = () => true;
+        const syncValidSpy = sinon.spy(syncValid);
+        const asyncValidSpy = sinon.spy(asyncValid);
+
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.text
+              model="test.foo"
+              validators={{ syncValidSpy }}
+              validateOn="change"
+              asyncValidators={{ asyncValidSpy }}
+              asyncValidateOn="change"
+            />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        control.value = 'testing';
+
+        TestUtils.Simulate.change(control);
+
+        assert.isTrue(syncValidSpy.called);
+        assert.isTrue(asyncValidSpy.called);
+      });
+
+      it('should execute sync and async validation simultaneously'
+        + ' if specified (with default validateOn)', () => {
+        const initialState = getInitialState({ foo: '' });
+        const reducer = formReducer('test');
+        const store = testCreateStore({
+          testForm: reducer,
+          test: modelReducer('test', initialState),
+        });
+        const syncValid = () => true;
+        const asyncValid = () => true;
+        const syncValidSpy = sinon.spy(syncValid);
+        const asyncValidSpy = sinon.spy(asyncValid);
+
+        const field = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Control.text
+              model="test.foo"
+              validators={{ syncValidSpy }}
+              asyncValidators={{ asyncValidSpy }}
+              asyncValidateOn="change"
+            />
+          </Provider>
+        );
+
+        const control = TestUtils.findRenderedDOMComponentWithTag(field, 'input');
+
+        control.value = 'testing';
+
+        TestUtils.Simulate.change(control);
+
+        assert.isTrue(syncValidSpy.called);
+        assert.isTrue(asyncValidSpy.called);
       });
     });
 

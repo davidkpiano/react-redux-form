@@ -4,6 +4,7 @@ import {
   MapView,
   Picker,
   DatePickerIOS,
+  DatePickerAndroid as RNDatePickerAndroid,
   Switch,
   TextInput,
   SegmentedControlIOS,
@@ -11,25 +12,27 @@ import {
   Text,
   View,
 } from 'react-native';
+import SegmentedControlAndroid from 'react-native-segmented-control-tab';
 
-import {
-  modelReducer,
-  formReducer,
-  modeled,
-  actions,
-  combineForms,
-  initialFieldState,
-  actionTypes,
-  Control,
-  Form,
-  Fieldset,
-  Errors,
-  batched,
-  form,
-  getField,
-  track,
-} from './index';
+
+import modelReducer from './reducers/model-reducer';
+import formReducer from './reducers/form-reducer';
+import modeled from './enhancers/modeled-enhancer';
+import actions from './actions';
+import combineForms from './reducers/forms-reducer';
+import initialFieldState from './constants/initial-field-state';
+import actionTypes from './action-types';
+import Form from './components/form-component';
+import Fieldset from './components/fieldset-component';
+import Errors from './components/errors-component';
+import batched from './enhancers/batched-enhancer';
+import form from './form';
+import track from './utils/track';
+
 import omit from './utils/omit';
+import _get from './utils/get';
+import getFieldFromState from './utils/get-field-from-state';
+import createControlClass from './components/control-component-factory';
 
 function getTextValue(value) {
   if (typeof value === 'string' || typeof value === 'number') {
@@ -39,7 +42,21 @@ function getTextValue(value) {
   return '';
 }
 
+const DatePickerAndroid = (...args) => ({
+  open: async () => {
+    const { action, year, month, day } = await RNDatePickerAndroid.open(...args);
+    const dismissed = action === RNDatePickerAndroid.dismissedAction;
+    return { dismissed, action, year, month, day };
+  },
+});
+
 const noop = () => undefined;
+
+const Control = createControlClass({
+  get: _get,
+  getFieldFromState,
+  actions,
+});
 
 Control.MapView = (props) => (
   <Control
@@ -119,9 +136,25 @@ Control.DatePickerIOS = (props) => (
   />
 );
 
+Control.DatePickerAndroid = DatePickerAndroid;
+
 Control.SegmentedControlIOS = (props) => (
   <Control
     component={SegmentedControlIOS}
+    mapProps={{
+      onResponderGrant: ({ onFocus }) => onFocus,
+      selectedIndex: ({ values, modelValue }) => values.indexOf(modelValue),
+      onValueChange: ({ onChange }) => onChange,
+      onChange: noop,
+      ...props.mapProps,
+    }}
+    {...omit(props, 'mapProps')}
+  />
+);
+
+Control.SegmentedControlAndroid = (props) => (
+  <Control
+    component={SegmentedControlAndroid}
     mapProps={{
       onResponderGrant: ({ onFocus }) => onFocus,
       selectedIndex: ({ values, modelValue }) => values.indexOf(modelValue),
@@ -183,6 +216,6 @@ export {
   form,
 
   // Utilities
-  getField,
+  getFieldFromState as getField,
   track,
 };
