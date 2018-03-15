@@ -275,7 +275,7 @@ Object.keys(testContexts).forEach((testKey) => {
       });
 
       context('state with empty key', () => {
-        const emptyReducer = function() { return {}; }
+        const emptyReducer = function () { return {}; };
         const store = createStore(combineReducers({
           '': emptyReducer,
           firstForm: formReducer('first'),
@@ -330,8 +330,7 @@ Object.keys(testContexts).forEach((testKey) => {
             getFormStateKey(store.getState(), 'second.nested.foo'),
             'deep.secondForm.nested');
         });
-    });
-
+      });
     });
 
     describe('getField()', () => {
