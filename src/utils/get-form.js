@@ -47,7 +47,7 @@ export function getFormStateKey(state, model, s = defaultStrategy, currentPath =
       return false;
     }
 
-    if (s.isObject(subState)) {
+    if (state !== subState && s.isObject(subState)) {
       deepCandidateKeys.push(key);
     }
 
