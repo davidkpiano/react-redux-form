@@ -1192,7 +1192,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
         const actualState = reducer(
           stateWithErrors,
-          actions.resetValidity('test.foo', ['foo', 'bar', ]));
+          actions.resetValidity('test.foo', ['foo', 'bar']));
 
         assert.containSubset(
           actualState.foo,
