@@ -1148,16 +1148,16 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(isValid(actualState.foo));
       });
 
-      it('should handle omitKeys option beeing empty array for string type field errors', () => {
+      it('should handle omitKeys option beeing empty array', () => {
         const stateWithErrors = reducer(
           undefined,
-          actions.setErrors('test.foo', 'String error'));
+          actions.setErrors('test.foo', 'Foo'));
 
         assert.containSubset(
           stateWithErrors.foo,
           {
             validity: false,
-            errors: 'String error',
+            errors: 'Foo',
           });
 
         assert.isFalse(isValid(stateWithErrors.foo));
@@ -1165,6 +1165,34 @@ Object.keys(testContexts).forEach((testKey) => {
         const actualState = reducer(
           stateWithErrors,
           actions.resetValidity('test.foo', []));
+
+        assert.containSubset(
+          actualState.foo,
+          {
+            validity: {},
+            errors: {},
+          });
+
+        assert.isTrue(isValid(actualState.foo));
+      });
+
+      it('should reset errors of a field with string errors', () => {
+        const stateWithErrors = reducer(
+          undefined,
+          actions.setErrors('test.foo', 'Foo'));
+
+        assert.containSubset(
+          stateWithErrors.foo,
+          {
+            validity: false,
+            errors: 'Foo',
+          });
+
+        assert.isFalse(isValid(stateWithErrors.foo));
+
+        const actualState = reducer(
+          stateWithErrors,
+          actions.resetValidity('test.foo', ['foo', 'bar', ]));
 
         assert.containSubset(
           actualState.foo,
