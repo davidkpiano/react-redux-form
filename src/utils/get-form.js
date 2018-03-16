@@ -17,6 +17,9 @@ export function getFormStateKey(state, model, s = defaultStrategy, currentPath =
   let result = null;
 
   s.keys(state).some((key) => {
+    if (key === '') {
+      return false;
+    }
     const subState = s.get(state, key);
 
     if (subState && s.get(subState, '$form')) {
@@ -47,7 +50,7 @@ export function getFormStateKey(state, model, s = defaultStrategy, currentPath =
       return false;
     }
 
-    if (state !== subState && s.isObject(subState)) {
+    if (s.isObject(subState)) {
       deepCandidateKeys.push(key);
     }
 
