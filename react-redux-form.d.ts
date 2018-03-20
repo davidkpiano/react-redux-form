@@ -39,10 +39,10 @@ interface ErrorsObject {
     [key: string]: boolean | string;
 }
 interface ErrorsMessageSelector {
-    (val: any): string;
+    (val: any): string | JSX.Element;
 }
 interface ErrorsComponentMessages {
-    [key: string]: string | ErrorsMessageSelector;
+    [key: string]: string | ErrorsMessageSelector | JSX.Element | bool;
 }
 
 interface FormValidators {
