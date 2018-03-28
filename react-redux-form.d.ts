@@ -226,7 +226,7 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
     /**
      * Determines the value given the event (from onChange) and optionally the control component's props.
      */
-    getValue?: (e: Event, props: any) => any;
+    getValue?: (e: ChangeEvent<T> | string, props: any) => any;
     /**
      * Signifies that the control is a toggle (e.g., a checkbox or a radio). If true, then some optimizations are made.
      */
