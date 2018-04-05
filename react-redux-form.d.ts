@@ -409,6 +409,20 @@ interface BaseFormProps {
      * Indicates whether native HTML5 constraint validation error messages should be shown. This does not preclude the form from failing to submit if native validation fails.
      */
     hideNativeErrors?: boolean;
+    /**
+     * Specify an encoding method for the body of the form's POST request.
+     * 
+     * The possible values are:
+     * * application/x-www-form-urlencoded (Default): all characters are encoded
+     *   before being sent. Spaces are converted to "+" and symbols are
+     *   converted to ASCII HEX values.
+     * * multipart/form-data: No characters are encoded. This option is required
+     *   for forms with file inputs.
+     * * text/plain: Spaces are converted to "+", but symbols are not encoded.
+     *   Its behavior is unpredictable, so avoid this option unless you
+     *   know what you're doing.
+     */
+    encType?: 'application/x-www-form-urlencoded' | 'multipart/form-data' | 'text/plain';
 }
 export interface FormProps extends BaseFormProps {
     /**
