@@ -18,6 +18,7 @@ export function getFormStateKey(state, model, s = defaultStrategy, currentPath =
 
   s.keys(state).some((key) => {
     if (key === '') {
+      console.warn('react-redux-form skipped over an empty property key: %s', currentPath);
       return false;
     }
     const subState = s.get(state, key);
