@@ -227,10 +227,11 @@ export function createFormActionsReducer(options) {
 
       case actionTypes.RESET_VALIDITY: {
         let validity = { ...fieldState.validity };
-        let errors = { ...fieldState.errors };
+        let errors;
         let valid;
 
-        if (action.omitKeys && action.omitKeys.length > 0) {
+        if (action.omitKeys && typeof fieldState.errors !== 'string') {
+          errors = { ...fieldState.errors };
           action.omitKeys.forEach((key) => {
             delete validity[key];
             delete errors[key];
