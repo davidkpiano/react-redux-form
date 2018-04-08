@@ -273,6 +273,64 @@ Object.keys(testContexts).forEach((testKey) => {
             'forms.array.simple');
         });
       });
+
+      context('state with empty key', () => {
+        const emptyReducer = function () { return {}; };
+        const store = createStore(combineReducers({
+          '': emptyReducer,
+          firstForm: formReducer('first'),
+          deep: combineReducers({
+            secondForm: formReducer('second', getInitialState({
+              nested: { foo: 'bar' },
+            })),
+            deeper: combineReducers({
+              thirdForm: formReducer('third'),
+            }),
+          }),
+        }));
+
+        it('should find a shallow form reducer state key', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'first'),
+            'firstForm');
+        });
+
+        it('should find a shallow form reducer state key with deep model', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'first.anything'),
+            'firstForm');
+        });
+
+        it('should find a deep form reducer state key', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'second'),
+            'deep.secondForm');
+        });
+
+        it('should find a deep form reducer state key with deep model', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'second.anything'),
+            'deep.secondForm');
+        });
+
+        it('should find a deeper form reducer state key', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'third'),
+            'deep.deeper.thirdForm');
+        });
+
+        it('should find a deeper form reducer state key with deep model', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'third.anything'),
+            'deep.deeper.thirdForm');
+        });
+
+        it('should find a nested form reducer', () => {
+          assert.equal(
+            getFormStateKey(store.getState(), 'second.nested.foo'),
+            'deep.secondForm.nested');
+        });
+      });
     });
 
     describe('getField()', () => {
