@@ -300,7 +300,10 @@ function createFormClass(s = defaultStrategy) {
     }
 
     handleReset(e) {
-      if (e) e.preventDefault();
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
 
       this.props.dispatch(s.actions.reset(this.props.model));
     }
@@ -330,7 +333,10 @@ function createFormClass(s = defaultStrategy) {
     }
 
     handleSubmit(e) {
-      if (e && !this.props.action) e.preventDefault();
+      if (e) {
+        if (!this.props.action) e.preventDefault();
+        e.stopPropagation();
+      }
       if (e && e.persist) e.persist();
 
       const {

@@ -2,7 +2,7 @@
 import { assert } from 'chai';
 import React from 'react';
 import PropTypes from 'prop-types';
-import { findDOMNode } from 'react-dom';
+import { createPortal, findDOMNode } from 'react-dom';
 import TestUtils from 'react-dom/test-utils';
 import { createStore, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
@@ -2155,6 +2155,39 @@ Object.keys(testContexts).forEach((testKey) => {
           fieldValidation: false,
           formValidation: false,
         });
+      });
+    });
+
+    describe('form rendered via createPortal', () => {
+      it('should NOT call onSubmit of outer form when inner form is submitted', () => {
+        const initialState = getInitialState({
+          foo: '',
+        });
+        const store = testCreateStore({
+          testForm: formReducer('test'),
+          test: modelReducer('test', initialState),
+        });
+
+        const onOuterSubmit = sinon.spy();
+        const onInnerSubmit = sinon.spy();
+
+        const form = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Form model="test" onSubmit={onOuterSubmit}>
+              {createPortal(
+                <Form model="test" className="inner-form" onSubmit={onInnerSubmit} />,
+                document.createElement('div'),
+              )}
+            </Form>
+          </Provider>
+        );
+
+        const formElement = TestUtils.findRenderedDOMComponentWithClass(form, 'inner-form');
+
+        TestUtils.Simulate.submit(formElement);
+
+        assert.isFalse(onOuterSubmit.called);
+        assert.ok(onInnerSubmit.calledOnce);
       });
     });
   });
