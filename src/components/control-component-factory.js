@@ -664,6 +664,10 @@ function createControlClass(s) {
           controlProps.children
         );
       }
+      // Set a default value to prevent it being treated as uncontrolled input
+      if (!controlProps.value && !mappedProps.value) {
+        mappedProps.value = '';
+      }
       return createElement(
         ComponentWrapper,
         {
