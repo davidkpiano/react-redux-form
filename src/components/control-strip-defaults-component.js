@@ -17,6 +17,9 @@ class ComponentWrapper extends Component {
     if (getRef) {
       otherProps.ref = getRef;
     }
+    if (!otherProps.value) {
+      otherProps.value = '';
+    }
     const WrappedComponent = component;
     return <WrappedComponent {...otherProps} />;
   }
