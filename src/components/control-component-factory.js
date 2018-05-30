@@ -140,7 +140,7 @@ function createControlClass(s) {
         const oldHandleBlur = this.handleBlur;
         this.handleBlur = (...args) => {
           this.handleUpdate.flush();
-          oldHandleBlur.call(this, args);
+          oldHandleBlur.call(this, ...args);
         };
       }
 
