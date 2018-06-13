@@ -42,7 +42,7 @@ interface ErrorsMessageSelector {
     (val: any): string | JSX.Element;
 }
 interface ErrorsComponentMessages {
-    [key: string]: string | ErrorsMessageSelector | JSX.Element | bool;
+    [key: string]: string | ErrorsMessageSelector | JSX.Element | boolean;
 }
 
 interface FormValidators {
