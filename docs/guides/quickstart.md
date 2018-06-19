@@ -16,7 +16,7 @@ Check out the above links if you need any help with those prerequisites.
 - `npm install react-redux-form --save`
 
 **Note:** - `redux-thunk` is no longer required for versions 1.3.0 and higher, unless you are using action thunk creators (such as `actions.push`, etc.).
-Please see [the docs for action creators]('../api/actions.html') to see which actions do not require `redux-thunk`.
+Please see [the docs for action creators](../api/actions.html) to see which actions do not require `redux-thunk`.
 If you are using a previous version, `redux-thunk` is still required, but upgrading to the latest version is highly recommended.
 
 ### 2. Setup your app.
@@ -49,7 +49,7 @@ ReactDOM.render(<App />, document.getElementById('app'));
 
 ### 3. Setup your store.
 
-We'll be using [`combineForms`]('../api/combineForms.html') to create the reducer that contains all of your `modelReducer`s, and
+We'll be using [`combineForms`](../api/combineForms.html) to create the reducer that contains all of your `modelReducer`s, and
 a single `formReducer` under the `'form'` key.
 
 ```jsx
