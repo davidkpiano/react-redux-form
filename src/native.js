@@ -19,7 +19,7 @@ import modelReducer from './reducers/model-reducer';
 import formReducer from './reducers/form-reducer';
 import modeled from './enhancers/modeled-enhancer';
 import actions from './actions';
-import { createForms }, combineForms from './reducers/forms-reducer';
+import combineForms, { createForms } from './reducers/forms-reducer';
 import initialFieldState from './constants/initial-field-state';
 import actionTypes from './action-types';
 import Form from './components/form-component';
