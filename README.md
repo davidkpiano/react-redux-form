@@ -5,6 +5,8 @@
 [![npm version](https://badge.fury.io/js/react-redux-form.svg)](https://badge.fury.io/js/react-redux-form)
 [![CDNJS](https://img.shields.io/cdnjs/v/react-redux-form.svg)](https://cdnjs.com/libraries/react-redux-form)
 
+### ⚠️ This project is in maintenance mode only. Please consider using [Formik](https://github.com/jaredpalmer/formik) instead.
+
 ## [Read the Documentation](https://davidkpiano.github.io/react-redux-form/docs.html)
 
 React Redux Form is a collection of reducer creators and action creators that make implementing even the most complex and custom forms with React and Redux simple and performant.
