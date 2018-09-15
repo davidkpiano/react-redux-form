@@ -2044,7 +2044,7 @@ Object.keys(testContexts).forEach((testKey) => {
 
 
     describe('form validation with models in collections', () => {
-      it('should call onSubmitFailed() prop if if collection item present at initialization', () => {
+      it('validates if item in initialState', () => {
         const initialState = getInitialState({ test1: {} });
 
         const store = testCreateStore({
@@ -2092,7 +2092,7 @@ Object.keys(testContexts).forEach((testKey) => {
         assert.isTrue(store.getState().testForm.test1.$form.submitFailed);
       });
 
-      it('should call onSubmitFailed() prop if if collection item not present at initialization', () => {
+      it('validates if item not in initialState', () => {
         const initialState = getInitialState({ test1: {} });
 
         const store = testCreateStore({
