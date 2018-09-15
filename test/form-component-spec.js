@@ -2042,6 +2042,106 @@ Object.keys(testContexts).forEach((testKey) => {
       });
     });
 
+
+    describe('form validation with models in collections', () => {
+      it('should call onSubmitFailed() prop if if collection item present at initialization', () => {
+        const initialState = getInitialState({ test1: {} });
+
+        const store = testCreateStore({
+          test: modelReducer('tests', initialState),
+          testForm: formReducer('tests', initialState),
+        });
+
+        let handleSubmitFailedCalledWith = null;
+
+        function handleSubmitFailed(val) {
+          handleSubmitFailedCalledWith = val;
+        }
+
+        const form = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Form
+              model="tests.test1"
+              onSubmitFailed={handleSubmitFailed}
+              validators={{
+                foo: (val) => val,
+              }}
+            >
+              <Control model=".foo" />
+            </Form>
+          </Provider>
+        );
+
+        const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+        TestUtils.Simulate.submit(formNode);
+
+        assert.containSubset(handleSubmitFailedCalledWith, {
+          $form: {
+            model: 'tests.test1',
+            valid: false,
+          },
+          foo: {
+            model: 'tests.test1.foo',
+            valid: false,
+            errors: true,
+          },
+        });
+
+        assert.isFalse(store.getState().testForm.test1.$form.pending);
+        assert.isTrue(store.getState().testForm.test1.$form.submitFailed);
+      });
+
+      it('should call onSubmitFailed() prop if if collection item not present at initialization', () => {
+        const initialState = getInitialState({ test1: {} });
+
+        const store = testCreateStore({
+          test: modelReducer('tests', initialState),
+          testForm: formReducer('tests', initialState),
+        });
+
+        let handleSubmitFailedCalledWith = null;
+
+        function handleSubmitFailed(val) {
+          handleSubmitFailedCalledWith = val;
+        }
+
+        const form = TestUtils.renderIntoDocument(
+          <Provider store={store}>
+            <Form
+              model="tests.test2"
+              onSubmitFailed={handleSubmitFailed}
+              validators={{
+                foo: (val) => val,
+              }}
+            >
+              <Control model=".foo" />
+            </Form>
+          </Provider>
+        );
+
+        const formNode = TestUtils.findRenderedDOMComponentWithTag(form, 'form');
+
+        TestUtils.Simulate.submit(formNode);
+
+        assert.containSubset(handleSubmitFailedCalledWith, {
+          $form: {
+            model: 'tests.test2',
+            valid: false,
+          },
+          foo: {
+            model: 'tests.test2.foo',
+            valid: false,
+            errors: true,
+          },
+        });
+
+        assert.isFalse(store.getState().testForm.test2.$form.pending);
+        assert.isTrue(store.getState().testForm.test2.$form.submitFailed);
+      });
+    });
+
+
     describe('getDispatch() prop', () => {
       it('should provide dispatch to callback', (done) => {
         const initialState = getInitialState({ foo: '' });

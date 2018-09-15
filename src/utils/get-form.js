@@ -76,7 +76,16 @@ let formStateKeyCache = {};
 export const clearGetFormCache =
   () => formStateKeyCache = {}; // eslint-disable-line no-return-assign
 
+export const clearGetFormCacheForModel =
+  (modelString) => delete formStateKeyCache[modelString]; // eslint-disable-line no-return-assign
+
 const getFormStateKeyCached = (() => (state, modelString, s = defaultStrategy) => {
+  // console.log('formStateKeyCache');
+  // console.log(formStateKeyCache);
+  // console.log('result');
+  // const result = getFormStateKey(state, modelString, s);
+  // console.log(result);
+
   if (formStateKeyCache[modelString]) return formStateKeyCache[modelString];
 
   const result = getFormStateKey(state, modelString, s);

@@ -10,7 +10,7 @@ import getValidity from '../utils/get-validity';
 import invertValidators from '../utils/invert-validators';
 import isValidityInvalid from '../utils/is-validity-invalid';
 import isValid from '../form/is-valid';
-import getForm from '../utils/get-form';
+import getForm, { clearGetFormCacheForModel } from '../utils/get-form';
 import getModel from '../utils/get-model';
 import getField from '../utils/get-field';
 import deepCompareChildren from '../utils/deep-compare-children';
@@ -409,6 +409,7 @@ function createFormClass(s = defaultStrategy) {
 
   function mapStateToProps(state, { model }) {
     const modelString = getModel(model, state);
+    clearGetFormCacheForModel(modelString);
     const form = s.getForm(state, modelString);
 
     invariant(form,
