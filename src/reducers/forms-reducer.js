@@ -52,7 +52,7 @@ function createFormCombiner(strategy = defaultStrategy) {
         }
 
         modelReducers[formKey] = strategy.modeled(formValue, subModel);
-        initialFormState[formKey] = initialState;
+        initialFormState[formKey] = strategy.toJS(initialState);
       } else {
         modelReducers[formKey] = strategy.modelReducer(subModel, formValue);
         initialFormState[formKey] = strategy.toJS(formValue);
