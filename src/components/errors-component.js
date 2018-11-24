@@ -40,6 +40,7 @@ const propTypes = {
     PropTypes.string,
     PropTypes.func,
     PropTypes.element,
+    PropTypes.object,
   ]),
   component: PropTypes.oneOfType([
     PropTypes.string,
