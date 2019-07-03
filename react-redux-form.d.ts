@@ -237,6 +237,11 @@ export interface ControlProps<T> extends React.HTMLProps<T> {
    * Signifies that the control is a toggle (e.g., a checkbox or a radio). If true, then some optimizations are made.
    */
   isToggle?: boolean;
+  /**
+   * Signifies that the field should be updated when Enter is pressed
+   * @default true
+   */
+  updateOnEnter?: boolean;
 }
 
 export class Control<T> extends React.Component<ControlProps<T>, {}> {
