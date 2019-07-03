@@ -1043,7 +1043,7 @@ interface Actions {
    * @param model The top level form model
    * @param fieldsValidity An object where the keys are field paths and the value is validity object
    */
-  setFieldsValidity: (model: string | ModelGetterFn, fieldsValidity: FieldsObject<ValidityObject | boolean>) => FieldAction;
+  setFieldsValidity: (model: string | ModelGetterFn, fieldsValidity: FieldsObject<ValidityObject>) => FieldAction;
 
   /**
    * This action allows you to set the errors for multiple submodels of a model at the same time. Similar to setFieldsValidity but for errors
@@ -1051,7 +1051,7 @@ interface Actions {
    * @param fieldsErrors An object where the keys are field paths and the value is error object
    * @param options { async: true } if the error is an error from async validation.
    */
-  setFieldsErrors: (model: string | ModelGetterFn, fieldsErrors: FieldsObject<ErrorsObject | boolean | string>, options?: SetErrorsOptions) => FieldAction;
+  setFieldsErrors: (model: string | ModelGetterFn, fieldsErrors: FieldsObject<ErrorsObject>, options?: SetErrorsOptions) => FieldAction;
 
 
 
