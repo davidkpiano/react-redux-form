@@ -23,6 +23,7 @@ const fieldPropTypes = {
   model: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.string,
+    PropTypes.array,
   ]).isRequired,
   component: PropTypes.oneOfType([
     PropTypes.func,

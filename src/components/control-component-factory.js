@@ -42,6 +42,7 @@ const propTypes = {
   model: PropTypes.oneOfType([
     PropTypes.func,
     PropTypes.string,
+    PropTypes.array,
   ]).isRequired,
   modelValue: PropTypes.any,
   viewValue: PropTypes.any,
