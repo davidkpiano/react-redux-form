@@ -157,7 +157,7 @@ function createControlClass(s) {
       this.handleLoad();
     }
 
-    componentWillReceiveProps({ modelValue }) {
+    UNSAFE_componentWillReceiveProps({ modelValue }) {
       if (modelValue !== this.props.modelValue) {
         this.setViewValue(modelValue);
       }
