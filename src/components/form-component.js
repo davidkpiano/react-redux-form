@@ -100,7 +100,7 @@ function createFormClass(s = defaultStrategy) {
       }
     }
 
-    componentWillReceiveProps(nextProps) {
+    UNSAFE_componentWillReceiveProps(nextProps) {
       if (containsEvent(nextProps.validateOn, 'change')) {
         this.validate(nextProps);
       }
