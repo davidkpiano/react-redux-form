@@ -101,12 +101,6 @@ function createFormClass(s = defaultStrategy) {
       clearGetFormCacheForModel(this.props.model);
     }
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
-      if (containsEvent(nextProps.validateOn, 'change')) {
-        this.validate(nextProps);
-      }
-    }
-
     shouldComponentUpdate(nextProps, nextState) {
       return deepCompareChildren(this, nextProps, nextState);
     }
@@ -120,6 +114,13 @@ function createFormClass(s = defaultStrategy) {
 
       if (!shallowEqual(prevProps.modelValue, this.props.modelValue)) {
         this.handleChange();
+      }
+    }
+
+    /* eslint-disable camelcase */
+    UNSAFE_componentWillReceiveProps(nextProps) {
+      if (containsEvent(nextProps.validateOn, 'change')) {
+        this.validate(nextProps);
       }
     }
 

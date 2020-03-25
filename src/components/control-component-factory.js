@@ -157,12 +157,6 @@ function createControlClass(s) {
       this.handleLoad();
     }
 
-    UNSAFE_componentWillReceiveProps({ modelValue }) {
-      if (modelValue !== this.props.modelValue) {
-        this.setViewValue(modelValue);
-      }
-    }
-
     shouldComponentUpdate(nextProps, nextState) {
       return !shallowEqual(this.props, nextProps, {
         deepKeys: ['controlProps'],
@@ -386,6 +380,13 @@ function createControlClass(s) {
 
     getValue(event) {
       return this.props.getValue(event, this.props);
+    }
+
+    /* eslint-disable camelcase */
+    UNSAFE_componentWillReceiveProps({ modelValue }) {
+      if (modelValue !== this.props.modelValue) {
+        this.setViewValue(modelValue);
+      }
     }
 
     handleIntents() {
