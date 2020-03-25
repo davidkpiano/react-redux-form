@@ -98,6 +98,7 @@ function createFormClass(s = defaultStrategy) {
       if (this.props.getDispatch) {
         this.props.getDispatch(this.props.dispatch);
       }
+      clearGetFormCacheForModel(this.props.model);
     }
 
     UNSAFE_componentWillReceiveProps(nextProps) {
@@ -409,7 +410,6 @@ function createFormClass(s = defaultStrategy) {
 
   function mapStateToProps(state, { model }) {
     const modelString = getModel(model, state);
-    clearGetFormCacheForModel(modelString);
     const form = s.getForm(state, modelString);
 
     invariant(form,
