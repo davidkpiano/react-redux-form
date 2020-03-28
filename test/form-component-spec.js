@@ -11,6 +11,7 @@ import sinon from 'sinon';
 
 import isValid from '../src/form/is-valid';
 import { defaultTestContexts, testCreateStore, testRender } from './utils';
+import { clearGetFormCache } from '../src/utils/get-form';
 
 import {
   Form as _Form,
@@ -69,6 +70,10 @@ Object.keys(testContexts).forEach((testKey) => {
   const combineForms = testContext.combineForms;
 
   describe(`<Form> component (${testKey} context)`, () => {
+    beforeEach(() => {
+      clearGetFormCache();
+    });
+
     describe('wraps component if specified', () => {
       const store = testCreateStore({
         testForm: formReducer('test', object),

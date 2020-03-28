@@ -98,12 +98,7 @@ function createFormClass(s = defaultStrategy) {
       if (this.props.getDispatch) {
         this.props.getDispatch(this.props.dispatch);
       }
-    }
-
-    UNSAFE_componentWillReceiveProps(nextProps) {
-      if (containsEvent(nextProps.validateOn, 'change')) {
-        this.validate(nextProps);
-      }
+      clearGetFormCacheForModel(this.props.model);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -119,6 +114,13 @@ function createFormClass(s = defaultStrategy) {
 
       if (!shallowEqual(prevProps.modelValue, this.props.modelValue)) {
         this.handleChange();
+      }
+    }
+
+    /* eslint-disable camelcase */
+    UNSAFE_componentWillReceiveProps(nextProps) {
+      if (containsEvent(nextProps.validateOn, 'change')) {
+        this.validate(nextProps);
       }
     }
 
@@ -409,7 +411,6 @@ function createFormClass(s = defaultStrategy) {
 
   function mapStateToProps(state, { model }) {
     const modelString = getModel(model, state);
-    clearGetFormCacheForModel(modelString);
     const form = s.getForm(state, modelString);
 
     invariant(form,
