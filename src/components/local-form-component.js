@@ -15,7 +15,7 @@ class LocalForm extends React.Component {
 
     this.dispatch = (action) => {
       if (typeof action === 'function') {
-        return action(this.store.dispatch, this.store.getState);
+        return action(this.dispatch, this.store.getState);
       }
 
       return this.store.dispatch(action);
